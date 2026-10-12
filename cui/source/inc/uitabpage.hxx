@@ -39,6 +39,8 @@ public:
     OUString GetSelectedMode();
     static std::optional<vcl::EnumContext::Application> GetCurrentAppEnum();
     static OUString GetCurrentApp();
+    /// notebookbar_office.ui exists only for Calc: map it to the regular Tabbed mode elsewhere.
+    static OUString GetModeForApp(const OUString& rMode, std::u16string_view sApp);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

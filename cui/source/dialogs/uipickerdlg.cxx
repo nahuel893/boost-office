@@ -89,15 +89,19 @@ IMPL_LINK(UIPickerDialog, OnApplyClick, weld::Button&, rButton, void)
         return;
     }
 
+    // Tabbed Office exists only for Calc; other apps get plain Tabbed (GetModeForApp)
     //apply to all except current module
     if (&rButton == m_xResetBtn.get()) // Apply to All
     {
         std::shared_ptr<comphelper::ConfigurationChanges> aBatch(
             comphelper::ConfigurationChanges::create());
-        officecfg::Office::UI::ToolbarMode::ActiveWriter::set(sCmd, aBatch);
+        officecfg::Office::UI::ToolbarMode::ActiveWriter::set(
+            UITabPage::GetModeForApp(sCmd, u"Writer"), aBatch);
         officecfg::Office::UI::ToolbarMode::ActiveCalc::set(sCmd, aBatch);
-        officecfg::Office::UI::ToolbarMode::ActiveImpress::set(sCmd, aBatch);
-        officecfg::Office::UI::ToolbarMode::ActiveDraw::set(sCmd, aBatch);
+        officecfg::Office::UI::ToolbarMode::ActiveImpress::set(
+            UITabPage::GetModeForApp(sCmd, u"Impress"), aBatch);
+        officecfg::Office::UI::ToolbarMode::ActiveDraw::set(
+            UITabPage::GetModeForApp(sCmd, u"Draw"), aBatch);
         aBatch->commit();
 
         const OUString sCurrentApp = UITabPage::GetCurrentApp();
@@ -107,13 +111,16 @@ IMPL_LINK(UIPickerDialog, OnApplyClick, weld::Button&, rButton, void)
             const utl::OConfigurationTreeRoot aAppNode(
                 xContext, u"org.openoffice.Office.UI.ToolbarMode/Applications/"_ustr, true);
             if (sCurrentApp != "Writer")
-                aAppNode.setNodeValue(u"Writer/Active"_ustr, css::uno::Any(sCmd));
+                aAppNode.setNodeValue(u"Writer/Active"_ustr,
+                                         css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Writer")));
             if (sCurrentApp != "Calc")
                 aAppNode.setNodeValue(u"Calc/Active"_ustr, css::uno::Any(sCmd));
             if (sCurrentApp != "Impress")
-                aAppNode.setNodeValue(u"Impress/Active"_ustr, css::uno::Any(sCmd));
+                aAppNode.setNodeValue(u"Impress/Active"_ustr,
+                                         css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Impress")));
             if (sCurrentApp != "Draw")
-                aAppNode.setNodeValue(u"Draw/Active"_ustr, css::uno::Any(sCmd));
+                aAppNode.setNodeValue(u"Draw/Active"_ustr,
+                                         css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Draw")));
             aAppNode.commit();
         };
     }

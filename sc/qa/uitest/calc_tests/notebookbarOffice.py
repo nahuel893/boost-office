@@ -68,4 +68,14 @@ class NotebookbarOffice(UITestCase):
                 xRadio.executeAction("CLICK", tuple())
                 self.assertEqual("true", get_state_as_dict(xRadio)["Checked"])
 
+    def test_ui_picker_hides_office_variant_in_writer(self):
+        # notebookbar_office.ui exists only for Calc
+        with self.ui_test.create_doc_in_start_center("writer"):
+            with self.ui_test.execute_dialog_through_command(".uno:UIPicker") as xDialog:
+                xRadio = xDialog.getChild("rbButton10")
+                self.assertEqual("false", get_state_as_dict(xRadio)["Visible"])
+                # the regular Tabbed button stays available
+                xTabbed = xDialog.getChild("rbButton2")
+                self.assertEqual("true", get_state_as_dict(xTabbed)["Visible"])
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

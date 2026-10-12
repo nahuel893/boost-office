@@ -50,7 +50,9 @@ UITabPage::UITabPage(weld::Container* pPage, weld::DialogController* pController
 
     Link<weld::Toggleable&, void> aLink = LINK(this, UITabPage, SelectUIMode);
 
-    const OUString sCurrentMode = GetCurrentMode();
+    const OUString sCurrentApp = GetCurrentApp();
+    // An old config may hold notebookbar_office.ui for an app without it: show "Tabbed" instead.
+    const OUString sCurrentMode = GetModeForApp(GetCurrentMode(), sCurrentApp);
     for (std::size_t i = 0; i < std::size(m_pRadioButtons); ++i)
     {
         m_pRadioButtons[i]->connect_toggled(aLink);
@@ -61,6 +63,10 @@ UITabPage::UITabPage(weld::Container* pPage, weld::DialogController* pController
             m_pInfoLabel->set_label(CuiResId(std::get<0>(UIMODES_ARRAY[i])));
         }
     }
+
+    // Tabbed Office is only available in Calc
+    if (sCurrentApp != "Calc")
+        m_pRadioButtons[nTabbedOffice]->set_visible(false);
 
     if (!officecfg::Office::Common::Misc::ExperimentalMode::get())
     {
@@ -81,6 +87,13 @@ OUString UITabPage::GetCurrentMode()
             sResult = comphelper::getString(aAppNode.getNodeValue(u"Active"_ustr));
     };
     return sResult;
+}
+
+OUString UITabPage::GetModeForApp(const OUString& rMode, std::u16string_view sApp)
+{
+    if (sApp != u"Calc" && rMode == std::get<1>(UIMODES_ARRAY[nTabbedOffice]))
+        return u"notebookbar.ui"_ustr;
+    return rMode;
 }
 
 std::optional<vcl::EnumContext::Application> UITabPage::GetCurrentAppEnum()

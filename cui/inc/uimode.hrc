@@ -33,6 +33,7 @@ const std::tuple<TranslateId, OUString, OUString> UIMODES_ARRAY[] =
 };
 
 //hide experimental UIs
+constexpr int nTabbedOffice = 2;
 constexpr int nGroupedbarFull = 6;
 constexpr int nContextualGroups = 9;
 
