@@ -98,3 +98,77 @@ Result: YES.
 Decision: later tasks may assert notebookbar content through `getChild` by widget id.
 Note: on failure, the UITest log ends with an unrelated Python 3.14 traceback-cleaning
 error from UNO exceptions; the real cause is the `Could not find child` line above it.
+
+## Validation
+
+Branch feature/calc-home-redesign at 904266ebd. Tabbed Office variant, Boost Light / Boost Dark
+schemes, boost / boost_dark icon themes.
+
+### Automatic checks (Step 1)
+
+- `python3 -I -m unittest discover -s product/tests -t .`: 36 tests, OK.
+- `product/dev/check-ui.sh sc/uiconfig/scalc/ui/notebookbar_office.ui`: exit 0.
+- UITests (module notebookbarOffice.NotebookbarOffice), all PASS:
+  test_office_variant_loads, test_switch_back_to_compact, test_home_sections_and_toolboxes,
+  test_ui_picker_lists_office_variant, test_ui_picker_hides_office_variant_in_writer.
+- `git diff --stat 62abc2329664 -- 'sc/uiconfig/scalc/ui/notebookbar*.ui'` lists only
+  notebookbar_office.ui (new file); no other notebookbar*.ui changed.
+
+### Screenshots
+
+Directory: /mnt/games/libreoffice/assets/previews/
+- Width test, dark: final-dark-1920.png, final-dark-1366.png, final-dark-1024.png
+- Width test, light: final-light-1920.png, final-light-1366.png, final-light-1024.png
+- Icons sheet: step3-icons-sheet.png (contact sheet; dryrun-icons-sheet.png is the earlier dry run)
+- Colors: step4-colors-dark.png, step4-colors-light.png, step4-colors-both.png
+- Baselines: baseline-tabbed-dark.png, baseline-tabbed-light.png, baseline-compact-dark.png,
+  baseline-compact-light.png
+
+### Width result
+
+Collapse: YES. Sections collapse into the ">>" overflow instead of clipping.
+
+| Shot | All 8 sections | In ">>" overflow | Overlap / cut |
+|------|----------------|------------------|---------------|
+| dark 1920 | yes | none | none in the ribbon (a dark frame outline surrounds the top ~550 px of the window, probably a screenshot/window artifact; not investigated) |
+| dark 1366 | no | Styles, Cells, Editing | none |
+| dark 1024 | no | Styles, Cells, Editing | none |
+| light 1920 | yes | none | none |
+| light 1366 | no | Styles, Cells, Editing | none |
+| light 1024 | no | Styles, Cells, Editing, and Number (wider light font metrics) | the capture caught the overflow popup open; it covers the ribbon's lower part and shows the Number section cut at its left edge; behind it Alignment's third row is hidden by the popup |
+
+Visible at 1366 and 1024: Undo, Clipboard, Font, Alignment, Number (Number moves into the
+overflow in light 1024). No button is cut mid-glyph in the resting ribbon.
+
+### Stage B / follow-up list
+
+From spec section 8:
+- Office-like flat tabs with an accent underline, scoped to the ribbon.
+- Caption color `text.secondary` (VCL label attributes support no color).
+- Automatic light/dark switching of the scheme and the icon theme.
+- The "~" menus, if still wanted.
+- The ">>" collapse for the full Tabbed layout: works in stage A (see width result).
+
+From "## 0b" (areas the scheme cannot style):
+- Field role is not used by the ribbon combos (they follow Base).
+- Separators follow Base, not Separator.
+- Inactive-tab text and captions cannot be told apart from ButtonText by role.
+- Toolbox buttons stay transparent over Window; no Face-colored button background.
+
+Gaps found during stage A review and validation:
+- Ribbon section separators are painted with BaseColor (SeparatorColor is ignored under gtk3),
+  so they are faint on the Boost Light green.
+- Custom schemes do not follow the system light/dark switch (see "## 0c").
+- The Excel-style dark-green tab band needs C++.
+- Table Styles (.uno:AutoFormat) is disabled without a cell range selected.
+- Split-button main-half click (clicking the body of Insert/Delete/... instead of the arrow) is
+  unverified.
+- Menus, hover and pressed colors still need a human check.
+- Translations for the new labels are pending.
+- A stale notebookbar_office.ui stored for non-Calc apps is only remapped in the UI picker.
+- Unexplained dark frame outline in final-dark-1920.png and an overflow popup caught open in
+  final-light-1024.png: confirm they are capture artifacts.
+
+### Known limitation
+
+The dev build is en-US only (no `--with-lang`), so long translated labels are not checked yet.
