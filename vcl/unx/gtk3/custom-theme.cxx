@@ -427,6 +427,17 @@ OString CreateStyleString()
         "  color: #" + aThemeColors.GetButtonTextColor().AsRGBHexString() + ";"
         "}"
 
+        // Flat themes (adw-gtk3) give entries and drop-down fields no edge;
+        // draw a thin one so they read as input / drop-down fields. The
+        // spinbutton's inner entry stays borderless, the spinbutton has it.
+        "spinbutton,"
+        "entry,"
+        "combobox > .linked > button.combo,"
+        "button.combo:only-child {"
+        "  border: 1px solid #" + aThemeColors.GetShadeColor().AsRGBHexString() + ";"
+        "  border-radius: 4px;"
+        "}"
+
         "spinbutton,"
         "entry {"
         "  background-color: #" + aSpinBack.AsRGBHexString() + ";"
