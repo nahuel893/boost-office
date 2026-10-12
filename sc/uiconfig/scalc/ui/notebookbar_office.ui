@@ -2997,28 +2997,6 @@
                                     <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkToolButton" id="btnHomeGrow">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="action-name">.uno:Grow</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkToolButton" id="btnHomeShrink">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="action-name">.uno:Shrink</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
-                                  </packing>
-                                </child>
                               </object>
                               <packing>
                                 <property name="left-attach">0</property>
@@ -3070,6 +3048,28 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:Strikeout</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeGrow">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Grow</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeShrink">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Shrink</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

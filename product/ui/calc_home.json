@@ -16,9 +16,10 @@
     ]},
     {"name": "Font", "caption": "Font", "rows": 2, "columns": [
       [{"id": "FontRow", "style": "small", "items": [
-          {"cmd": "CharFontName"}, {"cmd": "FontHeight"}, {"cmd": "Grow"}, {"cmd": "Shrink"}]},
+          {"cmd": "CharFontName"}, {"cmd": "FontHeight"}]},
        {"id": "FormatRow", "style": "small", "items": [
           {"cmd": "Bold"}, {"cmd": "Italic"}, {"cmd": "Underline", "kind": "split"}, {"cmd": "Strikeout"},
+          {"cmd": "Grow"}, {"cmd": "Shrink"},
           {"cmd": "SetBorderStyle", "kind": "split"}, {"cmd": "BackgroundColor", "kind": "split"},
           {"cmd": "Color", "kind": "split"}]}]
     ]},
