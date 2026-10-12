@@ -956,6 +956,7 @@ void ScCellShell::GetState(SfxItemSet &rSet)
                 break;
 
             case FID_MERGE_TOGGLE:
+            case FID_HOME_MERGE_CENTER:
                 if ( rDoc.GetChangeTrack() )
                     rSet.DisableItem( nWhich );
                 else

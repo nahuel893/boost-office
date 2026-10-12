@@ -11,7 +11,9 @@ import os
 from pathlib import Path
 
 from uitest.framework import UITestCase
+from uitest.uihelper.calc import enter_text_to_cell
 from uitest.uihelper.common import get_state_as_dict
+from libreoffice.uno.propertyvalue import mkPropertyValues
 
 OFFICE_UI = "notebookbar_office.ui"
 
@@ -59,6 +61,17 @@ class NotebookbarOffice(UITestCase):
                             self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
             finally:
                 self.switch_to("Default")
+
+    def test_home_merge_center_slot_merges_and_centers(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xCalcDoc = self.xUITest.getTopFocusWindow()
+            xGrid = xCalcDoc.getChild("grid_window")
+            enter_text_to_cell(xGrid, "A1", "merged")
+            xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A1:B2"}))
+            self.xUITest.executeCommand(".uno:HomeMergeCenter")
+            xCell = document.Sheets.getByIndex(0).getCellRangeByName("A1")
+            self.assertTrue(xCell.IsMerged)
+            self.assertEqual("CENTER", xCell.HoriJustify.value)
 
     def test_ui_picker_lists_office_variant(self):
         with self.ui_test.create_doc_in_start_center("calc"):

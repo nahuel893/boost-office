@@ -26,7 +26,7 @@ record are in `product/docs/stage-a-findings.md`.
 | Undo (new) | Undo, Redo (also kept in the quick access bar, by user decision) |
 | Clipboard | Paste (large, split), Cut, Copy, Clone Formatting |
 | Font | Row 1: font name, size. Row 2: B, I, U v, S, Grow, Shrink, Borders v, Fill v, Color v |
-| Alignment | Top/Middle/Bottom, Left/Center/Right, indent -/+, Wrap Text, **Merge & Center v** |
+| Alignment | Top/Middle/Bottom, Left/Center/Right, indent -/+, Wrap Text, **Merge & Center** (split: body merges and centers, arrow opens the menu) |
 | Number | Number format list, Currency v, %, 0.0 (thousands + 2 decimals), +/- decimals |
 | Styles (new) | Conditional Formatting (large, split), **Format as Table** (`.uno:AutoFormat`, large), cell style list (bottom of the section, no extra height) |
 | Cells | **Insert v**, **Delete v**, **Format v** (large) |
@@ -36,6 +36,9 @@ record are in `product/docs/stage-a-findings.md`.
   `HomeFormatMenu`, `HomeFillMenu`, `HomeClearMenu`, `HomeSortFilterMenu`,
   `HomeFindSelectMenu`). They only group commands LibreOffice already had; menu contents are in
   `sc/uiconfig/scalc/popupmenu/home_*.xml`.
+  Merge & Center is a split button: its body runs the Home-only slot `.uno:HomeMergeCenter`
+  (same code path as `.uno:ToggleMergeCells`, so other toolbars are unchanged), and only the
+  arrow opens `.uno:HomeMergeMenu` (Controller `Value`). The other seven menus are dropdown-only.
 - Removed from Home (still in Format Cells): Subscript, Superscript, Spacing, Justify,
   Left-to-right / Right-to-left. The old "Home" overflow menu is gone (its items live in Editing).
 - Large buttons use 32 px icons; section captions are plain (no italic), 90% size.
@@ -116,13 +119,13 @@ Other upstream files touched: `ToolbarMode.xcu` (mode), `Controller.xcu` + `Calc
 
 ## 4. Tests and checks
 
-- `python3 -I -m unittest discover -s product/tests -t .` — 43 tests: profile writer, ribbon
+- `python3 -I -m unittest discover -s product/tests -t .` — 50 tests: profile writer, ribbon
   generator, "office .ui == upstream + layout", icon themes (coverage of every Home button, color
   stripe band empty, no light-theme gray in dark, crisp 16 px, trim never clips ink, fills,
   badges), color schemes (27 roles, WCAG AA, xcu/extension layout, cell cursor), launcher.
-- `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` — 5 UITests: variant loads,
+- `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` — 6 UITests: variant loads,
   switching back to Tabbed Compact, every Home section/toolbox present, picker lists the variant
-  in Calc, picker hides it in Writer.
+  in Calc, picker hides it in Writer, `.uno:HomeMergeCenter` merges and centers A1:B2.
 - `product/dev/check-ui.sh sc/uiconfig/scalc/ui/notebookbar_office.ui` — the build's gla11y
   check (0 new warnings/fatals) and lint.
 

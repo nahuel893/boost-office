@@ -3299,6 +3299,20 @@
           <value xml:lang="en-US">Find text in values, to search in formulas use the dialog</value>
         </prop>
       </node>
+      <node oor:name=".uno:HomeMergeCenter" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Merge &amp; Center</value>
+        </prop>
+        <prop oor:name="ContextLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Merge &amp; Center</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Merge and Center Cells</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
       <node oor:name=".uno:HomeMergeMenu" oor:op="replace">
         <prop oor:name="Label" oor:type="xs:string">
           <value xml:lang="en-US">Merge &amp; Center</value>

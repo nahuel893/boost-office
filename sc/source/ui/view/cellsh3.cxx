@@ -853,6 +853,7 @@ void ScCellShell::Execute( SfxRequest& rReq )
         case FID_MERGE_ON:
         case FID_MERGE_OFF:
         case FID_MERGE_TOGGLE:
+        case FID_HOME_MERGE_CENTER:
         {
             if ( !GetViewData().GetDocument().GetChangeTrack() )
             {
@@ -868,6 +869,7 @@ void ScCellShell::Execute( SfxRequest& rReq )
                         bMerge = false;
                     break;
                     case FID_MERGE_TOGGLE:
+                    case FID_HOME_MERGE_CENTER:
                     {
                         bCenter = true;
                         std::unique_ptr<SfxPoolItem> pItem;

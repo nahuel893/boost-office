@@ -3594,6 +3594,23 @@ SfxVoidItem MergeCells FID_MERGE_ON
 ]
 
 
+SfxVoidItem HomeMergeCenter FID_HOME_MERGE_CENTER
+(SfxBoolItem MoveContents FID_HOME_MERGE_CENTER)
+[
+    AutoUpdate = FALSE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+    AccelConfig = TRUE,
+    MenuConfig = TRUE,
+    ToolBoxConfig = TRUE,
+    GroupId = SfxGroupId::Format;
+]
+
 SfxVoidItem ToggleMergeCells FID_MERGE_TOGGLE
 (SfxBoolItem MoveContents FID_MERGE_TOGGLE)
 [

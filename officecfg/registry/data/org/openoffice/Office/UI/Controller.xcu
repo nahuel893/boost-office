@@ -2179,13 +2179,16 @@
       </node>
       <node oor:name="HomeMergeMenuControl" oor:op="replace">
         <prop oor:name="Command">
-          <value>.uno:HomeMergeMenu</value>
+          <value>.uno:HomeMergeCenter</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:HomeMergeMenu</value>
         </prop>
       </node>
       <node oor:name="HomeInsertMenuControl" oor:op="replace">

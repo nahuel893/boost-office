@@ -538,6 +538,7 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define SID_EXPORT_AS_GRAPHIC   (SID_NEW_SLOTS+2)
 
 #define FID_MERGE_TOGGLE        (SID_NEW_SLOTS+10)
+#define FID_HOME_MERGE_CENTER   (SID_NEW_SLOTS+11)
 
 #define SID_RANGE_ROW           TypedWhichId<SfxInt32Item>(SID_NEW_SLOTS+20)
 #define SID_RANGE_COL           TypedWhichId<SfxInt16Item>(SID_NEW_SLOTS+21)

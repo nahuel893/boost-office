@@ -32,7 +32,7 @@
           {"cmd": "DecrementIndent"}, {"cmd": "IncrementIndent"}]}],
       [{"id": "WrapText", "style": "small-label", "items": [{"cmd": "WrapText"}]},
        {"id": "Merge", "style": "small-label", "items": [
-          {"cmd": "HomeMergeMenu", "kind": "split", "icon": "cmd/sc_togglemergecells.png"}]}]
+          {"cmd": "HomeMergeCenter", "kind": "split", "icon": "cmd/sc_togglemergecells.png"}]}]
     ]},
     {"name": "Number", "caption": "Number", "rows": 2, "columns": [
       [{"id": "NumberFormatType", "style": "small", "items": [{"cmd": "NumberFormatType"}]},

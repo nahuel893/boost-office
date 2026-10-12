@@ -192,6 +192,7 @@ interface CellSelection
     FID_MERGE_ON        [ ExecMethod = Execute; StateMethod = GetState; ]
     FID_MERGE_OFF       [ ExecMethod = Execute; StateMethod = GetState; ]
     FID_MERGE_TOGGLE    [ ExecMethod = Execute; StateMethod = GetState; ]
+    FID_HOME_MERGE_CENTER [ ExecMethod = Execute; StateMethod = GetState; ]
     SID_OUTLINE_HIDE    [ ExecMethod = ExecuteEdit; StateMethod = GetState; ]
     SID_OUTLINE_SHOW    [ ExecMethod = ExecuteEdit; StateMethod = GetState; ]
     SID_OUTLINE_MAKE    [ ExecMethod = ExecuteEdit; StateMethod = GetState; ]
