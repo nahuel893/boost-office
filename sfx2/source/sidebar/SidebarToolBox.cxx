@@ -339,6 +339,7 @@ public:
     : SidebarToolBox(pParentWindow)
     {
         mbSideBar = false;
+        SetCompactHeight(true);
         SetToolboxButtonSize(GetDefaultButtonSize());
     }
 

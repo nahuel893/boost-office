@@ -1138,6 +1138,7 @@ void ToolBox::ImplInitToolBoxData()
     mbIsKeyEvent          = false;
     mbChangingHighlight   = false;
     mbLineSpacing         = false;
+    mbCompactHeight       = false;
     mbIsArranged          = false;
     meButtonType          = ButtonType::SYMBOLONLY;
     meAlign               = WindowAlign::Top;
@@ -1402,41 +1403,46 @@ bool ToolBox::ImplCalcItem()
         // also calculate the area for comboboxes, drop down list boxes and spinfields
         // as these are often inserted into toolboxes; set mnWinHeight to the
         // greater of those values to prevent toolbar flickering (#i103385#)
-        aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
-        aReg = aRect;
-        if( GetNativeControlRegion( ControlType::Combobox, ControlPart::Entire,
-                                    aReg,
-                                    ControlState::ENABLED | ControlState::ROLLOVER,
-                                    aVal,
-                                    aNativeBounds, aNativeContent ) )
+        // A compact toolbox (notebookbar) must not grow to the native height of
+        // combo boxes it may not even contain.
+        if (!mbCompactHeight)
         {
-            aRect = aNativeBounds;
-            if( aRect.GetHeight() > mnWinHeight )
-                mnWinHeight = aRect.GetHeight();
-        }
-        aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
-        aReg = aRect;
-        if( GetNativeControlRegion( ControlType::Listbox, ControlPart::Entire,
-                                    aReg,
-                                    ControlState::ENABLED | ControlState::ROLLOVER,
-                                    aVal,
-                                    aNativeBounds, aNativeContent ) )
-        {
-            aRect = aNativeBounds;
-            if( aRect.GetHeight() > mnWinHeight )
-                mnWinHeight = aRect.GetHeight();
-        }
-        aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
-        aReg = aRect;
-        if( GetNativeControlRegion( ControlType::Spinbox, ControlPart::Entire,
-                                    aReg,
-                                    ControlState::ENABLED | ControlState::ROLLOVER,
-                                    aVal,
-                                    aNativeBounds, aNativeContent ) )
-        {
-            aRect = aNativeBounds;
-            if( aRect.GetHeight() > mnWinHeight )
-                mnWinHeight = aRect.GetHeight();
+            aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
+            aReg = aRect;
+            if( GetNativeControlRegion( ControlType::Combobox, ControlPart::Entire,
+                                        aReg,
+                                        ControlState::ENABLED | ControlState::ROLLOVER,
+                                        aVal,
+                                        aNativeBounds, aNativeContent ) )
+            {
+                aRect = aNativeBounds;
+                if( aRect.GetHeight() > mnWinHeight )
+                    mnWinHeight = aRect.GetHeight();
+            }
+            aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
+            aReg = aRect;
+            if( GetNativeControlRegion( ControlType::Listbox, ControlPart::Entire,
+                                        aReg,
+                                        ControlState::ENABLED | ControlState::ROLLOVER,
+                                        aVal,
+                                        aNativeBounds, aNativeContent ) )
+            {
+                aRect = aNativeBounds;
+                if( aRect.GetHeight() > mnWinHeight )
+                    mnWinHeight = aRect.GetHeight();
+            }
+            aRect = tools::Rectangle( Point( 0, 0 ), Size( nMinWidth, nMinHeight ) );
+            aReg = aRect;
+            if( GetNativeControlRegion( ControlType::Spinbox, ControlPart::Entire,
+                                        aReg,
+                                        ControlState::ENABLED | ControlState::ROLLOVER,
+                                        aVal,
+                                        aNativeBounds, aNativeContent ) )
+            {
+                aRect = aNativeBounds;
+                if( aRect.GetHeight() > mnWinHeight )
+                    mnWinHeight = aRect.GetHeight();
+            }
         }
     }
 
