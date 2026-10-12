@@ -3338,10 +3338,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeMergeMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeMergeMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_merge</property>
+                                    <property name="action-name">.uno:HomeMergeMenu</property>
                                     <property name="icon_name">cmd/sc_togglemergecells.png</property>
                                   </object>
                                   <packing>
@@ -3727,10 +3727,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeInsertMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeInsertMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_insert</property>
+                                    <property name="action-name">.uno:HomeInsertMenu</property>
                                     <property name="icon_name">cmd/32/insertcellsright.png</property>
                                   </object>
                                   <packing>
@@ -3755,10 +3755,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeDeleteMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeDeleteMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_delete</property>
+                                    <property name="action-name">.uno:HomeDeleteMenu</property>
                                     <property name="icon_name">cmd/32/deletecell.png</property>
                                   </object>
                                   <packing>
@@ -3783,10 +3783,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeFormatMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeFormatMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_format</property>
+                                    <property name="action-name">.uno:HomeFormatMenu</property>
                                     <property name="icon_name">cmd/32/formatcelldialog.png</property>
                                   </object>
                                   <packing>
@@ -3897,10 +3897,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeFillMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeFillMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_fill</property>
+                                    <property name="action-name">.uno:HomeFillMenu</property>
                                     <property name="icon_name">cmd/sc_filldown.png</property>
                                   </object>
                                   <packing>
@@ -3922,10 +3922,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeClearMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeClearMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_clear</property>
+                                    <property name="action-name">.uno:HomeClearMenu</property>
                                     <property name="icon_name">cmd/sc_delete.png</property>
                                   </object>
                                   <packing>
@@ -3949,10 +3949,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeSortFilterMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeSortFilterMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_sortfilter</property>
+                                    <property name="action-name">.uno:HomeSortFilterMenu</property>
                                     <property name="icon_name">cmd/32/sortfiltermenu.png</property>
                                   </object>
                                   <packing>
@@ -3977,10 +3977,10 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkMenuToolButton" id="btnHomeFindSelectMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeHomeFindSelectMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">private:resource/popupmenu/home_findselect</property>
+                                    <property name="action-name">.uno:HomeFindSelectMenu</property>
                                     <property name="icon_name">cmd/32/searchdialog.png</property>
                                   </object>
                                   <packing>

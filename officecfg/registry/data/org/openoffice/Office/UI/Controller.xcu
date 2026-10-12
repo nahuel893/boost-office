@@ -386,6 +386,118 @@
           <value>row_operations</value>
         </prop>
       </node>
+      <node oor:name="HomeMergeMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeMergeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_merge</value>
+        </prop>
+      </node>
+      <node oor:name="HomeInsertMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeInsertMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_insert</value>
+        </prop>
+      </node>
+      <node oor:name="HomeDeleteMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeDeleteMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_delete</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFormatMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFormatMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_format</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFillMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFillMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_fill</value>
+        </prop>
+      </node>
+      <node oor:name="HomeClearMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeClearMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_clear</value>
+        </prop>
+      </node>
+      <node oor:name="HomeSortFilterMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSortFilterMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_sortfilter</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFindSelectMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFindSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_findselect</value>
+        </prop>
+      </node>
       <node oor:name="c32" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:ToolbarMode</value>
@@ -2057,6 +2169,94 @@
       <node oor:name="ColumnOperationsControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:ColumnOperations</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeMergeMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeMergeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeInsertMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeInsertMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeDeleteMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeDeleteMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFormatMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFormatMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFillMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFillMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeClearMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeClearMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeSortFilterMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSortFilterMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFindSelectMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFindSelectMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>

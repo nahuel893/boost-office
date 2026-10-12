@@ -31,7 +31,7 @@
           {"cmd": "DecrementIndent"}, {"cmd": "IncrementIndent"}]}],
       [{"id": "WrapText", "style": "small-label", "items": [{"cmd": "WrapText"}]},
        {"id": "Merge", "style": "small-label", "items": [
-          {"cmd": "MergeMenu", "kind": "split", "action": "private:resource/popupmenu/home_merge", "icon": "cmd/sc_togglemergecells.png"}]}]
+          {"cmd": "HomeMergeMenu", "kind": "split", "icon": "cmd/sc_togglemergecells.png"}]}]
     ]},
     {"name": "Number", "caption": "Number", "rows": 2, "columns": [
       [{"id": "NumberFormatType", "style": "small", "items": [{"cmd": "NumberFormatType"}]},
@@ -47,16 +47,16 @@
       [{"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}]
     ]},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
-      [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "InsertMenu", "kind": "split", "action": "private:resource/popupmenu/home_insert", "icon": "cmd/32/insertcellsright.png"}]}],
-      [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "DeleteMenu", "kind": "split", "action": "private:resource/popupmenu/home_delete", "icon": "cmd/32/deletecell.png"}]}],
-      [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "FormatMenu", "kind": "split", "action": "private:resource/popupmenu/home_format", "icon": "cmd/32/formatcelldialog.png"}]}]
+      [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "HomeInsertMenu", "kind": "split", "icon": "cmd/32/insertcellsright.png"}]}],
+      [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "HomeDeleteMenu", "kind": "split", "icon": "cmd/32/deletecell.png"}]}],
+      [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "HomeFormatMenu", "kind": "split", "icon": "cmd/32/formatcelldialog.png"}]}]
     ]},
     {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
       [{"id": "AutoSum", "style": "small-label", "items": [{"cmd": "AutoSum"}]},
-       {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "FillMenu", "kind": "split", "action": "private:resource/popupmenu/home_fill", "icon": "cmd/sc_filldown.png"}]},
-       {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "ClearMenu", "kind": "split", "action": "private:resource/popupmenu/home_clear", "icon": "cmd/sc_delete.png"}]}],
-      [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "SortFilterMenu", "kind": "split", "action": "private:resource/popupmenu/home_sortfilter", "icon": "cmd/32/sortfiltermenu.png"}]}],
-      [{"id": "FindSelectMenu", "style": "large", "items": [{"cmd": "FindSelectMenu", "kind": "split", "action": "private:resource/popupmenu/home_findselect", "icon": "cmd/32/searchdialog.png"}]}]
+       {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "HomeFillMenu", "kind": "split", "icon": "cmd/sc_filldown.png"}]},
+       {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "HomeClearMenu", "kind": "split", "icon": "cmd/sc_delete.png"}]}],
+      [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "HomeSortFilterMenu", "kind": "split", "icon": "cmd/32/sortfiltermenu.png"}]}],
+      [{"id": "FindSelectMenu", "style": "large", "items": [{"cmd": "HomeFindSelectMenu", "kind": "split", "icon": "cmd/32/searchdialog.png"}]}]
     ]}
   ]
 }
