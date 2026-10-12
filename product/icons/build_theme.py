@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Build the partial "boost" icon themes from vendored Fluent SVGs and a manifest."""
 import argparse
+import functools
 import json
 import shutil
 import subprocess
@@ -41,17 +42,36 @@ def inner_markup(path):
     return "".join(ET.tostring(child, encoding="unicode") for child in root)
 
 
+@functools.lru_cache(maxsize=None)
+def ring_ink(path, pad):
+    """Count visible pixels (alpha > 40) in the outer `pad` px ring of a 20 px glyph."""
+    if pad == 0:
+        return 0
+    with tempfile.TemporaryDirectory() as tmp:
+        png = Path(tmp) / "g.png"
+        subprocess.run(["rsvg-convert", "-w", "20", "-h", "20", "-f", "png", "-o", str(png), str(path)], check=True)
+        alpha = Image.open(png).convert("RGBA").getchannel("A")
+    size = alpha.width
+    return sum(1 for i, a in enumerate(alpha.get_flattened_data())
+               if a > 40 and min(i % size, i // size, size - 1 - i % size, size - 1 - i // size) < pad)
+
+
 class Sources:
     """Find glyph SVGs; remember which 16 px icons had to be scaled from 20 px."""
 
     def __init__(self):
         self.scaled_16 = []
 
-    def load(self, icon, layer, size, stripe=False):
+    def load(self, icon, layer, size, stripe=False, also=()):
         """Return (markup, source size, padding to trim) for one glyph layer."""
         glyph, style = layer["glyph"], layer.get("style", "regular")
         if layer.get("custom"):
             # Custom glyphs are drawn on the 24 px grid with 2 px padding.
+            native = CUSTOM / f"{glyph}_{size}.svg"
+            if native.exists():
+                return inner_markup(native), size, 0
+            if size == 16:
+                self.scaled_16.append(f"{icon}:{glyph}")
             return inner_markup(CUSTOM / f"{glyph}.svg"), 24, (2 if size == 16 else 0)
         order = SOURCE_SIZES[size]
         if size == 16 and stripe:
@@ -62,7 +82,12 @@ class Sources:
                 if path.exists():
                     if size == 16 and src not in (16, 20):
                         self.scaled_16.append(f"{icon}:{glyph}")
-                    pad = 2 if (size == 16 and src == 20 and not stripe) else 0
+                    pad = 0
+                    if size == 16 and src == 20 and not stripe:
+                        # Trim only the padding that is really empty, for every style that must register.
+                        paths = [base / f"{glyph}_20_{s}.svg" for s in {style, *also}]
+                        paths = [p if p.exists() else FLUENT / p.name for p in paths]
+                        pad = next(n for n in (2, 1, 0) if all(ring_ink(p, n) == 0 for p in paths))
                     return inner_markup(path), src, pad
         raise FileNotFoundError(f"{glyph} ({style}) has no source for {size} px")
 
@@ -77,7 +102,7 @@ def compose(entry, colors, size, sources):
         # filled variant leaves open stay unfilled, which keeps a touch of white.
         base = next(layer for layer in entry["layers"] if "glyph" in layer)
         silhouette = dict(base, style="filled")
-        inner, src, pad = sources.load(entry["name"], silhouette, s, bool(entry.get("stripe")))
+        inner, src, pad = sources.load(entry["name"], silhouette, s, bool(entry.get("stripe")), also=("regular",))
         k = s / (src - 2 * pad) * base.get("scale", 1)
         dx, dy = base.get("dx", 0) * s - pad * k, base.get("dy", 0) * s - pad * k
         body.append(f'<g transform="translate({dx:g} {dy:g}) scale({k:g})" '
@@ -91,7 +116,8 @@ def compose(entry, colors, size, sources):
             markup = (f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" fill="{color}" '
                       f'fill-opacity="{layer.get("opacity", 1)}"/>')
         else:
-            inner, src, pad = sources.load(entry["name"], layer, s, bool(entry.get("stripe")))
+            also = ("filled",) if fill and layer is base else ()
+            inner, src, pad = sources.load(entry["name"], layer, s, bool(entry.get("stripe")), also=also)
             k = s / (src - 2 * pad) * scale
             markup = (f'<g transform="translate({dx - pad * k:g} {dy - pad * k:g}) scale({k:g})" '
                       f'fill="{color}" color="{color}">{inner}</g>')

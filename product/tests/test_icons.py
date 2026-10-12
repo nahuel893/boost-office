@@ -119,6 +119,34 @@ class IconThemeTest(unittest.TestCase):
         # 16 px slots use the 20 px design trimmed 1:1, or native 16; never a blurry 24 -> 16.
         self.assertEqual([], self.result["scaled_16"])
 
+    def test_trim_never_clips_vendored_ink(self):
+        # The 20 px design is trimmed by `pad` px per side for 16 px slots; the trimmed ring must be empty.
+        sources = bt.Sources()
+        for entry in bt.load_manifest()["icons"]:
+            if entry.get("stripe"):
+                continue
+            base = next(layer for layer in entry["layers"] if "glyph" in layer)
+            for layer in entry["layers"]:
+                if "glyph" not in layer or layer.get("custom"):
+                    continue
+                also = ("filled",) if entry.get("fill") and layer is base else ()
+                _, src, pad = sources.load(entry["name"], layer, 16, False, also=also)
+                if src != 20:
+                    continue
+                styles = {layer.get("style", "regular"), *also}
+                for style in styles:
+                    path = bt.FLUENT / f"{layer['glyph']}_20_{style}.svg"
+                    self.assertEqual(0, bt.ring_ink(path, pad), f"{path.name} loses ink at pad {pad}")
+            if entry.get("fill"):
+                _, src, pad = sources.load(entry["name"], dict(base, style="filled"), 16, False, also=("regular",))
+                _, src2, pad2 = sources.load(entry["name"], base, 16, False, also=("filled",))
+                self.assertEqual((src, pad), (src2, pad2), f"{entry['name']}: fill and outline not registered")
+
+    def test_custom_glyph_has_a_native_16px_drawing(self):
+        self.assertTrue((bt.CUSTOM / "thousands_16.svg").exists())
+        _, src, pad = bt.Sources().load("numberformatdecimal", {"glyph": "thousands", "custom": True}, 16)
+        self.assertEqual((16, 0), (src, pad))
+
     def test_vendored_glyphs_exist(self):
         for entry in bt.load_manifest()["icons"]:
             for layer in entry["layers"]:
