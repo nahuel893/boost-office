@@ -60,4 +60,12 @@ class NotebookbarOffice(UITestCase):
             finally:
                 self.switch_to("Default")
 
+    def test_ui_picker_lists_office_variant(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            with self.ui_test.execute_dialog_through_command(".uno:UIPicker") as xDialog:
+                xRadio = xDialog.getChild("rbButton10")
+                self.assertEqual("Tabbed Office", get_state_as_dict(xRadio)["Text"])
+                xRadio.executeAction("CLICK", tuple())
+                self.assertEqual("true", get_state_as_dict(xRadio)["Checked"])
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:
