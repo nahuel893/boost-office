@@ -380,10 +380,13 @@ OString CreateStyleString()
         "  border-style: none;"
         "}"
 
+        // Fixedline (e.g. the ribbon section dividers) is drawn natively with this
+        // "separator" style, so paint it with SeparatorColor, not BaseColor, which
+        // is nearly invisible on the window background.
         "separator {"
         "  min-width: 1px;"
         "  min-height: 1px;"
-        "  background-color: #" + aThemeColors.GetBaseColor().AsRGBHexString() + ";"
+        "  background-color: #" + aThemeColors.GetSeparatorColor().AsRGBHexString() + ";"
         "}"
 
         /***********
