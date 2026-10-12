@@ -141,7 +141,6 @@ private:
                         mbIsKeyEvent:1,
                         mbChangingHighlight:1,
                         mbLineSpacing:1,
-                        mbCompactHeight:1,
                         mbIsArranged:1;
     WindowAlign         meAlign;
     WindowAlign         meDockAlign;
@@ -513,7 +512,7 @@ public:
 
     /// Do not raise the line height to the native combo/list/spin box height
     /// (opt-in; item windows still raise it).
-    void SetCompactHeight(bool b) { mbCompactHeight = b; mbCalc = true; }
+    void SetCompactHeight(bool bCompact);
 };
 
 inline void ToolBox::CheckItem( ToolBoxItemId nItemId, bool bCheck )

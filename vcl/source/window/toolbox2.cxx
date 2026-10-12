@@ -56,6 +56,14 @@ using namespace vcl;
 #define TB_SEP_SIZE     8  // Separator size
 
 
+void ToolBox::SetCompactHeight(bool bCompact)
+{
+    if (mpData->mbCompactHeight == bCompact)
+        return;
+    mpData->mbCompactHeight = bCompact;
+    mbCalc = true;
+}
+
 ImplToolBoxPrivateData::ImplToolBoxPrivateData()
 {
     meButtonSize = ToolBoxButtonSize::DontCare;
@@ -67,6 +75,7 @@ ImplToolBoxPrivateData::ImplToolBoxPrivateData()
     mnMenuButtonWidth = TB_MENUBUTTON_SIZE;
 
     mbIsLocked = false;
+    mbCompactHeight = false;
     mbNativeButtons = false;
     mbIsPaintLocked = false;
     mbAssumeDocked = false;

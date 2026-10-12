@@ -150,7 +150,8 @@ struct ImplToolBoxPrivateData
             mbMenubuttonWasLastSelected:1, // menu button was highlighted when focus was lost
             mbNativeButtons:1,      // system supports native toolbar buttons
             mbWillUsePopupMode:1,   // this toolbox will be opened in popup mode
-            mbDropDownByKeyboard:1; // tells whether a dropdown was started by key input
+            mbDropDownByKeyboard:1, // tells whether a dropdown was started by key input
+            mbCompactHeight:1;      // do not grow lines to native combo/list/spin box height
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

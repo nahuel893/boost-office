@@ -64,7 +64,7 @@ record are in `product/docs/stage-a-findings.md`.
 - Cell selector (cursor frame, active header highlight, fill handle) uses the Calc green
   (`CalcCellFocus`: #1B7A3E light, #5CC27E dark).
 
-### First stage B (C++) changes, `vcl/unx/gtk3/custom-theme.cxx`
+### First stage B (C++) changes
 
 - Thin border (ShadowColor role, #828282 / #7A7A7A) around themed entries and combo boxes, so
   drop-down lists read as such (applies to every themed gtk3 field, dialogs included).
