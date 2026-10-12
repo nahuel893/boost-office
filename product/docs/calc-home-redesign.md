@@ -72,6 +72,11 @@ record are in `product/docs/stage-a-findings.md`.
   kept on hover (every themed gtk3 notebook).
 - Ribbon section separators painted with the SeparatorColor role (was BaseColor, invisible):
   gray #9E9E9E (light) / #6A6A6A (dark). The same gray now also draws menu and inactive borders.
+- Compact ribbon rows (`vcl/source/window/toolbox.cxx`, `sfx2/source/sidebar/SidebarToolBox.cxx`): new opt-in
+  `ToolBox::SetCompactHeight()`, enabled by every notebookbar toolbox (all apps and variants; not the sidebar,
+  standard toolbars or dialogs), stops the line height from growing to the native combo/list/spin box height.
+  Small icon rows on Home go from a 39 px to a 30 px pitch. Rows that hold a real combo box (font, number
+  format, cell style) stay as tall as the combo itself (~35 px, set by the GTK theme).
 
 Light palette as shipped: surface #E4F2E8, hover #D3E8DA, pressed #C3DECB, separator #9E9E9E,
 field border #828282, fields/menus/active tab white. Dark: surface #2B2B2B, separator #6A6A6A,
