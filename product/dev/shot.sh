@@ -2,7 +2,10 @@
 # Screenshot the dev build's Calc window on Sway or Hyprland.
 # Usage: shot.sh OUT.png [full|WIDTHxHEIGHT]
 # Env:   LO_PROFILE   isolated profile dir (default /mnt/games/libreoffice/dev-profile)
-#        LO_GTK_THEME GTK theme for the run (default adw-gtk3-dark; adw-gtk3 for light)
+#        LO_GTK_THEME GTK theme for the run (default adw-gtk3-dark; adw-gtk3 for light).
+#                     A theme not ending in "dark" also runs with a private GTK config
+#                     (see below), because the user's ~/.config/gtk-3.0/gtk.css and dconf
+#                     force dark colors on every GTK3 app and GTK_THEME alone cannot undo that.
 set -euo pipefail
 out="$1"
 size="${2:-full}"
@@ -10,7 +13,21 @@ core="$(cd "$(dirname "$0")/../.." && pwd)"
 profile="${LO_PROFILE:-/mnt/games/libreoffice/dev-profile}"
 mkdir -p "$(dirname "$out")"
 
-GTK_THEME="${LO_GTK_THEME:-adw-gtk3-dark}" SAL_USE_VCLPLUGIN=gtk3 \
+theme="${LO_GTK_THEME:-adw-gtk3-dark}"
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
+case "$theme" in
+*dark) ;;
+*)  # Private config home: everything linked except GTK3 settings/colors and dconf.
+    tmpcfg=$(mktemp -d)
+    trap 'rm -rf "$tmpcfg"' EXIT
+    for e in "$cfg"/* "$cfg"/.[!.]*; do
+        [ -e "$e" ] || continue
+        case "$(basename "$e")" in gtk-3.0|dconf) ;; *) ln -s "$e" "$tmpcfg/" ;; esac
+    done
+    export XDG_CONFIG_HOME="$tmpcfg" ;;
+esac
+
+GTK_THEME="$theme" SAL_USE_VCLPLUGIN=gtk3 \
     "$core/instdir/program/soffice" --calc --norestore --nologo \
     "-env:UserInstallation=file://$profile" >/dev/null 2>&1 &
 
@@ -47,7 +64,13 @@ if [ "$wm" = sway ]; then
     if [ "$size" = full ]; then
         swaymsg "[con_id=$addr] fullscreen enable" >/dev/null
     else
-        swaymsg "[con_id=$addr] floating enable, resize set ${size%x*} ${size#*x}, move position center" >/dev/null
+        # Each step needs the previous one applied: resizing in the same command as
+        # "floating enable" is ignored and the window keeps its floating default size.
+        swaymsg "[con_id=$addr] floating enable" >/dev/null
+        sleep 1
+        swaymsg "[con_id=$addr] resize set width ${size%x*} px height ${size#*x} px" >/dev/null
+        sleep 1
+        swaymsg "[con_id=$addr] move position center" >/dev/null
     fi
     sleep 3  # let the ribbon re-layout and repaint at the new size
     geom=$(swaymsg -t get_tree | jq -r --argjson a "$addr" \
