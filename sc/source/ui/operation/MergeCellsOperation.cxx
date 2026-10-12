@@ -167,6 +167,7 @@ bool MergeCellsOperation::runImplementation()
         pBindings->Invalidate(FID_MERGE_ON);
         pBindings->Invalidate(FID_MERGE_OFF);
         pBindings->Invalidate(FID_MERGE_TOGGLE);
+        pBindings->Invalidate(FID_HOME_MERGE_CENTER);
     }
 
     return true;

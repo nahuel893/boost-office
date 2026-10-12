@@ -184,6 +184,7 @@ IMPL_LINK_NOARG(AlignmentPropertyPanel, CBOXMergnCellClkHdl, weld::Toggleable&, 
     else
         GetBindings()->GetDispatcher()->Execute(FID_MERGE_OFF, SfxCallMode::RECORD);
     GetBindings()->Invalidate(FID_MERGE_TOGGLE,true);
+    GetBindings()->Invalidate(FID_HOME_MERGE_CENTER,true);
 }
 
 IMPL_LINK_NOARG(AlignmentPropertyPanel, CBOXWrapTextClkHdl, weld::Toggleable&, void)

@@ -67,11 +67,16 @@ class NotebookbarOffice(UITestCase):
             xCalcDoc = self.xUITest.getTopFocusWindow()
             xGrid = xCalcDoc.getChild("grid_window")
             enter_text_to_cell(xGrid, "A1", "merged")
+            # a selection change before dispatch must refresh the slot state
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
             xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A1:B2"}))
             self.xUITest.executeCommand(".uno:HomeMergeCenter")
             xCell = document.Sheets.getByIndex(0).getCellRangeByName("A1")
             self.assertTrue(xCell.IsMerged)
             self.assertEqual("CENTER", xCell.HoriJustify.value)
+            # second dispatch toggles: reads fresh state and unmerges
+            self.xUITest.executeCommand(".uno:HomeMergeCenter")
+            self.assertFalse(xCell.IsMerged)
 
     def test_ui_picker_lists_office_variant(self):
         with self.ui_test.create_doc_in_start_center("calc"):
