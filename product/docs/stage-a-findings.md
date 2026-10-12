@@ -27,9 +27,58 @@ Probe edits were reverted before commit.
 
 ## 0b Theme engine reach under gtk3
 
+Probe: scheme "Boost Probe" (one loud color per ThemeColors role), tint 255, Tabbed Office,
+dark appearance, gtk3. Screenshot: /mnt/games/libreoffice/assets/previews/spike-0b-probe-dark.png
+(colors sampled from pixels).
+
+| Ribbon part | Probe color | Role |
+|-------------|-------------|------|
+| Ribbon background | magenta | Window |
+| Tab strip background | magenta | Window |
+| Active tab | cyan (0,255,255) | Base |
+| Inactive tab text, group captions, plain button labels | dark navy | WindowText (not fully certain vs ButtonText) |
+| Font name / size combo field | cyan (0,255,255) | Base, not Field (light cyan) |
+| Combo dropdown-arrow part, Number format combo | yellow | Button |
+| Combo text ("General") | maroon | ButtonText |
+| Separators between sections | cyan | Base |
+| Formula bar, sheet tab | cyan | Base |
+| Status bar | magenta | Window |
+| Row/column header (selected) | orange | Accent |
+| Menu bar | not present in Tabbed Office | n/a |
+
+Gaps for stage B (the scheme alone cannot style these):
+- Field is not used by the ribbon combos; they follow Base, so a field-vs-ribbon contrast cannot be set separately.
+- Separators follow Base, not Separator.
+- Inactive-tab text and captions cannot be told apart from ButtonText by role.
+- Toolbox buttons stay transparent over Window; there is no Face-colored button background.
+
+Menu, hover and pressed states: not checked in stage A spikes (no human check); to be verified on the Boost scheme screenshots in Tasks 9-10.
+
 ## 0c Custom scheme switching with the system
 
+Probe: ApplicationAppearance=0 (follow the system), scheme "Boost Probe", run under
+LO_GTK_THEME=adw-gtk3 (light) and adw-gtk3-dark (dark).
+Screenshots: /mnt/games/libreoffice/assets/previews/spike-0c-system-light.png and
+/mnt/games/libreoffice/assets/previews/spike-0c-system-dark.png
+
+Result: NO, the custom scheme does not follow the system light/dark switch. Ribbon
+colors are identical in both shots (magenta Window, cyan Base, yellow Button); only
+font metrics differ. Explicitly set colors do not follow the OS
+(svtools/source/config/colorcfg.cxx:628-641). Decision: Task 10 must ship separate
+light and dark schemes and choose by appearance, not rely on auto-switching.
+
 ## 0d Runtime packaging (icon zip drop-in, configuration-only extension)
+
+Probe: images_probe.zip (red cmd/sc_bold.png 16px, cmd/lc_paste.png 24px, cmd/32/paste.png)
+dropped into instdir/share/config/, selected with SymbolStyle=probe; probe-scheme.oxt
+(configuration-data only, ColorSchemes.xcu) installed with unopkg into the dev profile.
+Screenshot: /mnt/games/libreoffice/assets/previews/spike-0b-probe-dark.png
+
+Result: both work.
+- Icon zip: YES. Bold shows a red 16 px square and Paste a red 24 px square (icon_size 3 = 24 px).
+- Fallback: YES. All other icons still render from Colibre (dark).
+- Extension: YES. `unopkg add -f` exits 0, `unopkg list` shows org.boost.probe-scheme, and the
+  "Boost Probe" scheme applies when selected by name.
 
 ## 0e UITest access to notebookbar widgets
 
