@@ -28,7 +28,7 @@ record are in `product/docs/stage-a-findings.md`.
 | Font | Row 1: font name, size. Row 2: B, I, U v, S, Grow, Shrink, Borders v, Fill v, Color v |
 | Alignment | Top/Middle/Bottom, Left/Center/Right, indent -/+, Wrap Text, **Merge & Center v** |
 | Number | Number format list, Currency v, %, 0.0 (thousands + 2 decimals), +/- decimals |
-| Styles (new) | Conditional Formatting (large, split), **Format as Table** (`.uno:AutoFormat`, large), cell style list |
+| Styles (new) | Conditional Formatting (large, split), **Format as Table** (`.uno:AutoFormat`, large), cell style list (bottom of the section, no extra height) |
 | Cells | **Insert v**, **Delete v**, **Format v** (large) |
 | Editing (new) | AutoSum, **Fill v**, **Clear v**, **Sort & Filter v** (large), **Find & Select v** (large) |
 

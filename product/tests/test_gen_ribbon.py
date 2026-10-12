@@ -158,6 +158,36 @@ class GenRibbonTest(unittest.TestCase):
         with self.assertRaises(g.LayoutError):
             g.emit_page(bad)
 
+    def test_small_toolbox_can_start_on_a_later_row(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][1]["columns"][0][0]["row"] = 1
+        _, packing = placed(ET.fromstring(generate(layout=layout)), "bxHomeFormatRow")
+        self.assertEqual("1", packing.find("property[@name='top-attach']").text)
+
+    def test_small_toolbox_can_align_to_the_bottom_of_its_row(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][1]["columns"][0][0]["valign"] = "end"
+        obj, _ = placed(ET.fromstring(generate(layout=layout)), "bxHomeFormatRow")
+        self.assertEqual(["end"], [p.text for p in obj.findall("property[@name='valign']")])
+
+    def test_rejects_unknown_valign(self):
+        bad = copy.deepcopy(LAYOUT)
+        bad["sections"][1]["columns"][0][0]["valign"] = "bottom"
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
+    def test_rejects_row_outside_the_section(self):
+        bad = copy.deepcopy(LAYOUT)
+        bad["sections"][1]["columns"][0][0]["row"] = 2
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
+    def test_rejects_toolboxes_sharing_a_row(self):
+        bad = copy.deepcopy(LAYOUT)
+        bad["sections"][0]["columns"][1][1]["row"] = 0
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
     def test_rejects_duplicate_ids(self):
         bad = copy.deepcopy(LAYOUT)
         bad["sections"][1]["columns"][0][0]["items"].append({"cmd": "Bold"})

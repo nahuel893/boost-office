@@ -7,6 +7,10 @@
 Only the children of the tab page box are rewritten. Every other line of the
 .ui file stays byte-identical, so the file can still be diffed against the
 upstream notebookbar.ui it was copied from.
+
+Toolboxes in a column fill rows from the top. A toolbox may set "row" to start
+lower (the next ones follow it) and "valign" (fill/start/center/end) to sit at
+one edge of its row, e.g. a combo box at the bottom of a section.
 """
 import argparse
 import json
@@ -46,6 +50,15 @@ def ids_of(layout):
                     yield "btn" + p + item["cmd"]
 
 
+def rows_of(column):
+    """Row of each toolbox: an explicit "row", else the row after the previous one."""
+    rows, row = [], -1
+    for box in column:
+        row = box.get("row", row + 1)
+        rows.append(row)
+    return rows
+
+
 def validate(layout):
     seen = set()
     for wid in ids_of(layout):
@@ -63,7 +76,12 @@ def validate(layout):
                 raise LayoutError(f"{name}: a large toolbox must be alone in its column")
             if len(column) > rows:
                 raise LayoutError(f"{name}: {len(column)} toolboxes in a column of {rows} rows")
+            placed = rows_of(column)
+            if placed != sorted(set(placed)) or any(not 0 <= r < rows for r in placed):
+                raise LayoutError(f"{name}: toolbox rows {placed} do not fit {rows} rows in order")
             for box in column:
+                if box.get("valign", "fill") not in ("fill", "start", "center", "end"):
+                    raise LayoutError(f"{name}: unknown valign {box['valign']}")
                 for item in box["items"]:
                     if item.get("kind", "button") not in BUTTON_CLASS:
                         raise LayoutError(f"{name}: unknown kind {item.get('kind')}")
@@ -123,8 +141,10 @@ def emit_box(w, layout, box, col, row, rows):
     w.prop("visible", "True")
     w.prop("can-focus", "True")
     if large:
-        w.prop("valign", "center")
+        w.prop("valign", box.get("valign", "center"))
         w.prop("vexpand", "True")
+    elif "valign" in box:
+        w.prop("valign", box["valign"])
     w.prop("toolbar-style", toolbar_style)
     w.prop("show-arrow", "False")
     w.prop("icon_size", icon_size)
@@ -166,7 +186,7 @@ def emit_section(w, layout, section, position, priority):
     w.packing(left_attach=0, top_attach=rows, width=ncols)
     w.close("</child>")
     for col, column in enumerate(section["columns"]):
-        for row, box in enumerate(column):
+        for row, box in zip(rows_of(column), column):
             emit_box(w, layout, box, col, row, rows)
     w.open("<child>")
     w.open('<object class="GtkSeparator">')

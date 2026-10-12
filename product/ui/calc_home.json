@@ -45,7 +45,7 @@
       [{"id": "ConditionalFormatMenu", "style": "large", "items": [
           {"cmd": "ConditionalFormatMenu", "kind": "split"}]}],
       [{"id": "AutoFormat", "style": "large", "items": [{"cmd": "AutoFormat"}]}],
-      [{"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}]
+      [{"id": "StyleApply", "style": "small", "row": 1, "valign": "end", "items": [{"cmd": "StyleApply"}]}]
     ]},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
       [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "HomeInsertMenu", "kind": "split", "icon": "cmd/32/insertcellsright.png"}]}],
