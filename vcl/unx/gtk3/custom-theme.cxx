@@ -64,6 +64,16 @@ OString CreateStyleString()
         aNotebookBorderColor.IncreaseLuminance(20);
     }
 
+    // The selected tab must stand out from the tab strip (which uses
+    // aPressedColor): white on light themes, the lighter face color on dark
+    // ones, plus an Office-style accent underline.
+    Color aCheckedTabColor = aThemeColors.GetBaseColor().IsDark()
+                                 ? aThemeColors.GetFaceColor()
+                                 : aThemeColors.GetBaseColor();
+    const OUString aCheckedTab
+        = "  background-color: #" + aCheckedTabColor.AsRGBHexString() + ";"
+          "  box-shadow: inset 0 -3px 0 #" + aThemeColors.GetActiveColor().AsRGBHexString() + ";";
+
     // clang-format off
     OUString aStr =
         /***************
@@ -235,8 +245,12 @@ OString CreateStyleString()
         "}"
 
         "tabbox > tab:checked, notebook > header tab:checked {"
-        "  background-color: #" + aPressedColor.AsRGBHexString() + ";"
+        + aCheckedTab +
         "  color: #" + aThemeColors.GetWindowTextColor().AsRGBHexString() + ";"
+        "}"
+
+        "tabbox > tab:checked:hover, notebook > header tab:checked:hover {"
+        + aCheckedTab +
         "}"
 
         "tabbox > tab, notebook > header tab {"
