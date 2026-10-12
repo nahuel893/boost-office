@@ -3548,7 +3548,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <child>
-                          <!-- n-columns=4 n-rows=3 -->
+                          <!-- n-columns=3 n-rows=3 -->
                           <object class="GtkGrid" id="gdHomeStyles">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
@@ -3572,7 +3572,7 @@
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">2</property>
-                                <property name="width">3</property>
+                                <property name="width">2</property>
                               </packing>
                             </child>
                             <child>
@@ -3599,7 +3599,7 @@
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">0</property>
-                                <property name="height">2</property>
+                                <property name="height">1</property>
                               </packing>
                             </child>
                             <child>
@@ -3626,14 +3626,13 @@
                               <packing>
                                 <property name="left-attach">1</property>
                                 <property name="top-attach">0</property>
-                                <property name="height">2</property>
+                                <property name="height">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxHomeStyleApply">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">end</property>
                                 <property name="toolbar-style">icons</property>
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
@@ -3650,8 +3649,9 @@
                                 </child>
                               </object>
                               <packing>
-                                <property name="left-attach">2</property>
+                                <property name="left-attach">0</property>
                                 <property name="top-attach">1</property>
+                                <property name="width">2</property>
                               </packing>
                             </child>
                             <child>
@@ -3661,7 +3661,7 @@
                                 <property name="orientation">vertical</property>
                               </object>
                               <packing>
-                                <property name="left-attach">3</property>
+                                <property name="left-attach">2</property>
                                 <property name="top-attach">0</property>
                                 <property name="height">3</property>
                               </packing>

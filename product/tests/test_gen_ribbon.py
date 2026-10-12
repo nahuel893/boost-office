@@ -194,6 +194,46 @@ class GenRibbonTest(unittest.TestCase):
         with self.assertRaises(g.LayoutError):
             g.emit_page(bad)
 
+    def footer_layout(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][0]["footer"] = {
+            "id": "StyleList", "style": "small", "valign": "end", "items": [{"cmd": "StyleApply"}]}
+        # Cut and Copy would collide with the footer row; keep one column box.
+        layout["sections"][0]["columns"][1].pop()
+        return layout
+
+    def test_footer_spans_all_columns_on_the_last_row(self):
+        obj, packing = placed(ET.fromstring(generate(layout=self.footer_layout())), "bxHomeStyleList")
+        self.assertEqual(("0", "2", "2"), tuple(packing.find(f"property[@name='{n}']").text
+                                                for n in ("left-attach", "top-attach", "width")))
+        self.assertEqual(["end"], [p.text for p in obj.findall("property[@name='valign']")])
+
+    def test_footer_shortens_large_toolboxes_by_one_row(self):
+        _, packing = placed(ET.fromstring(generate(layout=self.footer_layout())), "bxHomePaste")
+        self.assertEqual("2", packing.find("property[@name='height']").text)
+
+    def test_footer_ids_are_generated(self):
+        self.assertIn("btnHomeStyleApply", list(g.ids_of(self.footer_layout())))
+        self.assertIn("bxHomeStyleList", list(g.ids_of(self.footer_layout())))
+
+    def test_rejects_column_box_on_the_footer_row(self):
+        bad = self.footer_layout()
+        bad["sections"][0]["columns"][1][0]["row"] = 2
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
+    def test_rejects_footer_with_a_row(self):
+        bad = self.footer_layout()
+        bad["sections"][0]["footer"]["row"] = 1
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
+    def test_rejects_footer_duplicate_of_a_column_box(self):
+        bad = self.footer_layout()
+        bad["sections"][0]["footer"]["id"] = "Cut"
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
     def test_suppr_sync(self):
         ui = generate()
         suppr = "\n".join([

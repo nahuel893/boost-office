@@ -11,6 +11,10 @@ upstream notebookbar.ui it was copied from.
 Toolboxes in a column fill rows from the top. A toolbox may set "row" to start
 lower (the next ones follow it) and "valign" (fill/start/center/end) to sit at
 one edge of its row, e.g. a combo box at the bottom of a section.
+
+A section may also have a "footer": one toolbox (same schema, but no "row")
+that spans every column on the last row above the caption. Large toolboxes
+then span one row fewer, and column toolboxes must fit in the rows above it.
 """
 import argparse
 import json
@@ -36,6 +40,14 @@ class LayoutError(ValueError):
     pass
 
 
+def boxes_of(section):
+    """Every toolbox of a section: the column ones, then the footer if any."""
+    for column in section["columns"]:
+        yield from column
+    if "footer" in section:
+        yield section["footer"]
+
+
 def ids_of(layout):
     """Yield every widget id the layout creates, in document order."""
     p = layout["id_prefix"]
@@ -43,11 +55,10 @@ def ids_of(layout):
     for section in layout["sections"]:
         name = section["name"]
         yield from ("ob" + p + name, "gd" + p + name, "lb" + p + name)
-        for column in section["columns"]:
-            for box in column:
-                yield "bx" + p + box["id"]
-                for item in box["items"]:
-                    yield "btn" + p + item["cmd"]
+        for box in boxes_of(section):
+            yield "bx" + p + box["id"]
+            for item in box["items"]:
+                yield "btn" + p + item["cmd"]
 
 
 def rows_of(column):
@@ -67,6 +78,13 @@ def validate(layout):
         seen.add(wid)
     for section in layout["sections"]:
         name, rows = section["name"], section["rows"]
+        footer = section.get("footer")
+        if footer is not None:
+            if "row" in footer:
+                raise LayoutError(f"{name}: the footer cannot set a row")
+            if rows < 2:
+                raise LayoutError(f"{name}: a footer needs at least 2 rows")
+            rows -= 1  # column toolboxes only get the rows above the footer
         for column in section["columns"]:
             styles = [box["style"] for box in column]
             for style in styles:
@@ -79,12 +97,14 @@ def validate(layout):
             placed = rows_of(column)
             if placed != sorted(set(placed)) or any(not 0 <= r < rows for r in placed):
                 raise LayoutError(f"{name}: toolbox rows {placed} do not fit {rows} rows in order")
-            for box in column:
-                if box.get("valign", "fill") not in ("fill", "start", "center", "end"):
-                    raise LayoutError(f"{name}: unknown valign {box['valign']}")
-                for item in box["items"]:
-                    if item.get("kind", "button") not in BUTTON_CLASS:
-                        raise LayoutError(f"{name}: unknown kind {item.get('kind')}")
+        for box in boxes_of(section):
+            if box is footer and box["style"] not in set(STYLES) - {"large"}:
+                raise LayoutError(f"{name}: the footer must be a small toolbox")
+            if box.get("valign", "fill") not in ("fill", "start", "center", "end"):
+                raise LayoutError(f"{name}: unknown valign {box['valign']}")
+            for item in box["items"]:
+                if item.get("kind", "button") not in BUTTON_CLASS:
+                    raise LayoutError(f"{name}: unknown kind {item.get('kind')}")
 
 
 class Writer:
@@ -132,7 +152,7 @@ def emit_item(w, layout, box_style, item):
     w.close("</child>")
 
 
-def emit_box(w, layout, box, col, row, rows):
+def emit_box(w, layout, box, col, row, large_rows, width=1):
     p = layout["id_prefix"]
     toolbar_style, icon_size = STYLES[box["style"]]
     large = box["style"] == "large"
@@ -152,7 +172,9 @@ def emit_box(w, layout, box, col, row, rows):
         emit_item(w, layout, box["style"], item)
     w.close("</object>")
     if large:
-        w.packing(left_attach=col, top_attach=0, height=rows)
+        w.packing(left_attach=col, top_attach=0, height=large_rows)
+    elif width > 1:
+        w.packing(left_attach=col, top_attach=row, width=width)
     else:
         w.packing(left_attach=col, top_attach=row)
     w.close("</child>")
@@ -187,7 +209,9 @@ def emit_section(w, layout, section, position, priority):
     w.close("</child>")
     for col, column in enumerate(section["columns"]):
         for row, box in zip(rows_of(column), column):
-            emit_box(w, layout, box, col, row, rows)
+            emit_box(w, layout, box, col, row, rows - ("footer" in section))
+    if "footer" in section:
+        emit_box(w, layout, section["footer"], 0, rows - 1, rows - 1, ncols)
     w.open("<child>")
     w.open('<object class="GtkSeparator">')
     w.prop("visible", "True")

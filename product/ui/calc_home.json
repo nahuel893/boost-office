@@ -44,9 +44,8 @@
     {"name": "Styles", "caption": "Styles", "rows": 2, "columns": [
       [{"id": "ConditionalFormatMenu", "style": "large", "items": [
           {"cmd": "ConditionalFormatMenu", "kind": "split"}]}],
-      [{"id": "AutoFormat", "style": "large", "items": [{"cmd": "AutoFormat"}]}],
-      [{"id": "StyleApply", "style": "small", "row": 1, "valign": "end", "items": [{"cmd": "StyleApply"}]}]
-    ]},
+      [{"id": "AutoFormat", "style": "large", "items": [{"cmd": "AutoFormat"}]}]
+    ], "footer": {"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
       [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "HomeInsertMenu", "kind": "split", "icon": "cmd/32/insertcellsright.png"}]}],
       [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "HomeDeleteMenu", "kind": "split", "icon": "cmd/32/deletecell.png"}]}],
