@@ -115,6 +115,17 @@ class IconThemeTest(unittest.TestCase):
             close = [p for p in pixels if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 20]
             self.assertGreater(len(close), 40, f"{theme}: paste fill missing")
 
+    def test_badges_use_their_accent(self):
+        # (icon, accent hex in light, accent hex in dark)
+        cases = [("insertcell", "107C10", "54B054"), ("deletecell", "C50F1F", "E9737B"),
+                 ("conditionalformatmenu", "AD6800", "F2B230"), ("sortfiltermenu", "0F6CBD", "479EF5")]
+        for name, light, dark in cases:
+            for theme, accent in (("boost", light), ("boost_dark", dark)):
+                target = tuple(int(accent[i:i + 2], 16) for i in (0, 2, 4))
+                pixels = self.image(theme, f"cmd/lc_{name}.png").get_flattened_data()
+                close = [p for p in pixels if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 20]
+                self.assertTrue(close, f"{theme}:{name} has no {accent} pixels")
+
     def test_16px_icons_use_crisp_sources(self):
         # 16 px slots use the 20 px design trimmed 1:1, or native 16; never a blurry 24 -> 16.
         self.assertEqual([], self.result["scaled_16"])
