@@ -5,6 +5,26 @@ Spec: /home/nh/office-boost/docs/superpowers/specs/2026-10-12-calc-home-redesign
 
 ## 0a Declarative dropdown menus
 
+Decision: P3
+
+Question: can a ribbon button open a dropdown menu without C++ or a new .uno: slot?
+
+Tried: in notebookbar_office.ui, set `btnHomeRowOperations` (GtkMenuToolButton) `action-name` to
+`private:resource/popupmenu/row_operations`, with label "Rows" and icon `cmd/lc_insertrowsbefore.png`.
+Built sc, checked in the GUI (Tabbed Office, isolated profile). P2 was not needed and not probed.
+
+Observed (human click test):
+- (a) Icon shows (third icon of the Cells group top row, with an arrow). The label "Rows" is not
+  visible because that toolbox is icon-only; the label could not be observed there. Task 6 places
+  these buttons in "large" and "small-label" toolboxes and verifies the label by screenshot.
+- (b) Enabled (renders normal, unlike the greyed neighbour "Merge and Center Cells").
+- (c) Clicking the button or its arrow opens the Rows menu.
+- (d) "Insert Rows Above" inserts a row.
+
+Screenshot: /mnt/games/libreoffice/assets/previews/spike-0a-p3.png
+
+Probe edits were reverted before commit.
+
 ## 0b Theme engine reach under gtk3
 
 ## 0c Custom scheme switching with the system
