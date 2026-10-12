@@ -39,6 +39,11 @@ def scheme_values(palette):
             for index, scheme in enumerate(palette["schemes"])}
 
 
+def document_values(palette):
+    return {scheme: {role: palette["tokens"][token][index] for role, token in palette.get("document", {}).items()}
+            for index, scheme in enumerate(palette["schemes"])}
+
+
 def _luminance(hex_color):
     channels = [int(hex_color.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4)]
     linear = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
@@ -58,8 +63,10 @@ def xcu(palette):
              ' xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="UI" oor:package="org.openoffice.Office">',
              '  <node oor:name="ColorScheme">',
              '    <node oor:name="ColorSchemes">']
+    documents = document_values(palette)
     for scheme, roles in scheme_values(palette).items():
         lines.append(f'      <node oor:name={quoteattr(scheme)} oor:op="replace">')
+        roles = {**roles, **documents[scheme]}
         for role, color in roles.items():
             lines.append(f'        <node oor:name="{role}"><prop oor:name="Color">'
                          f'<value>{int(color.lstrip("#"), 16)}</value></prop></node>')

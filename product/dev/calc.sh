@@ -44,6 +44,7 @@ gtkcfg=/mnt/games/libreoffice/gtk-light-config
 if [ "$dry" = 1 ]; then
     echo "profile: python3 -I product/dev/profile.py ${args[*]} --profile $profile"
     case "$gtk" in *dark) ;; *) echo "private GTK config: $gtkcfg" ;; esac
+    echo "extension: reinstall when changed"
     echo "launch: GTK_THEME=$gtk soffice --calc $env_arg"
     exit 0
 fi
@@ -59,12 +60,19 @@ if [ ! -f "$core/instdir/share/config/images_boost.zip" ]; then
     python3 -I "$core/product/icons/build_theme.py" install --instdir "$core/instdir"
 fi
 
-# Color schemes: install the extension into this profile once.
+# Color schemes: rebuild the extension when its sources changed, and (re)install it
+# into this profile whenever the .oxt is newer than the profile's stamp.
 if [ -n "$scheme" ]; then
     oxt="$core/product/themes/out/boost-schemes.oxt"
-    [ -f "$oxt" ] || python3 -I "$core/product/themes/build_schemes.py"
-    if ! "$unopkg" list "$env_arg" 2>/dev/null | grep -q org.boost.colorschemes; then
+    themes="$core/product/themes"
+    if [ ! -f "$oxt" ] || [ "$themes/build_schemes.py" -nt "$oxt" ] || [ "$themes/palette.json" -nt "$oxt" ]; then
+        python3 -I "$themes/build_schemes.py" >/dev/null
+    fi
+    stamp="$profile/.boost-schemes-installed"
+    if [ ! -f "$stamp" ] || [ "$oxt" -nt "$stamp" ] \
+       || ! "$unopkg" list "$env_arg" 2>/dev/null | grep -q org.boost.colorschemes; then
         "$unopkg" add -f "$oxt" "$env_arg"
+        mkdir -p "$profile" && touch "$stamp"
     fi
 fi
 

@@ -26,5 +26,6 @@
     "MenuBarHighlightTextColor": "text",
     "MenuColor": "menu", "MenuTextColor": "text", "MenuHighlightColor": "menu.hover",
     "MenuHighlightTextColor": "text", "MenuBorderColor": "separator"
-  }
+  },
+  "document": {"CalcCellFocus": "accent.calc"}
 }

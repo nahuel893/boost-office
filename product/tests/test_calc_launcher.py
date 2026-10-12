@@ -24,6 +24,10 @@ class CalcLauncherTest(unittest.TestCase):
         self.assertIn("private GTK config", out.stdout)
         self.assertIn("/mnt/games/libreoffice/try-profile", out.stdout)
 
+    def test_dry_run_reports_extension_reinstall_on_change(self):
+        out = dry_run("light")
+        self.assertIn("extension: reinstall when changed", out.stdout)
+
     def test_dark_uses_office_ui_dark_scheme_and_dark_gtk(self):
         out = dry_run("dark")
         self.assertEqual(0, out.returncode, out.stderr)

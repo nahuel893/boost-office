@@ -65,6 +65,17 @@ class SchemesTest(unittest.TestCase):
         light = child(child(child(root, "ColorScheme"), "ColorSchemes"), "Boost Light")
         self.assertEqual(str(0xE4F2E8), child(light, "WindowColor").find("prop/value").text)
 
+    def test_calc_cell_focus_is_the_calc_green_with_ui_contrast(self):
+        def child(node, name):
+            return next(c for c in node if c.get(OOR + "name") == name)
+        root = ET.fromstring(bs.xcu(self.palette))
+        schemes = child(child(root, "ColorScheme"), "ColorSchemes")
+        for scheme, expected in (("Boost Light", 0x1B7A3E), ("Boost Dark", 0x5CC27E)):
+            node = child(child(schemes, scheme), "CalcCellFocus")
+            self.assertEqual(str(expected), node.find("prop/value").text, scheme)
+        self.assertEqual(27, len(self.values["Boost Light"]))
+        self.assertGreaterEqual(bs.contrast("#1B7A3E", "#FFFFFF"), 3.0)
+
     def test_extension_layout(self):
         with tempfile.TemporaryDirectory() as tmp:
             oxt = bs.build(self.palette, Path(tmp) / "boost-schemes.oxt")
