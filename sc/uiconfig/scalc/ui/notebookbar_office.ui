@@ -874,214 +874,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="Menu Home">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-Shadowed">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:Shadowed</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-OutlineFont">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:OutlineFont</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-Overline">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:Overline</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseToUpper">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseToUpper</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseToLower">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseToLower</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseRotateCase">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseRotateCase</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator2">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseToSentenceCase3">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseToSentenceCase</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseToTitleCase">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseToTitleCase</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-ChangeCaseToToggleCase">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChangeCaseToToggleCase</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator3">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRadioMenuItem" id="MenuHome-ParaLeftToRight">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ParaLeftToRight</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRadioMenuItem" id="MenuHome-ParaRightToLeft">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ParaRightToLeft</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator4">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertNonBreakingSpace">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertNonBreakingSpace</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertHardHyphen">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertHardHyphen</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertSoftHyphen">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertSoftHyphen</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertZWSP">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertZWSP</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertWJ">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertWJ</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertLRM">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertLRM</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-InsertRLM">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertRLM</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator5">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-SelectAlld">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SelectAll</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-SelectRow">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SelectRow</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-SelectColumn">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SelectColumn</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-SelectData">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SelectData</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuHome-separator6">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-FocusToFindbar">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">vnd.sun.star.findbar:FocusToFindbar</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuHome-SearchDialog">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SearchDialog</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkMenu" id="Menu Image">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -2863,125 +2655,117 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="spacing">6</property>
+                <!-- product:Home-begin -->
                 <child>
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbHome">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">center</property>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdHomeClipboard">
+                      <object class="VclOptionalBox" id="obHomeUndo">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbHomeClipboard">
+                          <!-- n-columns=2 n-rows=3 -->
+                          <object class="GtkGrid" id="gdHomeUndo">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedCalc|labelHomeClipboard">Clipboard</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomePaste">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
                             <child>
-                              <object class="GtkMenuToolButton" id="btnHomePaste">
+                              <object class="GtkLabel" id="lbHomeUndo">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:Paste</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeUndo">Undo</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                                <property name="width">1</property>
                               </packing>
                             </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeCut">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
                             <child>
-                              <object class="GtkToolButton" id="btnHomeCut">
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeUndo">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:Cut</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeUndo">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Undo</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeCopy">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
                             <child>
-                              <object class="GtkToolButton" id="btnHomeCopy">
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeRedo">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:Copy</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeRedo">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Redo</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeUndo"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbHomeClipboard"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-8"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2990,309 +2774,161 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=6 n-rows=3 -->
-                      <object class="GtkGrid" id="gdHomeFont">
+                      <object class="VclOptionalBox" id="obHomeClipboard">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbHomeFont">
+                          <!-- n-columns=3 n-rows=4 -->
+                          <object class="GtkGrid" id="gdHomeClipboard">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedCalc|labelHomeFont">Font</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeClipboard">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeClipboard">Clipboard</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">3</property>
+                                <property name="width">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomePaste">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomePaste">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Paste</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeCut">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeCut">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Cut</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeCopy">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeCopy">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Copy</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFormatPaintbrush">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeFormatPaintbrush">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:FormatPaintbrush</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">4</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeClipboard"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">5</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeFormatPaintbrush">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeFormatPaintbrush">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FormatPaintbrush</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeResetAttributes">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeResetAttributes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ResetAttributes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeCharFontName">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="hexpand">True</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeCharFontName">
-                                <property name="visible">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="action-name">.uno:CharFontName</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeCharFormat">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeBold">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Bold</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeItalic">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Italic</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeUnderline">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Underline</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeStrikeout">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Strikeout</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeFontHeight">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="margin-start">5</property>
-                            <property name="margin-end">5</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeFontHeight">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontHeight</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeCharColor">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeSetBorderStyle">
-                                <property name="visible">True</property>
-                                <property name="halign">start</property>
-                                <property name="action-name">.uno:SetBorderStyle</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeBackgroundColor">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:BackgroundColor</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeFontColor">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Color</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">1</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeScript">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeSubScript">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SubScript</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeSuperScript">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SuperScript</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="btnHomeGrowShrink">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeGrow">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Grow</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeShrink">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Shrink</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">4</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">5</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbHomeFont"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-7"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3301,250 +2937,209 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=4 n-rows=3 -->
-                      <object class="GtkGrid" id="gdHomeAlignment">
+                      <object class="VclOptionalBox" id="obHomeFont">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbHomeAlignment">
+                          <!-- n-columns=2 n-rows=3 -->
+                          <object class="GtkGrid" id="gdHomeFont">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedCalc|labelHomeAlignment">Alignment</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeFont">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeFont">Font</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                                <property name="width">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFontRow">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeCharFontName">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:CharFontName</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeFontHeight">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:FontHeight</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeGrow">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Grow</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeShrink">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Shrink</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFormatRow">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeBold">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Bold</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeItalic">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Italic</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeUnderline">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Underline</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeStrikeout">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Strikeout</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeSetBorderStyle">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:SetBorderStyle</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeBackgroundColor">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:BackgroundColor</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeColor">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:Color</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeFont"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">3</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeVAlign">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignTop">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignTop</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignVCenter">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignVCenter</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignBottom">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignBottom</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="boxHomeHAlign">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignLeft">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignLeft</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignHorizontalCenter">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignHorizontalCenter</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignRight">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignRight</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeSpacingIndentation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeSpacing">
-                                <property name="is-important">True</property>
-                                <property name="action-name">.uno:Spacing</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeIncrementIndent">
-                                <property name="visible">True</property>
-                                <property name="is-important">True</property>
-                                <property name="action-name">.uno:IncrementIndent</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeDecrementIndent">
-                                <property name="visible">True</property>
-                                <property name="is-important">True</property>
-                                <property name="action-name">.uno:DecrementIndent</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeParaLeftToRight">
-                                <property name="action-name">.uno:ParaLeftToRight</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeAlignBlock">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeAlignBlock">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:AlignBlock</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeWrapRTL">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeWrapText">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:WrapText</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeParaRightToLeft">
-                                <property name="action-name">.uno:ParaRightToLeft</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbHomeAlignment"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-6"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3553,181 +3148,239 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=4 n-rows=3 -->
-                      <object class="GtkGrid" id="gdHomeNumber">
+                      <object class="VclOptionalBox" id="obHomeAlignment">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbHomeNumber">
+                          <!-- n-columns=3 n-rows=4 -->
+                          <object class="GtkGrid" id="gdHomeAlignment">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedCalc|labelHomeNumber">Number</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeNumberFormatType">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
+                            <property name="margin-start">6</property>
                             <property name="margin-end">3</property>
-                            <property name="hexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
                             <child>
-                              <object class="GtkToolButton" id="btnHomeNumberFormatType">
+                              <object class="GtkLabel" id="lbHomeAlignment">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:NumberFormatType</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeAlignment">Alignment</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">3</property>
+                                <property name="width">2</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeVAlign">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignTop">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignTop</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignVCenter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignVCenter</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignBottom">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignBottom</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeHAlign">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignLeft">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignLeft</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignHorizontalCenter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignHorizontalCenter</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAlignRight">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AlignRight</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeIndent">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeDecrementIndent">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:DecrementIndent</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeIncrementIndent">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:IncrementIndent</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeWrapText">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeWrapText">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:WrapText</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeMerge">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeMergeMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeMergeMenu">Merge &amp; Center</property>
+                                    <property name="action-name">private:resource/popupmenu/home_merge</property>
+                                    <property name="icon_name">cmd/sc_togglemergecells.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">4</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeAlignment"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeNumberFormat">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeNumberFormatCurrency">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:NumberFormatCurrency</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeNumberFormatPercent">
-                                <property name="visible">True</property>
-                                <property name="halign">center</property>
-                                <property name="hexpand">True</property>
-                                <property name="action-name">.uno:NumberFormatPercent</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeNumberFormatDecimal">
-                                <property name="visible">True</property>
-                                <property name="halign">center</property>
-                                <property name="hexpand">True</property>
-                                <property name="action-name">.uno:NumberFormatDecimal</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeNumberDecimals">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeNumberFormatIncDecimals">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:NumberFormatIncDecimals</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeNumberFormatDecDecimals">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:NumberFormatDecDecimals</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeConditionalFormatMenu">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeConditionalFormatMenu">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ConditionalFormatMenu</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbHomeNumber"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-5"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3736,168 +3389,650 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdHomeCells">
+                      <object class="VclOptionalBox" id="obHomeNumber">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">6</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbHomeCells">
+                          <!-- n-columns=2 n-rows=3 -->
+                          <object class="GtkGrid" id="gdHomeNumber">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedCalc|labelHomeCells">Cells</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeNumber">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeNumber">Number</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                                <property name="width">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeNumberFormatType">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeNumberFormatType">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatType</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeNumberFormat">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeNumberFormatCurrency">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatCurrency</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeNumberFormatPercent">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatPercent</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeNumberFormatDecimal">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatDecimal</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeNumberFormatIncDecimals">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatIncDecimals</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeNumberFormatDecDecimals">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:NumberFormatDecDecimals</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeNumber"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeMergeCells">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeMergeCells">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ToggleMergeCells</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="btnHomeRow">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeInsertRowsBefore">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertRowsBefore</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeDeleteRows">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DeleteRows</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeRowOperations">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:RowOperations</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxHomeColumn">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertColumnsBefore">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertColumnsBefore</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeDeleteColumns">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DeleteColumns</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkMenuToolButton" id="btnHomeColumnOperations">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ColumnOperations</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbHomeCells"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-4"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obHomeStyles">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=4 n-rows=3 -->
+                          <object class="GtkGrid" id="gdHomeStyles">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeStyles">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeStyles">Styles</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                                <property name="width">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeConditionalFormatMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkMenuToolButton" id="btnHomeConditionalFormatMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:ConditionalFormatMenu</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeAutoFormat">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAutoFormat">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AutoFormat</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeStyleApply">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">icons</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeStyleApply">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:StyleApply</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeStyles"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obHomeCells">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=4 n-rows=3 -->
+                          <object class="GtkGrid" id="gdHomeCells">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeCells">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeCells">Cells</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                                <property name="width">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeInsertMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeInsertMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeInsertMenu">Insert</property>
+                                    <property name="action-name">private:resource/popupmenu/home_insert</property>
+                                    <property name="icon_name">cmd/lc_insertcell.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeDeleteMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeDeleteMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeDeleteMenu">Delete</property>
+                                    <property name="action-name">private:resource/popupmenu/home_delete</property>
+                                    <property name="icon_name">cmd/lc_deletecell.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFormatMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeFormatMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFormatMenu">Format</property>
+                                    <property name="action-name">private:resource/popupmenu/home_format</property>
+                                    <property name="icon_name">cmd/lc_formatcelldialog.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeCells"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obHomeEditing">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=4 n-rows=4 -->
+                          <object class="GtkGrid" id="gdHomeEditing">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="lbHomeEditing">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="vexpand">True</property>
+                                <property name="label" translatable="yes" context="TabbedCalc|labelHomeEditing">Editing</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">3</property>
+                                <property name="width">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeAutoSum">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeAutoSum">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="action-name">.uno:AutoSum</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFillMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeFillMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFillMenu">Fill</property>
+                                    <property name="action-name">private:resource/popupmenu/home_fill</property>
+                                    <property name="icon_name">cmd/sc_filldown.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeClearMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="toolbar-style">both-horiz</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">1</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeClearMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeClearMenu">Clear</property>
+                                    <property name="action-name">private:resource/popupmenu/home_clear</property>
+                                    <property name="icon_name">cmd/sc_delete.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeSortFilterMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeSortFilterMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeSortFilterMenu">Sort &amp; Filter</property>
+                                    <property name="action-name">private:resource/popupmenu/home_sortfilter</property>
+                                    <property name="icon_name">cmd/lc_sortfiltermenu.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="sfxlo-NotebookbarToolBox" id="bxHomeFindSelectMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="valign">center</property>
+                                <property name="vexpand">True</property>
+                                <property name="toolbar-style">both</property>
+                                <property name="show-arrow">False</property>
+                                <property name="icon_size">5</property>
+                                <child>
+                                  <object class="GtkToolButton" id="btnHomeFindSelectMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFindSelectMenu">Find &amp; Select</property>
+                                    <property name="action-name">private:resource/popupmenu/home_findselect</property>
+                                    <property name="icon_name">cmd/lc_searchdialog.png</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">False</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">4</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbHomeEditing"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </object>
@@ -3907,102 +4042,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="sfxlo-DropdownBox" id="Home-Menu">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkBox" id="PasteBox1">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="valign">center</property>
-                        <property name="vexpand">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="svtlo-ManagedMenuButton" id="Home-HomeButton:Menu Home">
-                            <property name="label" translatable="yes" context="TabbedCalc|HomeMenuButton">_Home</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="focus-on-click">False</property>
-                            <property name="receives-default">False</property>
-                            <property name="halign">end</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="relief">none</property>
-                            <property name="use-underline">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="SectionBottom10">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">1</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeSearchDialog">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SearchDialog</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeSortAscending1">
-                                <property name="visible">True</property>
-                                <property name="valign">center</property>
-                                <property name="action-name">.uno:SortAscending</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnHomeDataFilterAutoFilter1">
-                                <property name="visible">True</property>
-                                <property name="valign">center</property>
-                                <property name="action-name">.uno:DataFilterAutoFilter</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack-type">end</property>
-                    <property name="position">7</property>
-                  </packing>
-                </child>
+                <!-- product:Home-end -->
               </object>
               <packing>
                 <property name="position">1</property>

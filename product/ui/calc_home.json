@@ -1,0 +1,62 @@
+{
+  "page": "phbHome",
+  "id_prefix": "Home",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu Home"],
+  "sections": [
+    {"name": "Undo", "caption": "Undo", "rows": 2, "columns": [
+      [{"id": "Undo", "style": "small-label", "items": [{"cmd": "Undo", "kind": "split"}]},
+       {"id": "Redo", "style": "small-label", "items": [{"cmd": "Redo", "kind": "split"}]}]
+    ]},
+    {"name": "Clipboard", "caption": "Clipboard", "rows": 3, "columns": [
+      [{"id": "Paste", "style": "large", "items": [{"cmd": "Paste", "kind": "split"}]}],
+      [{"id": "Cut", "style": "small-label", "items": [{"cmd": "Cut"}]},
+       {"id": "Copy", "style": "small-label", "items": [{"cmd": "Copy"}]},
+       {"id": "FormatPaintbrush", "style": "small-label", "items": [{"cmd": "FormatPaintbrush"}]}]
+    ]},
+    {"name": "Font", "caption": "Font", "rows": 2, "columns": [
+      [{"id": "FontRow", "style": "small", "items": [
+          {"cmd": "CharFontName"}, {"cmd": "FontHeight"}, {"cmd": "Grow"}, {"cmd": "Shrink"}]},
+       {"id": "FormatRow", "style": "small", "items": [
+          {"cmd": "Bold"}, {"cmd": "Italic"}, {"cmd": "Underline", "kind": "split"}, {"cmd": "Strikeout"},
+          {"cmd": "SetBorderStyle", "kind": "split"}, {"cmd": "BackgroundColor", "kind": "split"},
+          {"cmd": "Color", "kind": "split"}]}]
+    ]},
+    {"name": "Alignment", "caption": "Alignment", "rows": 3, "columns": [
+      [{"id": "VAlign", "style": "small", "items": [
+          {"cmd": "AlignTop"}, {"cmd": "AlignVCenter"}, {"cmd": "AlignBottom"}]},
+       {"id": "HAlign", "style": "small", "items": [
+          {"cmd": "AlignLeft"}, {"cmd": "AlignHorizontalCenter"}, {"cmd": "AlignRight"}]},
+       {"id": "Indent", "style": "small", "items": [
+          {"cmd": "DecrementIndent"}, {"cmd": "IncrementIndent"}]}],
+      [{"id": "WrapText", "style": "small-label", "items": [{"cmd": "WrapText"}]},
+       {"id": "Merge", "style": "small-label", "items": [
+          {"cmd": "MergeMenu", "action": "private:resource/popupmenu/home_merge", "label": "Merge & Center", "icon": "cmd/sc_togglemergecells.png"}]}]
+    ]},
+    {"name": "Number", "caption": "Number", "rows": 2, "columns": [
+      [{"id": "NumberFormatType", "style": "small", "items": [{"cmd": "NumberFormatType"}]},
+       {"id": "NumberFormat", "style": "small", "items": [
+          {"cmd": "NumberFormatCurrency", "kind": "split"}, {"cmd": "NumberFormatPercent"},
+          {"cmd": "NumberFormatDecimal"}, {"cmd": "NumberFormatIncDecimals"},
+          {"cmd": "NumberFormatDecDecimals"}]}]
+    ]},
+    {"name": "Styles", "caption": "Styles", "rows": 2, "columns": [
+      [{"id": "ConditionalFormatMenu", "style": "large", "items": [
+          {"cmd": "ConditionalFormatMenu", "kind": "split"}]}],
+      [{"id": "AutoFormat", "style": "large", "items": [{"cmd": "AutoFormat"}]}],
+      [{"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}]
+    ]},
+    {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
+      [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "InsertMenu", "action": "private:resource/popupmenu/home_insert", "label": "Insert", "icon": "cmd/lc_insertcell.png"}]}],
+      [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "DeleteMenu", "action": "private:resource/popupmenu/home_delete", "label": "Delete", "icon": "cmd/lc_deletecell.png"}]}],
+      [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "FormatMenu", "action": "private:resource/popupmenu/home_format", "label": "Format", "icon": "cmd/lc_formatcelldialog.png"}]}]
+    ]},
+    {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
+      [{"id": "AutoSum", "style": "small-label", "items": [{"cmd": "AutoSum"}]},
+       {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "FillMenu", "action": "private:resource/popupmenu/home_fill", "label": "Fill", "icon": "cmd/sc_filldown.png"}]},
+       {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "ClearMenu", "action": "private:resource/popupmenu/home_clear", "label": "Clear", "icon": "cmd/sc_delete.png"}]}],
+      [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "SortFilterMenu", "action": "private:resource/popupmenu/home_sortfilter", "label": "Sort & Filter", "icon": "cmd/lc_sortfiltermenu.png"}]}],
+      [{"id": "FindSelectMenu", "style": "large", "items": [{"cmd": "FindSelectMenu", "action": "private:resource/popupmenu/home_findselect", "label": "Find & Select", "icon": "cmd/lc_searchdialog.png"}]}]
+    ]}
+  ]
+}

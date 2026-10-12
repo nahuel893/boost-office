@@ -31,6 +31,14 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/freezepanes \
 	sc/uiconfig/scalc/popupmenu/graphic \
 	sc/uiconfig/scalc/popupmenu/media \
+	sc/uiconfig/scalc/popupmenu/home_clear \
+	sc/uiconfig/scalc/popupmenu/home_delete \
+	sc/uiconfig/scalc/popupmenu/home_fill \
+	sc/uiconfig/scalc/popupmenu/home_findselect \
+	sc/uiconfig/scalc/popupmenu/home_format \
+	sc/uiconfig/scalc/popupmenu/home_insert \
+	sc/uiconfig/scalc/popupmenu/home_merge \
+	sc/uiconfig/scalc/popupmenu/home_sortfilter \
 	sc/uiconfig/scalc/popupmenu/notebookbar \
 	sc/uiconfig/scalc/popupmenu/oleobject \
 	sc/uiconfig/scalc/popupmenu/pagebreak \
