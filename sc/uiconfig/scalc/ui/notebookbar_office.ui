@@ -3338,16 +3338,15 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeMergeMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeMergeMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeMergeMenu">Merge &amp; Center</property>
                                     <property name="action-name">private:resource/popupmenu/home_merge</property>
                                     <property name="icon_name">cmd/sc_togglemergecells.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
+                                    <property name="homogeneous">False</property>
                                   </packing>
                                 </child>
                               </object>
@@ -3728,12 +3727,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeInsertMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeInsertMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeInsertMenu">Insert</property>
                                     <property name="action-name">private:resource/popupmenu/home_insert</property>
-                                    <property name="icon_name">cmd/lc_insertcell.png</property>
+                                    <property name="icon_name">cmd/32/insertcellsright.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -3757,12 +3755,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeDeleteMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeDeleteMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeDeleteMenu">Delete</property>
                                     <property name="action-name">private:resource/popupmenu/home_delete</property>
-                                    <property name="icon_name">cmd/lc_deletecell.png</property>
+                                    <property name="icon_name">cmd/32/deletecell.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -3786,12 +3783,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeFormatMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeFormatMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFormatMenu">Format</property>
                                     <property name="action-name">private:resource/popupmenu/home_format</property>
-                                    <property name="icon_name">cmd/lc_formatcelldialog.png</property>
+                                    <property name="icon_name">cmd/32/formatcelldialog.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -3901,16 +3897,15 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeFillMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeFillMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFillMenu">Fill</property>
                                     <property name="action-name">private:resource/popupmenu/home_fill</property>
                                     <property name="icon_name">cmd/sc_filldown.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
+                                    <property name="homogeneous">False</property>
                                   </packing>
                                 </child>
                               </object>
@@ -3927,16 +3922,15 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeClearMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeClearMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeClearMenu">Clear</property>
                                     <property name="action-name">private:resource/popupmenu/home_clear</property>
                                     <property name="icon_name">cmd/sc_delete.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
+                                    <property name="homogeneous">False</property>
                                   </packing>
                                 </child>
                               </object>
@@ -3955,12 +3949,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeSortFilterMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeSortFilterMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeSortFilterMenu">Sort &amp; Filter</property>
                                     <property name="action-name">private:resource/popupmenu/home_sortfilter</property>
-                                    <property name="icon_name">cmd/lc_sortfiltermenu.png</property>
+                                    <property name="icon_name">cmd/32/sortfiltermenu.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -3984,12 +3977,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnHomeFindSelectMenu">
+                                  <object class="GtkMenuToolButton" id="btnHomeFindSelectMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes" context="TabbedCalc|btnHomeFindSelectMenu">Find &amp; Select</property>
                                     <property name="action-name">private:resource/popupmenu/home_findselect</property>
-                                    <property name="icon_name">cmd/lc_searchdialog.png</property>
+                                    <property name="icon_name">cmd/32/searchdialog.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

@@ -31,7 +31,7 @@
           {"cmd": "DecrementIndent"}, {"cmd": "IncrementIndent"}]}],
       [{"id": "WrapText", "style": "small-label", "items": [{"cmd": "WrapText"}]},
        {"id": "Merge", "style": "small-label", "items": [
-          {"cmd": "MergeMenu", "action": "private:resource/popupmenu/home_merge", "label": "Merge & Center", "icon": "cmd/sc_togglemergecells.png"}]}]
+          {"cmd": "MergeMenu", "kind": "split", "action": "private:resource/popupmenu/home_merge", "icon": "cmd/sc_togglemergecells.png"}]}]
     ]},
     {"name": "Number", "caption": "Number", "rows": 2, "columns": [
       [{"id": "NumberFormatType", "style": "small", "items": [{"cmd": "NumberFormatType"}]},
@@ -47,16 +47,16 @@
       [{"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}]
     ]},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
-      [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "InsertMenu", "action": "private:resource/popupmenu/home_insert", "label": "Insert", "icon": "cmd/lc_insertcell.png"}]}],
-      [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "DeleteMenu", "action": "private:resource/popupmenu/home_delete", "label": "Delete", "icon": "cmd/lc_deletecell.png"}]}],
-      [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "FormatMenu", "action": "private:resource/popupmenu/home_format", "label": "Format", "icon": "cmd/lc_formatcelldialog.png"}]}]
+      [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "InsertMenu", "kind": "split", "action": "private:resource/popupmenu/home_insert", "icon": "cmd/32/insertcellsright.png"}]}],
+      [{"id": "DeleteMenu", "style": "large", "items": [{"cmd": "DeleteMenu", "kind": "split", "action": "private:resource/popupmenu/home_delete", "icon": "cmd/32/deletecell.png"}]}],
+      [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "FormatMenu", "kind": "split", "action": "private:resource/popupmenu/home_format", "icon": "cmd/32/formatcelldialog.png"}]}]
     ]},
     {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
       [{"id": "AutoSum", "style": "small-label", "items": [{"cmd": "AutoSum"}]},
-       {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "FillMenu", "action": "private:resource/popupmenu/home_fill", "label": "Fill", "icon": "cmd/sc_filldown.png"}]},
-       {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "ClearMenu", "action": "private:resource/popupmenu/home_clear", "label": "Clear", "icon": "cmd/sc_delete.png"}]}],
-      [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "SortFilterMenu", "action": "private:resource/popupmenu/home_sortfilter", "label": "Sort & Filter", "icon": "cmd/lc_sortfiltermenu.png"}]}],
-      [{"id": "FindSelectMenu", "style": "large", "items": [{"cmd": "FindSelectMenu", "action": "private:resource/popupmenu/home_findselect", "label": "Find & Select", "icon": "cmd/lc_searchdialog.png"}]}]
+       {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "FillMenu", "kind": "split", "action": "private:resource/popupmenu/home_fill", "icon": "cmd/sc_filldown.png"}]},
+       {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "ClearMenu", "kind": "split", "action": "private:resource/popupmenu/home_clear", "icon": "cmd/sc_delete.png"}]}],
+      [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "SortFilterMenu", "kind": "split", "action": "private:resource/popupmenu/home_sortfilter", "icon": "cmd/32/sortfiltermenu.png"}]}],
+      [{"id": "FindSelectMenu", "style": "large", "items": [{"cmd": "FindSelectMenu", "kind": "split", "action": "private:resource/popupmenu/home_findselect", "icon": "cmd/32/searchdialog.png"}]}]
     ]}
   ]
 }
