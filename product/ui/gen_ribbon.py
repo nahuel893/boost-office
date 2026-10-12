@@ -13,8 +13,8 @@ lower (the next ones follow it) and "valign" (fill/start/center/end) to sit at
 one edge of its row, e.g. a combo box at the bottom of a section.
 
 A section may also have a "footer": one toolbox (same schema, but no "row")
-that spans every column on the last row above the caption. Large toolboxes
-then span one row fewer, and column toolboxes must fit in the rows above it.
+that spans every column on the last row above the caption. Large and medium
+toolboxes then span one row fewer, and column toolboxes must fit in the rows above it.
 """
 import argparse
 import json
@@ -23,15 +23,18 @@ import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-# style -> (toolbar-style, icon_size); icon_size 5 = 32 px, 1 = 16 px
+# style -> (toolbar-style, icon_size); icon_size 5 = 32 px, 3 = 24 px, 1 = 16 px
 # (sfx2/source/sidebar/SidebarToolBox.cxx:318-327)
 STYLES = {
     "large": ("both", 5),
+    "medium": ("both", 3),
     "small": ("icons", 1),
     "small-label": ("both-horiz", 1),
 }
 BUTTON_CLASS = {"button": "GtkToolButton", "split": "GtkMenuToolButton"}
 SUPPRESSED_CLASSES = ("GtkToolButton", "GtkMenuToolButton")
+# Styles that fill the section height: alone in their column, label below.
+LARGE_LIKE = ("large", "medium")
 INDENT = "  "
 OBJECT_OPEN = re.compile(r"<object\b")
 
@@ -90,15 +93,15 @@ def validate(layout):
             for style in styles:
                 if style not in STYLES:
                     raise LayoutError(f"{name}: unknown style {style}")
-            if "large" in styles and len(column) != 1:
-                raise LayoutError(f"{name}: a large toolbox must be alone in its column")
+            if any(style in LARGE_LIKE for style in styles) and len(column) != 1:
+                raise LayoutError(f"{name}: a large or medium toolbox must be alone in its column")
             if len(column) > rows:
                 raise LayoutError(f"{name}: {len(column)} toolboxes in a column of {rows} rows")
             placed = rows_of(column)
             if placed != sorted(set(placed)) or any(not 0 <= r < rows for r in placed):
                 raise LayoutError(f"{name}: toolbox rows {placed} do not fit {rows} rows in order")
         for box in boxes_of(section):
-            if box is footer and box["style"] not in set(STYLES) - {"large"}:
+            if box is footer and box["style"] not in set(STYLES) - set(LARGE_LIKE):
                 raise LayoutError(f"{name}: the footer must be a small toolbox")
             if box.get("valign", "fill") not in ("fill", "start", "center", "end"):
                 raise LayoutError(f"{name}: unknown valign {box['valign']}")
@@ -147,7 +150,7 @@ def emit_item(w, layout, box_style, item):
     if "icon" in item:
         w.prop("icon_name", item["icon"])
     w.close("</object>")
-    homogeneous = "False" if box_style == "large" or kind == "split" else "True"
+    homogeneous = "False" if box_style in LARGE_LIKE or kind == "split" else "True"
     w.packing(expand="False", homogeneous=homogeneous)
     w.close("</child>")
 
@@ -155,7 +158,7 @@ def emit_item(w, layout, box_style, item):
 def emit_box(w, layout, box, col, row, large_rows, width=1):
     p = layout["id_prefix"]
     toolbar_style, icon_size = STYLES[box["style"]]
-    large = box["style"] == "large"
+    large = box["style"] in LARGE_LIKE
     w.open("<child>")
     w.open(f'<object class="sfxlo-NotebookbarToolBox" id="bx{p}{box["id"]}">')
     w.prop("visible", "True")

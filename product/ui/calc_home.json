@@ -42,9 +42,9 @@
           {"cmd": "NumberFormatDecDecimals"}]}]
     ]},
     {"name": "Styles", "caption": "Styles", "rows": 2, "columns": [
-      [{"id": "ConditionalFormatMenu", "style": "large", "items": [
+      [{"id": "ConditionalFormatMenu", "style": "medium", "items": [
           {"cmd": "ConditionalFormatMenu", "kind": "split"}]}],
-      [{"id": "AutoFormat", "style": "large", "items": [{"cmd": "AutoFormat"}]}]
+      [{"id": "AutoFormat", "style": "medium", "items": [{"cmd": "AutoFormat"}]}]
     ], "footer": {"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
       [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "HomeInsertMenu", "kind": "split", "icon": "cmd/32/insertcellsright.png"}]}],

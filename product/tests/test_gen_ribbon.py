@@ -234,6 +234,38 @@ class GenRibbonTest(unittest.TestCase):
         with self.assertRaises(g.LayoutError):
             g.emit_page(bad)
 
+    def medium_layout(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][0]["columns"][0][0]["style"] = "medium"
+        return layout
+
+    def test_medium_toolbox_is_24px_and_spans_like_a_large_one(self):
+        obj, packing = placed(ET.fromstring(generate(layout=self.medium_layout())), "bxHomePaste")
+        self.assertEqual("3", obj.find("property[@name='icon_size']").text)
+        self.assertEqual("both", obj.find("property[@name='toolbar-style']").text)
+        self.assertEqual("center", obj.find("property[@name='valign']").text)
+        self.assertEqual("3", packing.find("property[@name='height']").text)
+
+    def test_medium_toolbox_spans_rows_above_a_footer(self):
+        layout = self.medium_layout()
+        layout["sections"][0]["footer"] = {
+            "id": "StyleList", "style": "small", "items": [{"cmd": "StyleApply"}]}
+        layout["sections"][0]["columns"][1].pop()
+        _, packing = placed(ET.fromstring(generate(layout=layout)), "bxHomePaste")
+        self.assertEqual("2", packing.find("property[@name='height']").text)
+
+    def test_rejects_medium_toolbox_sharing_a_column(self):
+        bad = self.medium_layout()
+        bad["sections"][0]["columns"][0].append({"id": "X", "style": "small", "items": [{"cmd": "X"}]})
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
+    def test_rejects_medium_footer(self):
+        bad = self.footer_layout()
+        bad["sections"][0]["footer"]["style"] = "medium"
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
     def test_suppr_sync(self):
         ui = generate()
         suppr = "\n".join([

@@ -3583,7 +3583,7 @@
                                 <property name="vexpand">True</property>
                                 <property name="toolbar-style">both</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">3</property>
                                 <child>
                                   <object class="GtkMenuToolButton" id="btnHomeConditionalFormatMenu">
                                     <property name="visible">True</property>
@@ -3610,7 +3610,7 @@
                                 <property name="vexpand">True</property>
                                 <property name="toolbar-style">both</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">3</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnHomeAutoFormat">
                                     <property name="visible">True</property>
