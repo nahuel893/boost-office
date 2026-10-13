@@ -7,7 +7,7 @@
     {"name": "Sources", "caption": "Get External Data", "rows": 3, "columns": [
       [{"id": "FromDatabase", "style": "small-label", "items": [{"cmd": "DataFromDatabase"}]},
        {"id": "ExternalLinks", "style": "small-label", "items": [{"cmd": "InsertExternalDataSource"}]},
-       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile", "icon": "cmd/sc_insertsheetfromfile.png"}]}],
+       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile"}]}],
       [{"id": "OtherSourcesMenu", "style": "large", "items": [
           {"cmd": "DataOtherSourcesMenu", "kind": "split"}]}],
       [{"id": "DataSources", "style": "large", "items": [{"cmd": "ViewDataSourceBrowser"}]}]

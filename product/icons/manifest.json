@@ -102,7 +102,7 @@
     {"name": "datagroup", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "text_bullet_list_tree"}]},
     {"name": "dataungroup", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "text_bullet_list_tree"}, {"glyph": "dismiss_circle", "style": "filled", "color": "red", "scale": 0.5, "dx": 0.5, "dy": 0.5, "knockout": true}]},
     {"name": "datasubtotals", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "calculator"}]},
-    {"name": "showdetail", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "add_square"}]},
-    {"name": "hidedetail", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "subtract_square"}]}
+    {"name": "showdetail", "layers": [{"glyph": "add_square"}]},
+    {"name": "hidedetail", "layers": [{"glyph": "subtract_square"}]}
   ]
 }
