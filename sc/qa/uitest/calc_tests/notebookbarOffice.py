@@ -11,6 +11,7 @@ import os
 import time
 import uno
 import unohelper
+from contextlib import contextmanager
 from pathlib import Path
 
 from uitest.framework import UITestCase
@@ -25,9 +26,11 @@ OFFICE_UI = "notebookbar_office.ui"
 class StateListener(unohelper.Base, XStatusListener):
     def __init__(self):
         self.enabled = None
+        self.history = []  # every IsEnabled the frame pushed, in order
 
     def statusChanged(self, aEvent):
         self.enabled = aEvent.IsEnabled
+        self.history.append(aEvent.IsEnabled)
 
     def disposing(self, aEvent):
         pass
@@ -119,6 +122,36 @@ class NotebookbarOffice(UITestCase):
         self.assertIsNotNone(listener.enabled, "no state reported for " + name)
         return listener.enabled
 
+    @contextmanager
+    def watched_state(self, name):
+        """Keep ONE status listener on .uno:<name>; it must be told about later changes.
+
+        Unlike dispatch_enabled(), which registers a new listener (and so re-runs GetState)
+        for every query, this only sees states that SFX pushes after an Invalidate().
+        """
+        xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", self.xContext)
+        xTransformer = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.util.URLTransformer", self.xContext)
+        aURL = uno.createUnoStruct("com.sun.star.util.URL")
+        aURL.Complete = ".uno:" + name
+        aURL = xTransformer.parseStrict(aURL)[1]
+        xDispatch = xDesktop.getCurrentFrame().queryDispatch(aURL, "", 0)
+        self.assertIsNotNone(xDispatch, name)
+        listener = StateListener()
+        xDispatch.addStatusListener(listener, aURL)
+        try:
+            self.wait_for(lambda: listener.enabled is not None, "no initial state for " + name)
+            yield listener
+        finally:
+            xDispatch.removeStatusListener(listener, aURL)
+
+    def wait_for(self, condition, message, timeout=5):
+        deadline = time.time() + timeout
+        while not condition() and time.time() < deadline:
+            time.sleep(0.05)
+        self.assertTrue(condition(), message)
+
     def test_data_placeholders_have_a_slot_that_is_always_disabled(self):
         placeholders = ["DataFromDatabase", "DataRecentSources", "DataConnections",
                         "DataConnectionProperties", "DataFilterReapply", "DataFlashFill",
@@ -164,6 +197,34 @@ class NotebookbarOffice(UITestCase):
             xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
             self.select_rows(document, "2:3")
             self.assertFalse(self.dispatch_enabled("DataUngroup"))
+
+    def test_data_ungroup_listener_is_told_about_state_changes(self):
+        # One listener stays registered, so every update below was pushed by an Invalidate()
+        # mirror (olinefun.cxx for the group, tabview3.cxx for the selection), not by a GetState
+        # run for a freshly attached listener.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.select_rows(document, "2:3")
+            with self.watched_state("DataUngroup") as listener:
+                self.assertFalse(listener.enabled)  # no group yet
+                # same selection: only the outline operation can have invalidated the slot
+                self.xUITest.executeCommand(".uno:DataGroup")
+                self.wait_for(lambda: listener.enabled is True, "group did not enable Ungroup: %s" % listener.history)
+                # selection change only: the view must invalidate the slot
+                xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+                self.wait_for(lambda: listener.enabled is False, "selection did not disable Ungroup: %s" % listener.history)
+
+    def test_data_merge_center_listener_is_told_about_selection_changes(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            with self.watched_state("HomeMergeCenter") as listener:
+                self.assertFalse(listener.enabled)  # a single cell cannot merge
+                xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A1:B2"}))
+                self.wait_for(lambda: listener.enabled is True, "range did not enable it: %s" % listener.history)
+                xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+                self.wait_for(lambda: listener.enabled is False, "cell did not disable it: %s" % listener.history)
 
     def test_data_refresh_without_database_range_does_nothing(self):
         with self.ui_test.create_doc_in_start_center("calc") as document:
