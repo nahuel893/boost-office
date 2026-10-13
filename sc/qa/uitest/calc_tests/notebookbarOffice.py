@@ -199,16 +199,18 @@ class NotebookbarOffice(UITestCase):
             self.assertFalse(self.dispatch_enabled("DataUngroup"))
 
     def test_data_ungroup_listener_is_told_about_state_changes(self):
-        # One listener stays registered, so every update below was pushed by an Invalidate()
-        # mirror (olinefun.cxx for the group, tabview3.cxx for the selection), not by a GetState
-        # run for a freshly attached listener.
+        # One listener stays registered, so every update below was pushed to it, not produced by
+        # a GetState run for a freshly attached listener. This proves end-to-end freshness only:
+        # a control probe showed pushes also reach slots without a mirror, so it cannot tell
+        # which Invalidate() (olinefun.cxx, tabview3.cxx) caused a push. See
+        # product/docs/calc-data-redesign.md, "Known limitations".
         with self.ui_test.create_doc_in_start_center("calc") as document:
             xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
             xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
             self.select_rows(document, "2:3")
             with self.watched_state("DataUngroup") as listener:
                 self.assertFalse(listener.enabled)  # no group yet
-                # same selection: only the outline operation can have invalidated the slot
+                # same selection: the outline operation is what changes the state here
                 self.xUITest.executeCommand(".uno:DataGroup")
                 self.wait_for(lambda: listener.enabled is True, "group did not enable Ungroup: %s" % listener.history)
                 # selection change only: the view must invalidate the slot
