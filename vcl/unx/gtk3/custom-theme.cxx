@@ -281,13 +281,25 @@ OString CreateStyleString()
         "}"
 
         "scrollbar slider {"
-        // The transparent border only adds space around the thumb; the painted
-        // (padding-box) thickness is min-width/min-height, 8px in adw-gtk3.
-        "  min-width: 10px;"
-        "  min-height: 10px;"
         "  border: 2px solid transparent;"
         "  background-clip: padding-box;"
         "  background-color: #" + aThemeColors.GetShadeColor().AsRGBHexString() + ";"
+        "}"
+
+        // The transparent border only adds space around the thumb; the painted
+        // (padding-box) thickness is the cross-axis min size, 8px in adw-gtk3.
+        // This provider outranks the theme's, so the theme's 40px along-axis
+        // minimum is restated here, or the thumb could shrink to 10px on long
+        // sheets. Overlay indicators (dialogs, tree views) are excluded so they
+        // keep the thin GTK look.
+        "scrollbar.vertical:not(.overlay-indicator) slider {"
+        "  min-width: 10px;"
+        "  min-height: 40px;"
+        "}"
+
+        "scrollbar.horizontal:not(.overlay-indicator) slider {"
+        "  min-height: 10px;"
+        "  min-width: 40px;"
         "}"
 
         "scrollbar slider:hover {"

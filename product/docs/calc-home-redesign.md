@@ -82,8 +82,9 @@ record are in `product/docs/stage-a-findings.md`.
   format, cell style) stay as tall as the combo itself (~35 px, set by the GTK theme).
 - Scrollbar sliders visible at rest: ShadeColor (ShadowColor role, #828282 / #7A7A7A, about 3.9:1
   against the trough) instead of the surface color; 10 px painted thumb (was 8 px) with a 2 px
-  transparent border. Hover/active stay WindowTextColor. Every themed gtk3 scrollbar is affected
-  (dialogs, sidebar); overlay scrolling is untouched.
+  transparent border; the theme's 40 px along-axis minimum is kept explicitly. Hover/active stay
+  WindowTextColor. Every non-overlay themed gtk3 scrollbar is affected (dialogs, sidebar); overlay
+  indicators keep their thin GTK look.
 
 Light palette as shipped: surface #E4F2E8, hover #D3E8DA, pressed #C3DECB, separator #9E9E9E,
 field border #828282, fields/menus/active tab white. Dark: surface #2B2B2B, separator #6A6A6A,
