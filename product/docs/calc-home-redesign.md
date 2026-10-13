@@ -2,7 +2,8 @@
 
 Status: implemented on branch `feature/calc-home-redesign` (2026-10-12), validated with the user
 screen by screen. This document is the reference for what changed, how it is built, and what is
-still open. The next slice is the Data tab, built with the same tools.
+still open. The Data tab, built with the same tools, is documented in
+`product/docs/calc-data-redesign.md`.
 
 Design sources (outside the repo, `/home/nh/office-boost/docs/`):
 `superpowers/specs/2026-10-12-calc-home-redesign-design.md` (spec) and the annexes
@@ -14,7 +15,7 @@ record are in `product/docs/stage-a-findings.md`.
 ### A new ribbon variant, "Tabbed Office" (Calc only)
 
 - File: `sc/uiconfig/scalc/ui/notebookbar_office.ui`, a copy of the upstream Tabbed
-  `notebookbar.ui` whose Home page is generated (section 3). All other tabs are still upstream.
+  `notebookbar.ui` whose Home and Data pages are generated (section 3). All other tabs are still upstream.
 - Registered as Calc mode `TabbedOffice` (`ToolbarMode.xcu`), listed in View > User Interface
   and in the User Interface picker dialog (Calc only; other apps map it to "Tabbed").
 - LibreOffice's own "Tabbed" and every other variant are unchanged.
@@ -106,7 +107,7 @@ profile, and starts Calc detached. Close Calc before switching modes.
 
 | Tool | Purpose |
 |---|---|
-| `product/ui/gen_ribbon.py` + `product/ui/calc_home.json` | Generates the Home page XML from a JSON layout (sections, columns, toolboxes, items), splices it between `<!-- product:Home-begin/end -->` markers, and syncs `scalc.suppr`. Every other line of the .ui stays byte-identical to upstream. |
+| `product/ui/gen_ribbon.py` + `product/ui/calc_home.json` | Generates a page's XML (Home, Data) from a JSON layout (sections, columns, toolboxes, items), splices it between `<!-- product:<Page>-begin/end -->` markers, and syncs `scalc.suppr`. Every other line of the .ui stays byte-identical to upstream apart from the generated pages. |
 | `product/icons/build_theme.py` + `manifest.json` | Vendors Fluent glyphs, composes layers (fills, badges, highlights, knockouts, color-stripe clipping), renders 16/24/32 px light/dark PNGs, writes `links.txt`, zips and installs `images_boost*.zip`. |
 | `product/themes/build_schemes.py` + `palette.json` | Tokens -> 27 UI roles + document colors -> `ColorSchemes.xcu` -> `boost-schemes.oxt`. |
 | `product/dev/lo-make.sh` | gbuild under a cgroup memory cap (MemoryMax=7G, PARALLELISM=6); a full -j10 build froze the 14 GB machine. |
@@ -124,11 +125,11 @@ Other upstream files touched: `ToolbarMode.xcu` (mode), `Controller.xcu` + `Calc
 
 ## 4. Tests and checks
 
-- `python3 -I -m unittest discover -s product/tests -t .` — 60 tests: profile writer, ribbon
+- `python3 -I -m unittest discover -s product/tests -t .` — 84 tests (Home and Data): profile writer, ribbon
   generator, "office .ui == upstream + layout", icon themes (coverage of every Home button, color
   stripe band empty, no light-theme gray in dark, crisp 16 px, trim never clips ink, fills,
   badges), color schemes (27 roles, WCAG AA, xcu/extension layout, cell cursor), launcher.
-- `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` — 6 UITests: variant loads,
+- `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` — the Home UITests (the file also holds the Data ones, see the Data doc): variant loads,
   switching back to Tabbed Compact, every Home section/toolbox present, picker lists the variant
   in Calc, picker hides it in Writer, `.uno:HomeMergeCenter` merges and centers A1:B2.
 - `product/dev/check-ui.sh sc/uiconfig/scalc/ui/notebookbar_office.ui` — the build's gla11y
@@ -147,8 +148,9 @@ Other upstream files touched: `ToolbarMode.xcu` (mode), `Controller.xcu` + `Calc
 
 ## 6. Known limitations and next steps
 
-- Other Calc tabs, Writer/Impress/Draw, dialogs and the status bar are not redesigned yet.
-  Next: the Data tab, reusing `gen_ribbon.py`, the icon builder and the schemes.
+- Other Calc tabs (all but Home and Data), Writer/Impress/Draw, dialogs and the status bar are not
+  redesigned yet. The Data tab is documented in `product/docs/calc-data-redesign.md`; the next tabs
+  can reuse `gen_ribbon.py`, the icon builder and the schemes the same way.
 - Translations: the dev build is en-US only; new labels need Spanish strings (and a
   `--with-lang` build) before shipping.
 - Custom schemes do not follow the system light/dark switch (two schemes, chosen per profile).
