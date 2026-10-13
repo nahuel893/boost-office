@@ -29,14 +29,12 @@ PLACEHOLDERS = {
     "DataRelationships": "Relationships", "DataManageModel": "Manage Data Model",
     "DataForecastSheet": "Forecast Sheet",
 }
-SPLITS = {  # command: (label, body command, popup resource, popup items, icon)
+SPLITS = {  # command: (label, body command, popup resource, popup items)
     "DataRefresh": ("Refresh", "DataAreaRefresh", "data_refresh",
                     [".uno:DataAreaRefresh", ".uno:DataProviderRefresh", ".uno:RecalcPivotTable",
-                     ".uno:CalculateHard"], "cmd/32/dataarearefresh.png"),
-    "DataGroup": ("Group", "Group", "data_group", [".uno:Group", ".uno:AutoOutline"],
-                  "cmd/sc_group.png"),
-    "DataUngroup": ("Ungroup", "Ungroup", "data_ungroup", [".uno:Ungroup", ".uno:ClearOutline"],
-                    "cmd/sc_ungroup.png"),
+                     ".uno:CalculateHard"]),
+    "DataGroup": ("Group", "Group", "data_group", [".uno:Group", ".uno:AutoOutline"]),
+    "DataUngroup": ("Ungroup", "Ungroup", "data_ungroup", [".uno:Ungroup", ".uno:ClearOutline"]),
 }
 # split slot -> slot it mirrors (every invalidation of the original must also hit the new one)
 SPLIT_SLOTS = {"FID_DATA_REFRESH": "SID_REFRESH_DBAREA", "FID_DATA_GROUP": "SID_OUTLINE_MAKE",
@@ -48,6 +46,7 @@ PLACEHOLDER_SLOTS = {
     "DataRelationships": "FID_DATA_RELATIONSHIPS", "DataManageModel": "FID_DATA_MANAGE_MODEL",
     "DataForecastSheet": "FID_DATA_FORECAST_SHEET",
 }
+NO_IMAGE_OK = {"NumberFormatType"}  # Home's number-format dropdown shows text, not an image
 MENUS = {
     "DataOtherSourcesMenu": ("Other Sources", "data_othersources"),
     "DataWhatIfMenu": ("What-If Analysis", "data_whatif"),
@@ -117,14 +116,14 @@ class CalcDataUiTest(unittest.TestCase):
 
     def test_refresh_group_ungroup_are_split_buttons_on_new_commands(self):
         by_cmd = {i["cmd"]: i for i in self.items()}
-        for cmd, (_label, body, _res, _items, _icon) in SPLITS.items():
+        for cmd, (_label, body, _res, _items) in SPLITS.items():
             self.assertEqual("split", by_cmd[cmd].get("kind"), cmd)
             self.assertNotIn("icon", by_cmd[cmd], "icon resolves from the boost theme by command name: " + cmd)
             self.assertNotIn(body, by_cmd, "the old command must leave the page: " + body)
 
     def test_split_commands_have_labels_and_body_toolbar_controller(self):
         labels, nodes = commands_xcu(), controller_nodes()
-        for cmd, (label, _body, resource, _items, _icon) in SPLITS.items():
+        for cmd, (label, _body, resource, _items) in SPLITS.items():
             self.assertEqual(label, labels[".uno:" + cmd])
             ours = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd]
             self.assertEqual(1, len(ours), cmd)
@@ -134,7 +133,7 @@ class CalcDataUiTest(unittest.TestCase):
 
     def test_split_popup_commands_have_menu_controllers_and_labels(self):
         labels, nodes = commands_xcu(), controller_nodes()
-        for cmd, (label, _body, resource, _items, _icon) in SPLITS.items():
+        for cmd, (label, _body, resource, _items) in SPLITS.items():
             self.assertIn(".uno:" + cmd + "Menu", labels)
             ours = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd + "Menu"]
             self.assertEqual(1, len(ours), cmd)
@@ -149,7 +148,7 @@ class CalcDataUiTest(unittest.TestCase):
 
     def test_split_popup_menu_files_exact(self):
         mk = (ROOT / "sc/UIConfig_scalc.mk").read_text(encoding="utf-8")
-        for _label, _body, resource, items, _icon in SPLITS.values():
+        for _label, _body, resource, items in SPLITS.values():
             path = POPUPMENU / (resource + ".xml")
             self.assertTrue(path.exists(), resource)
             self.assertIn("sc/uiconfig/scalc/popupmenu/" + resource + " ", mk)
@@ -170,7 +169,12 @@ class CalcDataUiTest(unittest.TestCase):
             self.assertGreater(ids[name], ids["FID_HOME_MERGE_CENTER"])
         values = list(ids.values())
         self.assertEqual(len(values), len(set(values)), "duplicate SID_NEW_SLOTS offsets")
-        self.assertLess(max(ids[n] for n in mine), 400)  # SID_SC_START range ends at +999
+        self.assertLess(max(ids[n] for n in mine), 425)  # SID_SC_START range ends at +999
+        # placeholders live in the fork-reserved block, away from the ids upstream hands out next
+        for name in PLACEHOLDER_SLOTS.values():
+            self.assertTrue(380 <= ids[name] <= 399, name)
+        hrc = (ROOT / "sc/inc/sc.hrc").read_text(encoding="utf-8")
+        self.assertRegex(hrc, r"(?is)\+380\.\.\+399.*reserved for this fork")
 
     def sdi_text(self):
         return "".join(p.read_text(encoding="utf-8", errors="replace")
@@ -218,16 +222,52 @@ class CalcDataUiTest(unittest.TestCase):
             self.assertNotIn("ExecMethod", row.group(1), cmd)  # scaffold: state only
             self.assertIn("case " + slot + ":", state, cmd)
 
+    def test_placeholder_slots_are_writable_docs_and_hidden_from_customize(self):
+        sdi = (ROOT / "sc/sdi/scalc.sdi").read_text(encoding="utf-8")
+        for cmd, slot in PLACEHOLDER_SLOTS.items():
+            m = re.search(r"SfxVoidItem " + cmd + " " + slot + r"\n\(\)\n\[(.*?)\n\]", sdi, re.S)
+            self.assertIsNotNone(m, cmd)
+            body = m.group(1)
+            self.assertIn("ReadOnlyDoc = FALSE", body, cmd)
+            for flag in ("MenuConfig", "ToolBoxConfig", "AccelConfig"):
+                self.assertIn(flag + " = FALSE", body, cmd + " " + flag)
+
     def test_placeholder_slots_are_disabled_in_get_state_and_ignored_in_execute(self):
-        state = (ROOT / "sc/source/ui/view/cellsh.cxx").read_text(encoding="utf-8")
-        exe = (ROOT / "sc/source/ui/view/cellsh3.cxx").read_text(encoding="utf-8")
-        block = state[state.index("case " + PLACEHOLDER_SLOTS["DataFromDatabase"] + ":"):]
-        block = block[:block.index("break;")]
+        # Only slots still listed as placeholders are checked; once one is implemented it is
+        # removed from PLACEHOLDER_SLOTS and gets a real GetState/Execute case wherever it fits.
+        files = {p: p.read_text(encoding="utf-8") for p in (ROOT / "sc/source/ui/view").glob("cellsh*.cxx")}
         for slot in PLACEHOLDER_SLOTS.values():
-            self.assertIn("case " + slot + ":", block, slot)
-        self.assertIn("rSet.DisableItem( nWhich )", block)
+            hits = []
+            for text in files.values():
+                for m in re.finditer(r"((?:\s*case " + r"\w+:\n)+)(.*?)break;", text, re.S):
+                    labels = re.findall(r"case (\w+):", m.group(1))
+                    if slot in labels:
+                        hits.append(m.group(2))
+            self.assertTrue(hits, slot + " has no case in any cellsh*.cxx")
+            self.assertTrue(any("rSet.DisableItem( nWhich )" in h for h in hits), slot)
+        # a placeholder has no Execute: no case label for it outside the disabled GetState block
         for slot in PLACEHOLDER_SLOTS.values():
-            self.assertNotIn(slot, exe, slot)
+            for path, text in files.items():
+                for m in re.finditer(r"((?:\s*case \w+:\n)+)(.*?)break;", text, re.S):
+                    if slot in re.findall(r"case (\w+):", m.group(1)):
+                        self.assertIn("DisableItem", m.group(2), f"{slot} handled in {path.name}")
+
+    def test_commands_used_by_data_and_home_layouts_have_an_image_flag_or_icon(self):
+        flagged = set()
+        for path in UI_DIR.glob("*Commands.xcu"):
+            for node in ET.parse(path).iter("node"):
+                name = node.get(OOR + "name")
+                for prop in node.findall("prop"):
+                    if prop.get(OOR + "name") == "Properties" and int(prop.findtext("value")) & 1:
+                        flagged.add(name)
+        for layout in (self.layout, self.home):
+            groups = [b["items"] for s in layout["sections"] for c in s["columns"] for b in c]
+            groups += [s.get("footer", {}).get("items", []) for s in layout["sections"]]
+            for items in groups:
+                for item in items:
+                    if "icon" not in item and item["cmd"] not in NO_IMAGE_OK:
+                        self.assertIn(".uno:" + item["cmd"], flagged,
+                                      item["cmd"] + " is left out of the image list")
 
     def test_placeholders_have_a_not_available_tooltip(self):
         tree = ET.parse(UI_DIR / "CalcCommands.xcu")

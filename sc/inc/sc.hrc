@@ -653,16 +653,18 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define SID_REMOVE_CALCTABLE        (SID_NEW_SLOTS+121)
 #define SID_TABLE_STYLES            (SID_NEW_SLOTS+122)
 
+// SID_NEW_SLOTS+380..+399 is reserved for this fork's own slots, well clear of the ids
+// upstream hands out next (+123 onwards). Ceiling for the fork block is +424.
 // Data tab placeholders: always disabled until their feature gives them an Execute
-#define FID_DATA_FROM_DATABASE      (SID_NEW_SLOTS+123)
-#define FID_DATA_RECENT_SOURCES     (SID_NEW_SLOTS+124)
-#define FID_DATA_CONNECTIONS        (SID_NEW_SLOTS+125)
-#define FID_DATA_CONN_PROPS         (SID_NEW_SLOTS+126)
-#define FID_DATA_FILTER_REAPPLY     (SID_NEW_SLOTS+127)
-#define FID_DATA_FLASH_FILL         (SID_NEW_SLOTS+128)
-#define FID_DATA_RELATIONSHIPS      (SID_NEW_SLOTS+129)
-#define FID_DATA_MANAGE_MODEL       (SID_NEW_SLOTS+130)
-#define FID_DATA_FORECAST_SHEET     (SID_NEW_SLOTS+131)
+#define FID_DATA_FROM_DATABASE      (SID_NEW_SLOTS+380)
+#define FID_DATA_RECENT_SOURCES     (SID_NEW_SLOTS+381)
+#define FID_DATA_CONNECTIONS        (SID_NEW_SLOTS+382)
+#define FID_DATA_CONN_PROPS         (SID_NEW_SLOTS+383)
+#define FID_DATA_FILTER_REAPPLY     (SID_NEW_SLOTS+384)
+#define FID_DATA_FLASH_FILL         (SID_NEW_SLOTS+385)
+#define FID_DATA_RELATIONSHIPS      (SID_NEW_SLOTS+386)
+#define FID_DATA_MANAGE_MODEL       (SID_NEW_SLOTS+387)
+#define FID_DATA_FORECAST_SHEET     (SID_NEW_SLOTS+388)
 
 // idl parameter
 
