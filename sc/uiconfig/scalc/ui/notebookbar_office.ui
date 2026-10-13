@@ -5883,10 +5883,11 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">5</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnDataDataAreaRefresh">
+                                  <object class="GtkMenuToolButton" id="btnDataDataRefresh">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">.uno:DataAreaRefresh</property>
+                                    <property name="action-name">.uno:DataRefresh</property>
+                                    <property name="icon_name">cmd/32/dataarearefresh.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6660,14 +6661,15 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnDataGroup">
+                                  <object class="GtkMenuToolButton" id="btnDataDataGroup">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">.uno:Group</property>
+                                    <property name="action-name">.uno:DataGroup</property>
+                                    <property name="icon_name">cmd/sc_group.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
+                                    <property name="homogeneous">False</property>
                                   </packing>
                                 </child>
                               </object>
@@ -6684,14 +6686,15 @@
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
-                                  <object class="GtkToolButton" id="btnDataUngroup">
+                                  <object class="GtkMenuToolButton" id="btnDataDataUngroup">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="action-name">.uno:Ungroup</property>
+                                    <property name="action-name">.uno:DataUngroup</property>
+                                    <property name="icon_name">cmd/sc_ungroup.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
+                                    <property name="homogeneous">False</property>
                                   </packing>
                                 </child>
                               </object>

@@ -308,6 +308,7 @@ void ScCellShell::ExecuteDB( SfxRequest& rReq )
             break;
 
         case SID_REFRESH_DBAREA:
+        case FID_DATA_REFRESH:
             {
                 ScDBData* pDBData = pTabViewShell->GetDBData(true,SC_DB_OLD);
                 if (pDBData)
@@ -1185,6 +1186,7 @@ void ScCellShell::GetDBState( SfxItemSet& rSet )
         switch (nWhich)
         {
             case SID_REFRESH_DBAREA:
+            case FID_DATA_REFRESH:
                 {
                     //  imported data without selection
                     //  or filter,sort,subtotal (also without import)

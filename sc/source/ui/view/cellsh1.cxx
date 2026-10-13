@@ -1294,6 +1294,7 @@ void ScCellShell::ExecuteEdit( SfxRequest& rReq )
             break;
 
         case SID_OUTLINE_MAKE:
+        case FID_DATA_GROUP:
             {
                 bool bColumns = false;
                 bool bOk = true;
@@ -1390,6 +1391,7 @@ void ScCellShell::ExecuteEdit( SfxRequest& rReq )
             break;
 
         case SID_OUTLINE_REMOVE:
+        case FID_DATA_UNGROUP:
             {
                 bool bColumns = false;
                 bool bOk = true;

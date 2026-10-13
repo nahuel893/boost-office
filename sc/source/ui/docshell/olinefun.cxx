@@ -38,6 +38,7 @@ static void lcl_InvalidateOutliner( SfxBindings* pBindings )
         pBindings->Invalidate( SID_OUTLINE_SHOW );
         pBindings->Invalidate( SID_OUTLINE_HIDE );
         pBindings->Invalidate( SID_OUTLINE_REMOVE );
+        pBindings->Invalidate( FID_DATA_UNGROUP );
 
         pBindings->Invalidate( SID_STATUS_SUM );            // because of enabling/disabling
         pBindings->Invalidate( SID_ATTR_SIZE );

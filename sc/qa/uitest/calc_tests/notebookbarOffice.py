@@ -8,15 +8,29 @@
 #
 import json
 import os
+import time
 import uno
+import unohelper
 from pathlib import Path
 
 from uitest.framework import UITestCase
 from uitest.uihelper.calc import enter_text_to_cell
 from uitest.uihelper.common import get_state_as_dict
 from libreoffice.uno.propertyvalue import mkPropertyValues
+from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
+
+
+class StateListener(unohelper.Base, XStatusListener):
+    def __init__(self):
+        self.enabled = None
+
+    def statusChanged(self, aEvent):
+        self.enabled = aEvent.IsEnabled
+
+    def disposing(self, aEvent):
+        pass
 
 
 class NotebookbarOffice(UITestCase):
@@ -82,26 +96,83 @@ class NotebookbarOffice(UITestCase):
             finally:
                 self.switch_to("Default")
 
-    def test_data_placeholders_have_no_dispatch(self):
+    def dispatch_enabled(self, name, timeout=5):
+        """IsEnabled of .uno:<name> as the frame reports it to a status listener."""
+        xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", self.xContext)
+        xFrame = xDesktop.getCurrentFrame()
+        xTransformer = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.util.URLTransformer", self.xContext)
+        aURL = uno.createUnoStruct("com.sun.star.util.URL")
+        aURL.Complete = ".uno:" + name
+        aURL = xTransformer.parseStrict(aURL)[1]
+        xDispatch = xFrame.queryDispatch(aURL, "", 0)
+        self.assertIsNotNone(xDispatch, name)
+        listener = StateListener()
+        xDispatch.addStatusListener(listener, aURL)
+        try:
+            deadline = time.time() + timeout
+            while listener.enabled is None and time.time() < deadline:
+                time.sleep(0.05)
+        finally:
+            xDispatch.removeStatusListener(listener, aURL)
+        self.assertIsNotNone(listener.enabled, "no state reported for " + name)
+        return listener.enabled
+
+    def test_data_placeholders_have_a_slot_that_is_always_disabled(self):
         placeholders = ["DataFromDatabase", "DataRecentSources", "DataConnections",
                         "DataConnectionProperties", "DataFilterReapply", "DataFlashFill",
                         "DataRelationships", "DataManageModel", "DataForecastSheet"]
-        with self.ui_test.create_doc_in_start_center("calc"):
-            xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
-                "com.sun.star.frame.Desktop", self.xContext)
-            xFrame = xDesktop.getCurrentFrame()
-            xTransformer = self.xContext.ServiceManager.createInstanceWithContext(
-                "com.sun.star.util.URLTransformer", self.xContext)
-            for name in placeholders + ["DataSort"]:  # DataSort: a real slot, as control
-                aURL = uno.createUnoStruct("com.sun.star.util.URL")
-                aURL.Complete = ".uno:" + name
-                aURL = xTransformer.parseStrict(aURL)[1]
-                xDispatch = xFrame.queryDispatch(aURL, "", 0)
-                print("PROBE", name, xDispatch)
-                if name == "DataSort":
-                    self.assertIsNotNone(xDispatch, name)
-                else:
-                    self.assertIsNone(xDispatch, name)
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            enter_text_to_cell(xGrid, "A1", "keep")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertTrue(self.dispatch_enabled("DataSort"))  # control: a real, enabled slot
+            for name in placeholders:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            xSheet = document.Sheets.getByIndex(0)
+            self.assertEqual("keep", xSheet.getCellRangeByName("A1").String)
+
+    def select_rows(self, document, rows):
+        document.CurrentController.select(document.Sheets.getByIndex(0).getCellRangeByName(rows))
+
+    def rows_hidden_by_collapse(self, document, first, last):
+        """Collapse the outline over rows first..last (0-based) and report whether row `first` hid."""
+        xSheet = document.Sheets.getByIndex(0)
+        aAddr = xSheet.getCellRangeByName("A%d:A%d" % (first + 1, last + 1)).RangeAddress
+        xSheet.hideDetail(aAddr)
+        hidden = not xSheet.Rows.getByIndex(first).IsVisible
+        xSheet.showDetail(aAddr)
+        return hidden
+
+    def test_data_group_and_ungroup_slots_follow_the_selection(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertFalse(self.rows_hidden_by_collapse(document, 1, 2))
+            self.select_rows(document, "2:3")
+            self.xUITest.executeCommand(".uno:DataGroup")
+            self.assertTrue(self.rows_hidden_by_collapse(document, 1, 2))
+            # a selection change in between must refresh the cached slot state
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertFalse(self.dispatch_enabled("DataUngroup"))
+            self.select_rows(document, "2:3")
+            self.assertTrue(self.dispatch_enabled("DataUngroup"))
+            self.xUITest.executeCommand(".uno:DataUngroup")
+            self.assertFalse(self.rows_hidden_by_collapse(document, 1, 2))
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.select_rows(document, "2:3")
+            self.assertFalse(self.dispatch_enabled("DataUngroup"))
+
+    def test_data_refresh_without_database_range_does_nothing(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            enter_text_to_cell(xGrid, "A1", "keep")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertFalse(self.dispatch_enabled("DataRefresh"))
+            self.xUITest.executeCommand(".uno:DataRefresh")
+            self.assertEqual("keep", document.Sheets.getByIndex(0).getCellRangeByName("A1").String)
 
     def test_home_merge_center_slot_merges_and_centers(self):
         with self.ui_test.create_doc_in_start_center("calc") as document:

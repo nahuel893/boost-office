@@ -1051,7 +1051,22 @@ void ScCellShell::GetState(SfxItemSet &rSet)
                     rSet.DisableItem( nWhich );
                 break;
 
+            // Data tab placeholders: the slot only exists so that the ribbon button
+            // reads as unavailable; a feature adds its Execute and real state later.
+            case FID_DATA_FROM_DATABASE:
+            case FID_DATA_RECENT_SOURCES:
+            case FID_DATA_CONNECTIONS:
+            case FID_DATA_CONN_PROPS:
+            case FID_DATA_FILTER_REAPPLY:
+            case FID_DATA_FLASH_FILL:
+            case FID_DATA_RELATIONSHIPS:
+            case FID_DATA_MANAGE_MODEL:
+            case FID_DATA_FORECAST_SHEET:
+                rSet.DisableItem( nWhich );
+                break;
+
             case SID_OUTLINE_MAKE:
+            case FID_DATA_GROUP:
                 {
                     if ( GetViewData().GetDocument().GetDPAtCursor( GetViewData().GetCurX(),
                                             GetViewData().GetCurY(), GetViewData().CurrentTabForData() ) )
@@ -1085,6 +1100,7 @@ void ScCellShell::GetState(SfxItemSet &rSet)
                 break;
 
             case SID_OUTLINE_REMOVE:
+            case FID_DATA_UNGROUP:
                 {
                     if ( GetViewData().GetDocument().GetDPAtCursor( GetViewData().GetCurX(),
                                             GetViewData().GetCurY(), GetViewData().CurrentTabForData() ) )

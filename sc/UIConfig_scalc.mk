@@ -22,7 +22,10 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/column_operations \
 	sc/uiconfig/scalc/popupmenu/conditional \
 	sc/uiconfig/scalc/popupmenu/conditional_easy \
+	sc/uiconfig/scalc/popupmenu/data_group \
 	sc/uiconfig/scalc/popupmenu/data_othersources \
+	sc/uiconfig/scalc/popupmenu/data_refresh \
+	sc/uiconfig/scalc/popupmenu/data_ungroup \
 	sc/uiconfig/scalc/popupmenu/data_whatif \
 	sc/uiconfig/scalc/popupmenu/datatablemenu \
 	sc/uiconfig/scalc/popupmenu/draw \

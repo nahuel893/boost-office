@@ -526,6 +526,48 @@
           <value>data_whatif</value>
         </prop>
       </node>
+      <node oor:name="DataRefreshMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataRefreshMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>data_refresh</value>
+        </prop>
+      </node>
+      <node oor:name="DataGroupMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataGroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>data_group</value>
+        </prop>
+      </node>
+      <node oor:name="DataUngroupMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataUngroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>data_ungroup</value>
+        </prop>
+      </node>
       <node oor:name="DataStatisticsMenuPopup" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:DataStatisticsMenu</value>
@@ -2330,6 +2372,48 @@
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="DataRefreshControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataRefresh</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:DataRefreshMenu</value>
+        </prop>
+      </node>
+      <node oor:name="DataGroupControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataGroup</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:DataGroupMenu</value>
+        </prop>
+      </node>
+      <node oor:name="DataUngroupControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataUngroup</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:DataUngroupMenu</value>
         </prop>
       </node>
       <node oor:name="DataStatisticsMenuControl" oor:op="replace">

@@ -539,6 +539,10 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 
 #define FID_MERGE_TOGGLE        (SID_NEW_SLOTS+10)
 #define FID_HOME_MERGE_CENTER   (SID_NEW_SLOTS+11)
+// Data tab split-button bodies: same Execute/GetState as the slot they mirror
+#define FID_DATA_REFRESH        (SID_NEW_SLOTS+12)
+#define FID_DATA_GROUP          (SID_NEW_SLOTS+13)
+#define FID_DATA_UNGROUP        (SID_NEW_SLOTS+14)
 
 #define SID_RANGE_ROW           TypedWhichId<SfxInt32Item>(SID_NEW_SLOTS+20)
 #define SID_RANGE_COL           TypedWhichId<SfxInt16Item>(SID_NEW_SLOTS+21)
@@ -648,6 +652,17 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define SID_INSERT_CALCTABLE        (SID_NEW_SLOTS+120)
 #define SID_REMOVE_CALCTABLE        (SID_NEW_SLOTS+121)
 #define SID_TABLE_STYLES            (SID_NEW_SLOTS+122)
+
+// Data tab placeholders: always disabled until their feature gives them an Execute
+#define FID_DATA_FROM_DATABASE      (SID_NEW_SLOTS+123)
+#define FID_DATA_RECENT_SOURCES     (SID_NEW_SLOTS+124)
+#define FID_DATA_CONNECTIONS        (SID_NEW_SLOTS+125)
+#define FID_DATA_CONN_PROPS         (SID_NEW_SLOTS+126)
+#define FID_DATA_FILTER_REAPPLY     (SID_NEW_SLOTS+127)
+#define FID_DATA_FLASH_FILL         (SID_NEW_SLOTS+128)
+#define FID_DATA_RELATIONSHIPS      (SID_NEW_SLOTS+129)
+#define FID_DATA_MANAGE_MODEL       (SID_NEW_SLOTS+130)
+#define FID_DATA_FORECAST_SHEET     (SID_NEW_SLOTS+131)
 
 // idl parameter
 

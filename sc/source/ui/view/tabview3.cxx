@@ -606,9 +606,11 @@ void ScTabView::SelectionChanged(bool bFromPaste)
     rBindings.Invalidate( SID_UNFILTER );
     rBindings.Invalidate( SID_REIMPORT_DATA );
     rBindings.Invalidate( SID_REFRESH_DBAREA );
+    rBindings.Invalidate( FID_DATA_REFRESH );
     rBindings.Invalidate( SID_OUTLINE_SHOW );
     rBindings.Invalidate( SID_OUTLINE_HIDE );
     rBindings.Invalidate( SID_OUTLINE_REMOVE );
+    rBindings.Invalidate( FID_DATA_UNGROUP );
     rBindings.Invalidate( FID_FILL_TO_BOTTOM );
     rBindings.Invalidate( FID_FILL_TO_RIGHT );
     rBindings.Invalidate( FID_FILL_TO_TOP );
