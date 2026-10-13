@@ -80,6 +80,10 @@ record are in `product/docs/stage-a-findings.md`.
   standard toolbars or dialogs), stops the line height from growing to the native combo/list/spin box height.
   Small icon rows on Home go from a 39 px to a 30 px pitch. Rows that hold a real combo box (font, number
   format, cell style) stay as tall as the combo itself (~35 px, set by the GTK theme).
+- Scrollbar sliders visible at rest: ShadeColor (ShadowColor role, #828282 / #7A7A7A, about 3.9:1
+  against the trough) instead of the surface color; 10 px painted thumb (was 8 px) with a 2 px
+  transparent border. Hover/active stay WindowTextColor. Every themed gtk3 scrollbar is affected
+  (dialogs, sidebar); overlay scrolling is untouched.
 
 Light palette as shipped: surface #E4F2E8, hover #D3E8DA, pressed #C3DECB, separator #9E9E9E,
 field border #828282, fields/menus/active tab white. Dark: surface #2B2B2B, separator #6A6A6A,

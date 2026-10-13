@@ -281,9 +281,13 @@ OString CreateStyleString()
         "}"
 
         "scrollbar slider {"
-        "  border: 4px solid transparent;"
+        // The transparent border only adds space around the thumb; the painted
+        // (padding-box) thickness is min-width/min-height, 8px in adw-gtk3.
+        "  min-width: 10px;"
+        "  min-height: 10px;"
+        "  border: 2px solid transparent;"
         "  background-clip: padding-box;"
-        "  background-color: #" + aThemeColors.GetWindowColor().AsRGBHexString() + ";"
+        "  background-color: #" + aThemeColors.GetShadeColor().AsRGBHexString() + ";"
         "}"
 
         "scrollbar slider:hover {"
