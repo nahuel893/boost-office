@@ -91,11 +91,26 @@ Close Calc before switching modes. Details of the launcher are in the Home doc.
   `cellsh.sdi`) with a state method that always calls `DisableItem` and no execute method, so the
   toolbar greys it out. (Without a slot, the toolbar would re-enable the button: see
   `sfx2/source/sidebar/ControllerFactory.cxx`.) This is also the scaffold of each future feature:
-  to implement one, add its ExecMethod in the sdi row, its code in `cellsh*.cxx`, and replace the
-  `DisableItem` case with a real state.
+  to implement one, follow the recipe below. Placeholder slot ids live in the fork-reserved block
+  `SID_NEW_SLOTS+380..+399` (ceiling +424), not in the ids upstream hands out next.
+- **How to implement a placeholder**:
+  1. In `sc/sdi/scalc.sdi`, flip `MenuConfig`, `ToolBoxConfig` and `AccelConfig` back to `TRUE` (they
+     are `FALSE` while the command does nothing; `ReadOnlyDoc` is already `FALSE`).
+  2. In `sc/sdi/cellsh.sdi`, give the row an `ExecMethod` (Data commands usually live in
+     `cellsh2.cxx` `ExecuteDB`) and a real `StateMethod` (`GetDBState` where it fits).
+  3. Remove the slot from the always-`DisableItem` case list in `cellsh.cxx` and implement Execute.
+     Import data through `ScDBDocFunc::DoImport` so that Refresh can re-import the range later.
+  4. In `CalcCommands.xcu`, remove "(not available yet)" from the command's `TooltipLabel`.
+  5. Remove the slot from `PLACEHOLDERS` / `PLACEHOLDER_SLOTS` in
+     `product/tests/test_calc_data_ui.py` and from the placeholder list in the UITest
+     `sc/qa/uitest/calc_tests/notebookbarOffice.py`; add tests for the new behavior.
+- **From Database prerequisites**: `autogen.input` has `--disable-postgresql-sdbc`, `--without-java`
+  and `--disable-firebird-sdbc`. Enabling PostgreSQL means a reconfigure and a large rebuild. The
+  MariaDB/MySQL connector is already built.
 - **Icons**: `product/icons/manifest.json` entries named after the lowercased command (resolved
-  from the boost theme by command name, no icon key in the layout). The exception is
-  `InsertSheetFromFile`, whose item carries the explicit key `cmd/sc_insertsheetfromfile.png`.
+  from the boost theme by command name, no icon key in the layout). A command is only in the image
+  list when its `*Commands.xcu` entry has `Properties` = 1 (the image flag); a unit test checks this
+  for every command on the Data and Home pages.
 
 Other upstream files touched: `Controller.xcu`, `CalcCommands.xcu`, `sc/UIConfig_scalc.mk`
 (popup menus), `sc/inc/sc.hrc`, `sc/sdi/{cellsh,scalc}.sdi`, `sc/source/ui/view/{cellsh,cellsh1,cellsh2,tabview3}.cxx`,
@@ -133,15 +148,20 @@ Counts after the Data slice: 84 product unit tests, 12 UITests in
 
 ## 6. Known limitations and next steps
 
-- **Width**: all 8 sections fit at 1920 px (about 100 px to spare). At 1600 px the first five sections
+- **Width**: all 8 sections fit at 1920 px (about 100 px to spare, measured with en-US labels; translated labels may push Outline and Analyze
+  behind ">>"). At 1600 px the first five sections
   (up to Data Tools) are visible and Forecast, Outline and Analyze are behind ">>". At 1366 px only
   Get External Data, Get & Transform, Connections and Sort & Filter are visible. Excel instead folds
   group by group into dropdown buttons. If more width is ever needed, Insert Sheet from File can go
   icon-only (its label is the widest in its column).
-- `InsertSheetFromFile` needs an explicit icon key: the default lookup by command name shows
-  no icon for it (cause not found).
-- Group's state is not invalidated upstream (`SID_OUTLINE_MAKE` is never invalidated), so the Group
-  button does not refresh on selection changes; the new slot keeps that behavior.
+- `InsertSheetFromFile` used to need an explicit icon key. Root cause: its `CalcCommands.xcu` entry
+  lacked the image flag (`Properties` = 1), so `framework/source/uiconfiguration/uicommanddescription.cxx`
+  left it out of the image list. Fixed by adding the flag; the explicit key is gone.
+- Group's state: `SID_OUTLINE_MAKE` is never invalidated by upstream code that we found, and the
+  mirrored `FID_DATA_GROUP` inherits that. Known: the listener test saw a push after a selection
+  change, so the button does refresh then, by some other invalidation. Not known: which one, and
+  whether every selection change that should enable Group triggers it.
+- Other Sources > Streams only appears in experimental mode.
 - The status-listener UITests prove that the frame pushes fresh states to a long-lived listener
   after a group or selection change. They cannot attribute a push to a single `Invalidate()` mirror:
   in a control run a listener on `.uno:DataGroup` (which has no mirror) also received a push after a
