@@ -5579,6 +5579,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertSheetFromFile</property>
+                                    <property name="icon_name">cmd/sc_insertsheetfromfile.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -5605,7 +5606,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataOtherSourcesMenu</property>
-                                    <property name="icon_name">cmd/32/dataprovider.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -5887,7 +5887,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataRefresh</property>
-                                    <property name="icon_name">cmd/32/dataarearefresh.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6548,7 +6547,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataWhatIfMenu</property>
-                                    <property name="icon_name">cmd/32/goalseekdialog.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6665,7 +6663,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataGroup</property>
-                                    <property name="icon_name">cmd/sc_group.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6690,7 +6687,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataUngroup</property>
-                                    <property name="icon_name">cmd/sc_ungroup.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6853,7 +6849,6 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:DataStatisticsMenu</property>
-                                    <property name="icon_name">cmd/32/statisticsmenu.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

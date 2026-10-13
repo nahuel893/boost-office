@@ -109,9 +109,9 @@ class CalcDataUiTest(unittest.TestCase):
 
     def test_refresh_group_ungroup_are_split_buttons_on_new_commands(self):
         by_cmd = {i["cmd"]: i for i in self.items()}
-        for cmd, (_label, body, _res, _items, icon) in SPLITS.items():
+        for cmd, (_label, body, _res, _items, _icon) in SPLITS.items():
             self.assertEqual("split", by_cmd[cmd].get("kind"), cmd)
-            self.assertEqual(icon, by_cmd[cmd].get("icon"), cmd)
+            self.assertNotIn("icon", by_cmd[cmd], "icon resolves from the boost theme by command name: " + cmd)
             self.assertNotIn(body, by_cmd, "the old command must leave the page: " + body)
 
     def test_split_commands_have_labels_and_body_toolbar_controller(self):

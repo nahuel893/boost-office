@@ -7,9 +7,9 @@
     {"name": "Sources", "caption": "Get External Data", "rows": 3, "columns": [
       [{"id": "FromDatabase", "style": "small-label", "items": [{"cmd": "DataFromDatabase"}]},
        {"id": "ExternalLinks", "style": "small-label", "items": [{"cmd": "InsertExternalDataSource"}]},
-       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile"}]}],
+       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile", "icon": "cmd/sc_insertsheetfromfile.png"}]}],
       [{"id": "OtherSourcesMenu", "style": "large", "items": [
-          {"cmd": "DataOtherSourcesMenu", "kind": "split", "icon": "cmd/32/dataprovider.png"}]}],
+          {"cmd": "DataOtherSourcesMenu", "kind": "split"}]}],
       [{"id": "DataSources", "style": "large", "items": [{"cmd": "ViewDataSourceBrowser"}]}]
     ]},
     {"name": "Transform", "caption": "Get & Transform", "rows": 3, "columns": [
@@ -19,7 +19,7 @@
        {"id": "RecentSources", "style": "small-label", "items": [{"cmd": "DataRecentSources"}]}]
     ]},
     {"name": "Connections", "caption": "Connections", "rows": 3, "columns": [
-      [{"id": "Refresh", "style": "large", "items": [{"cmd": "DataRefresh", "kind": "split", "icon": "cmd/32/dataarearefresh.png"}]}],
+      [{"id": "Refresh", "style": "large", "items": [{"cmd": "DataRefresh", "kind": "split"}]}],
       [{"id": "Connections", "style": "small-label", "items": [{"cmd": "DataConnections"}]},
        {"id": "ConnectionProperties", "style": "small-label", "items": [{"cmd": "DataConnectionProperties"}]},
        {"id": "EditLinks", "style": "small-label", "items": [{"cmd": "EditLinks"}]}]
@@ -45,19 +45,19 @@
     ]},
     {"name": "Forecast", "caption": "Forecast", "rows": 3, "columns": [
       [{"id": "WhatIfMenu", "style": "large", "items": [
-          {"cmd": "DataWhatIfMenu", "kind": "split", "icon": "cmd/32/goalseekdialog.png"}]}],
+          {"cmd": "DataWhatIfMenu", "kind": "split"}]}],
       [{"id": "ForecastSheet", "style": "large", "items": [{"cmd": "DataForecastSheet"}]}]
     ]},
     {"name": "Outline", "caption": "Outline", "rows": 3, "columns": [
-      [{"id": "Group", "style": "small-label", "items": [{"cmd": "DataGroup", "kind": "split", "icon": "cmd/sc_group.png"}]},
-       {"id": "Ungroup", "style": "small-label", "items": [{"cmd": "DataUngroup", "kind": "split", "icon": "cmd/sc_ungroup.png"}]},
+      [{"id": "Group", "style": "small-label", "items": [{"cmd": "DataGroup", "kind": "split"}]},
+       {"id": "Ungroup", "style": "small-label", "items": [{"cmd": "DataUngroup", "kind": "split"}]},
        {"id": "Subtotals", "style": "small-label", "items": [{"cmd": "DataSubTotals"}]}],
       [{"id": "ShowDetail", "style": "small", "items": [{"cmd": "ShowDetail"}]},
        {"id": "HideDetail", "style": "small", "items": [{"cmd": "HideDetail"}]}]
     ]},
     {"name": "Analyze", "caption": "Analyze", "rows": 3, "columns": [
       [{"id": "StatisticsMenu", "style": "large", "items": [
-          {"cmd": "DataStatisticsMenu", "kind": "split", "icon": "cmd/32/statisticsmenu.png"}]}]
+          {"cmd": "DataStatisticsMenu", "kind": "split"}]}]
     ]}
   ]
 }

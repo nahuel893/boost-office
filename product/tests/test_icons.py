@@ -19,10 +19,14 @@ LIST_BOX_COMMANDS = {"charfontname", "fontheight", "numberformattype", "styleapp
 EXPECTED_SIZE = {"cmd/sc_": 16, "cmd/lc_": 24, "cmd/32/": 32}
 
 
-def home_page():
+def tab_page(tab):
     text = OFFICE.read_text(encoding="utf-8")
-    body = text.split("<!-- product:Home-begin -->")[1].split("<!-- product:Home-end -->")[0]
+    body = text.split(f"<!-- product:{tab}-begin -->")[1].split(f"<!-- product:{tab}-end -->")[0]
     return ET.fromstring("<root>" + body + "</root>")
+
+
+def home_page():
+    return tab_page("Home")
 
 
 class IconThemeTest(unittest.TestCase):
@@ -57,8 +61,16 @@ class IconThemeTest(unittest.TestCase):
             return Image.open(f).convert("RGBA").copy()
 
     def test_every_home_button_has_an_icon(self):
+        self.assertEqual([], self.missing_icons(home_page()))
+
+    def test_every_data_button_has_an_icon(self):
+        page = tab_page("Data")
+        self.assertGreater(len(list(page.iter("object"))), 30)
+        self.assertEqual([], self.missing_icons(page))
+
+    def missing_icons(self, page):
         missing = []
-        for box in home_page().iter("object"):
+        for box in page.iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
             large = box.find("property[@name='icon_size']").text == "5"
@@ -73,7 +85,7 @@ class IconThemeTest(unittest.TestCase):
                     wanted = [f"cmd/sc_{cmd}.png", f"cmd/lc_{cmd}.png"] + ([f"cmd/32/{cmd}.png"] if large else [])
                 for theme in self.zips:
                     missing += [f"{theme}:{m}" for m in wanted if not self.has(theme, m)]
-        self.assertEqual([], missing)
+        return missing
 
     def test_png_sizes(self):
         for theme in self.zips:
