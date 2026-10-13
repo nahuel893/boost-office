@@ -498,6 +498,48 @@
           <value>home_findselect</value>
         </prop>
       </node>
+      <node oor:name="DataOtherSourcesMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataOtherSourcesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>data_othersources</value>
+        </prop>
+      </node>
+      <node oor:name="DataWhatIfMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataWhatIfMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>data_whatif</value>
+        </prop>
+      </node>
+      <node oor:name="DataStatisticsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataStatisticsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>statisticsmenu</value>
+        </prop>
+      </node>
       <node oor:name="c32" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:ToolbarMode</value>
@@ -2260,6 +2302,39 @@
       <node oor:name="HomeFindSelectMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:HomeFindSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="DataOtherSourcesMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataOtherSourcesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="DataWhatIfMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataWhatIfMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="DataStatisticsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:DataStatisticsMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>

@@ -10,6 +10,7 @@ from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
 LAYOUT = ROOT / "product/ui/calc_home.json"
+DATA_LAYOUT = ROOT / "product/ui/calc_data.json"
 UPSTREAM = ROOT / "sc/uiconfig/scalc/ui/notebookbar.ui"
 OFFICE = ROOT / "sc/uiconfig/scalc/ui/notebookbar_office.ui"
 CONTROLLER_XCU = ROOT / "officecfg/registry/data/org/openoffice/Office/UI/Controller.xcu"
@@ -28,7 +29,10 @@ class CalcHomeUiTest(unittest.TestCase):
     def test_office_ui_is_upstream_plus_home_layout(self):
         # Only the Home page may differ from upstream notebookbar.ui; this also
         # proves the file can be regenerated after re-copying a newer upstream.
-        expected = g.splice(UPSTREAM.read_text(encoding="utf-8"), self.layout, g.emit_page(self.layout))
+        # (the Data page is generated too; test_calc_data_ui checks it)
+        expected = UPSTREAM.read_text(encoding="utf-8")
+        for layout in (self.layout, json.loads(DATA_LAYOUT.read_text(encoding="utf-8"))):
+            expected = g.splice(expected, layout, g.emit_page(layout))
         self.assertEqual(expected, OFFICE.read_text(encoding="utf-8"))
 
     def test_no_italic_captions_on_home(self):

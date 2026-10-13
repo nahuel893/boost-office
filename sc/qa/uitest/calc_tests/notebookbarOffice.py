@@ -8,6 +8,7 @@
 #
 import json
 import os
+import uno
 from pathlib import Path
 
 from uitest.framework import UITestCase
@@ -61,6 +62,46 @@ class NotebookbarOffice(UITestCase):
                             self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
             finally:
                 self.switch_to("Default")
+
+    def test_data_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_data.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(8, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_data_placeholders_have_no_dispatch(self):
+        placeholders = ["DataFromDatabase", "DataRecentSources", "DataConnections",
+                        "DataConnectionProperties", "DataFilterReapply", "DataFlashFill",
+                        "DataRelationships", "DataManageModel", "DataForecastSheet"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+                "com.sun.star.frame.Desktop", self.xContext)
+            xFrame = xDesktop.getCurrentFrame()
+            xTransformer = self.xContext.ServiceManager.createInstanceWithContext(
+                "com.sun.star.util.URLTransformer", self.xContext)
+            for name in placeholders + ["DataSort"]:  # DataSort: a real slot, as control
+                aURL = uno.createUnoStruct("com.sun.star.util.URL")
+                aURL.Complete = ".uno:" + name
+                aURL = xTransformer.parseStrict(aURL)[1]
+                xDispatch = xFrame.queryDispatch(aURL, "", 0)
+                print("PROBE", name, xDispatch)
+                if name == "DataSort":
+                    self.assertIsNotNone(xDispatch, name)
+                else:
+                    self.assertIsNone(xDispatch, name)
 
     def test_home_merge_center_slot_merges_and_centers(self):
         with self.ui_test.create_doc_in_start_center("calc") as document:

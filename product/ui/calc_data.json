@@ -1,0 +1,63 @@
+{
+  "page": "phbData",
+  "id_prefix": "Data",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu Data"],
+  "sections": [
+    {"name": "Sources", "caption": "Get External Data", "rows": 3, "columns": [
+      [{"id": "FromDatabase", "style": "small-label", "items": [{"cmd": "DataFromDatabase"}]},
+       {"id": "ExternalLinks", "style": "small-label", "items": [{"cmd": "InsertExternalDataSource"}]},
+       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile"}]}],
+      [{"id": "OtherSourcesMenu", "style": "large", "items": [
+          {"cmd": "DataOtherSourcesMenu", "kind": "split", "icon": "cmd/32/dataprovider.png"}]}],
+      [{"id": "DataSources", "style": "large", "items": [{"cmd": "ViewDataSourceBrowser"}]}]
+    ]},
+    {"name": "Transform", "caption": "Get & Transform", "rows": 3, "columns": [
+      [{"id": "DataProvider", "style": "large", "items": [{"cmd": "DataProvider"}]}],
+      [{"id": "SelectDB", "style": "small-label", "items": [{"cmd": "SelectDB"}]},
+       {"id": "DefineDBName", "style": "small-label", "items": [{"cmd": "DefineDBName"}]},
+       {"id": "RecentSources", "style": "small-label", "items": [{"cmd": "DataRecentSources"}]}]
+    ]},
+    {"name": "Connections", "caption": "Connections", "rows": 3, "columns": [
+      [{"id": "Refresh", "style": "large", "items": [{"cmd": "DataAreaRefresh"}]}],
+      [{"id": "Connections", "style": "small-label", "items": [{"cmd": "DataConnections"}]},
+       {"id": "ConnectionProperties", "style": "small-label", "items": [{"cmd": "DataConnectionProperties"}]},
+       {"id": "EditLinks", "style": "small-label", "items": [{"cmd": "EditLinks"}]}]
+    ]},
+    {"name": "SortFilter", "caption": "Sort & Filter", "rows": 3, "columns": [
+      [{"id": "SortAscending", "style": "small-label", "items": [{"cmd": "SortAscending"}]},
+       {"id": "SortDescending", "style": "small-label", "items": [{"cmd": "SortDescending"}]},
+       {"id": "Shuffle", "style": "small-label", "items": [{"cmd": "Shuffle"}]}],
+      [{"id": "Sort", "style": "large", "items": [{"cmd": "DataSort"}]}],
+      [{"id": "AutoFilter", "style": "large", "items": [{"cmd": "DataFilterAutoFilter"}]}],
+      [{"id": "ResetFilter", "style": "small-label", "items": [{"cmd": "DataFilterRemoveFilter"}]},
+       {"id": "ReapplyFilter", "style": "small-label", "items": [{"cmd": "DataFilterReapply"}]},
+       {"id": "AdvancedFilter", "style": "small-label", "items": [{"cmd": "DataFilterSpecialFilter"}]}]
+    ]},
+    {"name": "Tools", "caption": "Data Tools", "rows": 3, "columns": [
+      [{"id": "TextToColumns", "style": "large", "items": [{"cmd": "TextToColumns"}]}],
+      [{"id": "FlashFill", "style": "small-label", "items": [{"cmd": "DataFlashFill"}]},
+       {"id": "Duplicates", "style": "small-label", "items": [{"cmd": "HandleDuplicateRecords"}]},
+       {"id": "Validation", "style": "small-label", "items": [{"cmd": "Validation"}]}],
+      [{"id": "Consolidate", "style": "small-label", "items": [{"cmd": "DataConsolidate"}]},
+       {"id": "Relationships", "style": "small-label", "items": [{"cmd": "DataRelationships"}]},
+       {"id": "ManageModel", "style": "small-label", "items": [{"cmd": "DataManageModel"}]}]
+    ]},
+    {"name": "Forecast", "caption": "Forecast", "rows": 3, "columns": [
+      [{"id": "WhatIfMenu", "style": "large", "items": [
+          {"cmd": "DataWhatIfMenu", "kind": "split", "icon": "cmd/32/goalseekdialog.png"}]}],
+      [{"id": "ForecastSheet", "style": "large", "items": [{"cmd": "DataForecastSheet"}]}]
+    ]},
+    {"name": "Outline", "caption": "Outline", "rows": 3, "columns": [
+      [{"id": "Group", "style": "small-label", "items": [{"cmd": "Group"}]},
+       {"id": "Ungroup", "style": "small-label", "items": [{"cmd": "Ungroup"}]},
+       {"id": "Subtotals", "style": "small-label", "items": [{"cmd": "DataSubTotals"}]}],
+      [{"id": "ShowDetail", "style": "small", "items": [{"cmd": "ShowDetail"}]},
+       {"id": "HideDetail", "style": "small", "items": [{"cmd": "HideDetail"}]}]
+    ]},
+    {"name": "Analyze", "caption": "Analyze", "rows": 3, "columns": [
+      [{"id": "StatisticsMenu", "style": "large", "items": [
+          {"cmd": "DataStatisticsMenu", "kind": "split", "icon": "cmd/32/statisticsmenu.png"}]}]
+    ]}
+  ]
+}
