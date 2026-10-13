@@ -125,7 +125,7 @@ Other upstream files touched: `ToolbarMode.xcu` (mode), `Controller.xcu` + `Calc
 
 ## 4. Tests and checks
 
-- `python3 -I -m unittest discover -s product/tests -t .` — 84 tests (Home and Data): profile writer, ribbon
+- `python3 -I -m unittest discover -s product/tests -t .` — 86 tests (Home and Data): profile writer, ribbon
   generator, "office .ui == upstream + layout", icon themes (coverage of every Home button, color
   stripe band empty, no light-theme gray in dark, crisp 16 px, trim never clips ink, fills,
   badges), color schemes (27 roles, WCAG AA, xcu/extension layout, cell cursor), launcher.

@@ -118,7 +118,7 @@ Other upstream files touched: `Controller.xcu`, `CalcCommands.xcu`, `sc/UIConfig
 
 ## 4. Tests and checks
 
-Counts after the Data slice: 84 product unit tests, 12 UITests in
+Counts after the Data slice: 86 product unit tests, 12 UITests in
 `sc/qa/uitest/calc_tests/notebookbarOffice.py` (Home and Data together).
 
 - `python3 -I -m unittest discover -s product/tests -t .`: layout vs design (sections, captions,
