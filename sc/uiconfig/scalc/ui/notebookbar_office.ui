@@ -5952,7 +5952,7 @@
                               <object class="sfxlo-NotebookbarToolBox" id="bxDataEditLinks">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="toolbar-style">both-horiz</property>
+                                <property name="toolbar-style">icons</property>
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
@@ -6040,7 +6040,7 @@
                               <object class="sfxlo-NotebookbarToolBox" id="bxDataSortAscending">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="toolbar-style">both-horiz</property>
+                                <property name="toolbar-style">icons</property>
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
@@ -6064,7 +6064,7 @@
                               <object class="sfxlo-NotebookbarToolBox" id="bxDataSortDescending">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="toolbar-style">both-horiz</property>
+                                <property name="toolbar-style">icons</property>
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>
@@ -6088,7 +6088,7 @@
                               <object class="sfxlo-NotebookbarToolBox" id="bxDataShuffle">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="toolbar-style">both-horiz</property>
+                                <property name="toolbar-style">icons</property>
                                 <property name="show-arrow">False</property>
                                 <property name="icon_size">1</property>
                                 <child>

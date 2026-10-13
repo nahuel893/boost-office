@@ -170,6 +170,14 @@ class IconThemeTest(unittest.TestCase):
         _, src, pad = bt.Sources().load("numberformatdecimal", {"glyph": "thousands", "custom": True}, 16)
         self.assertEqual((16, 0), (src, pad))
 
+    def test_data_icons_that_reviews_found_ambiguous_use_distinct_glyphs(self):
+        # Reapply must not read as Reset Filter at 16 px; Consolidate must not read as the ">>" chevron.
+        icons = {e["name"]: e for e in bt.load_manifest()["icons"]}
+        glyphs = lambda name: [layer["glyph"] for layer in icons[name]["layers"]]
+        self.assertEqual(["filter_sync"], glyphs("datafilterreapply"))
+        self.assertNotEqual(glyphs("datafilterreapply"), glyphs("datafilterremovefilter"))
+        self.assertNotIn("merge", glyphs("dataconsolidate"))
+
     def test_vendored_glyphs_exist(self):
         for entry in bt.load_manifest()["icons"]:
             for layer in entry["layers"]:

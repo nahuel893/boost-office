@@ -95,6 +95,14 @@ class CalcDataUiTest(unittest.TestCase):
         self.assertEqual(SECTIONS, [s["name"] for s in self.layout["sections"]])
         self.assertEqual(CAPTIONS, [s["caption"] for s in self.layout["sections"]])
 
+    def test_width_savers_are_icon_only_small_buttons(self):
+        # Excel's A-Z / Z-A buttons carry no label; the tooltip keeps the name. EditLinks
+        # ("Links to External Files") is the widest label on the page, so it is icon-only too.
+        # Together they let all 8 sections fit at 1920 px.
+        boxes = {b["id"]: b for s in self.layout["sections"] for c in s["columns"] for b in c}
+        for box_id in ("SortAscending", "SortDescending", "Shuffle", "EditLinks"):
+            self.assertEqual("small", boxes[box_id]["style"], box_id)
+
     def test_old_data_menu_is_removed(self):
         self.assertIn("Menu Data", self.layout["remove_objects"])
         text = OFFICE.read_text(encoding="utf-8")

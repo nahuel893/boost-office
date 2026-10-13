@@ -22,12 +22,12 @@
       [{"id": "Refresh", "style": "large", "items": [{"cmd": "DataRefresh", "kind": "split"}]}],
       [{"id": "Connections", "style": "small-label", "items": [{"cmd": "DataConnections"}]},
        {"id": "ConnectionProperties", "style": "small-label", "items": [{"cmd": "DataConnectionProperties"}]},
-       {"id": "EditLinks", "style": "small-label", "items": [{"cmd": "EditLinks"}]}]
+       {"id": "EditLinks", "style": "small", "items": [{"cmd": "EditLinks"}]}]
     ]},
     {"name": "SortFilter", "caption": "Sort & Filter", "rows": 3, "columns": [
-      [{"id": "SortAscending", "style": "small-label", "items": [{"cmd": "SortAscending"}]},
-       {"id": "SortDescending", "style": "small-label", "items": [{"cmd": "SortDescending"}]},
-       {"id": "Shuffle", "style": "small-label", "items": [{"cmd": "Shuffle"}]}],
+      [{"id": "SortAscending", "style": "small", "items": [{"cmd": "SortAscending"}]},
+       {"id": "SortDescending", "style": "small", "items": [{"cmd": "SortDescending"}]},
+       {"id": "Shuffle", "style": "small", "items": [{"cmd": "Shuffle"}]}],
       [{"id": "Sort", "style": "large", "items": [{"cmd": "DataSort"}]}],
       [{"id": "AutoFilter", "style": "large", "items": [{"cmd": "DataFilterAutoFilter"}]}],
       [{"id": "ResetFilter", "style": "small-label", "items": [{"cmd": "DataFilterRemoveFilter"}]},
