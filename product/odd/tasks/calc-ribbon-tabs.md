@@ -65,8 +65,8 @@ Home and Data are done. The other tabs (Insert, Layout, Functions, Review, View,
 
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
-| R1 | Reference research: Excel 365 ribbon inventory per tab (groups, buttons, sizes, splits, menus), screenshots outside the repo, report in `product/docs/research/` | delegated (research worker) | [ ] | | |
-| L1 | Layout and command map per tab (`product/docs/design/calc-<tab>-tab-layout.txt`): LO command per button, placeholders, splits, missing icons | delegated | [ ] | | |
+| R1 | Reference research: Excel 365 ribbon inventory per tab (groups, buttons, sizes, splits, menus), screenshots outside the repo, report in `product/docs/research/` | delegated (research worker, opus) | [x] 6 main tabs inventoried with screenshots (64 images, outside the repo); 365 Data diff; brief tabs. Parent spot check: Insert matches the 2026 full-width screenshot | ee62c96b2 | passive (docs) |
+| L1 | Layout and command map per tab (`product/docs/design/calc-<tab>-tab-layout.txt`): LO command per button, placeholders, splits, missing icons | delegated (opus) | [ ] dispatched | | |
 | T1 | Tab order and names: Page Layout, Formulas before Data, Help tab added | delegated | [ ] | | |
 | T2 | Insert tab | delegated | [ ] | | |
 | T3 | Page Layout tab | delegated | [ ] | | |
@@ -81,7 +81,14 @@ Each tab task includes its placeholders, menus, icons and tests. A tab task can 
 ## Progress / evidence
 
 - 2026-10-15: feature created; branch `feature/calc-ribbon-tabs` from 01ab49af1.
+- 2026-10-15: R1 done.
+  - Omitted:
+    - Insert > Tours: absent from the 2026 full-width screenshot.
+    - Insert > Add-ins: moved to Home in 2024.
+    - Review > Insights: Smart Lookup was retired in 2025.
+    - Microsoft-cloud-only items: Insert > Forms, the Automate tab, Review > Changes, Performance.
+  - Kept as placeholders when LO lacks them: default conditional controls such as Insert > Checkbox and Formulas > Python.
 
 ## Next step
 
-R1 research, then L1 layouts.
+L1 layouts (dispatched), then T1.
