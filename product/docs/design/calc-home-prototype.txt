@@ -1,0 +1,77 @@
+CALC - HOME TAB REDESIGN: PROTOTYPE AND VALIDATION (section 4)
+==============================================================
+Status: APPROVED by the user on 2026-10-12.
+Depends on: sections 1 (layout), 2 (icons) and 3 (colors), all approved.
+
+
+1. WHERE WE BUILD IT
+--------------------
+
+  Our own LibreOffice build (master, LibreOfficeDev 27.2), not the system LibreOffice.
+    Program:  /mnt/games/libreoffice/core/instdir/program/soffice --calc
+    Profile:  /mnt/games/libreoffice/dev-profile   (isolated; your normal profile is untouched)
+  The old 26.8 copy (/mnt/games/libreoffice/proto) is retired: its notebookbar.ui differs
+  from master, so changes would have to be ported by hand twice.
+
+  The new ribbon is a NEW variant ("Tabbed Office", working name), added next to the
+  existing ones. Your current "Tabbed Compact" and every other variant stay unchanged.
+  You switch with View > User Interface.
+    New file:      sc/uiconfig/scalc/ui/notebookbar_office.ui
+    Registration:  a new mode entry for Calc (officecfg ToolbarMode.xcu)
+
+
+2. ORDER OF WORK (each step ends with screenshots for you)
+----------------------------------------------------------
+
+  Step 0  SPIKES (find limits early, about 1 day)
+            a. The new dropdown menus marked "~" (Insert v, Delete v, Format v, Fill v,
+               Clear v, Sort & Filter v, Find & Select v, Cell Styles v, Merge v):
+               can they be built from .ui/.xcu only, or do they need C++?
+               If C++: they move to stage B and stage A uses the fallback from section 1.
+            b. Does the theme engine reach the ribbon's buttons and hover states under gtk3?
+            c. Does LibreOffice switch between two custom color schemes with the system?
+            d. Can the icon zip be packed by the build, or does it go in at install time?
+  Step 1  BASELINE: screenshots of today's Calc (Tabbed and Tabbed Compact), light and dark.
+  Step 2  LAYOUT: the new variant with today's icons and colors. The 8 sections, captions,
+          large buttons at 32 px.
+  Step 3  ICONS: the 58 Home icons, light and dark zips.
+  Step 4  COLORS: the two color schemes, tint removed, plain captions.
+  Step 5  STAGE B: flat tabs, caption color, auto light/dark, and the "~" menus if the
+          spike sent them here. Each item is planned separately, after you approve step 4.
+
+  Screenshots are PNG files saved in /mnt/games/libreoffice/assets/previews/
+  Each step produces a "before | after" pair, in light and dark, at 1920x1080.
+
+
+3. CHECKS PER STEP
+------------------
+
+  Automatic (must pass before you see the step):
+    - UI test (LibreOffice UITest), written FIRST and failing until the step is done:
+        the variant loads in Calc; every Home button exists and runs its command.
+    - Accessibility check of the new .ui (bin/gla11y, the same check the build runs):
+        0 new errors.
+    - Lint of the new .ui (bin/lint-ui.py): clean.
+    - The existing variants are untouched (their files are not in the diff).
+
+  Visual (you decide):
+    - The 8 sections read like Excel's Home tab.
+    - Icons are legible at 16 px (the vertical-align trio and the table icons are the risky
+      ones, see section 2).
+    - Light and dark both look finished, no leftover green tint.
+
+  Width test:
+    - 1920 px: everything visible.
+    - 1366 px and 1024 px: sections collapse from the right into ">>" without overlapping.
+      If the full Tabbed layout cannot collapse (it has no priority classes today), this
+      becomes a spike finding and a stage B item.
+
+
+4. DONE MEANS
+-------------
+
+  - You approved the step 4 screenshots, light and dark.
+  - All automatic checks pass.
+  - One commit per step on a feature branch, conventional commit messages.
+  - The generic parts (for example the ">>" collapse, the dark icon auto-switch) are marked
+    as upstream candidates for later.

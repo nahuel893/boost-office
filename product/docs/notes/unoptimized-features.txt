@@ -1,0 +1,105 @@
+ Area: COUNTIFS
+  Symptom: Reporter measured Calc at about 238 s vs Excel 84 s for 10,000 rows (about 3x).
+  Likely root cause: Hypothesis: per-formula linear scan with no shared range index.
+  Source: tdf#144777 (https://bugs.documentfoundation.org/show_bug.cgi?id=144777)
+  Status: Unknown. A snippet said it was first closed as a duplicate, and a commenter argued it is an enhancement request.
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: COUNTIFS
+  Symptom: Regression in 7.2.0.4: about 326 s on 7.1.5, still unfinished after 6 min on 7.2. A snippet says about 20 s on a 7.3 alpha.
+  Likely root cause: Hypothesis: a 7.2-era query regression, later repaired.
+  Source: tdf#144159 (https://bugs.documentfoundation.org/show_bug.cgi?id=144159)
+  Status: Likely fixed in 7.3, per the snippet only.
+  Difficulty: n/a
+  ────────────────────────────────────────
+  Area: SUMIF family
+  Symptom: One column of SUMIF formulas in a ~100 KB file makes scrolling and selection sluggish.
+  Likely root cause: Hypothesis: recalculation or invalidation triggered by selection or scroll.
+  Source: tdf#146546 (https://bugs.documentfoundation.org/show_bug.cgi?id=146546)
+  Status: Unknown
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: SUMIFS/COUNTIFS/VLOOKUP
+  Symptom: A 7.4 optimization for COUNTIF/SUMIFS/VLOOKUP is linked to a performance report and to wrong results when COUNTIFS argument order changes.
+  Likely root cause: Hypothesis: correctness problems in the new cache or optimization path.
+  Source: tdf#159544 (https://bugs.documentfoundation.org/show_bug.cgi?id=159544)
+  Status: Unknown; the fix was not confirmed.
+  Difficulty: L
+  ────────────────────────────────────────
+  Area: SUMPRODUCT vs SUMIF
+  Symptom: SUMPRODUCT is much slower than SUMIF for the same computation.
+  Likely root cause: Hypothesis: array evaluation vs the query path.
+  Source: tdf#36689 (https://bugs.documentfoundation.org/show_bug.cgi?id=36689)
+  Status: Unknown, but the bug is old.
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: VLOOKUP unsorted
+  Symptom: An unsorted lookup over 10,000 columns took about 40 s, vs under 1 s when sorted.
+  Likely root cause: Verified in a developer blog (read via search): unsorted data falls back to a linear scan.
+  Source: tdf#115490 (https://bugs.documentfoundation.org/show_bug.cgi?id=115490); blog on planet.opensuse.org (https://planet.opensuse.org/en/page127/index.html)
+  Status: The blog's proposal (sort once, cache the order, binary search) reportedly shipped in 7.4. That claim comes from a forum thread, ask.libreoffice.org
+  (https://ask.libreoffice.org/t/about-vertical-lookup-vlookup-running-slow-on-calc/79618), and is unverified.
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: VLOOKUP, wildcards
+  Symptom: 41,670 rows took over 6 min. The reporter attributes 11 s to the wildcard setting being on.
+  Likely root cause: Hypothesis: wildcard/regex matching bypasses the sorted and cache paths.
+  Source: tdf#160081 (https://bugs.documentfoundation.org/show_bug.cgi?id=160081)
+  Status: Reported as NEW (2024).
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: Lookup call path
+  Symptom: A stack trace goes through ScInterpreter::LookupQueryWithCache.
+  Likely root cause: Verified only that this function exists in the path.
+  Source: tdf#121052 (https://bugs.libreoffice.org/show_bug.cgi?id=121052)
+  Status: Unknown
+  Difficulty: S (read first)
+  ────────────────────────────────────────
+  Area: Threaded groups
+  Symptom: Threading is on by default when OpenCL is off. It cannot parallelize groups with self-references or indirect dependencies. Err:522 appears only with threading on.
+  Likely root cause: Verified from a Dennis Francis commit message seen in a snippet: pardus mirror (https://kod.pardus.org.tr/libreoffice/core/commit/25cc0ab3b5d154fffbef27fad4adcf90f36ae92e). I did not
+  verify which functions are threadable.
+  Source: Phoronix (https://www.phoronix.com/news/LibreOffice-Calc-Threading)
+  Status: Unknown
+  Difficulty: L
+  ────────────────────────────────────────
+  Area: Row insert/delete/paste
+  Symptom: Since 7.5, cut, copy, paste or delete of rows freezes for a couple of seconds after a row paste. Columns and cells are fine.
+  Likely root cause: Hypothesis: broadcaster or listener updates. A 2013 dev post mentions limiting broadcasts to non-empty cells, and AOO issue 105200 concerns broadcast-slot handling.
+  Source: tdf#157659 (https://libreoffice.org/get-help/bug/show_bug.cgi?id=157659); tdf#134301 (https://www.libreoffice.org/bugzilla/show_bug.cgi?id=134301)
+  Status: Unknown
+  Difficulty: L
+  ────────────────────────────────────────
+  Area: Wide sheets
+  Symptom: Row insert/delete takes seconds in a wide sheet. 134301 was marked a duplicate of 131894 (slow sheet deletion).
+  Likely root cause: Hypothesis: cost grows with column count.
+  Source: tdf#131894 (https://bugs.libreoffice.org/show_bug.cgi?id=131894)
+  Status: Unknown
+  Difficulty: L
+  ────────────────────────────────────────
+  Area: AutoFilter / filter
+  Symptom: The dropdown freezes over 60 s with more than 100,000 rows. A high-cardinality filter took about 14 s, bisected to a 2017 advanced-filter commit. The reporter suggested a merge sort.
+  Likely root cause: Hypothesis: sorting or uniqueness handling of the value list.
+  Source: tdf#124450 (https://www.libreoffice.org/bugzilla/show_bug.cgi?id=124450); tdf#133878 (https://bugs.libreoffice.org/show_bug.cgi?id=133878)
+  Status: Unknown. The 100k-row report was closed as a duplicate of tdf#76481.
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: Conditional formatting
+  Symptom: Old OpenOffice bug: a sort took about 25 min with conditional formatting.
+  Likely root cause: Hypothesis: duplicate rules multiply the work.
+  Source: AOO 84689 (https://bz.apache.org/ooo/show_bug.cgi?id=84689)
+  Status: Unknown for LibreOffice
+  Difficulty: M
+  ────────────────────────────────────────
+  Area: Sorting
+  Symptom: Forum reports of 10 s or more on 6.1.5.
+  Likely root cause: Not investigated.
+  Source: ask.libreoffice.org (https://ask.libreoffice.org/t/why-is-libreoffice-calc-6-1-5-2-so-slow-at-sorting/60305)
+  Status: Unknown
+  Difficulty: M
+
+  Recent releases
+  - 25.8: Coverage I saw (linuxiac, Phoronix) claims files open up to 30% faster. It also mentions improvements for large spreadsheets and XLSX with conditional formatting.
+  - No formula-speed work found: I found no source saying SUMIFS or COUNTIFS evaluation got faster in 24.x, 25.x or 26.x.
+  - Correctness only: The 25.2.7 and 25.8.x notes list COUNTIFS correctness fixes (decimals, empty cells) and an XLOOKUP horizontal-search fix. Source: whatsnew 25.8.3
+    (https://whatsnew.libreoffice.org/25.8.3/).

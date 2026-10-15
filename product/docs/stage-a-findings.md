@@ -1,7 +1,7 @@
 # Stage A spike findings
 
 Each section records the question, what was tried, the observed result and the decision.
-Spec: /home/nh/office-boost/docs/superpowers/specs/2026-10-12-calc-home-redesign-design.md §6.
+Spec: product/docs/superpowers/specs/2026-10-12-calc-home-redesign-design.md §6.
 
 ## 0a Declarative dropdown menus
 

@@ -1,0 +1,237 @@
+CALC - HOME TAB REDESIGN (vertical slice 1)
+==========================================
+Status: section 1 (layout) APPROVED by the user on 2026-10-12.
+Reference: Microsoft 365 Excel organization + compact own identity (WPS-like).
+Key principle: every tab is split into SECTIONS with a visible title.
+
+
+LEGEND
+------
+  +--------+
+  | ICON   |    LARGE button: 32 px icon, label below
+  +--------+
+  (x) Label     SMALL button: 16 px icon, label to the right
+  (x)           SMALL button: icon only (tooltip shows the name)
+  [Text    v]   COMBO box (font name, size, number format)
+  v             the button has a DROPDOWN menu
+  ~             depends on a dropdown that may need C++ (verified during planning;
+                if it does, it moves to stage B and stage A uses the fallback)
+
+
+OVERVIEW (left to right)
+------------------------
+
+  File | HOME | Insert | Layout | Data | Functions | Review | View | Tools
+  -----+======+--------------------------------------------------------------
+  Undo | Clipboard | Font | Alignment | Number | Styles | Cells | Editing
+
+  When the window is narrow, sections collapse from the right into a ">>" button.
+
+
+SECTION 1 - UNDO  (new on Home; Undo/Redo also stay in the quick access bar.
+                   Kept for Office familiarity - user decision 2026-10-12)
+-----------------------
+
+  +------------------+
+  | (x) Undo  v      |
+  | (x) Redo  v      |
+  |                  |
+  |------------------|
+  |       Undo       |
+  +------------------+
+
+
+SECTION 2 - CLIPBOARD
+---------------------
+
+  +---------------------------------+
+  | +--------+  (x) Cut             |
+  | | PASTE  |  (x) Copy            |
+  | +--------+  (x) Format Painter  |
+  |  Paste v                        |
+  |---------------------------------|
+  |            Clipboard            |
+  +---------------------------------+
+
+
+SECTION 3 - FONT
+----------------
+
+  +----------------------------------------------------+
+  | [Calibri            v] [11 v]   (A+)  (A-)         |
+  | (B) (I) (U v) (S)  (Borders v) (Fill v) (Color v)  |
+  |                                                    |
+  |----------------------------------------------------|
+  |                        Font                        |
+  +----------------------------------------------------+
+
+
+SECTION 4 - ALIGNMENT
+---------------------
+
+  +----------------------------------------------------+
+  | (Top) (Middle) (Bottom)       (x) Wrap Text        |
+  | (Left) (Center) (Right)       (x) Merge & Center v~|
+  | (Decrease indent) (Increase indent)                |
+  |----------------------------------------------------|
+  |                     Alignment                      |
+  +----------------------------------------------------+
+
+
+SECTION 5 - NUMBER
+------------------
+
+  +-------------------------------------+
+  | [General                    v]      |
+  | ($ v) (%) (0.0)    (+.0) (-.0)      |
+  |                                     |
+  |-------------------------------------|
+  |               Number                |
+  +-------------------------------------+
+
+
+SECTION 6 - STYLES  (new)
+-------------------------
+
+  +-----------------------------------+
+  | +-------------+  +-----------+  +-------------+  |
+  | | CONDITIONAL |  | FORMAT AS |  |    CELL     |  |
+  | | FORMATTING  |  |   TABLE   |  |   STYLES    |  |
+  | +-------------+  +-----------+  +-------------+  |
+  |  Conditional      Format as      Cell            |
+  |  Formatting v     Table          Styles v ~      |
+  |-----------------------------------|
+  |              Styles               |
+  +-----------------------------------+
+
+
+SECTION 7 - CELLS  (7 small buttons -> 3 large)
+------------------------------------------------
+
+  +------------------------------------------+
+  | +----------+ +----------+ +----------+   |
+  | |  INSERT  | |  DELETE  | |  FORMAT  |   |
+  | +----------+ +----------+ +----------+   |
+  |  Insert v ~   Delete v ~   Format v ~    |
+  |                                          |
+  |------------------------------------------|
+  |                  Cells                   |
+  +------------------------------------------+
+
+
+SECTION 8 - EDITING  (new)
+--------------------------
+
+  +-----------------------------------------------------------+
+  | (x) AutoSum         +----------+  +----------+            |
+  | (x) Fill v ~        |  SORT &  |  |  FIND &  |            |
+  | (x) Clear v ~       |  FILTER  |  |  SELECT  |            |
+  |                     +----------+  +----------+            |
+  |                              Sort &        Find &         |
+  |                              Filter v ~    Select v ~     |
+  |-----------------------------------------------------------|
+  |                          Editing                          |
+  +-----------------------------------------------------------+
+
+
+BUTTON -> COMMAND MAP
+---------------------
+
+  Section    | Button                 | Size  | LibreOffice command             | Status
+  -----------+------------------------+-------+---------------------------------+--------------------------
+  Undo       | Undo                   | small | .uno:Undo                       | exists
+  Undo       | Redo                   | small | .uno:Redo                       | exists
+  Clipboard  | Paste v                | LARGE | .uno:Paste                      | exists (today's dropdown)
+  Clipboard  | Cut                    | small | .uno:Cut                        | exists
+  Clipboard  | Copy                   | small | .uno:Copy                       | exists
+  Clipboard  | Format Painter         | small | .uno:FormatPaintbrush           | exists
+  Font       | Font name              | combo | .uno:CharFontName               | exists
+  Font       | Font size              | combo | .uno:FontHeight                 | exists
+  Font       | Grow / Shrink          | small | .uno:Grow / .uno:Shrink         | exists
+  Font       | Bold / Italic          | small | .uno:Bold / .uno:Italic         | exists
+  Font       | Underline v            | small | .uno:Underline                  | exists (dropdown: verify)
+  Font       | Borders v              | small | .uno:SetBorderStyle             | exists
+  Font       | Fill v                 | small | .uno:BackgroundColor            | exists
+  Font       | Font color v           | small | .uno:Color                      | exists
+  Alignment  | Top / Middle / Bottom  | small | .uno:AlignTop/AlignVCenter/     | exists
+             |                        |       |      AlignBottom                |
+  Alignment  | Left / Center / Right  | small | .uno:AlignLeft/                 | exists
+             |                        |       |      AlignHorizontalCenter/     |
+             |                        |       |      AlignRight                 |
+  Alignment  | Decrease / Increase    | small | .uno:DecrementIndent/           | exists
+             |   indent               |       |      IncrementIndent            |
+  Alignment  | Wrap Text              | small | .uno:WrapText                   | exists
+  Alignment  | Merge & Center v ~     | small | .uno:ToggleMergeCells + menu    | button exists; menu NEW
+             |                        |       |   (MergeCells, SplitCell)       |
+  Number     | Number format          | combo | .uno:NumberFormatType           | exists
+  Number     | Currency v             | small | .uno:NumberFormatCurrency       | exists
+  Number     | Percent                | small | .uno:NumberFormatPercent        | exists
+  Number     | Number (0.0)           | small | .uno:NumberFormatDecimal        | exists (thousands separator +
+             |                        |       |                                 | 2 decimals = Excel Comma Style)
+  Number     | +decimal / -decimal    | small | .uno:NumberFormatIncDecimals/   | exists
+             |                        |       |      NumberFormatDecDecimals    |
+  Styles     | Conditional Formatting | LARGE | .uno:ConditionalFormatMenu      | exists (today's dropdown)
+  Styles     | Cell Styles v ~        | LARGE | .uno:StyleApply list            | NEW as a large button;
+             |                        |       |                                 | a real gallery = stage B
+  Cells      | Insert v ~             | LARGE | menu: InsertCell, InsertRows-   | menu NEW
+             |                        |       |   Before, InsertColumnsBefore   |
+  Cells      | Delete v ~             | LARGE | menu: DeleteCell, DeleteRows,   | menu NEW
+             |                        |       |   DeleteColumns                 |
+  Cells      | Format v ~             | LARGE | menu: FormatCellDialog,         | menu NEW
+             |                        |       |   RowHeight, ColumnWidth,       |
+             |                        |       |   SetOptimalColumnWidth, Hide   |
+  Editing    | AutoSum                | small | .uno:AutoSum                    | exists (new on ribbon)
+  Editing    | Fill v ~               | small | menu: FillDown, FillRight,      | menu NEW
+             |                        |       |   FillSeries                    |
+  Editing    | Clear v ~              | small | menu: Delete, ClearContents,    | menu NEW
+             |                        |       |   ResetAttributes               |
+  Editing    | Sort & Filter v ~      | LARGE | menu: SortAscending,            | menu NEW
+             |                        |       |   SortDescending, DataSort,     |
+             |                        |       |   DataFilterAutoFilter,         |
+             |                        |       |   DataFilterStandardFilter      |
+  Editing    | Find & Select v ~      | LARGE | menu: SearchDialog, SelectAll   | menu NEW
+
+
+FALLBACK FOR STAGE A (only if the new "~" menus need C++)
+---------------------------------------------------------
+
+  Cells:    Rows v and Columns v (existing menus .uno:RowOperations /
+            .uno:ColumnOperations) as LARGE buttons + Format Cells (dialog).
+  Editing:  AutoSum, Sort Ascending, AutoFilter, Find (existing commands,
+            no menus).
+  Merge:    plain Merge & Center button (no menu).
+  Styles:   Conditional Formatting + the existing style list box.
+  The full "~" menus move to stage B.
+
+
+REMOVED FROM HOME (and where they go)
+-------------------------------------
+
+  Subscript, Superscript             -> Format Cells dialog (Font Effects)
+  Character spacing                  -> Format Cells dialog
+  Justify (AlignBlock)               -> Format Cells dialog (Alignment)
+  Left-to-right / Right-to-left      -> Format Cells dialog (Alignment)
+  Clear Direct Formatting            -> Editing > Clear v
+  "Home" overflow menu (Find, Sort,  -> Editing section
+   AutoFilter)
+
+
+NUMBERS
+-------
+
+  Large buttons:  today 3  -> new 9   (Paste, Conditional Formatting, Cell Styles,
+                                       Insert, Delete, Format, AutoSum,
+                                       Sort & Filter, Find & Select)
+  Total buttons:  today 49 -> new about 42
+
+CHANGES AFTER APPROVAL (2026-10-12, matched against the user's Excel 365 web screenshot)
+--------------------------------------------------------------------------------------
+
+  - Font keeps Strikeout (S): Excel 365 shows it on Home.
+  - Styles adds Format as Table (.uno:AutoFormat, LARGE), as in Excel 365.
+  - Editing: AutoSum is a small labelled button stacked with Fill v and Clear v, as in
+    Excel; Sort & Filter and Find & Select stay LARGE.
+  - Number uses the original "0.0" button (.uno:NumberFormatDecimal: thousands separator
+    + 2 decimals = Excel's Comma Style) instead of .uno:NumberFormatThousands.
+  - Undo section kept although Undo/Redo also sit in the quick access bar (user decision).
+  - Not added: Excel's Orientation v (no single LibreOffice command; stage B candidate).

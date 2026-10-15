@@ -5,7 +5,7 @@ Status: implemented on branch `feature/calc-data-redesign` (2026-10-13). Second 
 read that first for the variant, the themes and the shared tooling). This document is the reference
 for what the Data tab looks like, how it is built, and what is still open.
 
-Design source (outside the repo): `/home/nh/office-boost/docs/design/calc-data-tab-layout.txt`.
+Design source: `product/docs/design/calc-data-tab-layout.txt`.
 
 ## 1. What the user sees
 

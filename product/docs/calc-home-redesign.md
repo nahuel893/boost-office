@@ -5,7 +5,7 @@ screen by screen. This document is the reference for what changed, how it is bui
 still open. The Data tab, built with the same tools, is documented in
 `product/docs/calc-data-redesign.md`.
 
-Design sources (outside the repo, `/home/nh/office-boost/docs/`):
+Design sources (`product/docs/`):
 `superpowers/specs/2026-10-12-calc-home-redesign-design.md` (spec) and the annexes
 `design/calc-home-{tab-layout,icons,palette,prototype}.txt`. Spike results and the validation
 record are in `product/docs/stage-a-findings.md`.

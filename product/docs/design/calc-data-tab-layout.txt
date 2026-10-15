@@ -1,0 +1,208 @@
+CALC - DATA TAB REDESIGN (vertical slice 2)
+==========================================
+Status: APPROVED by the user on 2026-10-12 ("vamos con todo ahora, y lo que no haya no
+funciona. Queda para despues la implementacion en codigo").
+Reference: the user's Excel 2016 Data tab screenshot ("this is the final result").
+Same tools as Home: gen_ribbon.py layout (id_prefix Data), Fluent icons, Boost schemes,
+compact rows.
+
+Rule: every Excel button is on the tab. Buttons whose feature LibreOffice lacks are
+PLACEHOLDERS: a new command with a label and icon but no implementation, so the button
+shows greyed out (disabled). The features are built later, one by one.
+
+
+LEGEND
+------
+  +--------+
+  | ICON   |    LARGE button: 32 px icon, label below
+  +--------+
+  (x) Label     SMALL button: 16 px icon, label to the right
+  (x)           SMALL button: icon only (tooltip shows the name)
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: click the body = instant action, the arrow opens a menu
+  ~             split that needs a dedicated command with a little C++ (same recipe
+                as Merge & Center), so other toolbars do not change
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+
+OVERVIEW (left to right)
+------------------------
+
+  File | Home | Insert | Layout | DATA | Functions | Review | View | Tools
+  -----+------+--------+--------+======+-----------------------------------
+  Get External Data | Get & Transform | Connections | Sort & Filter |
+  Data Tools | Forecast | Outline | Analyze
+
+  Excel's 7 sections in the same order, plus Analyze (Excel shows it when the
+  Analysis ToolPak is on; here it holds LibreOffice's Statistics). When the window is
+  narrow, sections collapse from the right into a ">>" button.
+
+
+SECTION 1 - GET EXTERNAL DATA
+-----------------------------
+
+  (x) From Database [P]   +---------+  +-------------+
+  (x) External Links      |  Other  |  |    Data     |
+  (x) Sheet from File     | Sources |  |   Sources   |
+                          |    v    |  |             |
+                          +---------+  +-------------+
+  ---------------------------------------------------
+                  Get External Data
+
+  From Access          -> From Database [P]: import a table or query from a database
+                          server (PostgreSQL first; LibreOffice already has the driver
+                          code, the build must enable it)
+  From Web             -> External Links  (.uno:InsertExternalDataSource: web page,
+                          HTML or CSV linked into the sheet)
+  From Text            -> Sheet from File (.uno:InsertSheetFromFile)
+  From Other Sources v -> Other Sources v: XML Source (.uno:ManageXMLSource),
+                          Streams (.uno:DataStreams)
+  Existing Connections -> Data Sources    (.uno:ViewDataSourceBrowser)
+
+
+SECTION 2 - GET & TRANSFORM
+---------------------------
+
+  +----------+  (x) Select Range
+  |   Data   |  (x) Define Range
+  | Provider |  (x) Recent Sources [P]
+  +----------+
+  -------------------------------------
+            Get & Transform
+
+  New Query v    -> Data Provider (.uno:DataProvider: import + transformations, the
+                    closest thing to Power Query)
+  Show Queries   -> Select Range (.uno:SelectDB, pick a defined data range)
+  From Table     -> Define Range (.uno:DefineDBName, turn cells into a range)
+  Recent Sources -> Recent Sources [P]
+
+
+SECTION 3 - CONNECTIONS
+-----------------------
+
+  +-----------+  (x) Connections [P]
+  |  Refresh  |  (x) Properties [P]
+  |    |v   ~ |  (x) Edit Links
+  +-----------+
+  ---------------------------------
+            Connections
+
+  Refresh All |v  body  = Refresh Range (.uno:DataAreaRefresh)
+                  arrow = Refresh Range, Refresh Data Provider
+                          (.uno:DataProviderRefresh), Refresh Pivot Table
+                          (.uno:RecalcPivotTable), Recalculate Hard (.uno:CalculateHard)
+  Connections     -> Connections [P] (manage the workbook's data connections)
+  Properties      -> Properties [P]  (refresh and layout options of a connection)
+  Edit Links      -> Edit Links (.uno:EditLinks, "Links to External Files...")
+
+
+SECTION 4 - SORT & FILTER
+-------------------------
+
+  (x)  A-Z   +------+  +--------+  (x) Reset Filter
+  (x)  Z-A   | Sort |  |  Auto  |  (x) Reapply [P]
+  (x)  Shuf  |      |  | Filter |  (x) Advanced Filter
+             +------+  +--------+
+  ----------------------------------------------------
+                    Sort & Filter
+
+  Sort A to Z  -> .uno:SortAscending     Sort    -> .uno:DataSort
+  Sort Z to A  -> .uno:SortDescending    Filter  -> .uno:DataFilterAutoFilter (toggle)
+  (LO extra)   -> Shuffle (.uno:Shuffle)
+  Clear        -> Reset Filter    (.uno:DataFilterRemoveFilter)
+  Reapply      -> Reapply [P]
+  Advanced     -> Advanced Filter (.uno:DataFilterSpecialFilter)
+  Standard Filter leaves the tab (Excel has none); it stays in the menu > Data.
+
+
+SECTION 5 - DATA TOOLS
+----------------------
+
+  +---------+  (x) Flash Fill [P]   (x) Consolidate
+  | Text to |  (x) Duplicates       (x) Relationships [P]
+  | Columns |  (x) Validity         (x) Manage Data Model [P]
+  +---------+
+  ---------------------------------------------------------
+                         Data Tools
+
+  Text to Columns    -> .uno:TextToColumns
+  Flash Fill         -> Flash Fill [P]
+  Remove Duplicates  -> Duplicates (.uno:HandleDuplicateRecords: remove or highlight)
+  Data Validation v  -> Validity (.uno:Validation), plain button
+  Consolidate        -> .uno:DataConsolidate
+  Relationships      -> Relationships [P]
+  Manage Data Model  -> Manage Data Model [P]
+
+
+SECTION 6 - FORECAST
+--------------------
+
+  +-----------+  +----------+
+  |  What-If  |  | Forecast |
+  | Analysis v|  | Sheet [P]|
+  +-----------+  +----------+
+  ---------------------------
+           Forecast
+
+  What-If Analysis v -> new menu: Scenarios (.uno:ScenarioManager), Goal Seek
+                        (.uno:GoalSeekDialog), Multiple Operations
+                        (.uno:TableOperationDialog, Excel's "Data Table"),
+                        Solver (.uno:SolverDialog)
+  Forecast Sheet     -> Forecast Sheet [P]
+
+
+SECTION 7 - OUTLINE
+-------------------
+
+  (x) Group    |v ~   (+)
+  (x) Ungroup  |v ~   (-)
+  (x) Subtotals
+  ---------------------------
+           Outline
+
+  Group   |v  body = Group (.uno:Group);    arrow = Group, AutoOutline
+  Ungroup |v  body = Ungroup (.uno:Ungroup); arrow = Ungroup, Remove Outline
+  Subtotals   = .uno:DataSubTotals
+  (+) (-)     = Show Details / Hide Details (.uno:ShowDetail / .uno:HideDetail),
+                icon only, like Excel
+
+
+SECTION 8 - ANALYZE
+-------------------
+
+  +------------+
+  | Statistics |
+  |     v      |
+  +------------+
+  --------------
+     Analyze
+
+  Data Analysis (Excel ToolPak) -> Statistics v (existing .uno:StatisticsMenu:
+                                   Sampling ... Exponential Smoothing, Moving Average,
+                                   Regression ... Fourier Analysis)
+
+
+OFF THE TAB
+-----------
+Still reachable from the menu button (top right) > Data, as today:
+  Standard Filter, Hide AutoFilter, Clear AutoFilter, Form..., Pivot Table items
+  (Excel has them on Insert), Calculate submenu (Excel has it on Formulas), Table
+  submenu.
+The old compact "Data" dropdown block at the end of the page is removed (as on Home).
+
+
+PLACEHOLDERS (9) - features to implement later, one feature each
+----------------------------------------------------------------
+  From Database, Recent Sources, Connections, Properties, Reapply, Flash Fill,
+  Relationships, Manage Data Model, Forecast Sheet.
+
+
+WHAT IT TAKES
+-------------
+- Layout: product/ui/calc_data.json + gen_ribbon.py (page markers for Data).
+- Config only: Other Sources and What-If menus, Statistics as a ribbon dropdown, the 9
+  placeholder commands (label + tooltip, no implementation).
+- Small C++ (same recipe as Merge & Center): Refresh, Group and Ungroup split buttons.
+- Icons: Fluent-based for every button, placeholders included.
+- Labels: LibreOffice's own for existing commands ("AutoFilter", "Validity");
+  Excel-style labels for the new commands.

@@ -1,0 +1,44 @@
+● En esta primera etapa cambia solo la pestaña Inicio. Las demás (Insertar, Diseño, Datos…) quedan como en la original hasta
+  las etapas siguientes.
+
+  Inicio hoy (original):
+  Portapapeles | Fuente | Alineación | Número | Celdas
+    5 secciones, 49 botones, 3 grandes
+
+  Inicio en "Tabbed Office":
+  Deshacer | Portapapeles | Fuente | Alineación | Número | Estilos | Celdas | Edición
+    8 secciones, ~42 botones, 9 grandes
+
+  Diferencias concretas:
+
+  ┌──────────────────┬────────────────────────────────────────┬────────────────────────────────────────────────────────┐
+  │                  │                Original                │                     Tabbed Office                      │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Deshacer /       │ No está en Inicio                      │ Sección propia, a la izquierda (como Excel)            │
+  │ Rehacer          │                                        │                                                        │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Estilos          │ No existe                              │ Sección nueva: Formato condicional (grande) y lista de │
+  │                  │                                        │  estilos de celda                                      │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Celdas           │ 6 iconitos (+fila, −fila, filas ▾…)    │ 3 botones grandes: Insertar ▾ · Eliminar ▾ · Formato ▾ │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Edición          │ No existe                              │ Sección nueva: Autosuma, Rellenar ▾, Borrar ▾, Ordenar │
+  │                  │                                        │  y filtrar ▾, Buscar y seleccionar ▾                   │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Combinar celdas  │ Botón simple                           │ Combinar y centrar ▾, con menú                         │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Número           │ Sin separador de miles                 │ Agrega el botón de miles ("000")                       │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Botones raros    │ Superíndice, subíndice, tachado,       │ Salen de Inicio; siguen disponibles en Formato de      │
+  │                  │ derecha-a-izquierda…                   │ celdas                                                 │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Menú "Home" a la │ Está (un menú suelto)                  │ Desaparece: su contenido pasa a la sección Edición     │
+  │  derecha         │                                        │                                                        │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Ventana angosta  │ Los botones se cortan                  │ Las secciones se pliegan desde la derecha en un botón  │
+  │                  │                                        │ ">>"                                                   │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Iconos           │ Colibre; los grandes a 24 px           │ Fluent (estilo Microsoft 365); los grandes a 32 px     │
+  ├──────────────────┼────────────────────────────────────────┼────────────────────────────────────────────────────────┤
+  │ Colores          │ Tinte verde, títulos en cursiva        │ Gris neutro claro u oscuro, títulos normales           │
+  └──────────────────┴────────────────────────────────────────┴────────────────────────────────────────────────────────┘

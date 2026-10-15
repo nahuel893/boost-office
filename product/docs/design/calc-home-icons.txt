@@ -1,0 +1,202 @@
+CALC - HOME TAB REDESIGN: ICON STYLE (section 2)
+================================================
+Status: APPROVED by the user on 2026-10-12.
+Depends on: section 1 (layout, approved) -> product/docs/design/calc-home-tab-layout.txt
+Preview image: /mnt/games/libreoffice/assets/previews/home-icons-compare.png
+  (per command: today's Colibre icon, then the Fluent candidate, then an alternative; 2x zoom)
+
+
+1. SOURCE
+---------
+
+  Base set:   Fluent UI System Icons (Microsoft), "Regular" (outline) style.
+              npm @fluentui/svg-icons 1.1.344, MIT license (copyright 2020 Microsoft Corporation).
+  Why:        the same visual family Microsoft 365 uses, so it feels familiar; free to ship and
+              modify; one consistent stroke and grid across ~2000 glyphs.
+  Not used:   the multicolor Office app icons. They are proprietary and are NOT part of this set.
+  License:    ship the MIT text inside the icon zip and in the product's third-party credits.
+
+
+2. STYLE RULES
+--------------
+
+  a) Line color: one dark gray for everything (#424242, Fluent's standard foreground).
+  b) Accents: AT MOST one accent color per icon, only on a small part (a badge or a highlight),
+     and only when it carries meaning. Most icons stay 100% gray.
+        green  = add / insert          (+ badge on Insert)
+        red    = delete / clear        (x badge on Delete)
+        blue   = data / sort / filter  (highlighted row/column, sort arrow)
+        amber  = format / highlight    (Conditional Formatting bars, Cell Styles brush)
+     The exact color values are defined in section 3 (palette).
+  c) Composed icons: build them from Fluent parts (grid + badge, cell + arrow); never mix in
+     glyphs from another icon family.
+  d) Color buttons (Font color, Fill color): leave the BOTTOM QUARTER of the icon empty.
+     LibreOffice paints the current color there as a stripe (svx tbxcolorupdate.cxx:266-274):
+        16 px icon -> rows 12-15 are reserved
+        24 px icon -> rows 18-23 are reserved
+        32 px icon -> rows 24-31 are reserved
+     Fluent's text_color has its own bar there; it is removed. paint_bucket is moved up.
+
+     Example (24 px, Font color):
+        +------------------------+
+        |          /\            |
+        |         /  \           |   glyph lives in the top 3/4
+        |        /----\          |
+        |       /      \         |
+        |========================|   <- LibreOffice paints the chosen color here
+        +------------------------+
+
+
+3. SIZES
+--------
+
+  File in the theme   Size   Used by
+  ------------------  -----  ------------------------------------------------------------
+  cmd/sc_<cmd>.png    16 px  small ribbon buttons and every dropdown menu item
+  cmd/lc_<cmd>.png    24 px  when the user picks "large" toolbar icons, sidebar
+  cmd/32/<cmd>.png    32 px  the 9 LARGE ribbon buttons (Excel uses 32 px too)
+
+  Verified: LibreOffice's large ribbon buttons use 24 px today (icon_size=3). The new
+  notebookbar_office.ui sets icon_size=5 on the 9 large buttons to get 32 px
+  (sfx2 SidebarToolBox.cxx:318-327). No C++ needed.
+
+  When Fluent lacks a size:
+    - use the native size whenever it exists;
+    - otherwise scale the nearest size (24 -> 32, 28 -> 32) and check that lines stay crisp;
+    - 16 px is hand-tuned when Fluent has no 16 (Grow, Shrink, both Decimal buttons,
+      Eraser, the vertical-align trio): scaling 20 -> 16 blurs 1 px lines.
+
+
+4. LIGHT AND DARK
+-----------------
+
+  Two zips built from the same SVG sources: only the colors change.
+    images_<name>.zip         gray #424242 lines, for light themes
+    images_<name>_dark.zip    light gray lines (value in section 3), for dark themes
+
+  Verified: LibreOffice does NOT switch a custom icon theme to its _dark twin by itself
+  (vcl IconThemeSelector.cxx:109-117); it only does that for its own built-in themes.
+    Stage A: the user picks the dark zip by hand (Options > View > Icon theme).
+    Stage B: a small C++ change that auto-picks "<theme>_dark" in dark mode. It is generic,
+             so it is a good upstream candidate.
+
+  <name> is a working name until the product name exists.
+
+
+5. ICON LIST (Home tab only)
+----------------------------
+
+  Class:  DIRECT  = one Fluent glyph as is
+          COMPOSE = built from Fluent parts, or a Fluent glyph edited (badge, moved, trimmed)
+          CUSTOM  = drawn by us in the Fluent style (no usable glyph exists)
+  L = also needed at 32 px (large button)
+
+  Command                     | Fluent source                         | Class    | Note
+  ----------------------------+---------------------------------------+----------+---------------------
+  Undo / Redo                 | arrow_undo / arrow_redo               | DIRECT   |
+  Paste                     L | clipboard_paste                       | DIRECT   | native 32
+  Cut / Copy                  | cut / copy                            | DIRECT   |
+  FormatPaintbrush            | paint_brush                           | DIRECT   |
+  Grow / Shrink               | font_increase / font_decrease         | DIRECT   | 16 hand-tuned
+  Bold / Italic / Underline   | text_bold / text_italic /             | DIRECT   |
+                              |   text_underline                      |          |
+  SetBorderStyle              | border_all                            | DIRECT   |
+  BackgroundColor             | paint_bucket                          | COMPOSE  | free bottom quarter
+  Color                       | text_color                            | COMPOSE  | remove own bar
+  AlignTop / VCenter / Bottom | textbox_align_top / _middle / _bottom | DIRECT   | 16 hand-tuned;
+                              |                                       |          | check legibility
+  AlignLeft / Center / Right  | text_align_left / _center / _right    | DIRECT   |
+  Decrement / IncrementIndent | text_indent_decrease / _increase      | DIRECT   |
+  WrapText                    | text_wrap                             | DIRECT   |
+  ToggleMergeCells/MergeCells | table_cells_merge                     | DIRECT   |
+  SplitCell                   | table_cells_split                     | DIRECT   |
+  NumberFormatCurrency        | money                                 | DIRECT   |
+  NumberFormatPercent         | text_percent                          | DIRECT   |
+  NumberFormatDecimal (0.0)   | "000" in Fluent text style            | CUSTOM   |
+  NumberFormatInc/DecDecimals | decimal_arrow_right / _left           | DIRECT   | 16 hand-tuned
+  ConditionalFormatMenu     L | table + data bars (amber)             | COMPOSE  |
+  Cell Styles             v L | table cell + paint_brush (amber)      | COMPOSE  |
+  InsertCell              v L | table + "+" badge (green)             | COMPOSE  | also the Insert v button
+  InsertRowsBefore            | table + row (gray) + "+" (green)      | COMPOSE  |
+  InsertColumnsBefore         | table + column (gray) + "+" (green)   | COMPOSE  |
+  DeleteCell              v L | table + "x" badge (red)               | COMPOSE  | also the Delete v button
+  DeleteRows                  | table + row (gray) + "x" (red)        | COMPOSE  |
+  DeleteColumns               | table + column (gray) + "x" (red)     | COMPOSE  |
+  FormatCellDialog        v L | table_settings                        | DIRECT   | 28 -> 32; Format v button
+  RowHeight / ColumnWidth     | table_resize_row / table_resize_column| DIRECT   |
+  SetOptimalColumnWidth       | table_resize_column + arrow_fit       | COMPOSE  |
+  AutoSum                   L | autosum                               | DIRECT   | 24 -> 32
+  FillDown / FillRight    v   | cell + arrow_down / arrow_right       | COMPOSE  | FillDown = Fill v button
+  FillSeries                  | "1 2 3" + arrow                       | CUSTOM   |
+  Delete (Delete Contents)    | eraser                                | DIRECT   | also the Clear v button
+  ClearContents               | backspace                             | DIRECT   |
+  ResetAttributes             | text_clear_formatting                 | DIRECT   |
+  SortAscending / Descending  | text_sort_ascending / _descending     | DIRECT   |
+  DataSort (Sort...)          | arrow_sort                            | DIRECT   |
+  Sort & Filter v (new)     L | text_sort_ascending + filter (blue)   | COMPOSE  | new menu button
+  DataFilterAutoFilter        | filter                                | DIRECT   |
+  DataFilterStandardFilter    | filter + gear badge                   | COMPOSE  |
+  SearchDialog            v L | search                                | DIRECT   | native 32; Find & Select v
+  SelectAll                   | select_all_on                         | DIRECT   |
+
+  Dropdown buttons (v) reuse the icon of their main item. Only "Sort & Filter" needs its own.
+
+  Changed vs the first automatic mapping (judged from the preview image):
+    - Vertical align: textbox_align_* instead of align_*. The align_* glyphs mean "align
+      objects", not "text inside the cell".
+    - Insert/Delete cells, rows, columns: composed from the plain grid. Fluent's own
+      table_cell_add / table_delete_row glyphs are too abstract at 16-24 px.
+    - Clear menu: eraser for Delete Contents and backspace for ClearContents, so they do not
+      look like "delete cells" (trash can).
+
+
+6. COUNTS
+---------
+
+  58 icons on the Home tab (57 commands + the new Sort & Filter menu button)
+     DIRECT   41
+     COMPOSE  15
+     CUSTOM    2   (Number "0.0" button: "000" glyph, FillSeries)
+  Files: 58 x 16 px + 58 x 24 px + 9 x 32 px = 125 PNGs per zip, x2 zips (light, dark).
+
+
+7. PACKAGING
+------------
+
+  - SVG sources are the single source of truth; a script renders the PNGs at each size and
+    color, writes links.txt (aliases) and builds both zips.
+  - The zip is partial: any command not in it falls back to Colibre automatically
+    (verified, vcl ImplImageTree.cxx:342-360). So the other tabs keep today's icons until
+    their slices are done. That mix is EXPECTED during the vertical slice.
+  - All of this is product-only and lives in new files (fork rule 2).
+
+
+8. OPEN POINTS (verify while planning, not decisions for now)
+-------------------------------------------------------------
+
+  - Legibility at 16 px of the vertical-align trio and the composed table icons
+    (checked in the prototype, section 4).
+  - Whether LibreOffice's build can pack an extra theme from icon-themes/<name>/, or the zip
+    must be added at install time.
+  - HiDPI: the target monitor is 1x. SVG-based themes (LibreOffice supports *_svg zips) come
+    later.
+
+CHANGE AFTER APPROVAL (2026-10-12, user decision after comparing with Excel 365)
+-------------------------------------------------------------------------------
+
+  Rule 2b is replaced: icons get a SOFT COLOR FILL inside every enclosed shape of the
+  outline, like Office's filled icons. No enclosed shape may stay white.
+    - Outline stays line gray (#424242 light / #D6D6D6 dark).
+    - One fill color per icon, chosen by meaning:
+        fill_yellow  #F5C96A / #B08A3A   clipboard, format painter, fill bucket
+        fill_blue    #9CC8F2 / #3E78B8   copy, search, filters
+        fill_cells   #BFDDF7 / #2F587C   grids and cells (insert/delete/format/borders/merge)
+        fill_red     #F1A5A8 / #B85A60   clear / erase
+        fill_green   #9FD89F / #4E8E4E   currency
+    - Badges and highlights keep their accent (green +, red x, amber, blue).
+    - Line-only glyphs (B I U, arrows, sigma, align lines) stay unfilled, as in Office.
+    - Fluent outlines leave small seams where shapes overlap (the clipboard behind the
+      paper); the builder seals seams up to 2.5 px so those shapes fill too, except where
+      the gaps are real (data bars: seal 0).
+  Preview: /mnt/games/libreoffice/assets/previews/icons-mono-vs-duotone.png and
+           /mnt/games/libreoffice/assets/previews/icons-filled-pipeline.png

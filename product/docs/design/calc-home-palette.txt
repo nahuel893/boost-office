@@ -1,0 +1,137 @@
+CALC - HOME TAB REDESIGN: COLORS AND TYPE (section 3)
+=====================================================
+Status: APPROVED by the user on 2026-10-12.
+Depends on: section 1 (layout) and section 2 (icons), both approved.
+
+
+1. PRINCIPLES
+-------------
+
+  a) Neutral surfaces. Color only where it means something (same rule as the icons).
+  b) Light AND dark are both first-class. The app follows the system setting, like
+     Microsoft 365. This machine runs dark (adw-gtk3-dark, prefer-dark), so the first
+     prototype screenshots will be dark.
+  c) Same look on every Linux desktop: we ship our own color scheme through LibreOffice's
+     theme engine, instead of inheriting whatever GTK theme the user has.
+  d) Each app keeps its own accent color, used sparingly: Calc green, Writer blue,
+     Impress orange (only Calc is defined in this slice).
+  e) Every text color meets WCAG AA (4.5:1); icon accents and field borders meet 3:1.
+
+
+2. TOKENS
+---------
+
+  Token              Light     Dark      Used for                            Contrast (on surface)
+  -----------------  --------  --------  ----------------------------------  ---------------------
+  surface            #E4F2E8   #2B2B2B   ribbon, tab strip, toolbars, dialogs  -
+  surface.hover      #D3E8DA   #383838   button under the mouse                -
+  surface.pressed    #C3DECB   #454545   pressed / toggled-on button           -
+  field              #FFFFFF   #1F1F1F   combo boxes, text fields, lists       -
+  field.border       #828282   #7A7A7A   border of combo boxes / fields        3.2 / 3.3
+  separator          #9E9E9E   #6A6A6A   lines between ribbon sections         2.3 / 2.6
+  text               #242424   #F2F2F2   labels, menus                         14.2 / 12.7
+  text.secondary     #616161   #ADADAD   section captions (stage B, see 4)     5.7 / 6.3
+  text.disabled      #A6A6A6   #6E6E6E   disabled items                        exempt
+  icon.line          #424242   #D6D6D6   icon strokes (section 2)              9.2 / 9.7
+  accent.calc        #1B7A3E   #5CC27E   active tab mark, focus ring, links    4.9 / 6.4
+  selection          #CFE8D7   #1E4D2E   selected row in lists (text on top)   12.0 / 8.7
+  menu               #FFFFFF   #2B2B2B   dropdown menus                        -
+  menu.hover         #F0F0F0   #383838   menu item under the mouse             13.6 / 10.5
+
+  Icon accents (section 2):
+  icon.green         #107C10   #54B054   add / insert                          4.9 / 5.2
+  icon.red           #C50F1F   #E9737B   delete / clear                        5.6 / 4.9
+  icon.blue          #0F6CBD   #479EF5   data / sort / filter                  4.9 / 5.0
+  icon.amber         #AD6800   #F2B230   format / highlight                    4.1 / 7.5
+
+  Icon fills (added 2026-10-12, see calc-home-icons.txt "CHANGE AFTER APPROVAL"):
+  fill_yellow        #F5C96A   #B08A3A   clipboard, format painter, fill bucket
+  fill_blue          #9CC8F2   #3E78B8   copy, search, filters
+  fill_cells         #BFDDF7   #2F587C   grids and cells
+  fill_red           #F1A5A8   #B85A60   clear / erase
+  fill_green         #9FD89F   #4E8E4E   currency
+
+  All contrast values were computed with the WCAG 2 formula against "surface". The worst
+  case on a pressed button is still above 3:1 for every icon accent.
+
+
+3. HOW IT LOOKS (Home tab, light)
+---------------------------------
+
+  +---------------------------------------------------------------------------------------+
+  | File  Home  Insert  Layout  Data  Functions  Review  View          surface #E4F2E8    |
+  |       ====  <- active tab: text + green underline (accent.calc), stage B               |
+  |---------------------------------------------------------------------------------------|
+  | (x) Undo | +-----+ (x) Cut   | [Calibri  v][11v] | ...                                  |
+  | (x) Redo | |PASTE| (x) Copy  | (B)(I)(U)  ...    |        icons #424242, no tint      |
+  |          | +-----+ (x) Paint |                   |                                     |
+  |   Undo   |   Clipboard       |       Font        |   <- captions: plain, 90% size      |
+  +---------------------------------------------------------------------------------------+
+     ^ separators #9E9E9E                    combo boxes: #FFFFFF with #828282 border
+
+  Dark is the same layout with the dark column of the token table.
+
+
+4. WHAT IS DONE WHERE
+---------------------
+
+  Stage A (configuration and .ui only, no C++):
+    - Two color schemes (light, dark) as ColorScheme entries, the same mechanism as
+      LibreOffice's built-in COLOR_SCHEME_LIBREOFFICE_LIGHT / _DARK (officecfg UI.xcu).
+      Main role mapping:
+        WindowColor = surface          WindowTextColor = text        BaseColor = field
+        SeparatorColor = separator     DisabledTextColor = text.disabled
+        AccentColor = selection        ActiveColor = accent.calc
+        MenuColor / MenuTextColor / MenuHighlightColor = menu / text / menu.hover
+      The full mapping of the 27 UI roles is in the spec.
+    - Remove the per-app tint (today Calc's ribbon is mixed with green #3cbc45):
+      set Office.Common/Misc/NotebookbarColorTransparency = 255.
+      Verified: 255 means "full dialog color, no module color" (Common.xcs:5236-5243,
+      applied in vcl notebookbar.cxx:268-291). No C++ needed.
+    - Section captions: drop the italic, keep 90% size.
+      Verified: the ribbon's label markup supports weight, style, underline, scale and
+      size only (vcl window2.cxx:1472-1521). There is no color attribute, so captions
+      use the normal text color in stage A.
+    - Font: the system UI font, for example Noto Sans 9 on this machine. LibreOffice has no
+      setting to override it (verified earlier), and it matches what users already see
+      in other apps.
+
+  Stage B (targeted C++, after stage A is validated):
+    - Office-like flat tabs: no tab box, active tab with a 3 px accent.calc underline,
+      hover = surface.hover. Scoped to the ribbon only, because today's tab CSS hits every
+      tab control, dialogs included (vcl gtk3 custom-theme.cxx:230-257).
+    - Section captions in text.secondary.
+    - Auto-switch between our light and dark scheme (and icon zip) with the system,
+      if LibreOffice does not already do it for custom schemes.
+
+
+5. OPEN POINTS (verify in the prototype, section 4)
+---------------------------------------------------
+
+  - Whether LibreOffice's theme engine reaches the ribbon's buttons and hover states under
+    gtk3, or only part of them (the CSS covers toolbars, menus, tabs, lists, scrollbars).
+  - Whether it switches between two custom schemes when the system goes light/dark.
+  - The theme engine is opt-in (Office.Common/Appearance/LibreOfficeTheme, default off);
+    the product turns it on by default.
+
+CHANGE AFTER APPROVAL (2026-10-12, user decision: "verde suave")
+---------------------------------------------------------------
+
+  Light theme surfaces are soft green instead of near-white (mockup chosen by the user:
+  /mnt/games/libreoffice/assets/previews/mock-green-options.png, row 2):
+    surface         #F5F5F5 -> #E4F2E8      surface.hover   #EBEBEB -> #D3E8DA
+    surface.pressed #E0E0E0 -> #C3DECB      separator       #D1D1D1 -> #B5D3BF
+    field.border    #8A8A8A -> #828282 (keeps 3:1 against the green surface)
+  Fields, menus and selection stay as they were (white fields read well on green).
+  Contrast on the new surface (WCAG): text 13.4, text.secondary 5.4, icon line 8.7,
+  field.border 3.3, accents >= 3.8 (amber); on the pressed surface amber is still 3.1.
+  The dark theme is unchanged.
+
+CHANGES AFTER IMPLEMENTATION (2026-10-12, user requests while testing)
+---------------------------------------------------------------------
+
+  - separator -> gray #9E9E9E (light) / #6A6A6A (dark); the ribbon separators now use it
+    (vcl gtk3 CSS "separator" node switched from BaseColor to SeparatorColor).
+  - Selected tab: white (light) / #454545 (dark) with a 3 px Calc-green underline.
+  - Drop-down fields: 1 px field.border outline.
+  - Cell selector (CalcCellFocus): Calc green #1B7A3E (light) / #5CC27E (dark).
