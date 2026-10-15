@@ -1,5 +1,7 @@
 # Feature: Excel-like formula tools in Calc's tabbed UI
 
+**Status:** superseded on 2026-10-15 by `product/odd/tasks/calc-ribbon-tabs.md`. The Formulas tab is built in the Tabbed Office variant instead.
+
 Locator: `product/odd/tasks/calc-formulas-tab.md`. Engram mirror: `odd/calc-formulas-tab/tasks`.
 
 ## Objective
