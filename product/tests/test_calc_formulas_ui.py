@@ -5,6 +5,9 @@
 the function-category menu controller (C++, T4c) and the AutoSum split."""
 import json
 import re
+import shutil
+import subprocess
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -23,6 +26,39 @@ MENU = "{http://openoffice.org/2001/menu}"
 PYTHON = ".uno:FormulasPython?Action:string="
 AUTOSUM = ".uno:AutoSum?Function:string="
 SEP = "-"  # a separator in a menu item list
+MENUBARMANAGER = ROOT / "framework/source/uielement/menubarmanager.cxx"
+
+
+def run_single_bool_argument(urls):
+    """Compile getSingleBoolArgument out of menubarmanager.cxx and run it on each URL: "true" or
+    "false" for a single boolean argument, "none" when the URL is no such variant."""
+    compiler = shutil.which("g++") or shutil.which("clang++")
+    if compiler is None:
+        raise unittest.SkipTest("no C++ compiler")
+    src = MENUBARMANAGER.read_text(encoding="utf-8")
+    start = src.index("bool getSingleBoolArgument(")
+    function = src[start:src.index("\n}\n", start) + 3]
+    program = "\n".join([
+        "#include <cstdio>", "#include <cstring>", "#include <string>", "#include <string_view>",
+        function,
+        "int main(int argc, char** argv)",
+        "{",
+        "    for (int i = 1; i < argc; ++i)",
+        "    {",
+        "        const std::u16string aURL(argv[i], argv[i] + std::strlen(argv[i]));",
+        "        bool bValue = false;",
+        "        const bool bMatch = getSingleBoolArgument(aURL, bValue);",
+        '        std::printf("%s\\n", !bMatch ? "none" : bValue ? "true" : "false");',
+        "    }",
+        "}",
+    ])
+    with tempfile.TemporaryDirectory() as tmp:
+        source, exe = Path(tmp) / "rule.cxx", Path(tmp) / "rule"
+        source.write_text(program, encoding="utf-8")
+        subprocess.run([compiler, "-std=c++20", "-o", str(exe), str(source)], check=True,
+                       capture_output=True)
+        out = subprocess.run([str(exe), *urls], check=True, capture_output=True, text=True).stdout
+    return out.splitlines()
 
 CATEGORY_MENUS = ["FormulasRecentlyUsedMenu", "FormulasFinancialMenu", "FormulasLogicalMenu",
                   "FormulasTextMenu", "FormulasDateTimeMenu", "FormulasLookupMenu",
@@ -294,11 +330,32 @@ class CalcFormulasUiTest(unittest.TestCase):
         self.assertIn(".uno:AutomaticCalculation", flagged_commands())
 
     def test_framework_menu_rule_checks_a_single_bool_argument_item_only_when_state_equals_it(self):
-        src = (ROOT / "framework/source/uielement/menubarmanager.cxx").read_text(encoding="utf-8")
+        src = MENUBARMANAGER.read_text(encoding="utf-8")
         self.assertIn("getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument )", src)
         self.assertIn("bCheckmark = ( bCheckmark == bArgument );", src)
         self.assertLess(src.index("bCheckmark = ( bCheckmark == bArgument );"),
                         src.index("m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );"))
+
+    def test_framework_menu_rule_reads_the_bool_type_from_the_arguments_type_segment(self):
+        # T8a: getSingleBoolArgument, compiled from the source as it is and run on URLs. The type
+        # is what "Name:type=value" has between the first ':' and the first '=' (as sfx2's
+        # SfxDispatchController_Impl::addParametersToArgs reads it), so a string value that
+        # contains ":bool=true" is no boolean variant.
+        cases = {
+            ".uno:Orientation?isLandscape:bool=true": "true",
+            ".uno:Orientation?isLandscape:bool=false": "false",
+            ".uno:AutomaticCalculation?AutomaticCalculation:bool=false": "false",
+            ".uno:X?Name:string=a:bool=true": "none",
+            ".uno:X?Name:string=:bool=false": "none",
+            ".uno:X?Name:string=bool=true": "none",
+            ".uno:X?:bool=true": "none",
+            ".uno:X?Name:boolean=true": "none",
+            ".uno:X?Name:bool=yes": "none",
+            ".uno:X?A:bool=true&B:bool=false": "none",
+            ".uno:X?Name:short=1": "none",
+            ".uno:X": "none",
+        }
+        self.assertEqual(cases, dict(zip(cases, run_single_bool_argument(list(cases)))))
 
     def test_suppr_has_an_entry_for_every_button(self):
         suppr = SUPPR.read_text(encoding="utf-8")

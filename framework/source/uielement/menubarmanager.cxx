@@ -254,10 +254,18 @@ bool getSingleBoolArgument(std::u16string_view rItemURL, bool& rValue)
     const std::u16string_view aArgs = rItemURL.substr(nQuery + 1);
     if (aArgs.find(u'&') != std::u16string_view::npos)
         return false;
-    const size_t nType = aArgs.find(u":bool=");
-    if (nType == std::u16string_view::npos || nType == 0)
+    // "Name:type=value", read as SfxDispatchController_Impl::addParametersToArgs reads it: the
+    // type lies between the first ':' and the first '='. A string value that contains
+    // ":bool=true" is no boolean argument.
+    const size_t nEquals = aArgs.find(u'=');
+    if (nEquals == std::u16string_view::npos)
         return false;
-    const std::u16string_view aValue = aArgs.substr(nType + 6);
+    const std::u16string_view aNameAndType = aArgs.substr(0, nEquals);
+    const size_t nColon = aNameAndType.find(u':');
+    if (nColon == std::u16string_view::npos || nColon == 0
+        || aNameAndType.substr(nColon + 1) != u"bool")
+        return false;
+    const std::u16string_view aValue = aArgs.substr(nEquals + 1);
     if (aValue == u"true")
         rValue = true;
     else if (aValue == u"false")
