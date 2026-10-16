@@ -19,7 +19,10 @@
 
 #include <sidebar/ControllerFactory.hxx>
 #include <sidebar/Tools.hxx>
+#include <svl/itempool.hxx>
+#include <unoctitm.hxx>
 
+#include <com/sun/star/beans/PropertyValue.hpp>
 #include <com/sun/star/frame/XToolbarController.hpp>
 #include <com/sun/star/frame/XFrame.hpp>
 #include <com/sun/star/frame/theToolbarControllerFactory.hpp>
@@ -41,18 +44,25 @@ namespace sfx2::sidebar {
 
 namespace {
 
-/// Whether the frame has a dispatch for the command, asked the way ToolboxController::bindListener
-/// asks it (the command, else its real command when it is an alias).
-bool HasDispatch(const Reference<frame::XFrame>& rxFrame, const OUString& rsCommandName)
+/// Whether a disabled state that update() gave the item will be kept up to date: the frame has a
+/// dispatch for the command, asked the way ToolboxController::bindListener asks it (the command,
+/// else its real command when it is an alias), and it is not a master command (".uno:X.y"), whose
+/// dispatch is not bound to the slot's state cache and never sends a state again.
+bool HasStatefulDispatch(const Reference<frame::XFrame>& rxFrame, const OUString& rsCommandName,
+                         const Sequence<beans::PropertyValue>& rProperties)
 {
     try
     {
-        if (Tools::GetDispatch(rxFrame, Tools::GetURL(rsCommandName)).is())
+        util::URL aURL(Tools::GetURL(rsCommandName));
+        if (SfxOfficeDispatch::IsMasterUnoCommand(aURL))
+            return false;
+        if (Tools::GetDispatch(rxFrame, aURL).is())
             return true;
-        auto aProperties = vcl::CommandInfoProvider::GetCommandProperties(rsCommandName,
-            vcl::CommandInfoProvider::GetModuleIdentifier(rxFrame));
-        const OUString sRealCommand(vcl::CommandInfoProvider::GetRealCommandForCommand(aProperties));
-        return !sRealCommand.isEmpty() && Tools::GetDispatch(rxFrame, Tools::GetURL(sRealCommand)).is();
+        const OUString sRealCommand(vcl::CommandInfoProvider::GetRealCommandForCommand(rProperties));
+        if (sRealCommand.isEmpty())
+            return false;
+        aURL = Tools::GetURL(sRealCommand);
+        return !SfxOfficeDispatch::IsMasterUnoCommand(aURL) && Tools::GetDispatch(rxFrame, aURL).is();
     }
     catch (const Exception&)
     {
@@ -165,10 +175,12 @@ Reference<frame::XToolbarController> ControllerFactory::CreateToolBoxController(
             if (pToolBox->GetQuickHelpText(nItemId).isEmpty())
                 pToolBox->SetQuickHelpText(nItemId, sTooltip);
             // update() gave the item the state of its command. A command without a dispatch (a
-            // dropdown that only opens its popup) was reported disabled for that reason alone, so
-            // enable it. Keep a disabled state that a dispatch reported: nothing sends it again
-            // while it does not change, e.g. on a second toolbox that shows the same slot.
-            if (!pToolBox->IsItemEnabled(nItemId) && !HasDispatch(rxFrame, rsCommandName))
+            // dropdown that only opens its popup) was reported disabled for that reason alone, and
+            // a master command's dispatch never updates it, so enable those. Keep a disabled state
+            // that a bound dispatch reported: nothing sends it again while it does not change,
+            // e.g. on a second toolbox that shows the same slot.
+            if (!pToolBox->IsItemEnabled(nItemId)
+                && !HasStatefulDispatch(rxFrame, rsCommandName, aProperties))
                 pToolBox->EnableItem(nItemId);
         }
     }

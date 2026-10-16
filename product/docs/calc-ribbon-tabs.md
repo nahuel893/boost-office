@@ -196,19 +196,23 @@ screenshots are T3b.
   disabled state the dispatch had just reported. A button only recovered when the bindings later pushed a state:
   the first push of a new slot cache, or a change. That push reaches only listeners on the URL that first bound
   the slot's shared dispatch (`SfxDispatchController_Impl::StateChanged` sends to `aDispatchURL.Main` and
-  `.Complete`), so the other URL variants of a family never got it, and a ribbon built again in the same window
-  (Office, Compact, Office) got no push at all: every placeholder, and real disabled commands such as Undo, Redo
-  and Paste in Calc or Cut, Copy and Paste in Writer, were drawn enabled.
+  `.Complete`), so the other URL variants of a family never got it. A ribbon built again in the same window
+  (Office, Compact, Office) gets no first push: a probe showed all 34 placeholders drawn enabled, and the item
+  dumps of that case showed, besides the 12 variants, only Undo, Redo and Paste flipped in Calc (in Writer's Tabbed
+  ribbon: Cut, Copy, Paste, Decrease spacing, three Borders, four table insert and three table align items).
 - **Fix**: the forced `EnableItem` now runs only for an item that is disabled after `update()` and whose command
-  has no dispatch (asked as `ToolboxController::bindListener` asks, alias included). That keeps dropdowns with no
-  slot (`.uno:InsertPicturesMenu`, `.uno:PageLayout*Menu`, upstream popup commands) enabled, which
-  `PopupMenuToolbarController::statusChanged` would otherwise disable for lack of a dispatch.
+  has no dispatch (asked as `ToolboxController::bindListener` asks, alias included) or is a master command
+  (`.uno:X.y`, e.g. `.uno:BasicShapes.rectangle`), whose dispatch is not bound to a state cache and pushes no later
+  state. That keeps dropdowns with no slot (`.uno:InsertPicturesMenu`, `.uno:PageLayout*Menu`, upstream popup
+  commands) enabled, which `PopupMenuToolbarController::statusChanged` would otherwise disable for lack of a
+  dispatch, and master commands as they were.
 - **Tests**: `test_every_placeholder_button_is_drawn_disabled` reads the toolbox items' own `Enabled` state
   (`toolboxitem-N` of each `bx<Prefix><Box>`), not a status listener, for all 34 placeholder buttons on the Data,
-  Insert and Page Layout pages; `test_placeholder_buttons_stay_disabled_when_the_ribbon_is_built_again` does it
-  again after a rebuild. Both failed before the fix (12 and 34 buttons drawn enabled).
-- **Not fixed**: a URL variant (`.uno:X?A:t=v`) still does not hear later state changes of its slot when another
-  URL bound the slot first (probe: a listener on `.uno:DataUngroup?Probe:string=x` heard `[False]` while one on
-  `.uno:DataUngroup` heard `[False, True, False]`). Placeholders never change state, so they are not affected;
-  real variant buttons (the Sparkline types) do not follow later changes, except the variant that bound the slot
-  first. The narrow fix would be in `SfxDispatchController_Impl::StateChanged` (`unoctitm.cxx`).
+  Insert and Page Layout pages; it failed before the fix with 12 buttons drawn enabled.
+  `test_placeholder_buttons_stay_disabled_when_the_ribbon_is_built_again` does the same check again after a rebuild.
+- **Not fixed** (follow-up task, `SfxDispatchController_Impl::StateChanged` URL filter): a URL argument variant
+  (`.uno:X?A:t=v`) does not hear later state changes of its slot when another URL bound the slot first (probe: a
+  listener on `.uno:DataUngroup?Probe:string=x` heard `[False]` while one on `.uno:DataUngroup` heard
+  `[False, True, False]`). With this fix such a variant that is disabled when its button is built now stays
+  greyed until the ribbon is built again, where before it stayed enabled. Placeholders never change state, so
+  they are not affected; real variant buttons (the Sparkline types) are.
