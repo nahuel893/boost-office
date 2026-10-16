@@ -171,8 +171,12 @@ class CalcPageLayoutUiTest(unittest.TestCase):
         self.assertNotRegex(self.office, r'action-name">\.uno:Orientation[<?]')
         controlled = {v["Command"]: v for v in controller_nodes().values()}
         self.assertEqual("", controlled[".uno:Orientation"].get("Module", ""))  # the reason for the trap
-        orientation = [i for i in MENUS["PageLayoutOrientationMenu"][2]]
-        self.assertEqual([ORIENTATION + "false", ORIENTATION + "true"], orientation)
+        # the two Orientation menu items are the only place the command appears, as URL variants
+        popup = (POPUPMENU / "pagelayout_orientation.xml").read_text(encoding="utf-8")
+        self.assertEqual([".uno:Orientation?isLandscape:bool=false", ".uno:Orientation?isLandscape:bool=true"],
+                         re.findall(r'menu:id="([^"]+)"', popup))
+        self.assertEqual(2, len(re.findall(r"\.uno:Orientation\b", " ".join(
+            i for _l, _r, items in MENUS.values() for i in items))))
 
     def test_every_command_in_the_layout_has_a_label(self):
         labels = commands_xcu()
@@ -335,16 +339,28 @@ class PrintTitlesAliasTest(unittest.TestCase):
         state = read("sc/source/ui/view/tabvwsha.cxx")
         match = re.search(r"case " + self.SLOT + r":(.*?)break;", state, re.S)
         self.assertIsNotNone(match)
-        self.assertIn("bActiveDrawSh", match.group(1))
-        self.assertIn("bActiveDrawTextSh", match.group(1))
+        # ScDrawShell and every shell derived from it (chart, OLE, graphic, media, draw form)
+        for flag in ("bActiveDrawSh", "bActiveDrawTextSh", "bActiveDrawFormSh", "bActiveOleObjectSh",
+                     "bActiveChartSh", "bActiveGraphicSh", "bActiveMediaSh"):
+            self.assertIn(flag, match.group(1))
         self.assertIn("rSet.DisableItem", match.group(1))
 
     def test_every_invalidation_of_the_original_also_hits_the_alias(self):
+        # Any mention of the original in a file that calls Invalidate (directly, through rBindings or
+        # pBindings, or in a slot id array handed to it) must be matched by a mention of the alias
         for path in (ROOT / "sc/source").rglob("*.cxx"):
             text = path.read_text(encoding="utf-8", errors="replace")
-            n_orig = len(re.findall(r"Invalidate\s*\(\s*" + self.ORIGINAL + r"\b", text))
-            n_new = len(re.findall(r"Invalidate\s*\(\s*" + self.SLOT + r"\b", text))
+            if self.ORIGINAL not in text or "Invalidate" not in text:
+                continue
+            if path.name in ("tabvwsh3.cxx", "tabvwsha.cxx", "reffact.cxx", "tabvwshc.cxx"):
+                continue  # Execute, state and dialog creation, no invalidation (checked below)
+            n_orig = len(re.findall(r"\b" + self.ORIGINAL + r"\b", text))
+            n_new = len(re.findall(r"\b" + self.SLOT + r"\b", text))
             self.assertGreaterEqual(n_new, n_orig, f"{self.SLOT} not mirrored in {path}")
+        for name in ("tabvwsh3.cxx", "tabvwsha.cxx", "reffact.cxx", "tabvwshc.cxx"):
+            text = read("sc/source/ui/view/" + name)
+            for m in re.finditer(r"Invalidate[^;]*?\b" + self.ORIGINAL + r"\b[^;]*;", text, re.S):
+                self.assertRegex(m.group(0), self.SLOT, name)
 
     def test_the_alias_is_a_functional_slot_not_a_placeholder(self):
         self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load()])

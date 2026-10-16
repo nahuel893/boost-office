@@ -228,8 +228,12 @@ void ScTabViewShell::GetState( SfxItemSet& rSet )
                         rSet.DisableItem( nWhich );
                     }
                     // The original is also disabled by the drawing shells (drawsh.sdi, drtxtob.sdi,
-                    // StateDisableItems); the alias lives in this view shell below them
-                    else if ( nWhich == FID_PAGELAYOUT_PRINT_TITLES && ( bActiveDrawSh || bActiveDrawTextSh ) )
+                    // StateDisableItems): ScDrawShell and its derived chart, OLE, graphic, media and
+                    // draw-form shells, and the draw text shell. The alias lives in this view shell
+                    // below them, so it checks the same subshell flags.
+                    else if ( nWhich == FID_PAGELAYOUT_PRINT_TITLES
+                              && ( bActiveDrawSh || bActiveDrawTextSh || bActiveDrawFormSh || bActiveOleObjectSh
+                                   || bActiveChartSh || bActiveGraphicSh || bActiveMediaSh ) )
                     {
                         rSet.DisableItem( nWhich );
                     }

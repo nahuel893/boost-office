@@ -372,13 +372,39 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual(self.dispatch_enabled("EditPrintArea"), self.dispatch_enabled("PageLayoutPrintTitles"))
             self.assertTrue(self.dispatch_enabled("PageLayoutPrintTitles"))
 
-    def select_new_shape(self, document, x, count=1):
-        """Add `count` rectangles to the first sheet, select them all, return the last one."""
+    def test_pagelayout_print_titles_alias_is_disabled_for_image_and_ole_selections_like_its_original(self):
+        # Every ScDrawShell subshell (graphic, OLE, chart, media, draw form) disables the original. The
+        # grid's SELECT OBJECT action marks the object like a mouse click (only the view's mark list
+        # changes), unlike the API's select(), which also switches the drawing shell on.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xPage = document.DrawPages.getByIndex(0)
+            for n, (service, clsid) in enumerate((
+                    ("com.sun.star.drawing.GraphicObjectShape", None),
+                    ("com.sun.star.drawing.OLE2Shape", "12DCAE26-281F-416F-a234-c3086127382e"))):
+                xShape = document.createInstance(service)
+                if clsid:
+                    xShape.CLSID = clsid
+                xShape.Name = "T3aObject%d" % n
+                xPage.add(xShape)
+                xShape.setPosition(uno.createUnoStruct("com.sun.star.awt.Point", 1000 + 4000 * n, 1000))
+                xShape.setSize(uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000))
+                self.select_rows(document, "A1")
+                self.assertTrue(self.dispatch_enabled("PageLayoutPrintTitles"), service)
+                xGrid.executeAction("SELECT", mkPropertyValues({"OBJECT": xShape.Name}))
+                self.assertFalse(self.dispatch_enabled("EditPrintArea"), service)
+                self.assertEqual(self.dispatch_enabled("EditPrintArea"),
+                                 self.dispatch_enabled("PageLayoutPrintTitles"), service)
+
+    def select_new_shape(self, document, x, count=1, service="com.sun.star.drawing.RectangleShape", clsid=None):
+        """Add `count` shapes to the first sheet, select them all, return the last one."""
         xPage = document.DrawPages.getByIndex(0)
         xShapes = self.xContext.ServiceManager.createInstance("com.sun.star.drawing.ShapeCollection")
         xShape = None
         for n in range(count):
-            xShape = document.createInstance("com.sun.star.drawing.RectangleShape")
+            xShape = document.createInstance(service)
+            if clsid:
+                xShape.CLSID = clsid
             xPage.add(xShape)
             xShape.setPosition(uno.createUnoStruct("com.sun.star.awt.Point", x + 4000 * n, 1000))
             xShape.setSize(uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000))
