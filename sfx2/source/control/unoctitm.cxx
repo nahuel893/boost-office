@@ -928,7 +928,6 @@ void SfxDispatchController_Impl::StateChanged( sal_uInt16 nSID, SfxItemState eSt
     // listeners on the same command with other arguments (.uno:X, .uno:X?Arg:string=v) are
     // registered here too. Tell each of them, with an event for the URL it listens on:
     // controllers compare FeatureURL.Complete with their own command.
-    css::uno::Reference<css::util::XURLTransformer> xTransformer;
     css::frame::FeatureStateEvent aListenerEvent(aEvent); // only its FeatureURL changes per URL
     const std::vector<OUString> aContainedTypes = pDispatch->getContainedTypes();
     for (const OUString& rName: aContainedTypes)
@@ -939,25 +938,25 @@ void SfxDispatchController_Impl::StateChanged( sal_uInt16 nSID, SfxItemState eSt
             continue;
         }
 
+        // A listener key is the plain command or the command with arguments: it belongs to this
+        // slot when it is aDispatchURL.Main or aDispatchURL.Main + "?" + arguments. Compare the
+        // text instead of parsing every key: this runs for every state change of a shared slot.
+        OUString aArguments;
+        if (rName != aDispatchURL.Main)
+        {
+            if (!rName.startsWith(aDispatchURL.Main)
+                || rName.getLength() == aDispatchURL.Main.getLength()
+                || rName[aDispatchURL.Main.getLength()] != '?')
+                continue; // another command
+            aArguments = rName.copy(aDispatchURL.Main.getLength() + 1);
+        }
+        // Protocol, Main, Path and Name are the dispatch URL's, the rest is exactly what the
+        // listener registered
         css::util::URL& rListenerURL = aListenerEvent.FeatureURL;
-        if (rName == aDispatchURL.Main)
-        {
-            // the plain command of the variant this dispatch was made for: its URL without the
-            // arguments, no need to parse it
-            rListenerURL = aDispatchURL;
-            rListenerURL.Arguments.clear();
-            rListenerURL.Mark.clear();
-        }
-        else
-        {
-            rListenerURL = css::util::URL();
-            rListenerURL.Complete = rName;
-            if (!xTransformer.is())
-                xTransformer = URLTransformer::create(::comphelper::getProcessComponentContext());
-            if (!xTransformer->parseStrict(rListenerURL) || rListenerURL.Main != aDispatchURL.Main)
-                continue; // not a URL, or another command
-        }
-        rListenerURL.Complete = rName; // exactly the URL the listener registered
+        rListenerURL = aDispatchURL;
+        rListenerURL.Complete = rName;
+        rListenerURL.Arguments = aArguments;
+        rListenerURL.Mark.clear();
         sendStatusChanged(rName, aListenerEvent);
     }
 }
