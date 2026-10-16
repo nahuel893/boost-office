@@ -35,9 +35,24 @@ TAB_PAGES = {0: "phbFile", 1: "phbHome", 2: "phbInsert", 3: "phbLayout", 4: "phb
 TAB_COUNT = 17
 
 
-def placeholder_urls(src, only=None):
-    """Every command URL of the shared placeholder registry (product/tests/placeholders.json)."""
+def placeholder_entries(src):
+    """The placeholders of the shared registry (product/tests/placeholders.json).
+
+    An entry flagged "implemented" stays in the file but is no placeholder any more.
+    """
     entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+    return [entry for entry in entries if not entry.get("implemented")]
+
+
+def placeholder_count(src, offsets=None):
+    """How many command URLs the placeholders in these SID_NEW_SLOTS offsets answer to."""
+    return sum(len(entry.get("variants", [None])) for entry in placeholder_entries(src)
+               if offsets is None or entry["offset"] in offsets)
+
+
+def placeholder_urls(src, only=None):
+    """Every command URL of the placeholders: the base command, or one per variant."""
+    entries = placeholder_entries(src)
     urls = []
     for entry in entries:
         if only is None or only(entry):
@@ -194,14 +209,17 @@ class NotebookbarOffice(UITestCase):
     def test_data_placeholders_have_a_slot_that_is_always_disabled(self):
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: e["command"].startswith("Data"))
-        self.assertEqual(9, len(names))
+        self.assertEqual(placeholder_count(src, range(380, 389)), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_every_placeholder_of_the_slice_is_disabled_and_inert(self):
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src)
-        self.assertEqual(65, len(names))  # 42 slots, 23 extra family variants
+        self.assertEqual(placeholder_count(src), len(names))  # one per plain slot, one per family variant
         self.check_placeholders_are_disabled_and_inert(names)
+
+    MENU_ONLY_PLACEHOLDERS = {".uno:InsertPictureInCell", ".uno:FormulasErrorChecking",
+                              ".uno:ReviewCheckAccessibility"}
 
     def placeholder_buttons(self, src):
         """(label, toolbox item) of every placeholder button on the generated ribbon pages.
@@ -209,7 +227,7 @@ class NotebookbarOffice(UITestCase):
         Reads the toolbox items themselves, not a status listener: what the ribbon draws.
         """
         labels = {}
-        for entry in json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8")):
+        for entry in placeholder_entries(src):
             base = ".uno:" + entry["command"]
             if "label" in entry:
                 labels[base] = entry["label"]
@@ -230,12 +248,9 @@ class NotebookbarOffice(UITestCase):
                                 xItem = xBox.getChild("toolboxitem-%d" % (pos + 1))
                                 self.assertEqual(labels[url], get_state_as_dict(xItem)["Text"].replace("~", ""))
                                 buttons.append((labels[url], xItem))
-        # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families),
-        # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet),
-        # Review 5 (Translate, Previous and Next Comment, Allow Edit Ranges, Hide Ink),
-        # View 14 (5 Sheet View, Page Layout, Custom Views, Ruler, Arrange All, Hide, Unhide, 3 Side by Side),
-        # Help 2 (Feedback, Blog)
-        self.assertEqual(62, len(buttons))
+        # one button per labelled placeholder URL on a page; the ones left over live in a menu
+        # (Place in Cell, Error Checking, Check Accessibility), never on a toolbox
+        self.assertEqual(len(labels) - len(self.MENU_ONLY_PLACEHOLDERS & set(labels)), len(buttons))
         return buttons
 
     def check_placeholder_buttons_are_drawn_disabled(self, src):
@@ -295,7 +310,7 @@ class NotebookbarOffice(UITestCase):
         # 10 slots: 9 plain ones (one is a Pictures menu item) and the chart-type family of 9 variants
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 389 <= e["offset"] <= 398)
-        self.assertEqual(18, len(names))
+        self.assertEqual(placeholder_count(src, range(389, 399)), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_insert_existing_commands_are_enabled(self):
@@ -516,7 +531,7 @@ class NotebookbarOffice(UITestCase):
         # 4 slots: Fonts/Effects, Background, Width/Height/Scale, Print Gridlines/Print Headings
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 399 <= e["offset"] <= 402)
-        self.assertEqual(8, len(names))
+        self.assertEqual(placeholder_count(src, range(399, 403)), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_pagelayout_print_titles_alias_follows_its_original_and_opens_the_same_dialog(self):
@@ -674,7 +689,7 @@ class NotebookbarOffice(UITestCase):
         # Watch Window and Calculate Sheet
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 403 <= e["offset"] <= 407)
-        self.assertEqual(8, len(names))
+        self.assertEqual(placeholder_count(src, range(403, 408)), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def fill_row(self, xGrid, row, values=("1", "2", "3")):
@@ -858,7 +873,7 @@ class NotebookbarOffice(UITestCase):
         # (2 variants), Allow Edit Ranges and Hide Ink
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 408 <= e["offset"] <= 412)
-        self.assertEqual(6, len(names))
+        self.assertEqual(placeholder_count(src, range(408, 413)), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_review_each_dropdown_has_an_enabled_command(self):
@@ -930,7 +945,7 @@ class NotebookbarOffice(UITestCase):
         # the Side by Side family (3) and the Sheet View family (5)
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 413 <= e["offset"] <= 418 or e["offset"] == 421)
-        self.assertEqual(14, len(names))
+        self.assertEqual(placeholder_count(src, list(range(413, 419)) + [421]), len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_view_each_dropdown_has_an_enabled_command(self):
@@ -974,7 +989,7 @@ class NotebookbarOffice(UITestCase):
 
     def test_view_placeholder_labels_resolve_for_every_variant(self):
         src = Path(os.environ["TDOC"]).parents[3]
-        entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+        entries = placeholder_entries(src)
         with self.ui_test.create_doc_in_start_center("calc"):
             count = 0
             for entry in entries:
@@ -987,7 +1002,9 @@ class NotebookbarOffice(UITestCase):
                 if "label" in entry:
                     self.assertEqual(entry["label"], self.command_label(base))
                     count += 1
-            self.assertEqual(14, count)
+            # labels of the Sheet View family and the other View placeholders, plain or per variant
+            self.assertEqual(sum(len(e.get("variant_labels", {})) + ("label" in e) for e in entries
+                                 if 413 <= e["offset"] <= 418 or e["offset"] == 421), count)
 
     def test_help_sections_and_toolboxes(self):
         src = Path(os.environ["TDOC"]).parents[3]
@@ -1010,17 +1027,18 @@ class NotebookbarOffice(UITestCase):
                 self.switch_to("Default")
 
     def test_help_placeholders_are_disabled_and_inert(self):
-        # 2 slots, no variants: Feedback and Blog
+        # the Help slots have no variants (Feedback and Blog while they are placeholders)
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: 419 <= e["offset"] <= 420)
-        self.assertEqual(["HelpFeedback", "HelpBlog"], [n.removeprefix(".uno:") for n in names])
+        self.assertEqual([e["command"] for e in placeholder_entries(src) if 419 <= e["offset"] <= 420],
+                         [n.removeprefix(".uno:") for n in names])
         self.check_placeholders_are_disabled_and_inert(names)
 
     def test_help_placeholder_buttons_are_drawn_disabled_and_the_others_enabled(self):
         # what the ribbon draws: toolboxitem `Enabled`. Only the two placeholders are disabled.
         src = Path(os.environ["TDOC"]).parents[3]
         layout = json.loads((src / "product" / "ui" / "calc_help.json").read_text(encoding="utf-8"))
-        disabled = {"HelpFeedback", "HelpBlog"}
+        disabled = {e["command"] for e in placeholder_entries(src) if 419 <= e["offset"] <= 420}
         with self.ui_test.create_doc_in_start_center("calc"):
             self.switch_to(OFFICE_UI)
             try:
@@ -1046,14 +1064,14 @@ class NotebookbarOffice(UITestCase):
 
     def test_help_placeholder_labels_resolve(self):
         src = Path(os.environ["TDOC"]).parents[3]
-        entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+        entries = placeholder_entries(src)
         with self.ui_test.create_doc_in_start_center("calc"):
             count = 0
             for entry in entries:
                 if 419 <= entry["offset"] <= 420:
                     self.assertEqual(entry["label"], self.command_label(".uno:" + entry["command"]))
                     count += 1
-            self.assertEqual(2, count)
+            self.assertEqual(placeholder_count(src, [419, 420]), count)
 
     def test_formulas_variant_menu_items_resolve_their_labels(self):
         with self.ui_test.create_doc_in_start_center("calc"):

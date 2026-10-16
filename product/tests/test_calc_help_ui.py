@@ -9,8 +9,7 @@ import unittest
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
-from product.tests.test_calc_insert_ui import flagged_commands, tooltips
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +24,7 @@ DESIGN = {
     "Community": ("Community", [".uno:GetInvolved", ".uno:HelpBlog"]),
 }
 PLACEHOLDER_LABELS = {".uno:HelpFeedback": "Feedback", ".uno:HelpBlog": "Blog"}
+PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS)  # implemented ones are no placeholder
 SHOWN_LABELS = {".uno:HelpIndex": "%PRODUCTNAME Help", ".uno:QuestionAnswers": "Get Help Online",
                 ".uno:Documentation": "User Guides", ".uno:WhatsNew": "What's New",
                 ".uno:GetInvolved": "Get Involved"}
@@ -114,7 +114,7 @@ class CalcHelpUiTest(unittest.TestCase):
     def test_the_registry_labels_both_help_slots(self):
         by_url = placeholders.labels_by_url()
         self.assertEqual(PLACEHOLDER_LABELS, {u: l for u, l in by_url.items() if u in PLACEHOLDER_LABELS})
-        entries = {e["offset"]: e for e in placeholders.load()}
+        entries = {e["offset"]: e for e in placeholders.load_all()}
         self.assertEqual(["HelpFeedback", "HelpBlog"], [entries[o]["command"] for o in HELP_SLOTS])
         for offset in HELP_SLOTS:
             self.assertNotIn("variants", entries[offset])

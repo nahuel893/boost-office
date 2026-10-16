@@ -10,8 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
-from product.tests.test_calc_insert_ui import flagged_commands, tooltips
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -85,6 +84,7 @@ PLACEHOLDER_LABELS = {
     PART + "fonts": "Fonts", PART + "effects": "Effects", ".uno:PageLayoutBackground": "Background",
     FIT + "width": "Width", FIT + "height": "Height", FIT + "scale": "Scale",
     OPTION + "gridlines": "Print Gridlines", OPTION + "headings": "Print Headings"}
+PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS)  # implemented ones are no placeholder
 PAGELAYOUT_SLOTS = range(399, 403)
 
 
@@ -363,8 +363,8 @@ class PrintTitlesAliasTest(unittest.TestCase):
                 self.assertRegex(m.group(0), self.SLOT, name)
 
     def test_the_alias_is_a_functional_slot_not_a_placeholder(self):
-        self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load()])
-        self.assertNotIn("PageLayoutPrintTitles", [e["command"] for e in placeholders.load()])
+        self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load_all()])
+        self.assertNotIn("PageLayoutPrintTitles", [e["command"] for e in placeholders.load_all()])
 
 
 if __name__ == "__main__":

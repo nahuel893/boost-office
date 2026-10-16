@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,28 +43,6 @@ MENUS = {
     "DataWhatIfMenu": ("What-If Analysis", "data_whatif"),
     "DataStatisticsMenu": ("Statistics", "statisticsmenu"),
 }
-
-
-def commands_xcu():
-    """Label (and node names) of every command in the *Commands.xcu files."""
-    labels = {}
-    for path in UI_DIR.glob("*Commands.xcu"):
-        for node in ET.parse(path).iter("node"):
-            name = node.get(OOR + "name")
-            if name and name.startswith(".uno:"):
-                for prop in node.findall("prop"):
-                    if prop.get(OOR + "name") == "Label":
-                        labels[name] = prop.findtext("value")
-    return labels
-
-
-def controller_nodes():
-    nodes = {}
-    for node in ET.parse(CONTROLLER_XCU).iter("node"):
-        props = {p.get(OOR + "name"): p.findtext("value") for p in node.findall("prop")}
-        if "Command" in props:
-            nodes[node.get(OOR + "name")] = props
-    return nodes
 
 
 class CalcDataUiTest(unittest.TestCase):
@@ -153,7 +132,7 @@ class CalcDataUiTest(unittest.TestCase):
 
     def test_data_slots_continue_after_merge_center_inside_the_fork_block(self):
         ids = self.sc_hrc_ids()
-        for name in list(SPLIT_SLOTS) + [e["slot"] for e in placeholders.load()]:
+        for name in list(SPLIT_SLOTS) + [e["slot"] for e in placeholders.load_all()]:
             self.assertIn(name, ids)
             self.assertGreater(ids[name], ids["FID_HOME_MERGE_CENTER"])
         for name in SPLIT_SLOTS:
@@ -198,13 +177,7 @@ class CalcDataUiTest(unittest.TestCase):
             self.assertNotIn(".uno:" + cmd, controlled, cmd)
 
     def test_commands_used_by_data_and_home_layouts_have_an_image_flag_or_icon(self):
-        flagged = set()
-        for path in UI_DIR.glob("*Commands.xcu"):
-            for node in ET.parse(path).iter("node"):
-                name = node.get(OOR + "name")
-                for prop in node.findall("prop"):
-                    if prop.get(OOR + "name") == "Properties" and int(prop.findtext("value")) & 1:
-                        flagged.add(name)
+        flagged = flagged_commands()
         for layout in (self.layout, self.home):
             groups = [b["items"] for s in layout["sections"] for c in s["columns"] for b in c]
             groups += [s.get("footer", {}).get("items", []) for s in layout["sections"]]
@@ -215,12 +188,7 @@ class CalcDataUiTest(unittest.TestCase):
                                       item["cmd"] + " is left out of the image list")
 
     def test_placeholders_have_a_not_available_tooltip(self):
-        tree = ET.parse(UI_DIR / "CalcCommands.xcu")
-        tips = {}
-        for node in tree.iter("node"):
-            for prop in node.findall("prop"):
-                if prop.get(OOR + "name") == "TooltipLabel":
-                    tips[node.get(OOR + "name")] = prop.findtext("value")
+        tips = tooltips()
         for cmd, label in PLACEHOLDERS.items():
             self.assertEqual(label + " (not available yet)", tips[".uno:" + cmd], cmd)
 

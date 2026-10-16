@@ -13,8 +13,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
-from product.tests.test_calc_insert_ui import flagged_commands, tooltips
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -112,6 +111,7 @@ PLACEHOLDER_LABELS = {
     PYTHON + "init": "Initialization", ".uno:FormulasErrorChecking": "Error Checking",
     ".uno:FormulasEvaluateFormula": "Evaluate Formula", ".uno:FormulasWatchWindow": "Watch Window",
     ".uno:FormulasCalculateSheet": "Calculate Sheet"}
+PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS)  # implemented ones are no placeholder
 FORMULAS_SLOTS = range(403, 408)
 VARIANT_LABELS = {AUTOSUM + "average": "Average", AUTOSUM + "count": "Count Numbers",
                   AUTOSUM + "max": "Max", AUTOSUM + "min": "Min"}
@@ -531,8 +531,8 @@ class AutoSumSplitTest(unittest.TestCase):
             self.assertGreaterEqual(n_new, n_orig, f"{self.SLOT} not mirrored in {path}")
 
     def test_the_slot_is_a_functional_slot_not_a_placeholder(self):
-        self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load()])
-        self.assertNotIn("FormulasAutoSum", [e["command"] for e in placeholders.load()])
+        self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load_all()])
+        self.assertNotIn("FormulasAutoSum", [e["command"] for e in placeholders.load_all()])
 
 
 if __name__ == "__main__":

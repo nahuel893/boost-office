@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,25 +62,6 @@ LINE_MENU = [".uno:Line", ".uno:Freeline_Unfilled", ".uno:Freeline", ".uno:Bezie
 SPARK_LABELS = {SPARK + "line": "Line", SPARK + "column": "Column", SPARK + "stacked": "Win/Loss"}
 INSERT_PLACEHOLDERS = {url: label for url, label in placeholders.labels_by_url().items()
                        if url.startswith(".uno:Insert")}
-
-
-def tooltips():
-    tips = {}
-    for node in ET.parse(UI_DIR / "CalcCommands.xcu").iter("node"):
-        for prop in node.findall("prop"):
-            if prop.get(OOR + "name") == "TooltipLabel":
-                tips[node.get(OOR + "name")] = prop.findtext("value")
-    return tips
-
-
-def flagged_commands():
-    flagged = set()
-    for path in UI_DIR.glob("*Commands.xcu"):
-        for node in ET.parse(path).iter("node"):
-            for prop in node.findall("prop"):
-                if prop.get(OOR + "name") == "Properties" and int(prop.findtext("value")) & 1:
-                    flagged.add(node.get(OOR + "name"))
-    return flagged
 
 
 class CalcInsertUiTest(unittest.TestCase):
@@ -159,7 +140,8 @@ class CalcInsertUiTest(unittest.TestCase):
 
     def test_placeholder_labels_and_tooltips_follow_excel(self):
         labels, tips = commands_xcu(), tooltips()
-        self.assertEqual(9 + 9, len(INSERT_PLACEHOLDERS))  # 9 plain slots + 9 chart-type variants
+        expected = sum(len(placeholders.urls(e)) for e in placeholders.load() if 389 <= e["offset"] <= 398)
+        self.assertEqual(expected, len(INSERT_PLACEHOLDERS))  # one per plain slot and per chart-type variant
         for url, label in INSERT_PLACEHOLDERS.items():
             self.assertEqual(label, labels[url], url)
             self.assertEqual(label + " (not available yet)", tips[url], url)

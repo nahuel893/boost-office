@@ -10,8 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
-from product.tests.test_calc_insert_ui import flagged_commands, tooltips
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -51,6 +50,7 @@ PLACEHOLDER_LABELS = {  # URL -> label; the first one is a menu item only
     ".uno:ReviewCheckAccessibility": "Check Accessibility", ".uno:ReviewTranslate": "Translate",
     GOTO + "previous": "Previous Comment", GOTO + "next": "Next Comment",
     ".uno:ReviewAllowEditRanges": "Allow Edit Ranges", ".uno:ReviewHideInk": "Hide Ink"}
+PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS)  # implemented ones are no placeholder
 REVIEW_SLOTS = range(408, 413)
 # R14: the LibreOffice-only buttons the old page had; each must stay reachable from the menu bar
 LEFT_THE_TAB = ["SpellOnline", "Hyphenate", "TraceChangeMode", "AcceptChanges", "CompareDocuments",
@@ -157,7 +157,7 @@ class CalcReviewUiTest(unittest.TestCase):
         self.assertLessEqual(comment_commands, {g.item_url(i) for i in self.items()})
         self.assertIn(".uno:InsertAnnotation", notes)
         # Previous/Next are the same two URL variants in both places: no extra slot, no extra label
-        self.assertEqual(2, sum(1 for e in placeholders.load() if e["command"] == "ReviewGoToComment"
+        self.assertEqual(2, sum(1 for e in placeholders.load_all() if e["command"] == "ReviewGoToComment"
                                 for _ in e["variants"]))
 
     def test_every_command_in_the_layout_has_a_label(self):

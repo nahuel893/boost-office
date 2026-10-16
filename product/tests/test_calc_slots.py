@@ -26,24 +26,28 @@ def hrc_offsets():
 class PlaceholderSlotsTest(unittest.TestCase):
 
     def setUp(self):
-        self.entries = placeholders.load()
+        self.all_entries = placeholders.load_all()   # every slot of the fork block
+        self.entries = placeholders.load()           # the placeholders: not flagged "implemented"
         self.offsets = hrc_offsets()
 
-    def test_registry_covers_data_and_the_whole_slice_without_gaps(self):
-        offsets = [e["offset"] for e in self.entries]
-        self.assertEqual(list(range(FORK_FIRST, SLICE_LAST + 1)), offsets)
-        self.assertEqual(len({e["slot"] for e in self.entries}), len(self.entries))
-        self.assertEqual(len({e["command"] for e in self.entries}), len(self.entries))
+    def test_registry_has_no_duplicates_and_stays_inside_the_slice(self):
+        # an implemented entry stays in the registry ("implemented": true), so the registry
+        # keeps every slot; gaps in the fork block are sc.hrc's business (see below)
+        offsets = [e["offset"] for e in self.all_entries]
+        self.assertEqual(len(offsets), len(set(offsets)))
+        self.assertTrue(all(FORK_FIRST <= o <= SLICE_LAST for o in offsets))
+        self.assertEqual(len({e["slot"] for e in self.all_entries}), len(self.all_entries))
+        self.assertEqual(len({e["command"] for e in self.all_entries}), len(self.all_entries))
 
     def test_registry_variants_are_well_formed(self):
-        for entry in self.entries:
+        for entry in self.all_entries:
             variants = entry.get("variants", [])
             self.assertEqual(len(variants), len(set(variants)), entry["command"])
             for variant in variants:
                 self.assertRegex(variant, r"^\w+:(string|long|boolean)=[\w.-]+$", entry["command"])
 
     def test_every_slot_is_defined_in_sc_hrc_inside_the_fork_block(self):
-        for entry in self.entries:
+        for entry in self.all_entries:
             self.assertEqual(entry["offset"], self.offsets.get(entry["slot"]), entry["slot"])
             self.assertTrue(FORK_FIRST <= entry["offset"] <= FORK_LAST, entry["slot"])
 

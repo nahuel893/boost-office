@@ -10,8 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office, placeholders
-from product.tests.test_calc_data_ui import commands_xcu, controller_nodes
-from product.tests.test_calc_insert_ui import flagged_commands, tooltips
+from product.tests.commands import commands_xcu, controller_nodes, flagged_commands, tooltips
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -67,6 +66,7 @@ PLACEHOLDER_LABELS = {  # URL -> label
     VISIBILITY + "hide": "Hide", VISIBILITY + "unhide": "Unhide",
     SIDE_BY_SIDE + "toggle": "View Side by Side", SIDE_BY_SIDE + "sync": "Synchronous Scrolling",
     SIDE_BY_SIDE + "reset": "Reset Window Position"}
+PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS)  # implemented ones are no placeholder
 VIEW_SLOTS = list(range(413, 419)) + [421]
 # R14: the LibreOffice-only buttons the old page had; each must stay reachable
 LEFT_THE_MENU_BAR = ["ZoomPage", "ZoomPageWidth", "FullScreen", "ViewValueHighlighting", "ViewHiddenColRow",
@@ -216,7 +216,7 @@ class CalcViewUiTest(unittest.TestCase):
         by_url = placeholders.labels_by_url()
         self.assertEqual(PLACEHOLDER_LABELS, {u: l for u, l in by_url.items()
                                               if u.startswith(".uno:View") and "Menu" not in u})
-        entries = {e["offset"]: e for e in placeholders.load()}
+        entries = {e["offset"]: e for e in placeholders.load_all()}
         for offset in VIEW_SLOTS:
             entry = entries[offset]
             if "variants" in entry:
