@@ -405,6 +405,7 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
             break;
 
         case SID_OPENDLG_EDIT_PRINTAREA:
+        case FID_PAGELAYOUT_PRINT_TITLES:
             {
                 sal_uInt16          nId  = ScPrintAreasDlgWrapper::GetChildWindowId();
                 SfxChildWindow* pWnd = rThisFrame.GetChildWindow( nId );

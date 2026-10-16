@@ -1642,6 +1642,23 @@ SfxVoidItem EditPrintArea SID_OPENDLG_EDIT_PRINTAREA
     GroupId = SfxGroupId::Format;
 ]
 
+SfxVoidItem PageLayoutPrintTitles FID_PAGELAYOUT_PRINT_TITLES
+()
+[
+    AutoUpdate = FALSE,
+    FastCall = FALSE,
+    ReadOnlyDoc = FALSE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+    AccelConfig = TRUE,
+    MenuConfig = TRUE,
+    ToolBoxConfig = TRUE,
+    GroupId = SfxGroupId::Format;
+]
+
 
 SfxVoidItem EditScenario SID_EDIT_SCENARIO
 (SfxStringItem ScenarioName SID_EDIT_SCENARIO)

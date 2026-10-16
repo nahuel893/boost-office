@@ -55,8 +55,9 @@ class PlaceholderSlotsTest(unittest.TestCase):
         self.assertLessEqual(max(values), FORK_LAST)
 
     def test_the_functional_slots_of_later_tasks_are_not_taken_yet(self):
+        # +15 is Formulas' AutoSum split body (T4); +16 is Page Layout's Print Titles alias (T3a)
         self.assertNotIn(15, self.offsets.values())
-        self.assertNotIn(16, self.offsets.values())
+        self.assertEqual(16, self.offsets["FID_PAGELAYOUT_PRINT_TITLES"])
 
     def test_sc_hrc_comment_describes_the_fork_block(self):
         text = re.sub(r"\s*//\s*", " ", read("sc/inc/sc.hrc"))

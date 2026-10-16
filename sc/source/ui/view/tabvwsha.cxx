@@ -219,10 +219,17 @@ void ScTabViewShell::GetState( SfxItemSet& rSet )
                 break;
 
             case SID_OPENDLG_EDIT_PRINTAREA:
+            case FID_PAGELAYOUT_PRINT_TITLES:
             case SID_ADD_PRINTAREA:
             case SID_DEFINE_PRINTAREA:
                 {
                     if ( pDocShell && pDocShell->IsDocShared() )
+                    {
+                        rSet.DisableItem( nWhich );
+                    }
+                    // The original is also disabled by the drawing shells (drawsh.sdi, drtxtob.sdi,
+                    // StateDisableItems); the alias lives in this view shell below them
+                    else if ( nWhich == FID_PAGELAYOUT_PRINT_TITLES && ( bActiveDrawSh || bActiveDrawTextSh ) )
                     {
                         rSet.DisableItem( nWhich );
                     }

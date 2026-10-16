@@ -34,6 +34,8 @@ interface TableOLEObject
 interface Tables
 {
     FID_TAB_SELECTALL   [ ExecMethod = Execute; StateMethod = GetState; ]
+    // Page Layout tab alias of SID_OPENDLG_EDIT_PRINTAREA (TableSelection, docsh.sdi): same Execute and GetState
+    FID_PAGELAYOUT_PRINT_TITLES [ ExecMethod = Execute; StateMethod = GetState; ]
     FID_TAB_DESELECTALL [ ExecMethod = Execute; StateMethod = GetState; ]
     FID_TAB_MENU_RENAME [ ExecMethod = ExecuteTable; StateMethod = GetStateTable; ]
     FID_TAB_APPEND      [ ExecMethod = ExecuteTable; StateMethod = GetStateTable; ]
