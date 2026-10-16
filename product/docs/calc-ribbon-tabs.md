@@ -210,9 +210,40 @@ screenshots are T3b.
   (`toolboxitem-N` of each `bx<Prefix><Box>`), not a status listener, for all 34 placeholder buttons on the Data,
   Insert and Page Layout pages; it failed before the fix with 12 buttons drawn enabled.
   `test_placeholder_buttons_stay_disabled_when_the_ribbon_is_built_again` does the same check again after a rebuild.
-- **Not fixed** (follow-up task, `SfxDispatchController_Impl::StateChanged` URL filter): a URL argument variant
-  (`.uno:X?A:t=v`) does not hear later state changes of its slot when another URL bound the slot first (probe: a
-  listener on `.uno:DataUngroup?Probe:string=x` heard `[False]` while one on `.uno:DataUngroup` heard
-  `[False, True, False]`). With this fix such a variant that is disabled when its button is built now stays
+- **Not fixed here** (fixed in T1c, below): a URL argument variant (`.uno:X?A:t=v`) did not hear later state
+  changes of its slot when another URL bound the slot first (probe: a listener on
+  `.uno:DataUngroup?Probe:string=x` heard `[False]` while one on `.uno:DataUngroup` heard
+  `[False, True, False]`). With the T1b fix alone such a variant that is disabled when its button is built stays
   greyed until the ribbon is built again, where before it stayed enabled. Placeholders never change state, so
   they are not affected; real variant buttons (the Sparkline types) are.
+
+### Argument-variant URLs hear later state changes (T1c)
+
+- **Cause** (sfx2, upstream too): `SfxBindings::GetDispatch` keeps one `SfxOfficeDispatch` per slot, made for the
+  URL that asked first, and every URL of that command shares it (`.uno:InsertSparkline`, `...?Type:string=line`,
+  `...=column`, `...=stacked`). Each listener is registered under its own URL, but
+  `SfxDispatchController_Impl::StateChanged` sent a pushed state only to the listeners under the first URL's
+  `Main` and `Complete`, and always with the first URL as `FeatureURL`. So in the Office ribbon (Line binds the
+  slot) Column and Win/Loss only ever got their first state, and a listener on the plain `.uno:InsertSparkline`
+  got events addressed to `...?Type:string=line`, which controllers that compare `FeatureURL.Complete` with
+  their own command ignore.
+- **Fix** (`sfx2/source/control/unoctitm.cxx`, `StateChanged`): the first URL's listeners get the same event as
+  before; listeners on any other URL with the same `Main` (the same command, other arguments) get the same state
+  with `FeatureURL` set to the URL they registered. Other URLs, and master commands (`.uno:X.y`, their own
+  unbound dispatch), are untouched. The LibreOfficeKit state callback (`InterceptLOKStateChangeEvent`) is called
+  once per change with the first URL's event, as before.
+- **Effect seen** (item dumps, before/after): nothing changes in a fresh Calc Office, Writer Tabbed, Writer Compact
+  or Impress `notebookbar_groupedbar_full` window, nor in Writer Compact with a read-only document. After Edit
+  Document, the seven `.uno:StyleApply?...` buttons of Writer Compact (Default Paragraph, Heading 1-4, Emphasis,
+  Strong Emphasis), which stayed greyed before, are enabled like in a fresh window.
+- **Tests**: `test_argument_variant_listener_hears_later_state_changes` (Default UI, plain URL binds first) and
+  `test_main_url_listener_hears_its_own_url_when_a_variant_bound_the_slot` (Office UI, Line binds first) keep a
+  listener on `.uno:InsertSparkline` and one on `...?Type:string=column`, select a shape (no cell shell: the slot
+  is disabled) and a cell again; each listener must hear exactly `[False, True]`, every event with its own URL.
+  `test_sparkline_buttons_follow_their_slot_state` reads the three Sparkline buttons' drawn `Enabled` state through
+  the same steps. Before the fix: Column was never told; Column and Win/Loss stayed drawn enabled with a shape
+  selected; the plain URL's listener got `...?Type:string=line` as `FeatureURL`.
+- **Not covered**: a probe saw no push at all, even on the plain URL's listener, after protecting the sheet
+  through the API (`XProtectable.protect`, also followed by a cell selection) or after a multi-range selection:
+  Calc does not invalidate `SID_INSERT_SPARKLINE` for them, so the button keeps its old state there (an sc
+  matter, not this defect). The tests therefore use the shape selection, which changes the shell.

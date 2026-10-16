@@ -45,10 +45,12 @@ class StateListener(unohelper.Base, XStatusListener):
     def __init__(self):
         self.enabled = None
         self.history = []  # every IsEnabled the frame pushed, in order
+        self.urls = []  # the FeatureURL.Complete of every event, in order
 
     def statusChanged(self, aEvent):
         self.enabled = aEvent.IsEnabled
         self.history.append(aEvent.IsEnabled)
+        self.urls.append(aEvent.FeatureURL.Complete)
 
     def disposing(self, aEvent):
         pass
@@ -157,6 +159,7 @@ class NotebookbarOffice(UITestCase):
         xDispatch = xDesktop.getCurrentFrame().queryDispatch(aURL, "", 0)
         self.assertIsNotNone(xDispatch, name)
         listener = StateListener()
+        listener.url = aURL.Complete  # the URL it listens on, as the dispatch keys it
         xDispatch.addStatusListener(listener, aURL)
         try:
             self.wait_for(lambda: listener.enabled is not None, "no initial state for " + name)
@@ -354,6 +357,72 @@ class NotebookbarOffice(UITestCase):
                 self.assertTrue(self.dispatch_enabled(name), name)
                 with self.ui_test.execute_dialog_through_command(".uno:" + name, close_button="cancel") as xDialog:
                     self.assertIsNotNone(xDialog.getChild("cancel"))  # the Sparkline dialog, as without argument
+
+    def wait_until_empty(self, items, timeout=5):
+        """Poll items() until it returns an empty list; return its last value."""
+        deadline = time.time() + timeout
+        while items() and time.time() < deadline:
+            time.sleep(0.05)
+        return items()
+
+    def check_main_and_variant_listeners_hear_state_changes(self, document):
+        # URLs that differ only in their arguments bind the same slot and share its dispatch,
+        # which the first of them bound. Every listener must be told about later state changes,
+        # one event per change, each with its own URL: controllers match FeatureURL.Complete.
+        # Selecting a drawing object takes the cell shell, and so the Sparkline slot, away.
+        self.xUITest.getTopFocusWindow().getChild("grid_window").executeAction(
+            "SELECT", mkPropertyValues({"CELL": "A1"}))
+        with self.watched_state("InsertSparkline") as main, \
+                self.watched_state("InsertSparkline?Type:string=column") as variant:
+            listeners = (main, variant)
+            not_told = lambda state: [listener.url for listener in listeners if listener.enabled is not state]
+            time.sleep(1)  # let the slot cache's first push arrive before counting
+            start = [len(listener.history) for listener in listeners]
+            self.assertEqual([], not_told(True))
+            self.select_new_shape(document, 1000)
+            self.assertEqual([], self.wait_until_empty(lambda: not_told(False)), "a shape disabled the slot")
+            self.select_rows(document, "A1")  # back to the cells
+            self.assertEqual([], self.wait_until_empty(lambda: not_told(True)), "a cell enabled the slot")
+            time.sleep(1)  # a duplicate or extra event would have arrived by now
+            for listener, n in zip(listeners, start):
+                self.assertEqual([False, True], listener.history[n:], listener.url)
+                self.assertEqual({listener.url}, set(listener.urls), listener.url)
+
+    def test_argument_variant_listener_hears_later_state_changes(self):
+        # Default UI: the plain .uno:InsertSparkline bound the slot first.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.check_main_and_variant_listeners_hear_state_changes(document)
+
+    def test_main_url_listener_hears_its_own_url_when_a_variant_bound_the_slot(self):
+        # Office UI: the Sparkline Line button's URL (...?Type:string=line) bound the slot first.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_main_and_variant_listeners_hear_state_changes(document)
+            finally:
+                self.switch_to("Default")
+
+    def test_sparkline_buttons_follow_their_slot_state(self):
+        # The three Sparkline buttons are argument variants of one slot; each one must be drawn
+        # with the slot's current state, not only the variant whose URL bound the slot first.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                xCalcDoc.getChild("grid_window").executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+                buttons = {box: xCalcDoc.getChild("bxInsert" + box).getChild("toolboxitem-1")
+                           for box in ("SparklineLine", "SparklineColumn", "SparklineWinLoss")}
+                drawn_not = lambda state: sorted(box for box, xItem in buttons.items()
+                                                 if get_state_as_dict(xItem)["Enabled"] != state)
+                self.assertEqual([], self.wait_until_empty(lambda: drawn_not("true")), "drawn disabled at start")
+                self.select_new_shape(document, 1000)
+                self.assertEqual([], self.wait_until_empty(lambda: drawn_not("false")),
+                                 "drawn enabled with a shape selected")
+                self.select_rows(document, "A1")
+                self.assertEqual([], self.wait_until_empty(lambda: drawn_not("true")),
+                                 "drawn disabled with a cell selected again")
+            finally:
+                self.switch_to("Default")
 
     def test_family_variant_url_is_disabled_and_does_nothing(self):
         # A URL variant of a family slot reaches the same always-disabled slot: the status

@@ -924,11 +924,32 @@ void SfxDispatchController_Impl::StateChanged( sal_uInt16 nSID, SfxItemState eSt
         InterceptLOKStateChangeEvent(nSID, pDispatcher->GetFrame(), aEvent, pState);
     }
 
+    // SfxBindings::GetDispatch shares one dispatch per slot, made for the URL that asked first, so
+    // listeners on the same command with other arguments (.uno:X, .uno:X?Arg:string=v) are
+    // registered here too. Tell each of them, with an event for the URL it listens on:
+    // controllers compare FeatureURL.Complete with their own command.
+    css::uno::Reference<css::util::XURLTransformer> xTransformer;
     const std::vector<OUString> aContainedTypes = pDispatch->getContainedTypes();
     for (const OUString& rName: aContainedTypes)
     {
-        if (rName == aDispatchURL.Main || rName == aDispatchURL.Complete)
+        if (rName == aDispatchURL.Complete)
+        {
             sendStatusChanged(rName, aEvent);
+            continue;
+        }
+
+        css::util::URL aListenerURL;
+        aListenerURL.Complete = rName;
+        if (!xTransformer.is())
+            xTransformer = URLTransformer::create(::comphelper::getProcessComponentContext());
+        xTransformer->parseStrict(aListenerURL);
+        if (rName != aDispatchURL.Main && aListenerURL.Main != aDispatchURL.Main)
+            continue; // another command
+
+        css::frame::FeatureStateEvent aListenerEvent(aEvent);
+        aListenerEvent.FeatureURL = std::move(aListenerURL);
+        aListenerEvent.FeatureURL.Complete = rName; // exactly the URL the listener registered
+        sendStatusChanged(rName, aListenerEvent);
     }
 }
 
