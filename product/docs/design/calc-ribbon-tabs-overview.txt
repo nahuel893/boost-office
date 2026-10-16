@@ -224,7 +224,8 @@ Feature doc: product/odd/tasks/calc-ribbon-tabs.md (rulings). Home and Data are 
 -----------------------------------------------------------
   1. Family slots for placeholders (needed by the slot ceiling): accept?
   2. Help tab last (after Tools, current design) or right after View?
-  3. View > Sheet View: omitted (cloud rule) although it is the first group of Excel's View tab;
+  3. RESOLVED: View > Sheet View was added as greyed placeholders by ruling (Excel's reduced form,
+     family slot +421). Original question: omitted (cloud rule) although it is the first group of Excel's View tab;
      build it as greyed placeholders in Excel's reduced form instead?
   4. Review: LibreOffice's single comment type drives both Excel's Comments group and Notes menu.
   5. Formulas: accept the C++ popup controller for the function-category menus in T4?

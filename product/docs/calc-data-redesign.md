@@ -105,9 +105,13 @@ Close Calc before switching modes. Details of the launcher are in the Home doc.
   3. Remove the slot from the always-`DisableItem` case list in `cellsh.cxx` and implement Execute.
      Import data through `ScDBDocFunc::DoImport` so that Refresh can re-import the range later.
   4. In `CalcCommands.xcu`, remove "(not available yet)" from the command's `TooltipLabel`.
-  5. Remove the slot from `PLACEHOLDERS` / `PLACEHOLDER_SLOTS` in
-     `product/tests/test_calc_data_ui.py` and from the placeholder list in the UITest
-     `sc/qa/uitest/calc_tests/notebookbarOffice.py`; add tests for the new behavior.
+  5. In `product/tests/placeholders.json`, keep the entry and add `"implemented": true`. Do not delete it:
+     the slot stays in the fork block of `sc.hrc`, whose no-gaps rule (`test_calc_slots.py`) is the only
+     gap check. `placeholders.load()`, `labelled()`, `labels_by_url()` and `all_urls()` and the UITests'
+     `placeholder_entries()` then leave the entry out, so every "is a placeholder" check skips it
+     (disabled, inert, tooltip, always-disabled list, no other reference), and the per-tab label tables
+     (`placeholders.drop_implemented`) and all placeholder counts follow the registry. Add tests for the
+     new behavior; nothing else in the tests names the slot.
 - **From Database prerequisites**: `autogen.input` has `--disable-postgresql-sdbc`, `--without-java`
   and `--disable-firebird-sdbc`. Enabling PostgreSQL means a reconfigure and a large rebuild. The
   MariaDB/MySQL connector is already built.

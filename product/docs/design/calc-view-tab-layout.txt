@@ -70,7 +70,10 @@ TAB MOCK (left to right)
   |    ||    ||       |   |Window||All [P]||Panes v| (x) Unhide   [P]  (x) Reset Window Pos.[P]  |Windows v| |  v   |
   +----++----++-------+   +------++-------++-------+                                             +---------+ +------+
 
-  Six sections. Excel's Sheet View group (OneDrive/SharePoint only) is not built (OMISSIONS).
+  Six sections drawn here. Excel's Sheet View group (OneDrive/SharePoint only) was added later, as
+  greyed placeholders by ruling (family slot +421, Excel's reduced form: Default plus four icon-only
+  buttons, first group), so the shipped page has seven sections; see OPEN QUESTIONS 1 and
+  product/docs/calc-ribbon-tabs.md section 6.9.
 
 LAYOUT FILE
 -----------
@@ -331,7 +334,7 @@ OMISSIONS (Excel controls or menu items not built)
 --------------------------------------------------
   Sheet View group (view combo, Keep, Exit, New, Options)  works only for files on OneDrive or
                        SharePoint (cloud ruling). It is the first group of Excel's View tab, so
-                       its absence is visible: open question 1
+                       its absence was visible: built as placeholders by ruling (open question 1)
   Show > Data Type Icons   Microsoft online data types (cloud ruling)
   Focus Cell menu          Focus Cell Color >, Show Auto-Highlight (plain toggle)
   Macros > Use Relative References   no LibreOffice equivalent
@@ -352,7 +355,8 @@ ICONS
 
 OPEN QUESTIONS
 --------------
-  1. Sheet View: omitted by the cloud ruling, but it is the first group of every default Excel
+  1. RESOLVED: Sheet View was added as greyed placeholders by ruling (reduced form, family slot +421).
+     Original question: omitted by the cloud ruling, but it is the first group of every default Excel
      View tab (shown greyed for local files). To match the look it could be greyed placeholders
      on one family slot (a "Default" view button instead of the combo, which gen_ribbon cannot
      make, plus Keep, Exit, New, Options). At full size (~270 px) the tab would overflow

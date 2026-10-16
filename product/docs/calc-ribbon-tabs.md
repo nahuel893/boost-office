@@ -38,8 +38,8 @@ marked **[P]** below and listed in section 8. Dropdown buttons are marked **(men
 | Filters | Slicer [P], Timeline [P] (small buttons with labels) |
 | Links | Hyperlink |
 | Comments | Comment |
-| Text | Text Box, Headers and Footers, Fontwork (Excel's WordArt), Signature Line, Object |
-| Symbols | Equation (Formula Object), Symbol |
+| Text | Text Box, Headers and Footers, Insert Fontwork (Excel's WordArt), Signature Line, Insert OLE Object (Excel's Object) |
+| Symbols | Formula Object (Excel's Equation), Symbol |
 
 ### Page Layout (5 sections)
 
@@ -111,12 +111,14 @@ At 1920 px the usable width stops near 1830 px, so Insert (about 50 px spare) an
 are the tightest. Insert only fits because Filters and Sparklines are small-label columns. Translated
 labels may push the last sections behind ">>".
 
-Home is unchanged by this slice, except that section captions now sit on one baseline on every tab (section 6.11).
+Home is unchanged by this slice, except that section captions now sit on one baseline on every visible tab, the
+generated ones and the upstream Extension and Tools (section 6.11).
 
 ### Icons
 
 Boost and boost_dark icons for every button (Fluent glyphs with soft fills, the same style as Home and
-Data): 35 for Insert, 25 Page Layout, 28 Formulas, 15 Review, 27 View and 7 Help, in both themes.
+Data): 35 for Insert, 25 Page Layout, 28 Formulas, 15 Review (its 16th button, Comment, reuses Insert's
+`insertannotation`), 27 View and 7 Help, in both themes.
 Glyph substitutes, where Fluent 1.1.344 has no glyph at 24 px: four on Formulas (see T4b) and two on
 View (see T6b).
 
@@ -148,8 +150,9 @@ Screenshots and Excel reference images stay outside the repository.
   slots live in the fork block `SID_NEW_SLOTS+380..+421` of `sc/inc/sc.hrc` (spare +422..+424;
   +424 is the last Calc slot id). The functional slots `FID_FORMULAS_AUTOSUM` (+15) and
   `FID_PAGELAYOUT_PRINT_TITLES` (+16) use two unused ids next to Data's +12..+14.
-- **To implement a placeholder**: follow the recipe in the Data doc, section 3, and remove its entry from
-  `product/tests/placeholders.json`.
+- **To implement a placeholder**: follow the recipe in the Data doc, section 3, and flag its entry in
+  `product/tests/placeholders.json` with `"implemented": true` (the entry stays; it is no longer a
+  placeholder for any test).
 - **Shared code touched** (not Calc-only; see section 7): `sfx2/source/sidebar/ControllerFactory.cxx` (T1b),
   `sfx2/source/control/unoctitm.cxx` (T1c, T8a), `framework/source/uielement/menubarmanager.cxx` (T3c, T8a),
   the export of `svt::PopupMenuControllerBase` in `include/svtools/popupmenucontrollerbase.hxx` (T4c), `vcl/source/bitmap/BitmapDisabledImageFilter.cxx`,
@@ -160,17 +163,19 @@ Screenshots and Excel reference images stay outside the repository.
 
 ## 4. Tests and checks
 
-Counts at the end of the slice: 279 product unit tests, 71 UITests in
+Counts at the end of the slice: 293 product unit tests, 71 UITests in
 `sc/qa/uitest/calc_tests/notebookbarOffice.py` (all tabs together), 7 VCL CppUnit tests for the
 disabled-image filter (`CppunitTest_vcl_bitmapprocessor_test`).
 
-- `python3 -I -m unittest discover -s product/tests -t .`: each generated page against its design file,
+- `python3 -I -m unittest discover -s product/tests -t .`: each generated page against the design tables
+  copied by hand into the test modules (`DESIGN` in `test_calc_<tab>_ui.py`; the `.txt` design files are not
+  read, so a change to a design file must be copied to its test),
   "office .ui == upstream + tab operations + every generated page" (`product/tests/office.py`), labels,
   controllers and popup files of every command, the placeholder registry against `sc.hrc`, the `.sdi`
   files and `cellsh.cxx` (`test_calc_slots.py`), the split mirrors, icon coverage of every button in
   both themes (`test_icons.py`), duplicate widget ids over the whole `.ui`, the caption rule, suppr entries.
 - `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` (full names, one at a time): tab order,
-  every placeholder disabled and inert and drawn disabled (62 buttons), dropdown contents built through the
+  every placeholder disabled and inert and drawn disabled (every labelled placeholder button of the registry), dropdown contents built through the
   real menu controllers, AutoSum and Print Titles against their originals, the function menus, state
   listeners on URL variants.
 - `product/dev/check-ui.sh sc/uiconfig/scalc/ui/notebookbar_office.ui`: gla11y and lint, no new warnings
@@ -211,7 +216,7 @@ feature document. Ask for a change and the matching task is reopened.
 11. **Functional slots +15 and +16** go in the upstream gap next to Data's +12..+14 (upstream appends at the top
     and rarely refills old holes).
 12. **Print Titles** is an alias slot that mirrors `SID_OPENDLG_EDIT_PRINTAREA` (same Execute and GetState), declared in the `Tables` interface of
-    `tabvwsh.sdi` and disabled in drawing modes by its own `GetState`, because the files that disable the
+    `tabvwsh.sdi` and disabled in the seven drawing subshells by its own `GetState`, because the files that disable the
     original were outside that task's edit surface.
 13. **Formulas function menus**: static menus shipped first (T4a); the C++ category popup controller replaced
     them (T4c).
@@ -262,18 +267,26 @@ Extension, Tools, **Help**. Page ids do not change (`phbLayout`, `phbFunctions`)
 
 The edits are data, not hand edits: `product/ui/calc_tabs.json` is applied by
 `product/ui/gen_ribbon.py` (`apply_tabs`) to the upstream `notebookbar.ui`, before the generated
-pages are spliced in. Operations: `relabel` (id, from, to; refuses an unexpected old text),
-`move` (a page and its tab label in front of another page), `positions` (packing positions) and
+pages are spliced in (`regenerate_all`). Operations: `relabel` (id, from, to; refuses an unexpected old text),
+`properties` (id, name, from, to: one own property of one object, e.g. a box's `valign`; refuses an unexpected
+old value), `move` (a page and its tab label in front of another page), `positions` (packing positions) and
 `add_pages` (a new, empty generated page with its Help-style `product:<Tab>-begin/end` markers
 and a tab label). Each operation can be applied twice, so re-running is safe.
 
 The tests rebuild the office `.ui` as upstream + tab operations + every generated page
 (`product/tests/office.py`) and compare it with the committed file.
 
+To rebuild everything, run the one command (from the repository root; it reads the upstream
+`notebookbar.ui`, applies `calc_tabs.json`, splices every `product/ui/calc_*.json` page and syncs the
+`scalc.suppr` entries, so it needs no argument and is safe to re-run):
+
 ```
-python3 -I product/ui/gen_ribbon.py --layout product/ui/calc_home.json --tabs product/ui/calc_tabs.json \
-    --ui sc/uiconfig/scalc/ui/notebookbar_office.ui --suppr solenv/sanitizers/ui/modules/scalc.suppr
+python3 -I product/ui/gen_ribbon.py --all
 ```
+
+The older single-page form still works (`--layout product/ui/calc_home.json --tabs product/ui/calc_tabs.json
+--ui sc/uiconfig/scalc/ui/notebookbar_office.ui --suppr solenv/sanitizers/ui/modules/scalc.suppr`), but it
+changes only the pages it is given.
 
 The Help page holds one empty `sfxlo-PriorityMergedHBox` (`pmhbHelp`) until T7 gives it a layout
 (`calc_help.json`, `id_prefix` Help, page `phbHelp`).
@@ -294,7 +307,13 @@ argument the slot does not declare.
 
 - `product/tests/placeholders.json` is the one registry: slot, offset, base command, optional URL
   variants (`Arg:type=value`) and, once a button is on a page, its label. `placeholders.py` loads it;
-  the UITests read the same file. Implementing a placeholder removes its entry.
+  the UITests read the same file. Implementing a placeholder flags its entry `"implemented": true`:
+  `load()`, `labelled()`, `labels_by_url()` and `all_urls()` skip it, `load_all()` keeps every slot, and the
+  slot stays in `sc.hrc`'s no-gaps block. Every placeholder count in the unit tests and the UITests comes from
+  the registry, and `test_placeholders.py` proves the helpers exclude a flagged entry in a temporary copy.
+- `product/tests/commands.py` resolves labels, tooltips and image flags the way Calc does: `CalcCommands.xcu`
+  first, then `GenericCommands.xcu` (the other modules' files never apply). Every test reads commands through it.
+  The per-tab tests walk toolboxes with `gen_ribbon.boxes_of`, so a footer item cannot skip the per-item checks.
 - `gen_ribbon.item_url(item)` is the full command URL of a layout item (its `action`, else
   `.uno:<cmd>`); `item_command(item)` is the base command. Slot checks use the base command, label
   and icon checks the full URL.
@@ -398,9 +417,12 @@ screenshots are T3b.
 - **Print Titles alias** `.uno:PageLayoutPrintTitles` = `FID_PAGELAYOUT_PRINT_TITLES` = `SID_NEW_SLOTS+16`
   (was unused). Mirrors `SID_OPENDLG_EDIT_PRINTAREA`: same `Execute`/`GetState` (`tabvwsh3.cxx`, `tabvwsha.cxx`),
   ReadOnlyDoc FALSE. The original is declared in `TableSelection` (docsh.sdi) and disabled in drawing modes by
-  drawsh.sdi/drtxtob.sdi; those files were outside T3a's edit surface, so the alias is declared in the sibling
-  interface `Tables` of the same shell (`tabvwsh.sdi`) and its `GetState` disables it when `bActiveDrawSh` or
-  `bActiveDrawTextSh` is set (same effect, one UITest compares it with the original). Nothing invalidates the
+  drawsh.sdi/drtxtob.sdi, that is in seven subshells (ScDrawShell and its derived chart, OLE, graphic, media and
+  draw-form shells, and the draw text shell); those files were outside T3a's edit surface, so the alias is declared
+  in the sibling interface `Tables` of the same shell (`tabvwsh.sdi`) and its `GetState` (`tabvwsha.cxx:221-235`)
+  disables it when any of the seven subshell flags (`bActiveDrawSh`, `bActiveDrawTextSh`, `bActiveDrawFormSh`,
+  `bActiveOleObjectSh`, `bActiveChartSh`, `bActiveGraphicSh`, `bActiveMediaSh`) is set (same effect, one UITest
+  compares it with the original). Nothing invalidates the
   original (checked with rg), so there is no invalidation mirror; `PrintTitlesAliasTest` scans `sc/source` and
   fails if one appears without its mirror.
 - **Spikes**
@@ -671,8 +693,8 @@ screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
 
 #### Review icons and fit (T5b)
 
-- **Icons**: 15 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as the other tabs), all
-  large: `spelldialog` (text_proofing_tools; the design's `text_proofing_tools_abc` does not exist in Fluent 1.1.344),
+- **Icons**: 15 new boost/boost_dark manifest entries for the 16 buttons (Fluent glyphs, soft fills, same style as the
+  other tabs; the commit that added them also added Formulas' `formulascalculatesheet`), all large: `spelldialog` (text_proofing_tools; the design's `text_proofing_tools_abc` does not exist in Fluent 1.1.344),
   `thesaurusdialog` (book_open), `setdocumentproperties` (data_usage), `reviewaccessibilitymenu`
   (accessibility_checkmark), `reviewtranslate` (translate), `deletenote` (comment_dismiss), `showannotations`
   (comment_multiple), `reviewnotesmenu` (comment_note), `protect` (lock_closed), `toolprotectiondocument`
@@ -798,6 +820,13 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   caption ends on its section's bottom edge. The toolboxes keep their columns, rows, spans and `valign`. A new
   `properties` operation of `calc_tabs.json` sets `phbLayout`'s own `valign` from `center` to `fill` (re-runnable,
   refuses an unexpected value). Requisitions are unchanged, so the ribbon height is too.
+- **Extension and Tools (final review follow-up)**: these two upstream pages are not generated, but their
+  `pmhbExtension` and `pmhbTools` boxes were `valign center` too. The same `properties` operation now sets both to
+  `fill` (`calc_tabs.json`), so every visible tab fills its tab page. `CaptionBaselineTest` and `test_calc_tabs.py`
+  check it (the two pages differ from upstream only in that one line). Limit: Tools keeps upstream's single
+  three-row section grids, not the generated two-row structure, so in a 1920 px light screenshot its captions
+  ("Macro", "AutoCorrection") end about 2 px above the generated pages' baseline and its separators run y = 56-155
+  instead of 51-162. Extension holds only the add-on merge point (no sections to align).
 - **Measured** (1920 px light screenshots, before -> after): name box top (the ribbon's bottom edge) y = 181 on every
   tab, before and after. Section separators and caption baselines:
 
@@ -830,8 +859,9 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
 #### Parked review minors
 
 - **sfx2** (`SfxDispatchController_Impl::StateChanged`, T1c): one event copy before the loop with only `FeatureURL`
-  set per listener URL; the plain command of the bound variant takes `aDispatchURL` without its arguments instead of
-  being parsed; a URL whose `parseStrict` fails is skipped. The variant-listener UITest helper waits until no listener
+  set per listener URL. No key is parsed any more (final review): a key belongs to the slot when it equals
+  `aDispatchURL.Main` or starts with `aDispatchURL.Main + "?"`; its event URL is the dispatch URL with `Complete` =
+  the key and `Arguments` = the text after the `?`; any other key is skipped. The variant-listener UITest helper waits until no listener
   has heard an event for one second (the bindings push from a 300 ms timer) instead of a fixed `sleep(1)`.
 - **framework** (`getSingleBoolArgument`, T3c): the type is what `Name:type=value` has between the first `:` and the
   first `=` (as `SfxDispatchController_Impl::addParametersToArgs` reads it), so a string whose value contains
@@ -899,10 +929,11 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   signature as tooltip text anyway (UITest); other VCL plugins show it.
 - **Popups hide disabled entries** (pending decision **T10**). LibreOffice's `DontHideDisabledEntry` defaults to
   hiding them; Excel shows them greyed. So the Breaks menu on cell A1 reads "[No selection possible]", the Notes
-  menu on an empty cell shows only Insert Comment, and the Check Accessibility menu on an empty cell is empty.
+  menu on an empty cell shows only Insert Comment, and the Check Accessibility menu on an empty cell reads
+  "[No selection possible]".
   Changing the default affects every context menu. If chosen, the screenshots of the populated menus can be taken.
-- **Some labels are LibreOffice's, not Excel's** (pending decision **T9**): for example Fontwork for WordArt,
-  Headers and Footers, Object for the OLE button, Formula Object for Equation, Table Styles (the AutoFormat
+- **Some labels are LibreOffice's, not Excel's** (pending decision **T9**): for example Insert Fontwork for WordArt,
+  Headers and Footers, Insert OLE Object for Object, Formula Object for Equation, Table Styles (the AutoFormat
   entry of the accessibility menu), "Chart..." for the chart wizard. Two ways: Calc-only label overrides in
   `CalcCommands.xcu`, which also rename the menus, or ribbon-only URL label variants.
 - **Labels are en-US only.** About 115 new `CalcCommands.xcu` nodes, the three tab labels and the new
@@ -946,8 +977,8 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
 The "features to program later". 65 buttons and menu items on 42 slots (`product/tests/placeholders.json`,
 `sc/inc/sc.hrc`): 9 on Data, 53 on the six new tabs' ribbons, 3 menu items. A family slot serves several
 rows. Previous and Next Comment are also items of the Notes menu. All are greyed, with the tooltip
-"<Label> (not available yet)", and do nothing. To implement one, follow the Data doc's recipe and delete
-its registry entry.
+"<Label> (not available yet)", and do nothing. To implement one, follow the Data doc's recipe and flag
+its registry entry `"implemented": true`.
 
 | Tab | Label | Command | Slot |
 |---|---|---|---|
