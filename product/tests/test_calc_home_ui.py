@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import office
+from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
 LAYOUT = ROOT / "product/ui/calc_home.json"
@@ -38,7 +39,7 @@ class CalcHomeUiTest(unittest.TestCase):
 
     def test_merge_center_is_an_instant_split_button(self):
         # The body runs .uno:HomeMergeCenter; only the arrow opens the menu.
-        items = [i for s in self.layout["sections"] for c in s["columns"] for b in c
+        items = [i for s in self.layout["sections"] for b in g.boxes_of(s)
                  for i in b["items"] if i["cmd"] == "HomeMergeCenter"]
         self.assertEqual(1, len(items))
         self.assertEqual("split", items[0]["kind"])

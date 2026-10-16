@@ -146,7 +146,7 @@ class CalcFormulasUiTest(unittest.TestCase):
         self.office = OFFICE.read_text(encoding="utf-8")
 
     def boxes(self, section):
-        return [b for c in section["columns"] for b in c]
+        return list(g.boxes_of(section))  # the columns' toolboxes, then the footer
 
     def items(self):
         return [i for s in self.layout["sections"] for b in self.boxes(s) for i in b["items"]]

@@ -52,9 +52,7 @@ class CalcDataUiTest(unittest.TestCase):
         self.home = json.loads(HOME_LAYOUT.read_text(encoding="utf-8"))
 
     def items(self):
-        return [i for s in self.layout["sections"] for c in s["columns"] for b in c
-                for i in b["items"] + []] + [i for s in self.layout["sections"]
-                                             for i in s.get("footer", {}).get("items", [])]
+        return [i for s in self.layout["sections"] for b in g.boxes_of(s) for i in b["items"]]
 
     def test_page_and_sections_follow_the_design(self):
         self.assertEqual("phbData", self.layout["page"])
@@ -67,7 +65,7 @@ class CalcDataUiTest(unittest.TestCase):
         # Excel's A-Z / Z-A buttons carry no label; the tooltip keeps the name. EditLinks
         # ("Links to External Files") is the widest label on the page, so it is icon-only too.
         # Together they let all 8 sections fit at 1920 px.
-        boxes = {b["id"]: b for s in self.layout["sections"] for c in s["columns"] for b in c}
+        boxes = {b["id"]: b for s in self.layout["sections"] for b in g.boxes_of(s)}
         for box_id in ("SortAscending", "SortDescending", "Shuffle", "EditLinks"):
             self.assertEqual("small", boxes[box_id]["style"], box_id)
 
@@ -179,8 +177,7 @@ class CalcDataUiTest(unittest.TestCase):
     def test_commands_used_by_data_and_home_layouts_have_an_image_flag_or_icon(self):
         flagged = flagged_commands()
         for layout in (self.layout, self.home):
-            groups = [b["items"] for s in layout["sections"] for c in s["columns"] for b in c]
-            groups += [s.get("footer", {}).get("items", []) for s in layout["sections"]]
+            groups = [b["items"] for s in layout["sections"] for b in g.boxes_of(s)]
             for items in groups:
                 for item in items:
                     if "icon" not in item and item["cmd"] not in NO_IMAGE_OK:
