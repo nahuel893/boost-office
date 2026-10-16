@@ -194,6 +194,99 @@ class NotebookbarOffice(UITestCase):
         self.assertEqual(61, len(names))  # 42 slots, 19 extra family variants
         self.check_placeholders_are_disabled_and_inert(names)
 
+    def test_insert_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_insert.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(10, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_placeholders_are_disabled_and_inert(self):
+        # 10 slots: 9 plain ones (one is a Pictures menu item) and the chart-type family of 9 variants
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 389 <= e["offset"] <= 398)
+        self.assertEqual(18, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_insert_dropdowns_and_menu_items_are_enabled(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            # the two dropdown commands have no slot: their popups are checked below
+            for name in ("InsertGraphic", "Gallery", "InsertCalcTable", "InsertObjectChart",
+                         "DataDataPilotRun", "HyperlinkDialog", "InsertAnnotation", "DrawText"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def popup_of(self, command, resource):
+        """The awt popup menu the ribbon dropdown `command` shows, built by its menu controller."""
+        xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", self.xContext)
+        xFrame = xDesktop.getCurrentFrame()
+        xFactory = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
+        self.assertTrue(xFactory.hasController(command, "com.sun.star.sheet.SpreadsheetDocument"), command)
+        xController = xFactory.createInstanceWithArgumentsAndContext(
+            command, mkPropertyValues({"Frame": xFrame, "CommandURL": command,
+                                       "Value": resource,
+                                       "ModuleIdentifier": "com.sun.star.sheet.SpreadsheetDocument"}),
+            self.xContext)
+        self.assertIsNotNone(xController, command)
+        xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
+        xController.setPopupMenu(xPopup)
+        xController.updatePopupMenu()
+        return xPopup
+
+    def popup_commands(self, xPopup):
+        commands = []
+        for pos in range(xPopup.getItemCount()):
+            nId = xPopup.getItemId(pos)
+            command = xPopup.getCommand(nId)
+            if command:  # separators have none
+                commands.append(command)
+        return commands
+
+    def test_insert_shapes_dropdown_builds_its_submenus(self):
+        # risk R6: a product popup with submenus (Line) and single items that open toolbar submenus
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:InsertShapesMenu", "insert_shapes")
+            self.assertEqual([".uno:ShapesLineMenu", ".uno:BasicShapes", ".uno:ArrowShapes",
+                              ".uno:FlowChartShapes", ".uno:StarShapes", ".uno:CalloutShapes",
+                              ".uno:SymbolShapes", ".uno:ConnectorToolbox"], self.popup_commands(xPopup))
+            xLine = xPopup.getPopupMenu(xPopup.getItemId(0))
+            self.assertIsNotNone(xLine)
+            self.assertEqual(8, xLine.getItemCount())
+            self.assertEqual(".uno:Line", xLine.getCommand(xLine.getItemId(0)))
+
+    def test_insert_pictures_dropdown_lists_place_in_cell_and_image(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:InsertPicturesMenu", "insert_pictures")
+            self.assertEqual([".uno:InsertPictureInCell", ".uno:InsertGraphic"], self.popup_commands(xPopup))
+
+    def test_insert_sparkline_variants_stay_enabled_and_open_the_dialog(self):
+        # risk R3: the slot declares no Type argument; sfx2 must ignore it, not disable the button
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            for cell, text in (("A1", "1"), ("B1", "2"), ("C1", "3"), ("D1", "")):
+                enter_text_to_cell(xGrid, cell, text)
+            xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "D1"}))
+            for value in ("line", "column", "stacked"):
+                name = "InsertSparkline?Type:string=" + value
+                self.assertTrue(self.dispatch_enabled(name), name)
+                with self.ui_test.execute_dialog_through_command(".uno:" + name, close_button="cancel") as xDialog:
+                    self.assertIsNotNone(xDialog.getChild("cancel"))  # the Sparkline dialog, as without argument
+
     def test_family_variant_url_is_disabled_and_does_nothing(self):
         # A URL variant of a family slot reaches the same always-disabled slot: the status
         # listener hears "disabled" and a dispatch changes nothing (risk R3).
