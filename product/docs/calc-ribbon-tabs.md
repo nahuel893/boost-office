@@ -484,3 +484,28 @@ screenshots are T6b (the variant buttons already carry their icon names). No C++
 - **UITests**: `test_view_*` (sections and toolboxes, placeholders disabled and inert, enabled commands, popup
   contents, Switch Windows fill, labels of every variant). The drawn-disabled count is now 60 buttons and the
   slice-wide placeholder count 65.
+
+### View icons and fit (T6b)
+
+- **Icons**: 27 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as the other tabs).
+  Large: `normalviewmode` (grid), `pagebreakmode` (document_page_break), `viewpagelayout` (document_one_page),
+  `viewcustomviews` (eye), `changetheme` (weather_moon), `zoom` (zoom_in), `zoom100percent` (ratio_one_to_one),
+  `zoomoptimal` (zoom_fit), `newwindow` (window_new), `viewarrangeall` (window_multiple), `viewfreezepanesmenu`
+  (table_freeze_column_and_row), `viewswitchwindowsmenu` (tab_desktop_multiple; `window_multiple_swap` has no
+  24 px source), `viewmacrosmenu` (code). Small: `viewruler` (ruler), `inputlinevisible` (text_field;
+  `window_header_horizontal` has only a 20 px source), `viewcolumnrowhighlighting` (table_cursor), `splitwindow`
+  (split_horizontal) and the URL variants `viewsheetview_{switch,keep,exit,new,options}` (eye_lines, save, eye_off,
+  eye, text_bullet_list, after Excel's Sheet View icons), `viewwindowvisibility_{hide,unhide}` (eye_off, eye),
+  `viewsidebyside_{toggle,sync,reset}` (split_vertical, arrow_sync, arrow_reset). Navigator, View Grid Lines and
+  View Headers reuse the Page Layout icons.
+- All URL variants are small buttons, so the json `icon` keys keep the `cmd/sc_<base>_<value>.png` form; no json,
+  .ui or xcu change was needed (every View command already had the image flag).
+- `test_icons.py`: every View button resolves its icon in both themes (RED before: 58 missing members) and the
+  URL-variant icon names and sizes.
+- **Fit at 1920 px (measured on screenshots)**: all seven sections are visible with no ">>" and no fallback step was
+  needed. Section right edges: Sheet View 118, Workbook Views 465, Dark Mode 551, Show 921, Zoom 1080, Window 1729,
+  Macros 1806. At 1600 px (dark) Sheet View to Zoom stay (last edge x = 1080) and Window and Macros fold behind
+  ">>". At 1366 px the same: Sheet View to Zoom stay, Window and Macros fold.
+- **Real-window menu**: with New Window clicked once (two windows of one document), Switch Windows lists
+  "Untitled 1" (selected, radio mark) and "Untitled 1 : 2", so the framework WindowListMenuController fills a popup
+  opened from the ribbon button.

@@ -88,6 +88,11 @@ class IconThemeTest(unittest.TestCase):
         self.assertGreater(len(list(page.iter("object"))), 12)
         self.assertEqual([], self.missing_icons(page))
 
+    def test_every_view_button_has_an_icon(self):
+        page = tab_page("View")
+        self.assertGreater(len(list(page.iter("object"))), 20)
+        self.assertEqual([], self.missing_icons(page))
+
     def test_insert_url_variants_use_plain_icon_names_of_the_right_size(self):
         self.check_url_variant_icons("Insert")
 
@@ -99,6 +104,9 @@ class IconThemeTest(unittest.TestCase):
 
     def test_review_url_variants_use_plain_icon_names_of_the_right_size(self):
         self.check_url_variant_icons("Review")
+
+    def test_view_url_variants_use_plain_icon_names_of_the_right_size(self):
+        self.check_url_variant_icons("View")
 
     def check_url_variant_icons(self, tab):
         # json "icon" key: cmd/sc_<base>_<value>.png for small, cmd/32/<base>_<value>.png for large buttons
