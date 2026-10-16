@@ -566,7 +566,7 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   every page follows the two-row rule) and fixture tests in `test_gen_ribbon.py`; `test_calc_tabs.py` checks the
   Page Layout property change and the `properties` operation.
 
-### Disabled icons in dark (not fixed: needs VCL)
+### Disabled icons in dark (fixed in VCL by T8b, section 12)
 
 - Disabled icon-only buttons (View > Sheet View, Hide/Unhide; Review > Hide Ink) look almost as bright as enabled
   ones in Boost Dark. VCL draws a disabled image through `BitmapDisabledImageFilter`
@@ -592,3 +592,35 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   controller threw `DisposedException` out of `updatePopupMenu`; it is caught and the function items are built
   disabled. UITest `test_formulas_function_menu_of_a_closed_window_is_built_with_its_items_disabled` (RED before:
   `DisposedException: Frame disposed`).
+
+## 12. Disabled icons in dark themes (T8b)
+
+- **Cause** (section 11): `BitmapDisabledImageFilter` mapped every pixel to grey `luminance / 4 + 160` whatever the
+  background, so on a dark face a disabled icon was a light grey brighter than many enabled icons.
+- **Fix** (`vcl/source/bitmap/BitmapDisabledImageFilter.cxx`): the filter takes the face color it is drawn on. A light
+  face (`!IsDark()`) keeps `luminance / 4 + 160`, byte for byte. A dark face maps luminance to a band just above the
+  face: `face luminance + luminance * 3 / 16` (face .. face + 47). The band is narrower than the light one (1/4 of the
+  range) because WCAG contrast grows faster at the dark end; 3/16 was chosen by simulating the filter on the Boost
+  icons (1/8: 1.39:1, 3/16: 1.61:1, 1/4: 1.82:1 against #2B2B2B; light today: 1.55:1) and it stays at 1.49-1.60:1 for
+  any dark face from #1A1A1A to #5A5A5A. `Image::Draw` passes the output device's `StyleSettings::GetFaceColor()`
+  (the color VCL already uses to pick a dark or light toolbox arrow); `ImplImage` keys its cached disabled bitmap by
+  that face color too, so a theme switch at runtime makes it again.
+- **Measured** (1920 px screenshots, every icon that changed, WCAG contrast of its mean ink against the background,
+  as in section 11):
+
+  | Screen | Light (before = after) | Dark before | Dark after |
+  |---|---|---|---|
+  | Calc View (16 disabled icons) | 1.53:1 | 6.14:1 | 1.56:1 |
+  | Calc Review (10) | 1.56:1 | 6.82:1 | 1.63:1 |
+  | Writer standard toolbar (7: Cut, Copy, Paste, Undo, Redo, ...) | 1.60:1 | 6.23:1 | 1.60:1 |
+  | Impress toolbars (14) | 1.60:1 | 6.91:1 | 1.66:1 |
+
+  Light screenshots are pixel-identical before and after. Enabled icons are unchanged (Calc View Column/Row
+  Highlighting: 2.33:1 light, 3.63:1 dark).
+- **Runtime switch**: one Calc process with system GTK colors (Adwaita), toggled light -> dark -> light by
+  `.uno:ChangeTheme`: the disabled Ruler and Page Layout icons go from grey 176..255 on white to 45..93 on #2D2D2D
+  (1.63:1, 1.75:1; 7.19:1 and 7.99:1 without the fix) and back to the same light pixels. (With a LibreOffice color
+  scheme such as Boost, a scheme change asks for a restart, so it is not a runtime switch.)
+- **Tests**: `vcl/qa/cppunit/BitmapProcessorTest.cxx` (`CppunitTest_vcl_bitmapprocessor_test`): a dark face keeps
+  each pixel in face .. face + 48; light faces give exactly today's output; alpha is kept; an image drawn disabled on
+  a light, a dark and again a light face gives the light, dark and light grey (the cache follows the face color).
