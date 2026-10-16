@@ -929,6 +929,7 @@ void SfxDispatchController_Impl::StateChanged( sal_uInt16 nSID, SfxItemState eSt
     // registered here too. Tell each of them, with an event for the URL it listens on:
     // controllers compare FeatureURL.Complete with their own command.
     css::uno::Reference<css::util::XURLTransformer> xTransformer;
+    css::frame::FeatureStateEvent aListenerEvent(aEvent); // only its FeatureURL changes per URL
     const std::vector<OUString> aContainedTypes = pDispatch->getContainedTypes();
     for (const OUString& rName: aContainedTypes)
     {
@@ -938,17 +939,25 @@ void SfxDispatchController_Impl::StateChanged( sal_uInt16 nSID, SfxItemState eSt
             continue;
         }
 
-        css::util::URL aListenerURL;
-        aListenerURL.Complete = rName;
-        if (!xTransformer.is())
-            xTransformer = URLTransformer::create(::comphelper::getProcessComponentContext());
-        xTransformer->parseStrict(aListenerURL);
-        if (rName != aDispatchURL.Main && aListenerURL.Main != aDispatchURL.Main)
-            continue; // another command
-
-        css::frame::FeatureStateEvent aListenerEvent(aEvent);
-        aListenerEvent.FeatureURL = std::move(aListenerURL);
-        aListenerEvent.FeatureURL.Complete = rName; // exactly the URL the listener registered
+        css::util::URL& rListenerURL = aListenerEvent.FeatureURL;
+        if (rName == aDispatchURL.Main)
+        {
+            // the plain command of the variant this dispatch was made for: its URL without the
+            // arguments, no need to parse it
+            rListenerURL = aDispatchURL;
+            rListenerURL.Arguments.clear();
+            rListenerURL.Mark.clear();
+        }
+        else
+        {
+            rListenerURL = css::util::URL();
+            rListenerURL.Complete = rName;
+            if (!xTransformer.is())
+                xTransformer = URLTransformer::create(::comphelper::getProcessComponentContext());
+            if (!xTransformer->parseStrict(rListenerURL) || rListenerURL.Main != aDispatchURL.Main)
+                continue; // not a URL, or another command
+        }
+        rListenerURL.Complete = rName; // exactly the URL the listener registered
         sendStatusChanged(rName, aListenerEvent);
     }
 }

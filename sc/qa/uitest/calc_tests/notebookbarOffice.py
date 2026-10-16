@@ -382,6 +382,22 @@ class NotebookbarOffice(UITestCase):
             time.sleep(0.05)
         return items()
 
+    def wait_until_quiet(self, listeners, quiet=1.0, timeout=10):
+        """Wait until no listener has heard an event for `quiet` seconds: the bindings push
+        pending states from a 300 ms timer (TIMEOUT_FIRST, sfx2 bindings.cxx), so after a second
+        of silence every push already arrived and the next count starts after them."""
+        deadline = time.time() + timeout
+        heard = [len(listener.history) for listener in listeners]
+        since = time.time()
+        while time.time() < deadline:
+            time.sleep(0.05)
+            now = [len(listener.history) for listener in listeners]
+            if now != heard:
+                heard, since = now, time.time()
+            elif time.time() - since >= quiet:
+                return
+        self.fail("the listeners kept hearing events: %s" % [listener.history for listener in listeners])
+
     def check_main_and_variant_listeners_hear_state_changes(self, document):
         # URLs that differ only in their arguments bind the same slot and share its dispatch,
         # which the first of them bound. Every listener must be told about later state changes,
@@ -393,14 +409,14 @@ class NotebookbarOffice(UITestCase):
                 self.watched_state("InsertSparkline?Type:string=column") as variant:
             listeners = (main, variant)
             not_told = lambda state: [listener.url for listener in listeners if listener.enabled is not state]
-            time.sleep(1)  # let the slot cache's first push arrive before counting
+            self.wait_until_quiet(listeners)  # the slot cache's first push arrives before counting
             start = [len(listener.history) for listener in listeners]
             self.assertEqual([], not_told(True))
             self.select_new_shape(document, 1000)
             self.assertEqual([], self.wait_until_empty(lambda: not_told(False)), "a shape disabled the slot")
             self.select_rows(document, "A1")  # back to the cells
             self.assertEqual([], self.wait_until_empty(lambda: not_told(True)), "a cell enabled the slot")
-            time.sleep(1)  # a duplicate or extra event would have arrived by now
+            self.wait_until_quiet(listeners)  # a duplicate or extra event arrives before checking
             for listener, n in zip(listeners, start):
                 self.assertEqual([False, True], listener.history[n:], listener.url)
                 self.assertEqual({listener.url}, set(listener.urls), listener.url)
