@@ -51,5 +51,7 @@ argument the slot does not declare.
 - `test_calc_slots.py` proves, for every registered slot: defined in the fork block of `sc.hrc`,
   scalc.sdi and cellsh.sdi entries, in the always-disabled list, no execute path, no other source
   mentions it; and that the slot ids have no gaps or duplicates.
-- UITests (`sc/qa/uitest/calc_tests/notebookbarOffice.py`): tab order and names (read from the
-  accessibility tree), every placeholder URL disabled and inert, one family variant URL.
+- UITests (`sc/qa/uitest/calc_tests/notebookbarOffice.py`): tab order (each position selected
+  and its page checked visible; tab texts are not exposed to UITests, so the names are checked
+  only by the unit tests against the .ui), every placeholder URL disabled and inert, one family
+  variant URL.
