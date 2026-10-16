@@ -190,27 +190,37 @@
    "Action:string=reset",
    "Action:string=editor",
    "Action:string=init"
-  ]
+  ],
+  "variant_labels": {
+   "Action:string=insert": "Insert Python",
+   "Action:string=reset": "Reset",
+   "Action:string=editor": "Editor",
+   "Action:string=init": "Initialization"
+  }
  },
  {
   "slot": "FID_FORMULAS_ERROR_CHECKING",
   "offset": 404,
-  "command": "FormulasErrorChecking"
+  "command": "FormulasErrorChecking",
+  "label": "Error Checking"
  },
  {
   "slot": "FID_FORMULAS_EVALUATE_FORMULA",
   "offset": 405,
-  "command": "FormulasEvaluateFormula"
+  "command": "FormulasEvaluateFormula",
+  "label": "Evaluate Formula"
  },
  {
   "slot": "FID_FORMULAS_WATCH_WINDOW",
   "offset": 406,
-  "command": "FormulasWatchWindow"
+  "command": "FormulasWatchWindow",
+  "label": "Watch Window"
  },
  {
   "slot": "FID_FORMULAS_CALCULATE_SHEET",
   "offset": 407,
-  "command": "FormulasCalculateSheet"
+  "command": "FormulasCalculateSheet",
+  "label": "Calculate Sheet"
  },
  {
   "slot": "FID_REVIEW_CHECK_ACCESSIBILITY",

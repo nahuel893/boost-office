@@ -44,11 +44,13 @@ def placeholder_urls(src, only=None):
 class StateListener(unohelper.Base, XStatusListener):
     def __init__(self):
         self.enabled = None
+        self.state = None  # the State of the last event
         self.history = []  # every IsEnabled the frame pushed, in order
         self.urls = []  # the FeatureURL.Complete of every event, in order
 
     def statusChanged(self, aEvent):
         self.enabled = aEvent.IsEnabled
+        self.state = aEvent.State
         self.history.append(aEvent.IsEnabled)
         self.urls.append(aEvent.FeatureURL.Complete)
 
@@ -224,8 +226,9 @@ class NotebookbarOffice(UITestCase):
                                 xItem = xBox.getChild("toolboxitem-%d" % (pos + 1))
                                 self.assertEqual(labels[url], get_state_as_dict(xItem)["Text"].replace("~", ""))
                                 buttons.append((labels[url], xItem))
-        # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families)
-        self.assertEqual(34, len(buttons))
+        # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families),
+        # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet)
+        self.assertEqual(41, len(buttons))
         return buttons
 
     def check_placeholder_buttons_are_drawn_disabled(self, src):
@@ -615,6 +618,229 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual([".uno:InsertRowBreak", ".uno:InsertColumnBreak"], self.popup_commands(xInsert))
             xDelete = xPopup.getPopupMenu(xPopup.getItemId(1))
             self.assertEqual([".uno:DeleteRowbreak", ".uno:DeleteColumnbreak"], self.popup_commands(xDelete))
+
+    def test_formulas_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_formulas.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(5, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_formulas_placeholders_are_disabled_and_inert(self):
+        # 5 slots: the Python family (4 variants), Error Checking (a menu item), Evaluate Formula,
+        # Watch Window and Calculate Sheet
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 403 <= e["offset"] <= 407)
+        self.assertEqual(8, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def fill_row(self, xGrid, row, values=("1", "2", "3")):
+        for col, text in zip("ABC", values):
+            enter_text_to_cell(xGrid, "%s%d" % (col, row), text)
+
+    def test_formulas_autosum_body_inserts_a_sum_like_autosum(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xSheet = document.Sheets.getByIndex(0)
+            for row in (1, 2, 3, 4, 5, 6):
+                self.fill_row(xGrid, row)
+            for row, command, formula in (
+                    (1, ".uno:AutoSum", "=SUM(A1:C1)"),
+                    (2, ".uno:FormulasAutoSum", "=SUM(A2:C2)"),
+                    (3, ".uno:AutoSum?Function:string=average", "=AVERAGE(A3:C3)"),
+                    (4, ".uno:AutoSum?Function:string=count", "=COUNT(A4:C4)"),
+                    (5, ".uno:AutoSum?Function:string=max", "=MAX(A5:C5)"),
+                    (6, ".uno:AutoSum?Function:string=min", "=MIN(A6:C6)")):
+                xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A%d:C%d" % (row, row)}))
+                self.xUITest.executeCommand(command)
+                xCell = xSheet.getCellRangeByName("D%d" % row)
+                self.assertEqual(formula, xCell.Formula, command)
+            self.assertEqual(xSheet.getCellRangeByName("D1").Value, xSheet.getCellRangeByName("D2").Value)
+
+    def test_formulas_autosum_body_ignores_an_argument_it_does_not_declare(self):
+        # risk R3: .uno:FormulasAutoSum declares no Function argument; sfx2 must ignore it and still
+        # run the plain sum (it does not reach the average branch of the shared Execute)
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            self.fill_row(xGrid, 1)
+            xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A1:C1"}))
+            self.assertTrue(self.dispatch_enabled("FormulasAutoSum?Function:string=average"))
+            self.xUITest.executeCommand(".uno:FormulasAutoSum?Function:string=average")
+            self.assertEqual("=SUM(A1:C1)", document.Sheets.getByIndex(0).getCellRangeByName("D1").Formula)
+
+    def test_formulas_autosum_body_state_matches_autosum_in_every_mode(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            same = lambda: (self.dispatch_enabled("AutoSum"), self.dispatch_enabled("FormulasAutoSum"))
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertEqual((True, True), same())
+            xGrid.executeAction("SELECT", mkPropertyValues({"RANGE": "A1:B2"}))
+            self.assertEqual((True, True), same())
+            self.select_new_shape(document, 1000)  # a drawing object takes the cell shell away
+            original, body = same()
+            self.assertFalse(original)
+            self.assertEqual(original, body)
+            self.select_rows(document, "A1")
+            self.assertEqual((True, True), same())
+            xPage = document.DrawPages.getByIndex(0)
+            for n, (service, clsid) in enumerate((
+                    ("com.sun.star.drawing.GraphicObjectShape", None),
+                    ("com.sun.star.drawing.OLE2Shape", "12DCAE26-281F-416F-a234-c3086127382e"))):
+                xShape = document.createInstance(service)
+                if clsid:
+                    xShape.CLSID = clsid
+                xShape.Name = "T4aObject%d" % n
+                xPage.add(xShape)
+                xShape.setPosition(uno.createUnoStruct("com.sun.star.awt.Point", 1000 + 4000 * n, 1000))
+                xShape.setSize(uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000))
+                self.select_rows(document, "A1")
+                xGrid.executeAction("SELECT", mkPropertyValues({"OBJECT": xShape.Name}))
+                original, body = same()
+                self.assertEqual(original, body, service)
+            # in cell edit mode the two stay alike too
+            self.select_rows(document, "A1")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            xGrid.executeAction("TYPE", mkPropertyValues({"KEYCODE": "F2"}))
+            self.assertEqual(*same())
+            xGrid.executeAction("TYPE", mkPropertyValues({"KEYCODE": "ESC"}))
+
+    def test_formulas_autosum_body_listener_hears_what_the_original_hears(self):
+        # One listener each stays registered: both slots must be told about the same state changes
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            with self.watched_state("AutoSum") as original, self.watched_state("FormulasAutoSum") as body:
+                time.sleep(1)
+                start = [len(original.history), len(body.history)]
+                self.assertEqual((True, True), (original.enabled, body.enabled))
+                self.select_new_shape(document, 1000)
+                self.wait_for(lambda: original.enabled is False and body.enabled is False,
+                              "a shape did not disable both: %s %s" % (original.history, body.history))
+                self.select_rows(document, "A1")
+                self.wait_for(lambda: original.enabled is True and body.enabled is True,
+                              "a cell did not enable both: %s %s" % (original.history, body.history))
+                time.sleep(1)
+                self.assertEqual(original.history[start[0]:], body.history[start[1]:])
+
+    def test_formulas_autosum_button_is_drawn_like_the_original_state(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                xCalcDoc.getChild("grid_window").executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+                xItem = xCalcDoc.getChild("bxFormulasAutoSum").getChild("toolboxitem-1")
+                drawn = lambda: get_state_as_dict(xItem)["Enabled"]
+                self.wait_for(lambda: drawn() == "true", "AutoSum body drawn disabled at start")
+                self.select_new_shape(document, 1000)
+                self.wait_for(lambda: drawn() == "false", "AutoSum body drawn enabled with a shape selected")
+                self.assertFalse(self.dispatch_enabled("AutoSum"))
+                self.select_rows(document, "A1")
+                self.wait_for(lambda: drawn() == "true", "AutoSum body drawn disabled with a cell selected")
+            finally:
+                self.switch_to("Default")
+
+    def test_formulas_autosum_menu_is_usable_when_the_body_is(self):
+        # VCL arrow check: while the body is disabled the arrow is too, so the menu must offer
+        # nothing that works then. Every AutoSum item shares the body's shell; the only item that is
+        # enabled with a shape selected would be a hole in this rule (Function... is checked here).
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.select_new_shape(document, 1000)
+            body = self.dispatch_enabled("FormulasAutoSum")
+            items = {name: self.dispatch_enabled(name) for name in (
+                "AutoSum", "AutoSum?Function:string=average", "AutoSum?Function:string=count",
+                "AutoSum?Function:string=max", "AutoSum?Function:string=min", "FunctionDialog")}
+            print("T4a arrow check, shape selected: body=%s items=%s" % (body, items))
+            self.assertFalse(body)
+            self.assertEqual([], [name for name, enabled in items.items() if enabled and not body],
+                             "menu items usable while the body (and with it the arrow) is disabled")
+
+    def test_formulas_each_dropdown_has_an_enabled_command(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            for name in ("FunctionDialog", "FunctionBox",                   # Function Library menus
+                         "FormulasAutoSum", "AutoSum",                       # AutoSum
+                         "InsertName",                                       # Use in Formula
+                         "ClearArrows", "ClearArrowPrecedents", "ClearArrowDependents",
+                         "ShowErrors",                                       # Error Checking
+                         "AutomaticCalculation",                             # Calculation Options
+                         "DefineName", "AddName", "CreateNames", "ShowPrecedents", "ShowDependents",
+                         "ToggleFormula", "Calculate"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_formulas_dropdown_popups_list_their_items(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            functions = [".uno:FunctionDialog", ".uno:FunctionBox"]
+            for command, resource in (
+                    ("FormulasRecentlyUsedMenu", "formulas_recentlyused"),
+                    ("FormulasFinancialMenu", "formulas_financial"),
+                    ("FormulasLogicalMenu", "formulas_logical"), ("FormulasTextMenu", "formulas_text"),
+                    ("FormulasDateTimeMenu", "formulas_datetime"),
+                    ("FormulasLookupMenu", "formulas_lookup"), ("FormulasMathMenu", "formulas_math"),
+                    ("FormulasMoreFunctionsMenu", "formulas_morefunctions")):
+                xPopup = self.popup_of(".uno:" + command, resource)
+                self.assertEqual(functions, self.popup_commands(xPopup), command)
+            expected = {
+                ("FormulasAutoSumMenu", "formulas_autosum"): [
+                    ".uno:AutoSum", ".uno:AutoSum?Function:string=average",
+                    ".uno:AutoSum?Function:string=count", ".uno:AutoSum?Function:string=max",
+                    ".uno:AutoSum?Function:string=min", ".uno:FunctionDialog"],
+                ("FormulasUseInFormulaMenu", "formulas_useinformula"): [".uno:InsertName"],
+                ("FormulasRemoveArrowsMenu", "formulas_removearrows"): [
+                    ".uno:ClearArrows", ".uno:ClearArrowPrecedents", ".uno:ClearArrowDependents"],
+                ("FormulasErrorCheckingMenu", "formulas_errorchecking"): [
+                    ".uno:FormulasErrorChecking", ".uno:ShowErrors"],
+                ("FormulasCalcOptionsMenu", "formulas_calcoptions"): [".uno:AutomaticCalculation"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.popup_of(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_formulas_variant_menu_items_resolve_their_labels(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:FormulasAutoSumMenu", "formulas_autosum")
+            self.assertEqual(["Sum", "Average", "Count Numbers", "Max", "Min", "Function"],
+                             [self.command_label(c).replace("...", "") for c in self.popup_commands(xPopup)])
+
+    def test_formulas_calculation_variant_urls_share_one_boolean_state(self):
+        # risk R9, the cause: Automatic (...bool=true) and Manual (...bool=false) are URL variants of
+        # one slot, and every listener is told the slot's boolean (true = automatic) whatever its
+        # URL. The menu bar manager checks an item with that boolean, so both items would show a check
+        # mark in automatic mode and neither in manual mode. Hence one AutoCalculate toggle item.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            names = ("AutomaticCalculation", "AutomaticCalculation?AutomaticCalculation:bool=true",
+                     "AutomaticCalculation?AutomaticCalculation:bool=false")
+            for automatic in (True, False):
+                self.xUITest.executeCommand(
+                    ".uno:AutomaticCalculation?AutomaticCalculation:bool=" + str(automatic).lower())
+                self.assertEqual(automatic, document.isAutomaticCalculationEnabled())
+                states = []
+                for name in names:
+                    with self.watched_state(name) as listener:
+                        states.append(listener.state)
+                self.assertEqual([automatic] * 3, states, "one shared state for every variant URL")
+
+    def test_formulas_calculation_options_toggle_switches_automatic_calculation(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xPopup = self.popup_of(".uno:FormulasCalcOptionsMenu", "formulas_calcoptions")
+            self.assertEqual([".uno:AutomaticCalculation"], self.popup_commands(xPopup))
+            self.assertEqual("AutoCalculate", self.command_label(".uno:AutomaticCalculation"))
+            self.assertTrue(document.isAutomaticCalculationEnabled())
+            self.xUITest.executeCommand(".uno:AutomaticCalculation")
+            self.assertFalse(document.isAutomaticCalculationEnabled())
+            self.xUITest.executeCommand(".uno:AutomaticCalculation")
+            self.assertTrue(document.isAutomaticCalculationEnabled())
 
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which

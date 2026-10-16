@@ -1,0 +1,54 @@
+{
+  "page": "phbFunctions",
+  "id_prefix": "Formulas",
+  "context": "TabbedCalc",
+  "remove_objects": [],
+  "sections": [
+    {"name": "FunctionLibrary", "caption": "Function Library", "rows": 3, "columns": [
+      [{"id": "InsertFunction", "style": "large", "items": [{"cmd": "FunctionDialog"}]}],
+      [{"id": "AutoSum", "style": "large", "items": [{"cmd": "FormulasAutoSum", "kind": "split"}]}],
+      [{"id": "RecentlyUsed", "style": "large", "items": [{"cmd": "FormulasRecentlyUsedMenu", "kind": "split"}]}],
+      [{"id": "Financial", "style": "large", "items": [{"cmd": "FormulasFinancialMenu", "kind": "split"}]}],
+      [{"id": "Logical", "style": "large", "items": [{"cmd": "FormulasLogicalMenu", "kind": "split"}]}],
+      [{"id": "Text", "style": "large", "items": [{"cmd": "FormulasTextMenu", "kind": "split"}]}],
+      [{"id": "DateTime", "style": "large", "items": [{"cmd": "FormulasDateTimeMenu", "kind": "split"}]}],
+      [{"id": "Lookup", "style": "large", "items": [{"cmd": "FormulasLookupMenu", "kind": "split"}]}],
+      [{"id": "Math", "style": "large", "items": [{"cmd": "FormulasMathMenu", "kind": "split"}]}],
+      [{"id": "MoreFunctions", "style": "large", "items": [{"cmd": "FormulasMoreFunctionsMenu", "kind": "split"}]}]
+    ]},
+    {"name": "Python", "caption": "Python", "rows": 3, "columns": [
+      [{"id": "PythonInsert", "style": "large", "items": [
+          {"cmd": "PythonInsert", "icon": "cmd/sc_formulaspython_insert.png",
+           "action": ".uno:FormulasPython?Action:string=insert"}]}],
+      [{"id": "PythonReset", "style": "small-label", "items": [
+          {"cmd": "PythonReset", "icon": "cmd/sc_formulaspython_reset.png",
+           "action": ".uno:FormulasPython?Action:string=reset"}]},
+       {"id": "PythonEditor", "style": "small-label", "items": [
+          {"cmd": "PythonEditor", "icon": "cmd/sc_formulaspython_editor.png",
+           "action": ".uno:FormulasPython?Action:string=editor"}]},
+       {"id": "PythonInit", "style": "small-label", "items": [
+          {"cmd": "PythonInit", "icon": "cmd/sc_formulaspython_init.png",
+           "action": ".uno:FormulasPython?Action:string=init"}]}]
+    ]},
+    {"name": "DefinedNames", "caption": "Defined Names", "rows": 3, "columns": [
+      [{"id": "ManageNames", "style": "large", "items": [{"cmd": "DefineName"}]}],
+      [{"id": "DefineName", "style": "small-label", "items": [{"cmd": "AddName"}]},
+       {"id": "UseInFormula", "style": "small-label", "items": [{"cmd": "FormulasUseInFormulaMenu", "kind": "split"}]},
+       {"id": "CreateNames", "style": "small-label", "items": [{"cmd": "CreateNames"}]}]
+    ]},
+    {"name": "Auditing", "caption": "Formula Auditing", "rows": 3, "columns": [
+      [{"id": "TracePrecedents", "style": "small-label", "items": [{"cmd": "ShowPrecedents"}]},
+       {"id": "TraceDependents", "style": "small-label", "items": [{"cmd": "ShowDependents"}]},
+       {"id": "RemoveArrows", "style": "small-label", "items": [{"cmd": "FormulasRemoveArrowsMenu", "kind": "split"}]}],
+      [{"id": "ShowFormulas", "style": "small", "items": [{"cmd": "ToggleFormula"}]},
+       {"id": "ErrorChecking", "style": "small", "items": [{"cmd": "FormulasErrorCheckingMenu", "kind": "split"}]},
+       {"id": "EvaluateFormula", "style": "small", "items": [{"cmd": "FormulasEvaluateFormula"}]}],
+      [{"id": "WatchWindow", "style": "large", "items": [{"cmd": "FormulasWatchWindow"}]}]
+    ]},
+    {"name": "Calculation", "caption": "Calculation", "rows": 3, "columns": [
+      [{"id": "CalcOptions", "style": "large", "items": [{"cmd": "FormulasCalcOptionsMenu", "kind": "split"}]}],
+      [{"id": "CalcNow", "style": "small", "items": [{"cmd": "Calculate"}]},
+       {"id": "CalcSheet", "style": "small", "items": [{"cmd": "FormulasCalculateSheet"}]}]
+    ]}
+  ]
+}

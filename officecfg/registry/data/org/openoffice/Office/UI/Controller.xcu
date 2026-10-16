@@ -652,6 +652,188 @@
           <value>pagelayout_rotate</value>
         </prop>
       </node>
+      <node oor:name="FormulasAutoSumMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasAutoSumMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_autosum</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasRecentlyUsedMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasRecentlyUsedMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_recentlyused</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasFinancialMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasFinancialMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_financial</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasLogicalMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasLogicalMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_logical</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasTextMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_text</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasDateTimeMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasDateTimeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_datetime</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasLookupMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasLookupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_lookup</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasMathMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasMathMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_math</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasMoreFunctionsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasMoreFunctionsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_morefunctions</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasUseInFormulaMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasUseInFormulaMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_useinformula</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasRemoveArrowsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasRemoveArrowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_removearrows</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasErrorCheckingMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasErrorCheckingMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_errorchecking</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasCalcOptionsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasCalcOptionsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>formulas_calcoptions</value>
+        </prop>
+      </node>
       <node oor:name="InsertPicturesMenuPopup" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:InsertPicturesMenu</value>
@@ -2633,6 +2815,152 @@
       <node oor:name="PageLayoutRotateMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:PageLayoutRotateMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasAutoSumControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasAutoSum</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:FormulasAutoSumMenu</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasRecentlyUsedMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasRecentlyUsedMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasFinancialMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasFinancialMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasLogicalMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasLogicalMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasTextMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasDateTimeMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasDateTimeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasLookupMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasLookupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasMathMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasMathMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasMoreFunctionsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasMoreFunctionsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasUseInFormulaMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasUseInFormulaMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasRemoveArrowsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasRemoveArrowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasErrorCheckingMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasErrorCheckingMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="FormulasCalcOptionsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:FormulasCalcOptionsMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>

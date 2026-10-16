@@ -247,3 +247,53 @@ screenshots are T3b.
   through the API (`XProtectable.protect`, also followed by a cell selection) or after a multi-range selection:
   Calc does not invalidate `SID_INSERT_SPARKLINE` for them, so the button keeps its old state there (an sc
   matter, not this defect). The tests therefore use the shape selection, which changes the shell.
+
+## 7. Formulas tab (T4a)
+
+`product/ui/calc_formulas.json` (page `phbFunctions`, prefix `Formulas`) replaces the upstream Functions page
+children between generated `product:Formulas-begin/end` markers. That page had no overflow menu object, so
+`remove_objects` is empty. Five sections in Excel's order: Function Library, Python, Defined Names, Formula
+Auditing, Calculation (verbatim spec: `product/docs/design/calc-formulas-tab-layout.txt`). Icons, the 1920 px
+fit and screenshots are T4b; the eight function-category menus are the design's static fallback until T4c.
+
+- **Static category menus**: `.uno:Formulas{RecentlyUsed,Financial,Logical,Text,DateTime,Lookup,Math,MoreFunctions}Menu`
+  are dropdowns without a slot (Popup + ToolBox nodes in `Controller.xcu`, `popupmenu/formulas_*.xml`), each listing
+  "Function..." (`.uno:FunctionDialog`) and "Function List" (`.uno:FunctionBox`). T4c replaces the Popup nodes by one
+  C++ controller that fills them from the function manager.
+- **Other dropdowns**: Use in Formula (Paste Names), Remove Arrows (all traces, precedents, dependents), Error
+  Checking (placeholder item "Error Checking" `FID_FORMULAS_ERROR_CHECKING`, then Trace Error), Calculation Options.
+- **AutoSum split**: `.uno:FormulasAutoSum` = `FID_FORMULAS_AUTOSUM` = `SID_NEW_SLOTS+15` (was unused). The body
+  shares `ExecuteEdit` and the `case` of `SID_AUTO_SUM` (`cellsh1.cxx`) and sits in the same sdi interface
+  (`cellsh.sdi`, `CellSelection`). `SID_AUTO_SUM` has no state method and no `Invalidate()` call anywhere, so the
+  mirror has none of either: the dispatcher alone decides its state from the shells that declare the slot, and both
+  slots are declared only by `ScCellShell`. The arrow opens `.uno:FormulasAutoSumMenu` (Sum, Average, Count
+  Numbers, Max, Min as `.uno:AutoSum` variants, then "Function..."), wired like Home's Merge & Center.
+  `AutoSumSplitTest` fails if any source mentions the original in a `case` or `Invalidate` call without the body.
+- **Placeholders**: Insert Python, Reset, Editor, Initialization (family `FID_FORMULAS_PYTHON`, +403), Evaluate
+  Formula (+405), Watch Window (+406), Calculate Sheet (+407) are ribbon buttons; Error Checking (+404) is a menu
+  item. Labels, "(not available yet)" tooltips and registry labels (`variant_labels` for Python) as on Page Layout.
+- `.uno:CreateNames` had no image flag (`Properties` = 1), so no icon could ever show; added.
+- **Spikes**
+  - **R9 (settled, fallback applied)**: `.uno:AutomaticCalculation?AutomaticCalculation:bool=true|false` as
+    "Automatic"/"Manual" menu items both showed a check mark in automatic mode (screenshot of the real
+    dropdown). Cause: every listener of the slot, whatever its URL, is told the slot's boolean (true = automatic);
+    `MenuBarManager::statusChanged` (`framework/source/uielement/menubarmanager.cxx`) checks an item with that
+    boolean, so both items are checked in automatic mode and neither in manual mode. The popup an awt test builds has
+    no `MenuBarManager` until a real menu activation, so a UITest cannot read the marks; the UITest
+    `test_formulas_calculation_variant_urls_share_one_boolean_state` proves the shared state instead. Applied the
+    design's fallback: Calculation Options has one item, the `.uno:AutomaticCalculation` toggle ("AutoCalculate").
+  - **R3 (settled)**: the only variants with an argument the slot does not declare would be the AutoSum body itself
+    (`FormulasAutoSum` declares none). `.uno:FormulasAutoSum?Function:string=average` stays enabled and runs the plain
+    sum: sfx2 ignores the undeclared argument. The other variants (`AutoSum?Function`, `AutomaticCalculation`) use
+    declared arguments, and the Python family never executes.
+  - **VCL split arrow**: a disabled toolbox item is dead in its arrow too (`ToolBox` mouse handling skips items
+    with `mbEnabled` false, and `PopupMenuToolbarController::statusChanged` follows the body's state). The body is
+    disabled exactly when the cell shell is absent (a drawing object, graphic, OLE or chart is selected); then every
+    AutoSum menu item, including "Function...", is disabled as well (UITest), so no usable menu is hidden behind a
+    disabled body. In cell edit mode both stay enabled like the original.
+- **Tests**: `test_calc_formulas_ui.py` (layout vs design, controllers, popup files, labels, image flags, suppr,
+  registry, reproducibility, the AutoSum mirror) and 13 UITests (`test_formulas_*`): page groups and toolboxes, every
+  Formulas placeholder disabled and inert, AutoSum body inserting the same formula as `.uno:AutoSum` (and the four
+  variants), state equal to the original for cell, range, shape, image, OLE and edit mode, a status listener on each
+  hearing the same changes, the ribbon button drawn like its state, one real command per dropdown enabled, every
+  popup listing its items, the Calculation Options toggle. The placeholder-button UITest now covers 41 buttons.
