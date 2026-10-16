@@ -43,6 +43,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/home_format \
 	sc/uiconfig/scalc/popupmenu/home_insert \
 	sc/uiconfig/scalc/popupmenu/home_merge \
+	sc/uiconfig/scalc/popupmenu/insert_pictures \
+	sc/uiconfig/scalc/popupmenu/insert_shapes \
 	sc/uiconfig/scalc/popupmenu/home_sortfilter \
 	sc/uiconfig/scalc/popupmenu/notebookbar \
 	sc/uiconfig/scalc/popupmenu/oleobject \

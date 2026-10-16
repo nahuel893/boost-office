@@ -55,3 +55,27 @@ argument the slot does not declare.
   and its page checked visible; tab texts are not exposed to UITests, so the names are checked
   only by the unit tests against the .ui), every placeholder URL disabled and inert, one family
   variant URL.
+
+## 4. Insert tab (T2a)
+
+`product/ui/calc_insert.json` (page `phbInsert`, prefix `Insert`) replaces the upstream Insert page
+between the generated `product:Insert-begin/end` markers and removes the `Menu Insert` overflow menu.
+Ten sections in Excel's order: Tables, Illustrations, Controls, Charts, Sparklines, Filters, Links,
+Comments, Text, Symbols (verbatim spec: `product/docs/design/calc-insert-tab-layout.txt`).
+
+- **Dropdowns** `.uno:InsertPicturesMenu` and `.uno:InsertShapesMenu`: config only (label, a
+  `ResourceMenuController` Popup node, a `GenericPopupToolbarController` ToolBox node, and
+  `popupmenu/insert_pictures.xml` / `insert_shapes.xml` registered in `UIConfig_scalc.mk`). They have
+  no slot, so they cannot be dispatched; the UITests build their popup through the menu controller.
+- **URL variants** (`.uno:InsertSparkline?Type:string=line|column|stacked`, the nine
+  `.uno:InsertChartType?Type:string=...` placeholders): one CalcCommands.xcu node per full URL, "&"
+  escaped; the layout item has a short `cmd` id (`SparklineLine`, `ChartMap`, ...) and the URL in
+  `action`. Placeholder tooltips read "<Label> (not available yet)".
+- **Registry**: every Insert placeholder entry in `product/tests/placeholders.json` now carries its
+  `label` (family slot: `variant_labels`, one per variant); `placeholders.labels_by_url()` flattens them.
+- Icons, the 1920 px fit check and screenshots belong to T2b: the layout items have no `icon` yet.
+
+Risks settled in T2a: R6 (the Shapes popup builds its Line submenu and the seven toolbar-submenu
+entries from a ribbon dropdown), R3 (`InsertSparkline?Type:string=...` stays enabled and opens the
+Sparkline dialog; sfx2 ignores the undeclared argument) and R12 (no duplicate widget id in the
+whole office `.ui`). The UITests that prove them are in `notebookbarOffice.py`.

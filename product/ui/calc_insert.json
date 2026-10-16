@@ -1,0 +1,75 @@
+{
+  "page": "phbInsert",
+  "id_prefix": "Insert",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu Insert"],
+  "sections": [
+    {"name": "Tables", "caption": "Tables", "rows": 3, "columns": [
+      [{"id": "PivotTable", "style": "large", "items": [{"cmd": "DataDataPilotRun"}]}],
+      [{"id": "RecommendedPivot", "style": "large", "items": [{"cmd": "InsertRecommendedPivotTables"}]}],
+      [{"id": "Table", "style": "large", "items": [{"cmd": "InsertCalcTable"}]}]
+    ]},
+    {"name": "Illustrations", "caption": "Illustrations", "rows": 3, "columns": [
+      [{"id": "Pictures", "style": "small-label", "items": [{"cmd": "InsertPicturesMenu", "kind": "split"}]},
+       {"id": "Shapes", "style": "small-label", "items": [{"cmd": "InsertShapesMenu", "kind": "split"}]},
+       {"id": "Gallery", "style": "small-label", "items": [{"cmd": "Gallery"}]}],
+      [{"id": "Models3D", "style": "small", "items": [{"cmd": "Insert3DModels"}]},
+       {"id": "SmartArt", "style": "small", "items": [{"cmd": "InsertSmartArt"}]},
+       {"id": "Screenshot", "style": "small", "items": [{"cmd": "InsertScreenshot"}]}]
+    ]},
+    {"name": "Controls", "caption": "Controls", "rows": 3, "columns": [
+      [{"id": "Checkbox", "style": "large", "items": [{"cmd": "InsertCellCheckbox"}]}]
+    ]},
+    {"name": "Charts", "caption": "Charts", "rows": 3, "columns": [
+      [{"id": "Chart", "style": "large", "items": [{"cmd": "InsertObjectChart"}]}],
+      [{"id": "ChartColumnBar", "style": "small", "items": [
+          {"cmd": "ChartColumnBar", "action": ".uno:InsertChartType?Type:string=columnbar"}]},
+       {"id": "ChartLineArea", "style": "small", "items": [
+          {"cmd": "ChartLineArea", "action": ".uno:InsertChartType?Type:string=linearea"}]},
+       {"id": "ChartPie", "style": "small", "items": [
+          {"cmd": "ChartPie", "action": ".uno:InsertChartType?Type:string=piedoughnut"}]}],
+      [{"id": "ChartHierarchy", "style": "small", "items": [
+          {"cmd": "ChartHierarchy", "action": ".uno:InsertChartType?Type:string=hierarchy"}]},
+       {"id": "ChartStatistic", "style": "small", "items": [
+          {"cmd": "ChartStatistic", "action": ".uno:InsertChartType?Type:string=statistic"}]},
+       {"id": "ChartScatter", "style": "small", "items": [
+          {"cmd": "ChartScatter", "action": ".uno:InsertChartType?Type:string=scatterbubble"}]}],
+      [{"id": "ChartWaterfall", "style": "small", "items": [
+          {"cmd": "ChartWaterfall", "action": ".uno:InsertChartType?Type:string=waterfall"}]},
+       {"id": "ChartCombo", "style": "small", "items": [
+          {"cmd": "ChartCombo", "action": ".uno:InsertChartType?Type:string=combo"}]}],
+      [{"id": "ChartMap", "style": "large", "items": [
+          {"cmd": "ChartMap", "action": ".uno:InsertChartType?Type:string=map"}]}],
+      [{"id": "PivotChart", "style": "large", "items": [{"cmd": "InsertPivotChart"}]}]
+    ]},
+    {"name": "Sparklines", "caption": "Sparklines", "rows": 3, "columns": [
+      [{"id": "SparklineLine", "style": "large", "items": [
+          {"cmd": "SparklineLine", "action": ".uno:InsertSparkline?Type:string=line"}]}],
+      [{"id": "SparklineColumn", "style": "large", "items": [
+          {"cmd": "SparklineColumn", "action": ".uno:InsertSparkline?Type:string=column"}]}],
+      [{"id": "SparklineWinLoss", "style": "large", "items": [
+          {"cmd": "SparklineWinLoss", "action": ".uno:InsertSparkline?Type:string=stacked"}]}]
+    ]},
+    {"name": "Filters", "caption": "Filters", "rows": 3, "columns": [
+      [{"id": "Slicer", "style": "large", "items": [{"cmd": "InsertSlicer"}]}],
+      [{"id": "Timeline", "style": "large", "items": [{"cmd": "InsertTimeline"}]}]
+    ]},
+    {"name": "Links", "caption": "Links", "rows": 3, "columns": [
+      [{"id": "Hyperlink", "style": "large", "items": [{"cmd": "HyperlinkDialog"}]}]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation"}]}]
+    ]},
+    {"name": "Text", "caption": "Text", "rows": 3, "columns": [
+      [{"id": "TextBox", "style": "large", "items": [{"cmd": "DrawText"}]}],
+      [{"id": "HeaderFooter", "style": "large", "items": [{"cmd": "EditHeaderAndFooter"}]}],
+      [{"id": "Fontwork", "style": "large", "items": [{"cmd": "FontworkGalleryFloater"}]}],
+      [{"id": "SignatureLine", "style": "large", "items": [{"cmd": "InsertSignatureLine"}]}],
+      [{"id": "OleObject", "style": "large", "items": [{"cmd": "InsertObject"}]}]
+    ]},
+    {"name": "Symbols", "caption": "Symbols", "rows": 3, "columns": [
+      [{"id": "Formula", "style": "large", "items": [{"cmd": "InsertObjectStarMath"}]}],
+      [{"id": "Symbol", "style": "large", "items": [{"cmd": "CharmapControl"}]}]
+    ]}
+  ]
+}

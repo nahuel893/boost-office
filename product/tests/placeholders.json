@@ -56,32 +56,38 @@
  {
   "slot": "FID_INSERT_RECOMMENDED_PIVOT",
   "offset": 389,
-  "command": "InsertRecommendedPivotTables"
+  "command": "InsertRecommendedPivotTables",
+  "label": "Recommended PivotTables"
  },
  {
   "slot": "FID_INSERT_PICTURE_IN_CELL",
   "offset": 390,
-  "command": "InsertPictureInCell"
+  "command": "InsertPictureInCell",
+  "label": "Place in Cell"
  },
  {
   "slot": "FID_INSERT_3D_MODELS",
   "offset": 391,
-  "command": "Insert3DModels"
+  "command": "Insert3DModels",
+  "label": "3D Models"
  },
  {
   "slot": "FID_INSERT_SMARTART",
   "offset": 392,
-  "command": "InsertSmartArt"
+  "command": "InsertSmartArt",
+  "label": "SmartArt"
  },
  {
   "slot": "FID_INSERT_SCREENSHOT",
   "offset": 393,
-  "command": "InsertScreenshot"
+  "command": "InsertScreenshot",
+  "label": "Screenshot"
  },
  {
   "slot": "FID_INSERT_CELL_CHECKBOX",
   "offset": 394,
-  "command": "InsertCellCheckbox"
+  "command": "InsertCellCheckbox",
+  "label": "Checkbox"
  },
  {
   "slot": "FID_INSERT_CHART_TYPE",
@@ -97,22 +103,36 @@
    "Type:string=waterfall",
    "Type:string=combo",
    "Type:string=map"
-  ]
+  ],
+  "variant_labels": {
+   "Type:string=columnbar": "Insert Column or Bar Chart",
+   "Type:string=linearea": "Insert Line or Area Chart",
+   "Type:string=piedoughnut": "Insert Pie or Doughnut Chart",
+   "Type:string=hierarchy": "Insert Hierarchy Chart",
+   "Type:string=statistic": "Insert Statistic Chart",
+   "Type:string=scatterbubble": "Insert Scatter (X, Y) or Bubble Chart",
+   "Type:string=waterfall": "Insert Waterfall, Funnel, Stock, Surface or Radar Chart",
+   "Type:string=combo": "Insert Combo Chart",
+   "Type:string=map": "Maps"
+  }
  },
  {
   "slot": "FID_INSERT_PIVOT_CHART",
   "offset": 396,
-  "command": "InsertPivotChart"
+  "command": "InsertPivotChart",
+  "label": "PivotChart"
  },
  {
   "slot": "FID_INSERT_SLICER",
   "offset": 397,
-  "command": "InsertSlicer"
+  "command": "InsertSlicer",
+  "label": "Slicer"
  },
  {
   "slot": "FID_INSERT_TIMELINE",
   "offset": 398,
-  "command": "InsertTimeline"
+  "command": "InsertTimeline",
+  "label": "Timeline"
  },
  {
   "slot": "FID_PAGELAYOUT_THEME_PART",

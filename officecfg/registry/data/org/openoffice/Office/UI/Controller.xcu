@@ -512,6 +512,34 @@
           <value>data_othersources</value>
         </prop>
       </node>
+      <node oor:name="InsertPicturesMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertPicturesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_pictures</value>
+        </prop>
+      </node>
+      <node oor:name="InsertShapesMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertShapesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_shapes</value>
+        </prop>
+      </node>
       <node oor:name="DataWhatIfMenuPopup" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:DataWhatIfMenu</value>
@@ -2355,6 +2383,28 @@
       <node oor:name="DataOtherSourcesMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:DataOtherSourcesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertPicturesMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertPicturesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertShapesMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertShapesMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>

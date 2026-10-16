@@ -28,3 +28,18 @@ def urls(entry):
 def labelled():
     """Placeholders whose button is already on a page: base command -> label."""
     return {e["command"]: e["label"] for e in load() if "label" in e}
+
+
+def labels_by_url():
+    """Label of every placeholder button that is on a page: ".uno:Base[?Arg:type=value]" -> label.
+
+    A plain slot has one "label"; a family slot has a "variant_labels" map, one label per variant.
+    """
+    out = {}
+    for entry in load():
+        base = ".uno:" + entry["command"]
+        if "label" in entry:
+            out[base] = entry["label"]
+        for variant, label in entry.get("variant_labels", {}).items():
+            out[base + "?" + variant] = label
+    return out
