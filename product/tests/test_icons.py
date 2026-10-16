@@ -68,6 +68,28 @@ class IconThemeTest(unittest.TestCase):
         self.assertGreater(len(list(page.iter("object"))), 30)
         self.assertEqual([], self.missing_icons(page))
 
+    def test_every_insert_button_has_an_icon(self):
+        page = tab_page("Insert")
+        self.assertGreater(len(list(page.iter("object"))), 40)
+        self.assertEqual([], self.missing_icons(page))
+
+    def test_insert_url_variants_use_plain_icon_names_of_the_right_size(self):
+        # json "icon" key: cmd/sc_<base>_<value>.png for small, cmd/32/<base>_<value>.png for large buttons
+        for box in tab_page("Insert").iter("object"):
+            if box.get("class") != "sfxlo-NotebookbarToolBox":
+                continue
+            large = box.find("property[@name='icon_size']").text == "5"
+            for button in box.findall("child/object"):
+                icon = button.find("property[@name='icon_name']")
+                action = button.find("property[@name='action-name']").text
+                if "?" not in action:
+                    self.assertIsNone(icon, action)
+                    continue
+                self.assertRegex(icon.text, r"^cmd/32/[a-z0-9_]+\.png$" if large else r"^cmd/sc_[a-z0-9_]+\.png$", action)
+                for theme in self.zips:
+                    self.assertTrue(self.has(theme, icon.text), f"{theme}:{icon.text}")
+                    self.assertTrue(self.has(theme, icon.text.replace("cmd/32/", "cmd/lc_").replace("cmd/sc_", "cmd/lc_")))
+
     def missing_icons(self, page):
         missing = []
         for box in page.iter("object"):
