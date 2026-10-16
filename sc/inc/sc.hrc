@@ -653,8 +653,9 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define SID_REMOVE_CALCTABLE        (SID_NEW_SLOTS+121)
 #define SID_TABLE_STYLES            (SID_NEW_SLOTS+122)
 
-// SID_NEW_SLOTS+380..+399 is reserved for this fork's own slots, well clear of the ids
-// upstream hands out next (+123 onwards). Ceiling for the fork block is +424.
+// SID_NEW_SLOTS+380..+424 reserved for this fork (Data
+// +380..+388, remaining tabs +389..+421, spare +422..+424); +424 is the last Calc slot id.
+// The ids stay well clear of the ones upstream hands out next (+123 onwards).
 // Data tab placeholders: always disabled until their feature gives them an Execute
 #define FID_DATA_FROM_DATABASE      (SID_NEW_SLOTS+380)
 #define FID_DATA_RECENT_SOURCES     (SID_NEW_SLOTS+381)
@@ -665,6 +666,53 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define FID_DATA_RELATIONSHIPS      (SID_NEW_SLOTS+386)
 #define FID_DATA_MANAGE_MODEL       (SID_NEW_SLOTS+387)
 #define FID_DATA_FORECAST_SHEET     (SID_NEW_SLOTS+388)
+
+// Insert tab placeholders: always disabled until their feature gives them an Execute
+#define FID_INSERT_RECOMMENDED_PIVOT    (SID_NEW_SLOTS+389)
+#define FID_INSERT_PICTURE_IN_CELL      (SID_NEW_SLOTS+390)
+#define FID_INSERT_3D_MODELS            (SID_NEW_SLOTS+391)
+#define FID_INSERT_SMARTART             (SID_NEW_SLOTS+392)
+#define FID_INSERT_SCREENSHOT           (SID_NEW_SLOTS+393)
+#define FID_INSERT_CELL_CHECKBOX        (SID_NEW_SLOTS+394)
+#define FID_INSERT_CHART_TYPE           (SID_NEW_SLOTS+395)
+#define FID_INSERT_PIVOT_CHART          (SID_NEW_SLOTS+396)
+#define FID_INSERT_SLICER               (SID_NEW_SLOTS+397)
+#define FID_INSERT_TIMELINE             (SID_NEW_SLOTS+398)
+
+// Page Layout tab placeholders: always disabled until their feature gives them an Execute
+#define FID_PAGELAYOUT_THEME_PART       (SID_NEW_SLOTS+399)
+#define FID_PAGELAYOUT_BACKGROUND       (SID_NEW_SLOTS+400)
+#define FID_PAGELAYOUT_SCALE_TO_FIT     (SID_NEW_SLOTS+401)
+#define FID_PAGELAYOUT_PRINT_OPTION     (SID_NEW_SLOTS+402)
+
+// Formulas tab placeholders: always disabled until their feature gives them an Execute
+#define FID_FORMULAS_PYTHON             (SID_NEW_SLOTS+403)
+#define FID_FORMULAS_ERROR_CHECKING     (SID_NEW_SLOTS+404)
+#define FID_FORMULAS_EVALUATE_FORMULA   (SID_NEW_SLOTS+405)
+#define FID_FORMULAS_WATCH_WINDOW       (SID_NEW_SLOTS+406)
+#define FID_FORMULAS_CALCULATE_SHEET    (SID_NEW_SLOTS+407)
+
+// Review tab placeholders: always disabled until their feature gives them an Execute
+#define FID_REVIEW_CHECK_ACCESSIBILITY  (SID_NEW_SLOTS+408)
+#define FID_REVIEW_TRANSLATE            (SID_NEW_SLOTS+409)
+#define FID_REVIEW_GOTO_COMMENT         (SID_NEW_SLOTS+410)
+#define FID_REVIEW_ALLOW_EDIT_RANGES    (SID_NEW_SLOTS+411)
+#define FID_REVIEW_HIDE_INK             (SID_NEW_SLOTS+412)
+
+// View tab placeholders: always disabled until their feature gives them an Execute
+#define FID_VIEW_PAGE_LAYOUT            (SID_NEW_SLOTS+413)
+#define FID_VIEW_CUSTOM_VIEWS           (SID_NEW_SLOTS+414)
+#define FID_VIEW_RULER                  (SID_NEW_SLOTS+415)
+#define FID_VIEW_ARRANGE_ALL            (SID_NEW_SLOTS+416)
+#define FID_VIEW_WINDOW_VISIBILITY      (SID_NEW_SLOTS+417)
+#define FID_VIEW_SIDE_BY_SIDE           (SID_NEW_SLOTS+418)
+
+// Help tab placeholders: always disabled until their feature gives them an Execute
+#define FID_HELP_FEEDBACK               (SID_NEW_SLOTS+419)
+#define FID_HELP_BLOG                   (SID_NEW_SLOTS+420)
+
+// View tab, Sheet View group: a family slot too (its variants are defined with the View tab)
+#define FID_VIEW_SHEET_VIEW             (SID_NEW_SLOTS+421)
 
 // idl parameter
 

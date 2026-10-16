@@ -1051,8 +1051,9 @@ void ScCellShell::GetState(SfxItemSet &rSet)
                     rSet.DisableItem( nWhich );
                 break;
 
-            // Data tab placeholders: the slot only exists so that the ribbon button
-            // reads as unavailable; a feature adds its Execute and real state later.
+            // Placeholders of the ribbon tabs (Data, Insert .. Help, family slots included):
+            // the slot only exists so that the ribbon button reads as unavailable; a feature
+            // adds its Execute and real state later.
             case FID_DATA_FROM_DATABASE:
             case FID_DATA_RECENT_SOURCES:
             case FID_DATA_CONNECTIONS:
@@ -1062,6 +1063,39 @@ void ScCellShell::GetState(SfxItemSet &rSet)
             case FID_DATA_RELATIONSHIPS:
             case FID_DATA_MANAGE_MODEL:
             case FID_DATA_FORECAST_SHEET:
+            case FID_INSERT_RECOMMENDED_PIVOT:
+            case FID_INSERT_PICTURE_IN_CELL:
+            case FID_INSERT_3D_MODELS:
+            case FID_INSERT_SMARTART:
+            case FID_INSERT_SCREENSHOT:
+            case FID_INSERT_CELL_CHECKBOX:
+            case FID_INSERT_CHART_TYPE:
+            case FID_INSERT_PIVOT_CHART:
+            case FID_INSERT_SLICER:
+            case FID_INSERT_TIMELINE:
+            case FID_PAGELAYOUT_THEME_PART:
+            case FID_PAGELAYOUT_BACKGROUND:
+            case FID_PAGELAYOUT_SCALE_TO_FIT:
+            case FID_PAGELAYOUT_PRINT_OPTION:
+            case FID_FORMULAS_PYTHON:
+            case FID_FORMULAS_ERROR_CHECKING:
+            case FID_FORMULAS_EVALUATE_FORMULA:
+            case FID_FORMULAS_WATCH_WINDOW:
+            case FID_FORMULAS_CALCULATE_SHEET:
+            case FID_REVIEW_CHECK_ACCESSIBILITY:
+            case FID_REVIEW_TRANSLATE:
+            case FID_REVIEW_GOTO_COMMENT:
+            case FID_REVIEW_ALLOW_EDIT_RANGES:
+            case FID_REVIEW_HIDE_INK:
+            case FID_VIEW_PAGE_LAYOUT:
+            case FID_VIEW_CUSTOM_VIEWS:
+            case FID_VIEW_RULER:
+            case FID_VIEW_ARRANGE_ALL:
+            case FID_VIEW_WINDOW_VISIBILITY:
+            case FID_VIEW_SIDE_BY_SIDE:
+            case FID_HELP_FEEDBACK:
+            case FID_HELP_BLOG:
+            case FID_VIEW_SHEET_VIEW:
                 rSet.DisableItem( nWhich );
                 break;
 

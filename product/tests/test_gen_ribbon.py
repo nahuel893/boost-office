@@ -284,5 +284,24 @@ class GenRibbonTest(unittest.TestCase):
         self.assertEqual(len(out), len(set(out)))
 
 
+class ItemUrlTest(unittest.TestCase):
+
+    def test_plain_item_is_its_uno_command(self):
+        item = {"cmd": "Bold"}
+        self.assertEqual(".uno:Bold", g.item_url(item))
+        self.assertEqual(".uno:Bold", g.item_command(item))
+
+    def test_url_variant_has_a_full_url_and_a_base_command(self):
+        item = {"cmd": "InsertChartMap", "action": ".uno:InsertChartType?Type:string=map"}
+        self.assertEqual(".uno:InsertChartType?Type:string=map", g.item_url(item))
+        self.assertEqual(".uno:InsertChartType", g.item_command(item))
+
+    def test_variant_action_is_what_the_button_runs(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][0]["columns"][0][0]["items"][0]["action"] = ".uno:Paste?Mode:string=x"
+        text = "\n".join(g.emit_page(layout))
+        self.assertIn('<property name="action-name">.uno:Paste?Mode:string=x</property>', text)
+
+
 if __name__ == "__main__":
     unittest.main()

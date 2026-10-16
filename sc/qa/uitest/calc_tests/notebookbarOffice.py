@@ -22,6 +22,15 @@ from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
 
+def placeholder_urls(src, only=None):
+    """Every command URL of the shared placeholder registry (product/tests/placeholders.json)."""
+    entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+    urls = []
+    for entry in entries:
+        if only is None or only(entry):
+            urls += [entry["command"] + "?" + v for v in entry.get("variants", [])] or [entry["command"]]
+    return urls
+
 
 class StateListener(unohelper.Base, XStatusListener):
     def __init__(self):
@@ -152,20 +161,34 @@ class NotebookbarOffice(UITestCase):
             time.sleep(0.05)
         self.assertTrue(condition(), message)
 
-    def test_data_placeholders_have_a_slot_that_is_always_disabled(self):
-        placeholders = ["DataFromDatabase", "DataRecentSources", "DataConnections",
-                        "DataConnectionProperties", "DataFilterReapply", "DataFlashFill",
-                        "DataRelationships", "DataManageModel", "DataForecastSheet"]
+    def check_placeholders_are_disabled_and_inert(self, names):
         with self.ui_test.create_doc_in_start_center("calc") as document:
             xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
             enter_text_to_cell(xGrid, "A1", "keep")
             xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
             self.assertTrue(self.dispatch_enabled("DataSort"))  # control: a real, enabled slot
-            for name in placeholders:
+            for name in names:
                 self.assertFalse(self.dispatch_enabled(name), name)
                 self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
             xSheet = document.Sheets.getByIndex(0)
             self.assertEqual("keep", xSheet.getCellRangeByName("A1").String)
+
+    def test_data_placeholders_have_a_slot_that_is_always_disabled(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["command"].startswith("Data"))
+        self.assertEqual(9, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_every_placeholder_of_the_slice_is_disabled_and_inert(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src)
+        self.assertEqual(61, len(names))  # 42 slots, 19 extra family variants
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_family_variant_url_is_disabled_and_does_nothing(self):
+        # A URL variant of a family slot reaches the same always-disabled slot: the status
+        # listener hears "disabled" and a dispatch changes nothing (risk R3).
+        self.check_placeholders_are_disabled_and_inert(["InsertChartType?Type:string=map"])
 
     def select_rows(self, document, rows):
         document.CurrentController.select(document.Sheets.getByIndex(0).getCellRangeByName(rows))

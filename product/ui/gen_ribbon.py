@@ -43,6 +43,16 @@ class LayoutError(ValueError):
     pass
 
 
+def item_url(item):
+    """The command URL of a layout item: its "action", else .uno:<cmd>."""
+    return item.get("action", ".uno:" + item["cmd"])
+
+
+def item_command(item):
+    """The base command of a layout item: its URL without the "?Arg:type=value" part."""
+    return item_url(item).split("?", 1)[0]
+
+
 def boxes_of(section):
     """Every toolbox of a section: the column ones, then the footer if any."""
     for column in section["columns"]:
@@ -146,7 +156,7 @@ def emit_item(w, layout, box_style, item):
     w.prop("can-focus", "False")
     if "label" in item:
         w.prop("label", item["label"], f' translatable="yes" context="{ctx}|{wid}"')
-    w.prop("action-name", item.get("action", ".uno:" + item["cmd"]))
+    w.prop("action-name", item_url(item))
     if "icon" in item:
         w.prop("icon_name", item["icon"])
     w.close("</object>")

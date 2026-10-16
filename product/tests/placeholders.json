@@ -1,0 +1,264 @@
+[
+ {
+  "slot": "FID_DATA_FROM_DATABASE",
+  "offset": 380,
+  "command": "DataFromDatabase",
+  "label": "From Database"
+ },
+ {
+  "slot": "FID_DATA_RECENT_SOURCES",
+  "offset": 381,
+  "command": "DataRecentSources",
+  "label": "Recent Sources"
+ },
+ {
+  "slot": "FID_DATA_CONNECTIONS",
+  "offset": 382,
+  "command": "DataConnections",
+  "label": "Connections"
+ },
+ {
+  "slot": "FID_DATA_CONN_PROPS",
+  "offset": 383,
+  "command": "DataConnectionProperties",
+  "label": "Properties"
+ },
+ {
+  "slot": "FID_DATA_FILTER_REAPPLY",
+  "offset": 384,
+  "command": "DataFilterReapply",
+  "label": "Reapply"
+ },
+ {
+  "slot": "FID_DATA_FLASH_FILL",
+  "offset": 385,
+  "command": "DataFlashFill",
+  "label": "Flash Fill"
+ },
+ {
+  "slot": "FID_DATA_RELATIONSHIPS",
+  "offset": 386,
+  "command": "DataRelationships",
+  "label": "Relationships"
+ },
+ {
+  "slot": "FID_DATA_MANAGE_MODEL",
+  "offset": 387,
+  "command": "DataManageModel",
+  "label": "Manage Data Model"
+ },
+ {
+  "slot": "FID_DATA_FORECAST_SHEET",
+  "offset": 388,
+  "command": "DataForecastSheet",
+  "label": "Forecast Sheet"
+ },
+ {
+  "slot": "FID_INSERT_RECOMMENDED_PIVOT",
+  "offset": 389,
+  "command": "InsertRecommendedPivotTables"
+ },
+ {
+  "slot": "FID_INSERT_PICTURE_IN_CELL",
+  "offset": 390,
+  "command": "InsertPictureInCell"
+ },
+ {
+  "slot": "FID_INSERT_3D_MODELS",
+  "offset": 391,
+  "command": "Insert3DModels"
+ },
+ {
+  "slot": "FID_INSERT_SMARTART",
+  "offset": 392,
+  "command": "InsertSmartArt"
+ },
+ {
+  "slot": "FID_INSERT_SCREENSHOT",
+  "offset": 393,
+  "command": "InsertScreenshot"
+ },
+ {
+  "slot": "FID_INSERT_CELL_CHECKBOX",
+  "offset": 394,
+  "command": "InsertCellCheckbox"
+ },
+ {
+  "slot": "FID_INSERT_CHART_TYPE",
+  "offset": 395,
+  "command": "InsertChartType",
+  "variants": [
+   "Type:string=columnbar",
+   "Type:string=linearea",
+   "Type:string=piedoughnut",
+   "Type:string=hierarchy",
+   "Type:string=statistic",
+   "Type:string=scatterbubble",
+   "Type:string=waterfall",
+   "Type:string=combo",
+   "Type:string=map"
+  ]
+ },
+ {
+  "slot": "FID_INSERT_PIVOT_CHART",
+  "offset": 396,
+  "command": "InsertPivotChart"
+ },
+ {
+  "slot": "FID_INSERT_SLICER",
+  "offset": 397,
+  "command": "InsertSlicer"
+ },
+ {
+  "slot": "FID_INSERT_TIMELINE",
+  "offset": 398,
+  "command": "InsertTimeline"
+ },
+ {
+  "slot": "FID_PAGELAYOUT_THEME_PART",
+  "offset": 399,
+  "command": "PageLayoutThemePart",
+  "variants": [
+   "Part:string=fonts",
+   "Part:string=effects"
+  ]
+ },
+ {
+  "slot": "FID_PAGELAYOUT_BACKGROUND",
+  "offset": 400,
+  "command": "PageLayoutBackground"
+ },
+ {
+  "slot": "FID_PAGELAYOUT_SCALE_TO_FIT",
+  "offset": 401,
+  "command": "PageLayoutScaleToFit",
+  "variants": [
+   "Dimension:string=width",
+   "Dimension:string=height",
+   "Dimension:string=scale"
+  ]
+ },
+ {
+  "slot": "FID_PAGELAYOUT_PRINT_OPTION",
+  "offset": 402,
+  "command": "PageLayoutPrintOption",
+  "variants": [
+   "Option:string=gridlines",
+   "Option:string=headings"
+  ]
+ },
+ {
+  "slot": "FID_FORMULAS_PYTHON",
+  "offset": 403,
+  "command": "FormulasPython",
+  "variants": [
+   "Action:string=insert",
+   "Action:string=reset",
+   "Action:string=editor",
+   "Action:string=init"
+  ]
+ },
+ {
+  "slot": "FID_FORMULAS_ERROR_CHECKING",
+  "offset": 404,
+  "command": "FormulasErrorChecking"
+ },
+ {
+  "slot": "FID_FORMULAS_EVALUATE_FORMULA",
+  "offset": 405,
+  "command": "FormulasEvaluateFormula"
+ },
+ {
+  "slot": "FID_FORMULAS_WATCH_WINDOW",
+  "offset": 406,
+  "command": "FormulasWatchWindow"
+ },
+ {
+  "slot": "FID_FORMULAS_CALCULATE_SHEET",
+  "offset": 407,
+  "command": "FormulasCalculateSheet"
+ },
+ {
+  "slot": "FID_REVIEW_CHECK_ACCESSIBILITY",
+  "offset": 408,
+  "command": "ReviewCheckAccessibility"
+ },
+ {
+  "slot": "FID_REVIEW_TRANSLATE",
+  "offset": 409,
+  "command": "ReviewTranslate"
+ },
+ {
+  "slot": "FID_REVIEW_GOTO_COMMENT",
+  "offset": 410,
+  "command": "ReviewGoToComment",
+  "variants": [
+   "Direction:string=previous",
+   "Direction:string=next"
+  ]
+ },
+ {
+  "slot": "FID_REVIEW_ALLOW_EDIT_RANGES",
+  "offset": 411,
+  "command": "ReviewAllowEditRanges"
+ },
+ {
+  "slot": "FID_REVIEW_HIDE_INK",
+  "offset": 412,
+  "command": "ReviewHideInk"
+ },
+ {
+  "slot": "FID_VIEW_PAGE_LAYOUT",
+  "offset": 413,
+  "command": "ViewPageLayout"
+ },
+ {
+  "slot": "FID_VIEW_CUSTOM_VIEWS",
+  "offset": 414,
+  "command": "ViewCustomViews"
+ },
+ {
+  "slot": "FID_VIEW_RULER",
+  "offset": 415,
+  "command": "ViewRuler"
+ },
+ {
+  "slot": "FID_VIEW_ARRANGE_ALL",
+  "offset": 416,
+  "command": "ViewArrangeAll"
+ },
+ {
+  "slot": "FID_VIEW_WINDOW_VISIBILITY",
+  "offset": 417,
+  "command": "ViewWindowVisibility",
+  "variants": [
+   "Action:string=hide",
+   "Action:string=unhide"
+  ]
+ },
+ {
+  "slot": "FID_VIEW_SIDE_BY_SIDE",
+  "offset": 418,
+  "command": "ViewSideBySide",
+  "variants": [
+   "Action:string=toggle",
+   "Action:string=sync",
+   "Action:string=reset"
+  ]
+ },
+ {
+  "slot": "FID_HELP_FEEDBACK",
+  "offset": 419,
+  "command": "HelpFeedback"
+ },
+ {
+  "slot": "FID_HELP_BLOG",
+  "offset": 420,
+  "command": "HelpBlog"
+ },
+ {
+  "slot": "FID_VIEW_SHEET_VIEW",
+  "offset": 421,
+  "command": "ViewSheetView"
+ }
+]
