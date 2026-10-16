@@ -42,7 +42,8 @@ record are in `product/docs/stage-a-findings.md`.
   arrow opens `.uno:HomeMergeMenu` (Controller `Value`). The other seven menus are dropdown-only.
 - Removed from Home (still in Format Cells): Subscript, Superscript, Spacing, Justify,
   Left-to-right / Right-to-left. The old "Home" overflow menu is gone (its items live in Editing).
-- Large buttons use 32 px icons; section captions are plain (no italic), 90% size.
+- Large buttons use 32 px icons; section captions are plain (no italic), 90% size, on the bottom edge of every
+  section: one baseline on every tab (the toolboxes' grid takes all extra height; see `calc-ribbon-tabs.md`, T8a).
 - Narrow windows: sections collapse from the right into a ">>" button (VclOptionalBox +
   priority classes).
 - No new spreadsheet functionality: every button dispatches an existing LibreOffice command.

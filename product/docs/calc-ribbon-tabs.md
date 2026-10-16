@@ -531,3 +531,64 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   button resolves its icon) and the `test_help_*` UITests (sections and toolboxes, both placeholders disabled and
   inert and drawn disabled while the other five buttons are drawn enabled, labels). The drawn-disabled count is now
   62 buttons.
+
+## 11. Cross-tab polish (T8a)
+
+### Section captions on one baseline
+
+- **Cause**: the tab control is as tall as its tallest page (Home), and each generated page box was `valign center`,
+  so a page whose sections hold only large buttons (Review, Help: 80 px of sections) sat centered in it with its
+  captions about 16 px higher than Home's. Page Layout's upstream page itself was `valign center` (3 px lower than
+  the others once filled). Within a page, VclGrid splits extra height evenly between expanding rows and drops the
+  remainder, so a caption under several expanding rows (a large button spans rows 0-2, the caption row expanded too)
+  ended up to 3 px above its neighbours (Home: Clipboard and Editing against Font).
+- **Fix** (`gen_ribbon.py`): the page box fills the tab page (`valign fill`), and each section grid `gd<P><Name>` now
+  has two rows: the toolboxes' grid `gc<P><Name>` (new id, row 0, the only child with `vexpand`), the caption under
+  it (row 1, no `vexpand`) and the separator spanning both. The extra height all goes to the toolboxes' grid, so every
+  caption ends on its section's bottom edge. The toolboxes keep their columns, rows, spans and `valign`. A new
+  `properties` operation of `calc_tabs.json` sets `phbLayout`'s own `valign` from `center` to `fill` (re-runnable,
+  refuses an unexpected value). Requisitions are unchanged, so the ribbon height is too.
+- **Measured** (1920 px light screenshots, before -> after): name box top (the ribbon's bottom edge) y = 181 on every
+  tab, before and after. Section separators and caption baselines:
+
+  | Tab | Separators before | Baselines before | Separators after | Baseline after |
+  |---|---|---|---|---|
+  | Home | 51-159 .. 51-162 | 156, 158, 159 | 51-162 | 159 |
+  | Insert, Data, View | 54-158 | 155 | 51-162 | 159 |
+  | Page Layout, Formulas | 54-157 .. 54-158 | 154, 155 | 51-162 | 159 |
+  | Review, Help | 66-146 | 143 | 51-162 | 159 |
+
+  Large buttons stay centered in the area above the caption, which is now the same on every tab: their icons start
+  at y = 70-71 everywhere (Review and Help unchanged, Insert 6 px lower, Home's Paste 2 px lower). On Home the Cells
+  buttons (Insert, Delete, Format) moved 8 px lower and line up with Sort & Filter and Find & Select (labels at
+  y = 110-119 in both).
+- **Tests**: `CaptionBaselineTest` (every generated page and its tab page fill the page height; every section grid of
+  every page follows the two-row rule) and fixture tests in `test_gen_ribbon.py`; `test_calc_tabs.py` checks the
+  Page Layout property change and the `properties` operation.
+
+### Disabled icons in dark (not fixed: needs VCL)
+
+- Disabled icon-only buttons (View > Sheet View, Hide/Unhide; Review > Hide Ink) look almost as bright as enabled
+  ones in Boost Dark. VCL draws a disabled image through `BitmapDisabledImageFilter`
+  (`vcl/source/bitmap/BitmapDisabledImageFilter.cxx`, cached by `ImplImage::getBitmap`): every pixel becomes grey
+  `luminance / 4 + 160` (160..224) with its alpha kept, whatever the background. Measured on the View screenshots: the
+  disabled Sheet View icons are pure grey, at most 213 (the dark outline #D6D6D6) on #2B2B2B, contrast 6.3:1, above
+  the enabled Column/Row Highlighting icon (3.6:1); in light they are at least 176 (#424242 outline) on #E4F2E8, 1.5:1.
+- No product-side lever: the filter reads neither the color scheme nor the icon theme, and an icon's alpha dims its
+  enabled form too. A fix belongs in VCL (filter range or alpha from the face color, with the cache keyed by it).
+
+### Parked review minors
+
+- **sfx2** (`SfxDispatchController_Impl::StateChanged`, T1c): one event copy before the loop with only `FeatureURL`
+  set per listener URL; the plain command of the bound variant takes `aDispatchURL` without its arguments instead of
+  being parsed; a URL whose `parseStrict` fails is skipped. The variant-listener UITest helper waits until no listener
+  has heard an event for one second (the bindings push from a 300 ms timer) instead of a fixed `sleep(1)`.
+- **framework** (`getSingleBoolArgument`, T3c): the type is what `Name:type=value` has between the first `:` and the
+  first `=` (as `SfxDispatchController_Impl::addParametersToArgs` reads it), so a string whose value contains
+  `:bool=true` is not a boolean variant. `test_framework_menu_rule_reads_the_bool_type_from_the_arguments_type_segment`
+  compiles the function out of the source with the system C++ compiler and runs it on 12 URLs (RED before: the two
+  string URLs were read as booleans).
+- **sc** (`FunctionMenuController::updateFunctionsEnabled`, T4c): `queryDispatch` on a frame disposed before the
+  controller threw `DisposedException` out of `updatePopupMenu`; it is caught and the function items are built
+  disabled. UITest `test_formulas_function_menu_of_a_closed_window_is_built_with_its_items_disabled` (RED before:
+  `DisposedException: Frame disposed`).
