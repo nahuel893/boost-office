@@ -1,11 +1,261 @@
 # Calc ribbon tabs like Excel (Tabbed Office)
 
-Status: in progress on branch `feature/calc-ribbon-tabs`. This document grows with the tab tasks;
-T1 (below) is the shared groundwork. Design: `product/docs/design/calc-ribbon-tabs-overview.txt`,
-rulings: `product/odd/tasks/calc-ribbon-tabs.md`. Read `calc-data-redesign.md` first for the
-placeholder and split recipes.
+Status: implemented on branch `feature/calc-ribbon-tabs` (2026-10-16), waiting for the user's visual
+review. Third slice of the "Tabbed Office" ribbon, built with the tools of the Home and Data slices
+(`product/docs/calc-home-redesign.md`, `product/docs/calc-data-redesign.md`; read the Data doc first
+for the placeholder and split recipes). This document is the reference for what the six new tabs
+look like, how they are built, what was decided while the user was away, and what is still open.
 
-## 1. Tab order and labels (T1)
+Design sources: `product/docs/design/calc-ribbon-tabs-overview.txt` and one
+`product/docs/design/calc-<tab>-tab-layout.txt` per tab. Excel reference research:
+`product/docs/research/`. Feature document with every task and its evidence:
+`product/odd/tasks/calc-ribbon-tabs.md`.
+
+## 1. What the user sees
+
+### Tab order and labels
+
+File, Home, Insert, **Page Layout**, **Formulas**, Data, Review, View, (contextual tabs), Extension,
+Tools, **Help**. LibreOffice's Layout tab is now Page Layout and its Functions tab is now Formulas,
+placed before Data. Help is a new tab, last, after Tools (Excel puts "(Developer), Help" there).
+Page ids do not change (`phbLayout`, `phbFunctions`). No "~" shows on the tab bar: it is the
+mnemonic marker of the `.ui` labels.
+
+Reference: Excel for Microsoft 365, Windows desktop, at full width. Every button is an Excel
+button. Where LibreOffice has the feature, the button runs it. Where it does not, the button is a
+**placeholder**: greyed out, tooltip "<Label> (not available yet)", no action. Placeholders are
+marked **[P]** below and listed in section 8. Dropdown buttons are marked **(menu)**.
+
+### Insert (10 sections)
+
+| Section | Content |
+|---|---|
+| Tables | Pivot Table, Recommended PivotTables [P], Table |
+| Illustrations | Pictures (menu: Place in Cell [P], Image...), Shapes (menu: Line, Basic Shapes, Block Arrows, Flowchart, Stars and Banners, Callout Shapes, Symbol Shapes, Connectors, each a submenu), Gallery (LibreOffice's Gallery sidebar; Excel's Icons), 3D Models [P], SmartArt [P], Screenshot [P] |
+| Controls | Checkbox [P] |
+| Charts | Chart (LibreOffice's chart wizard), nine chart-type buttons [P] (Column or Bar, Line or Area, Pie or Doughnut, Hierarchy, Statistic, Scatter or Bubble, Waterfall/Funnel/Stock/Surface/Radar, Combo, Maps), PivotChart [P] |
+| Sparklines | Line, Column, Win/Loss (small buttons with labels; they run LibreOffice's sparkline dialog) |
+| Filters | Slicer [P], Timeline [P] (small buttons with labels) |
+| Links | Hyperlink |
+| Comments | Comment |
+| Text | Text Box, Headers and Footers, Fontwork (Excel's WordArt), Signature Line, Object |
+| Symbols | Equation (Formula Object), Symbol |
+
+### Page Layout (5 sections)
+
+| Section | Content |
+|---|---|
+| Themes | Spreadsheet Theme, Theme..., Fonts [P], Effects [P] |
+| Page Setup | Margins (menu: Normal, Wide, Narrow presets), Orientation (menu: Portrait, Landscape), Size (menu: 12 paper sizes and Page Style...), Print Area (menu: Set, Clear, Add, Edit), Breaks (menu: Insert Page Break with Row Break and Column Break, Remove Page Break with its submenu, Reset All), Background [P], Print Titles |
+| Scale to Fit | Width [P], Height [P], Scale [P] |
+| Sheet Options | Sheet Right-to-Left, View Grid Lines, Print Gridlines [P], View Headers, Print Headings [P] |
+| Arrange | Bring Forward (menu), Send Backward (menu), Navigator (Excel's Selection Pane), Align (menu), Group (menu), Rotate (menu) |
+
+### Formulas (5 sections)
+
+| Section | Content |
+|---|---|
+| Function Library | Function, AutoSum (split: body inserts SUM, menu: Sum, Average, Count Numbers, Max, Min, Function...), Recently Used, Financial, Logical, Text, Date & Time, Lookup & Reference, Math & Trig, More Functions (all eight are menus listing the functions of the category; More Functions has five submenus: Statistical, Engineering, Information, Database, Array) |
+| Python | Insert Python [P], Reset [P], Editor [P], Initialization [P] |
+| Defined Names | Manage Names, Define Name, Use in Formula (menu), Create Names |
+| Formula Auditing | Trace Precedents, Trace Dependents, Remove Arrows (menu: all, precedents, dependents), Show Formulas, Error Checking (menu: Error Checking [P], Trace Error), Evaluate Formula [P], Watch Window [P] |
+| Calculation | Calculation Options (menu: Automatic, Manual, with a check mark on the current mode), Recalculate, Calculate Sheet [P] |
+
+### Review (7 sections, all large buttons)
+
+| Section | Content |
+|---|---|
+| Proofing | Spelling, Thesaurus, Properties (document properties) |
+| Accessibility | Check Accessibility (menu: Check Accessibility [P], Alt Text, Table Styles, Unmerge Cells) |
+| Language | Translate [P] |
+| Comments | Comment, Delete Comment, Previous Comment [P], Next Comment [P], Show Comments |
+| Notes | Notes (menu: Insert Comment, Edit, Previous [P], Next [P], Show/Hide, Show All, Hide All, Delete All) |
+| Protect | Protect Sheet, Protect Spreadsheet Structure, Allow Edit Ranges [P], Share Spreadsheet |
+| Ink | Hide Ink [P] |
+
+### View (7 sections)
+
+| Section | Content |
+|---|---|
+| Sheet View | Default, Keep, Exit, New, Options: all [P]. Excel's reduced form: one button for the combo, four icon-only buttons under it |
+| Workbook Views | Normal View, Page Break, Page Layout [P], Custom Views [P] |
+| Dark Mode | Dark Mode |
+| Show | Navigator, Ruler [P], View Grid Lines, Formula Bar, View Headers, Column/Row Highlighting (Excel's Focus Cell) |
+| Zoom | Zoom, 100%, Optimal |
+| Window | New Window, Arrange All [P], Freeze Panes (menu: Freeze Panes, First Row, First Column), Split Window, Hide [P], Unhide [P], View Side by Side [P], Synchronous Scrolling [P], Reset Window Position [P], Switch Windows (menu: the open windows, the active one marked) |
+| Macros | Macros (menu: Macro Manager, Record Macro, Run Macro, Edit Macros) |
+
+### Help (2 sections, all large buttons)
+
+| Section | Content |
+|---|---|
+| Help | LibreOffice Help, Get Help Online, Feedback [P], User Guides, What's New |
+| Community | Get Involved, Blog [P] |
+
+### Width behaviour (measured on screenshots, en-US labels)
+
+Narrower windows fold sections from the right into ">>"; Excel folds group by group into dropdown
+buttons instead.
+
+| Tab | 1920 px | 1600 px | 1366 px |
+|---|---|---|---|
+| Insert | all 10 sections (last edge x = 1782) | Tables to Comments (x = 1098); Text and Symbols folded | same as 1600 |
+| Page Layout | all 5 (Arrange ends at x = 1648) | Themes to Sheet Options (x = 1178); Arrange folded | same as 1600 |
+| Formulas | all 5 (Calculation ends at x = 1773) | Function Library to Defined Names (x = 1322); Formula Auditing and Calculation folded | Function Library and Python (x = 1081) |
+| Data | all 8 | first 5 (to Data Tools); Forecast, Outline and Analyze folded | first 4 (to Sort & Filter) |
+| Review | all 7 (Ink ends at x = 1601) | Proofing to Protect (x = 1531); Ink folded | Proofing to Notes (x = 1016); Protect and Ink folded |
+| View | all 7 (Macros ends at x = 1806) | Sheet View to Zoom (x = 1080); Window and Macros folded | same as 1600 |
+| Help | both sections (ends at x = 611) | not measured; nothing folds by arithmetic | not measured; nothing folds by arithmetic |
+
+At 1920 px the usable width stops near 1830 px, so Insert (about 50 px spare) and View (about 25 px)
+are the tightest. Insert only fits because Filters and Sparklines are small-label columns. Translated
+labels may push the last sections behind ">>".
+
+Home is unchanged by this slice, except that section captions now sit on one baseline on every tab (section 6.11).
+
+### Icons
+
+Boost and boost_dark icons for every button (Fluent glyphs with soft fills, the same style as Home and
+Data): 35 for Insert, 25 Page Layout, 28 Formulas, 15 Review, 27 View and 7 Help, in both themes.
+Glyph substitutes, where Fluent 1.1.344 has no glyph at 24 px: four on Formulas (see T4b) and two on
+View (see T6b).
+
+## 2. How to try it
+
+```
+product/dev/calc.sh dark      # Tabbed Office, dark; then open any tab
+product/dev/calc.sh light
+product/dev/shot-tab.sh THEME TAB OUT.png [WIDTH]    # headless screenshot of one tab, see section 6.5
+```
+
+Close Calc before switching modes. After a build that changed the icon themes, run
+`python3 -I product/icons/build_theme.py install --instdir instdir` so the installed icons match.
+Screenshots and Excel reference images stay outside the repository.
+
+## 3. How it is built
+
+- One layout file per tab: `product/ui/calc_<tab>.json` (insert, pagelayout, formulas, review, view, help;
+  same schema as `calc_home.json`). `product/ui/gen_ribbon.py` splices each page between its
+  `product:<Tab>-begin/end` markers of `sc/uiconfig/scalc/ui/notebookbar_office.ui` and removes the
+  upstream overflow menu object where there was one. The file stays "upstream + generated pages";
+  `product/ui/calc_tabs.json` holds the tab operations (relabel, move, positions, add_pages, properties).
+  Regenerate as shown in section 6.1.
+- **Dropdowns**, **splits**, **placeholders** and **URL variants** follow the Data recipe
+  (`calc-data-redesign.md`): a command with `Popup` and `ToolBox` nodes in `Controller.xcu` and a label in
+  `CalcCommands.xcu`; a split body has its own slot that mirrors the original's state and execute code;
+  a placeholder is a real slot whose state always disables it. New in this slice: a **family slot**
+  serves several buttons through URL variants (`.uno:InsertChartType?Type:string=map`), and the placeholder
+  slots live in the fork block `SID_NEW_SLOTS+380..+421` of `sc/inc/sc.hrc` (spare +422..+424;
+  +424 is the last Calc slot id). The functional slots `FID_FORMULAS_AUTOSUM` (+15) and
+  `FID_PAGELAYOUT_PRINT_TITLES` (+16) use two unused ids next to Data's +12..+14.
+- **To implement a placeholder**: follow the recipe in the Data doc, section 3, and remove its entry from
+  `product/tests/placeholders.json`.
+- **Shared code touched** (not Calc-only; see section 7): `sfx2/source/sidebar/ControllerFactory.cxx` (T1b),
+  `sfx2/source/control/unoctitm.cxx` (T1c, T8a), `framework/source/uielement/menubarmanager.cxx` (T3c, T8a),
+  the export of `svt::PopupMenuControllerBase` in `include/svtools/popupmenucontrollerbase.hxx` (T4c), `vcl/source/bitmap/BitmapDisabledImageFilter.cxx`,
+  `vcl/source/image/{Image,ImplImage}.cxx` and `vcl/inc/image.h` (T8b). Calc code: `sc/source/ui/unoobj/funcmenucontroller.cxx` (the function-category
+  menus), the slots in `sc/sdi` and `sc/source/ui/view`.
+- **Building**: only through `product/dev/lo-make.sh`. A task that adds a UNO component must run
+  `product/dev/lo-make.sh Rdb_services` after `postprocess.build` (section 6.1, T1).
+
+## 4. Tests and checks
+
+Counts at the end of the slice: 279 product unit tests, 71 UITests in
+`sc/qa/uitest/calc_tests/notebookbarOffice.py` (all tabs together), 7 VCL CppUnit tests for the
+disabled-image filter (`CppunitTest_vcl_bitmapprocessor_test`).
+
+- `python3 -I -m unittest discover -s product/tests -t .`: each generated page against its design file,
+  "office .ui == upstream + tab operations + every generated page" (`product/tests/office.py`), labels,
+  controllers and popup files of every command, the placeholder registry against `sc.hrc`, the `.sdi`
+  files and `cellsh.cxx` (`test_calc_slots.py`), the split mirrors, icon coverage of every button in
+  both themes (`test_icons.py`), duplicate widget ids over the whole `.ui`, the caption rule, suppr entries.
+- `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test>` (full names, one at a time): tab order,
+  every placeholder disabled and inert and drawn disabled (62 buttons), dropdown contents built through the
+  real menu controllers, AutoSum and Print Titles against their originals, the function menus, state
+  listeners on URL variants.
+- `product/dev/check-ui.sh sc/uiconfig/scalc/ui/notebookbar_office.ui`: gla11y and lint, no new warnings
+  or fatals.
+- Width, alignment and menus in a real window are checked by screenshot (`product/dev/shot-tab.sh`), not by
+  a unit test.
+- Final screenshots of the user gate (light and dark, 1920 px, every tab) are contact sheets outside the
+  repository: `/mnt/games/libreoffice/assets/previews/calc-ribbon-tabs-light.png` and `...-dark.png`.
+
+## 5. Decisions and rulings
+
+Made while the user was away (2026-10-15 and 16), each worded so the user can overturn it. Source: the
+feature document. Ask for a change and the matching task is reopened.
+
+**Scope and reference**
+
+1. **Reference**: Excel for Microsoft 365, Windows desktop, at 1920 px. The Data tab was built from the user's
+   Excel 2016 screenshot; research R1 records how the 365 Data tab differs. Changing Data is a separate decision.
+2. **Tab set and order**: File, Home, Insert, Page Layout, Formulas, Data, Review, View, Help. Functions becomes
+   Formulas, before Data; Layout becomes Page Layout.
+3. **Help goes last**, after Tools, as in Excel's "(Developer), Help".
+4. **Not in this slice**: contextual tabs (Picture Format, Shape Format, Developer and others), Excel's Draw
+   (ink) and Automate tabs, the File backstage.
+5. **Screenshots of Microsoft's UI** are references only; they live in `/mnt/games/libreoffice/assets/excel-ref/`
+   and are never committed.
+6. **Supersedes** `product/odd/tasks/calc-formulas-tab.md`, which proposed editing the upstream `notebookbar.ui`.
+7. **Omitted**: Insert > Tours, Add-ins (moved to Home in 2024), Forms; Review > Insights (Smart Lookup was retired
+   in 2025), Changes, Performance; the Automate tab; anything that needs a Microsoft cloud (Power BI, Stock Images,
+   Online Pictures, Signature Services, Data Type Icons).
+8. **Kept as placeholders** when LibreOffice lacks the feature: Insert > Checkbox, Formulas > Python (four
+   buttons), Review > Translate, View > Sheet View.
+9. **Sheet Right-to-Left, Dark Mode** (existing LibreOffice features) are kept; **Translate** is a placeholder.
+
+**Slots and structure**
+
+10. **Family slots**: one slot serves several placeholder buttons through URL variants (53 ids would be needed
+    otherwise; the Calc range ends at +424).
+11. **Functional slots +15 and +16** go in the upstream gap next to Data's +12..+14 (upstream appends at the top
+    and rarely refills old holes).
+12. **Print Titles** is an alias slot that mirrors `SID_OPENDLG_EDIT_PRINTAREA` (same Execute and GetState), declared in the `Tables` interface of
+    `tabvwsh.sdi` and disabled in drawing modes by its own `GetState`, because the files that disable the
+    original were outside that task's edit surface.
+13. **Formulas function menus**: static menus shipped first (T4a); the C++ category popup controller replaced
+    them (T4c).
+14. **AutoSum split** body mirrors `SID_AUTO_SUM`; nothing invalidates the original, so the mirror has no
+    invalidation either.
+15. **Python buttons never execute**, and the AutoSum body ignores an undeclared argument (R3).
+
+**Content calls**
+
+16. **Comments and Notes both drive LibreOffice's single comment type.** The Comments group has Comment,
+    Delete, Previous, Next, Show Comments; the Notes menu holds the note-style actions; Convert to Comments
+    is left out.
+17. **Gallery** is Excel's Icons. **PivotTable** is a plain button (no menu).
+18. **View > Sheet View** is built as Excel's reduced form (one "Default" button plus four icon-only buttons),
+    as placeholders on one family slot (+421). It is the first group of Excel's View tab.
+19. **Review loses LibreOffice-only buttons**: Automatic Spell Checking, Hyphenation, Track Changes, Compare,
+    Merge Document and Redact have no Review button; each stays in the menu bar (a test asserts it).
+20. **View loses LibreOffice-only buttons**: Entire Page, Page Width, Full Screen, Value Highlighting, Hidden
+    Row/Column Indicator, Manage Styles, Sidebar and Status Bar stay in the menu bar. Images and Charts
+    (`.uno:ShowGraphics`) was only in the removed View menu and is now reachable from Tools > Options only.
+21. **Calculation Options** is Excel's Automatic/Manual with radio marks (T3c), not a single toggle.
+22. **Orientation shows no check mark**; `docsh4.cxx` is left alone because the sidebar shares that state (T3c).
+23. **Blog** (not "Microsoft Blog") and **Feedback** are the Help placeholders; the label must not carry
+    Microsoft's product name.
+24. **Icons**: a Fluent glyph with the closest meaning where Fluent has none at 24 px (six cases, listed in
+    T4b and T6b). Menu-only items (Portrait, paper sizes, margin presets) have no icon.
+25. **Popup entries shown disabled** in Excel are hidden here (LibreOffice default). Reversing this is T10
+    (section 7).
+
+**Process**
+
+26. **RDD**: a due native review is recorded as "consent pending" per task and offered when the user returns;
+    no review was run while the user was away.
+27. **Changes to shared code were made where the root cause was** (T1b, T1c, T3c, T4c, T8a, T8b), not worked
+    around in Calc. Each has a regression test. They are candidates for upstream (section 7).
+28. **Delivery strategy** is ask-on-risk: no product remote exists yet, and publishing waits for the user's answer.
+
+## 6. Reference by task
+
+The sections below keep the per-task notes (what was built, the spikes, the measurements) in the order the
+work was done: T1 groundwork, T2 Insert, T3 Page Layout, T1b and T1c bugfixes, T4 Formulas, T5 Review, T6 View,
+T7 Help, T8a polish, T8b dark disabled icons. T-numbers refer to the feature document.
+
+### 6.1 Tab order and labels (T1)
 
 Visible tabs: File, Home, Insert, **Page Layout**, **Formulas**, Data, Review, View, (contextual tabs),
 Extension, Tools, **Help**. Page ids do not change (`phbLayout`, `phbFunctions`).
@@ -28,7 +278,7 @@ python3 -I product/ui/gen_ribbon.py --layout product/ui/calc_home.json --tabs pr
 The Help page holds one empty `sfxlo-PriorityMergedHBox` (`pmhbHelp`) until T7 gives it a layout
 (`calc_help.json`, `id_prefix` Help, page `phbHelp`).
 
-## 2. Placeholder slots (T1)
+### 6.2 Placeholder slots (T1)
 
 All placeholder slots of the slice exist already: `SID_NEW_SLOTS+380..+421` (Data +380..+388,
 the other tabs +389..+420, View > Sheet View +421). Spare: +422..+424; +424 is the last Calc slot
@@ -40,7 +290,7 @@ A **family slot** serves several buttons through URL variants, for example
 `.uno:InsertChartType?Type:string=map`. The slot is disabled for every variant, and sfx2 ignores an
 argument the slot does not declare.
 
-## 3. Test tooling (T1)
+### 6.3 Test tooling (T1)
 
 - `product/tests/placeholders.json` is the one registry: slot, offset, base command, optional URL
   variants (`Arg:type=value`) and, once a button is on a page, its label. `placeholders.py` loads it;
@@ -60,7 +310,7 @@ argument the slot does not declare.
   was, so the new implementation cannot be created (T4c). `product/dev/uitest.sh` goes through the `UITest_calc_tests`
   target, which first rebuilds whatever changed, so a RED UITest run already uses the new sources.
 
-## 4. Insert tab (T2a)
+### 6.4 Insert tab (T2a)
 
 `product/ui/calc_insert.json` (page `phbInsert`, prefix `Insert`) replaces the upstream Insert page
 between the generated `product:Insert-begin/end` markers and removes the `Menu Insert` overflow menu.
@@ -112,7 +362,7 @@ UITests in `notebookbarOffice.py`. R6 is only half proven by those: they build t
 through the menu controller, which shows its items exist, not that a real window opens nested
 submenus from the ribbon button. The real-window check above (T2b) is what shows they open.
 
-## 5. Screenshot tool (`product/dev/shot-tab.sh`)
+### 6.5 Screenshot tool (`product/dev/shot-tab.sh`)
 
 ```
 product/dev/shot-tab.sh THEME TAB OUT.png [WIDTH]     # light|dark, e.g. dark Insert /tmp/x.png 1600
@@ -129,7 +379,7 @@ in use. `SHOT_AFTER='echo "click X Y" > "$SHOT_PTR"; sleep 2'` runs extra pointe
 `click`, `press`, `release`, `wait`) before the capture, which is how the Shapes popup was captured;
 `SHOT_KEEP=1` leaves sway running. Screenshots belong outside the repository.
 
-## 6. Page Layout tab (T3a)
+### 6.6 Page Layout tab (T3a)
 
 `product/ui/calc_pagelayout.json` (page `phbLayout`, prefix `PageLayout`) replaces the upstream Layout page
 and removes `Menu Page`. Five sections in Excel's order: Themes, Page Setup, Scale to Fit, Sheet Options,
@@ -164,7 +414,7 @@ screenshots are T3b.
 - Menu item texts of an awt popup built by the controller are empty until the menu is shown; the UITests resolve
   labels through `theUICommandDescription` instead.
 
-### Page Layout icons and fit (T3b)
+#### Page Layout icons and fit (T3b)
 
 - **Icons**: 25 boost/boost_dark manifest entries, one per control (Fluent glyphs, soft fills, same style as
   Home, Data and Insert): `choosedesign` (paint_brush), `themedialog` (color), `pagelayoutthemepart_{fonts,effects}`
@@ -193,7 +443,7 @@ screenshots are T3b.
   greyed; the others (Effects, Height, Scale, Print Headings) were drawn like enabled buttons although their
   slot is disabled (same on Insert's chart placeholders). Not caused by icons; fixed in T1b (below).
 
-### Placeholder buttons drawn disabled (T1b)
+#### Placeholder buttons drawn disabled (T1b)
 
 - **Cause** (sfx2, so upstream has it too): `ControllerFactory::CreateToolBoxController` (the VCL `ToolBox` path of
   notebookbar and sidebar toolboxes) called `EnableItem` after the controller's `update()`, which overwrote the
@@ -221,7 +471,7 @@ screenshots are T3b.
   greyed until the ribbon is built again, where before it stayed enabled. Placeholders never change state, so
   they are not affected; real variant buttons (the Sparkline types) are.
 
-### Argument-variant URLs hear later state changes (T1c)
+#### Argument-variant URLs hear later state changes (T1c)
 
 - **Cause** (sfx2, upstream too): `SfxBindings::GetDispatch` keeps one `SfxOfficeDispatch` per slot, made for the
   URL that asked first, and every URL of that command shares it (`.uno:InsertSparkline`, `...?Type:string=line`,
@@ -252,7 +502,7 @@ screenshots are T3b.
   Calc does not invalidate `SID_INSERT_SPARKLINE` for them, so the button keeps its old state there (an sc
   matter, not this defect). The tests therefore use the shape selection, which changes the shell.
 
-## 7. Formulas tab (T4a)
+### 6.7 Formulas tab (T4a)
 
 `product/ui/calc_formulas.json` (page `phbFunctions`, prefix `Formulas`) replaces the upstream Functions page
 children between generated `product:Formulas-begin/end` markers. That page had no overflow menu object, so
@@ -308,7 +558,7 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
   hearing the same changes, the ribbon button drawn like its state, one real command per dropdown enabled, every
   popup listing its items, the Calculation Options toggle. The placeholder-button UITest now covers 41 buttons.
 
-### Formulas icons and fit (T4b)
+#### Formulas icons and fit (T4b)
 
 - **Icons**: 27 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as Home, Data, Insert and
   Page Layout), one per control, plus the alias `formulasautosum` on the existing `autosum` entry. Large: `functiondialog`
@@ -338,7 +588,7 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
 - **Real-window menus**: the AutoSum arrow lists Sum, Average, Count Numbers, Max, Min, a separator and Function...;
   Calculation Options lists Automatic (checked) and Manual (unchecked) with check boxes.
 
-### Function-category menus (T4c)
+#### Function-category menus (T4c)
 
 - **One controller**: `sc/source/ui/unoobj/funcmenucontroller.cxx`, a `svt::PopupMenuControllerBase`
   (implementation `com.sun.star.comp.Calc.FunctionMenuController`, constructor
@@ -390,7 +640,7 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
   `SELECT OBJECT`) the function items are disabled, and enabled again with a cell. They build the popup through
   `PopupMenuControllerFactory` without a `Value` and select an item by calling the controller's `itemSelected`.
 
-## 8. Review tab (T5a)
+### 6.8 Review tab (T5a)
 
 `product/ui/calc_review.json` (page `phbReview`, prefix `Review`) replaces the upstream Review page children
 between generated `product:Review-begin/end` markers and removes the overflow menu object `Menu Review`. Seven
@@ -419,7 +669,7 @@ screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
 - `.uno:AutoFormat` in the Check Accessibility menu keeps LibreOffice's label "Table Styles" instead of the design's
   "AutoFormat Styles..." (no such string exists; changing the shared label would rename other menus).
 
-### Review icons and fit (T5b)
+#### Review icons and fit (T5b)
 
 - **Icons**: 15 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as the other tabs), all
   large: `spelldialog` (text_proofing_tools; the design's `text_proofing_tools_abc` does not exist in Fluent 1.1.344),
@@ -443,7 +693,7 @@ screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
   "Insert Comment" and the Check Accessibility menu shows "[No selection possible]" (its four items need an object, a
   range or a merged cell). The full item lists are covered by the UITests, not by a screenshot.
 
-## 9. View tab (T6a)
+### 6.9 View tab (T6a)
 
 `product/ui/calc_view.json` (page `phbView`, prefix `View`) replaces the upstream View page children between
 generated `product:View-begin/end` markers and removes the overflow menu object `Menu View`. Seven sections:
@@ -485,7 +735,7 @@ screenshots are T6b (the variant buttons already carry their icon names). No C++
   contents, Switch Windows fill, labels of every variant). The drawn-disabled count is now 60 buttons and the
   slice-wide placeholder count 65.
 
-### View icons and fit (T6b)
+#### View icons and fit (T6b)
 
 - **Icons**: 27 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as the other tabs).
   Large: `normalviewmode` (grid), `pagebreakmode` (document_page_break), `viewpagelayout` (document_one_page),
@@ -510,7 +760,7 @@ screenshots are T6b (the variant buttons already carry their icon names). No C++
   "Untitled 1" (selected, radio mark) and "Untitled 1 : 2", so the framework WindowListMenuController fills a popup
   opened from the ribbon button.
 
-## 10. Help tab (T7)
+### 6.10 Help tab (T7)
 
 `product/ui/calc_help.json` (page `phbHelp`, prefix `Help`, no `remove_objects`) fills the empty `pmhbHelp` box
 between the `product:Help-begin/end` markers. Two sections, all large buttons, no menus, no launchers
@@ -532,9 +782,9 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   inert and drawn disabled while the other five buttons are drawn enabled, labels). The drawn-disabled count is now
   62 buttons.
 
-## 11. Cross-tab polish (T8a)
+### 6.11 Cross-tab polish (T8a)
 
-### Section captions on one baseline
+#### Section captions on one baseline
 
 - **Cause**: the tab control is as tall as its tallest page (Home), and each generated page box was `valign center`,
   so a page whose sections hold only large buttons (Review, Help: 80 px of sections) sat centered in it with its
@@ -566,7 +816,7 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   every page follows the two-row rule) and fixture tests in `test_gen_ribbon.py`; `test_calc_tabs.py` checks the
   Page Layout property change and the `properties` operation.
 
-### Disabled icons in dark (fixed in VCL by T8b, section 12)
+#### Disabled icons in dark (fixed in VCL by T8b, 6.12)
 
 - Disabled icon-only buttons (View > Sheet View, Hide/Unhide; Review > Hide Ink) look almost as bright as enabled
   ones in Boost Dark. VCL draws a disabled image through `BitmapDisabledImageFilter`
@@ -577,7 +827,7 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
 - No product-side lever: the filter reads neither the color scheme nor the icon theme, and an icon's alpha dims its
   enabled form too. A fix belongs in VCL (filter range or alpha from the face color, with the cache keyed by it).
 
-### Parked review minors
+#### Parked review minors
 
 - **sfx2** (`SfxDispatchController_Impl::StateChanged`, T1c): one event copy before the loop with only `FeatureURL`
   set per listener URL; the plain command of the bound variant takes `aDispatchURL` without its arguments instead of
@@ -593,9 +843,9 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   disabled. UITest `test_formulas_function_menu_of_a_closed_window_is_built_with_its_items_disabled` (RED before:
   `DisposedException: Frame disposed`).
 
-## 12. Disabled icons in dark themes (T8b)
+### 6.12 Disabled icons in dark themes (T8b)
 
-- **Cause** (section 11): `BitmapDisabledImageFilter` mapped every pixel to grey `luminance / 4 + 160` whatever the
+- **Cause** (6.11): `BitmapDisabledImageFilter` mapped every pixel to grey `luminance / 4 + 160` whatever the
   background, so on a dark face a disabled icon was a light grey brighter than many enabled icons.
 - **Fix** (`vcl/source/bitmap/BitmapDisabledImageFilter.cxx`): the filter takes the face color it is drawn on. A light
   face (`!IsDark()`) keeps `luminance / 4 + 160`, byte for byte. On a dark face a pixel of luminance L becomes the grey
@@ -603,7 +853,7 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   (#2B2B2B: 43..88; #000000: 0..63; #454545: 69..114). The band is set in contrast, not in sRGB levels: the first
   version (`face + L * 3 / 16`, a fixed 48-level band) dimmed alike from #1F1F1F up but nearly vanished on black
   (1.28:1 simulated, high contrast black), because the same sRGB step is less contrast near black. Simulated on the
-  Boost Dark icons (mean ink contrast, as in section 11), the contrast band gives 1.51:1 on #000000, 1.61:1 on
+  Boost Dark icons (mean ink contrast, as in 6.11), the contrast band gives 1.51:1 on #000000, 1.61:1 on
   #1A1A1A, 1.63:1 on #2B2B2B to #5A5A5A (light today: 1.55:1). `Image::Draw` passes the output device's
   `StyleSettings::GetFaceColor()` (the color VCL already uses to pick a dark or light toolbox arrow); `ImplImage`
   keys its cached disabled bitmap by that face color too, so a theme switch at runtime makes it again.
@@ -615,7 +865,7 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   mixes a dark face with light menus or fields (`MenuColor`, `FieldColor`) would draw dark-on-light disabled icons
   there.
 - **Measured** (1920 px screenshots, every icon that changed, WCAG contrast of its mean ink against the background,
-  as in section 11; "dark after" is the first version of the band, Calc View re-measured with the contrast band:
+  as in 6.11; "dark after" is the first version of the band, Calc View re-measured with the contrast band:
   1.59:1, range 1.47-1.81):
 
   | Screen | Light (before = after) | Dark before | Dark after |
@@ -636,3 +886,133 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   #454545, #1A1A1A and #000000 every disabled pixel is a grey at contrast `1 + L / 255` (within 0.02) against the face;
   light faces give exactly today's output; alpha is kept; an image drawn disabled on a light, a dark and again a light
   face gives the light, dark and light grey (the cache follows the face color).
+
+## 7. Known limitations and next steps
+
+- **Orientation menu has no check mark.** Its slot state is an `SvxPageItem`, not a boolean, so neither Portrait
+  nor Landscape is marked (6.3, T3c; ruling 22). Calculation Options does show its mode.
+- **Images and Charts (`.uno:ShowGraphics`) is reachable only through Tools > Options > LibreOffice Calc > View >
+  Objects.** It was only in the removed View menu.
+- **Macro Manager is hidden unless experimental mode is on** (`IsExperimental`, framework rule). Record Macro,
+  Run Macro and Edit Macros always show. Data > Other Sources > Streams has the same limit.
+- **gtk3 menus show no item tooltips.** `GtkSalMenu` implements no `SetItemTooltip`. The function menus set the
+  signature as tooltip text anyway (UITest); other VCL plugins show it.
+- **Popups hide disabled entries** (pending decision **T10**). LibreOffice's `DontHideDisabledEntry` defaults to
+  hiding them; Excel shows them greyed. So the Breaks menu on cell A1 reads "[No selection possible]", the Notes
+  menu on an empty cell shows only Insert Comment, and the Check Accessibility menu on an empty cell is empty.
+  Changing the default affects every context menu. If chosen, the screenshots of the populated menus can be taken.
+- **Some labels are LibreOffice's, not Excel's** (pending decision **T9**): for example Fontwork for WordArt,
+  Headers and Footers, Object for the OLE button, Formula Object for Equation, Table Styles (the AutoFormat
+  entry of the accessibility menu), "Chart..." for the chart wizard. Two ways: Calc-only label overrides in
+  `CalcCommands.xcu`, which also rename the menus, or ribbon-only URL label variants.
+- **Labels are en-US only.** About 115 new `CalcCommands.xcu` nodes, the three tab labels and the new
+  popup menus need translations before shipping. Translated labels may also push the last sections behind ">>"
+  at 1920 px.
+- **Width**: sections fold into ">>" at 1600 and 1366 px (section 1); Excel folds group by group into dropdowns.
+- **After adding a UNO component** (a `.component` entry, as for the function menus) run
+  `product/dev/lo-make.sh Rdb_services` after `postprocess.build`, or the new service cannot be created.
+- **Shared code changed in this slice** (candidates for upstream; each has a regression test):
+  - **T1b** `sfx2/source/sidebar/ControllerFactory.cxx`: a toolbox button whose slot is disabled was forced
+    enabled after `update()`.
+  - **T1c** `sfx2/source/control/unoctitm.cxx`: a URL variant of a slot did not hear later state changes. The
+    T8a refactor keeps one event copy per push. Side effect: seven Writer Compact `StyleApply` buttons that stayed
+    greyed after Edit Document are now enabled.
+  - **T3c** `framework/source/uielement/menubarmanager.cxx`: a menu item whose URL has exactly one boolean
+    argument is checked only when the slot's state equals the argument. Only our Orientation and Calculation
+    Options items use it in the whole tree.
+  - **T4c** `include/svtools/popupmenucontrollerbase.hxx`: the class is exported unconditionally (visibility only);
+    release builds enable mergelibs and the dev build does not, so that link is not exercised here.
+  - **T8b** VCL: `BitmapDisabledImageFilter` draws disabled images by the face colour, so they look disabled in
+    dark themes. Light output is byte-identical. The band follows the face colour, not the surface under the
+    image; a theme that mixes a dark face with light menus or fields would draw dark-on-light disabled icons there.
+- **Pre-existing bug, not fixed**: after a runtime theme switch (Adwaita light to dark with `.uno:ChangeTheme`)
+  the View > Sheet View buttons lose their icons. With a LibreOffice colour scheme such as Boost a scheme change
+  asks for a restart, so the normal path is not affected.
+- **Not exercised in a real window**: clicking a Shapes entry to draw a shape; the mergelibs link of the
+  function-menu controller. Calc does not invalidate `SID_INSERT_SPARKLINE` after the sheet is protected through
+  the API or after a multi-range selection, so the Sparkline buttons keep their old state there (an sc matter).
+- **Glyph substitutes** (Fluent 1.1.344 lacks the glyph at 24 px): four on Formulas and two on View (details in
+  6.7 T4b and 6.9 T6b). Near-identical small icons remain (tags, the e^x pair,
+  Calculate Now and Calculate Sheet).
+- **Function menus**: the Financial menu is taller than the screen (GTK scrolls it); "Function..." stays enabled with
+  a shape selected.
+- **Next steps**: decide T9 and T10; the user reviews the screenshots; contextual tabs, Draw and Automate and the
+  File backstage are separate slices; then implement placeholders one by one (section 8), starting with those
+  that need no new infrastructure: Hide/Unhide, View Side by Side, Previous/Next Comment, Print Gridlines and
+  Print Headings, Scale to Fit.
+
+## 8. Placeholders
+
+The "features to program later". 65 buttons and menu items on 42 slots (`product/tests/placeholders.json`,
+`sc/inc/sc.hrc`): 9 on Data, 53 on the six new tabs' ribbons, 3 menu items. A family slot serves several
+rows. Previous and Next Comment are also items of the Notes menu. All are greyed, with the tooltip
+"<Label> (not available yet)", and do nothing. To implement one, follow the Data doc's recipe and delete
+its registry entry.
+
+| Tab | Label | Command | Slot |
+|---|---|---|---|
+| Data, Get External Data | From Database | `.uno:DataFromDatabase` | `FID_DATA_FROM_DATABASE` (+380) |
+| Data, Get & Transform | Recent Sources | `.uno:DataRecentSources` | `FID_DATA_RECENT_SOURCES` (+381) |
+| Data, Connections | Connections | `.uno:DataConnections` | `FID_DATA_CONNECTIONS` (+382) |
+| Data, Connections | Properties | `.uno:DataConnectionProperties` | `FID_DATA_CONN_PROPS` (+383) |
+| Data, Sort & Filter | Reapply | `.uno:DataFilterReapply` | `FID_DATA_FILTER_REAPPLY` (+384) |
+| Data, Data Tools | Flash Fill | `.uno:DataFlashFill` | `FID_DATA_FLASH_FILL` (+385) |
+| Data, Data Tools | Relationships | `.uno:DataRelationships` | `FID_DATA_RELATIONSHIPS` (+386) |
+| Data, Data Tools | Manage Data Model | `.uno:DataManageModel` | `FID_DATA_MANAGE_MODEL` (+387) |
+| Data, Forecast | Forecast Sheet | `.uno:DataForecastSheet` | `FID_DATA_FORECAST_SHEET` (+388) |
+| Insert, Tables | Recommended PivotTables | `.uno:InsertRecommendedPivotTables` | `FID_INSERT_RECOMMENDED_PIVOT` (+389) |
+| Insert, Pictures menu (menu item) | Place in Cell | `.uno:InsertPictureInCell` | `FID_INSERT_PICTURE_IN_CELL` (+390) |
+| Insert, Illustrations | 3D Models | `.uno:Insert3DModels` | `FID_INSERT_3D_MODELS` (+391) |
+| Insert, Illustrations | SmartArt | `.uno:InsertSmartArt` | `FID_INSERT_SMARTART` (+392) |
+| Insert, Illustrations | Screenshot | `.uno:InsertScreenshot` | `FID_INSERT_SCREENSHOT` (+393) |
+| Insert, Controls | Checkbox | `.uno:InsertCellCheckbox` | `FID_INSERT_CELL_CHECKBOX` (+394) |
+| Insert, Charts | Insert Column or Bar Chart | `.uno:InsertChartType?Type:string=columnbar` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Line or Area Chart | `.uno:InsertChartType?Type:string=linearea` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Pie or Doughnut Chart | `.uno:InsertChartType?Type:string=piedoughnut` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Hierarchy Chart | `.uno:InsertChartType?Type:string=hierarchy` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Statistic Chart | `.uno:InsertChartType?Type:string=statistic` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Scatter (X, Y) or Bubble Chart | `.uno:InsertChartType?Type:string=scatterbubble` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Waterfall, Funnel, Stock, Surface or Radar Chart | `.uno:InsertChartType?Type:string=waterfall` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Insert Combo Chart | `.uno:InsertChartType?Type:string=combo` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | Maps | `.uno:InsertChartType?Type:string=map` | `FID_INSERT_CHART_TYPE` (+395) |
+| Insert, Charts | PivotChart | `.uno:InsertPivotChart` | `FID_INSERT_PIVOT_CHART` (+396) |
+| Insert, Filters | Slicer | `.uno:InsertSlicer` | `FID_INSERT_SLICER` (+397) |
+| Insert, Filters | Timeline | `.uno:InsertTimeline` | `FID_INSERT_TIMELINE` (+398) |
+| Page Layout, Themes | Fonts | `.uno:PageLayoutThemePart?Part:string=fonts` | `FID_PAGELAYOUT_THEME_PART` (+399) |
+| Page Layout, Themes | Effects | `.uno:PageLayoutThemePart?Part:string=effects` | `FID_PAGELAYOUT_THEME_PART` (+399) |
+| Page Layout, Page Setup | Background | `.uno:PageLayoutBackground` | `FID_PAGELAYOUT_BACKGROUND` (+400) |
+| Page Layout, Scale to Fit | Width | `.uno:PageLayoutScaleToFit?Dimension:string=width` | `FID_PAGELAYOUT_SCALE_TO_FIT` (+401) |
+| Page Layout, Scale to Fit | Height | `.uno:PageLayoutScaleToFit?Dimension:string=height` | `FID_PAGELAYOUT_SCALE_TO_FIT` (+401) |
+| Page Layout, Scale to Fit | Scale | `.uno:PageLayoutScaleToFit?Dimension:string=scale` | `FID_PAGELAYOUT_SCALE_TO_FIT` (+401) |
+| Page Layout, Sheet Options | Print Gridlines | `.uno:PageLayoutPrintOption?Option:string=gridlines` | `FID_PAGELAYOUT_PRINT_OPTION` (+402) |
+| Page Layout, Sheet Options | Print Headings | `.uno:PageLayoutPrintOption?Option:string=headings` | `FID_PAGELAYOUT_PRINT_OPTION` (+402) |
+| Formulas, Python | Insert Python | `.uno:FormulasPython?Action:string=insert` | `FID_FORMULAS_PYTHON` (+403) |
+| Formulas, Python | Reset | `.uno:FormulasPython?Action:string=reset` | `FID_FORMULAS_PYTHON` (+403) |
+| Formulas, Python | Editor | `.uno:FormulasPython?Action:string=editor` | `FID_FORMULAS_PYTHON` (+403) |
+| Formulas, Python | Initialization | `.uno:FormulasPython?Action:string=init` | `FID_FORMULAS_PYTHON` (+403) |
+| Formulas, Error Checking menu (menu item) | Error Checking | `.uno:FormulasErrorChecking` | `FID_FORMULAS_ERROR_CHECKING` (+404) |
+| Formulas, Formula Auditing | Evaluate Formula | `.uno:FormulasEvaluateFormula` | `FID_FORMULAS_EVALUATE_FORMULA` (+405) |
+| Formulas, Formula Auditing | Watch Window | `.uno:FormulasWatchWindow` | `FID_FORMULAS_WATCH_WINDOW` (+406) |
+| Formulas, Calculation | Calculate Sheet | `.uno:FormulasCalculateSheet` | `FID_FORMULAS_CALCULATE_SHEET` (+407) |
+| Review, Check Accessibility menu (menu item) | Check Accessibility | `.uno:ReviewCheckAccessibility` | `FID_REVIEW_CHECK_ACCESSIBILITY` (+408) |
+| Review, Language | Translate | `.uno:ReviewTranslate` | `FID_REVIEW_TRANSLATE` (+409) |
+| Review, Comments | Previous Comment | `.uno:ReviewGoToComment?Direction:string=previous` | `FID_REVIEW_GOTO_COMMENT` (+410) |
+| Review, Comments | Next Comment | `.uno:ReviewGoToComment?Direction:string=next` | `FID_REVIEW_GOTO_COMMENT` (+410) |
+| Review, Protect | Allow Edit Ranges | `.uno:ReviewAllowEditRanges` | `FID_REVIEW_ALLOW_EDIT_RANGES` (+411) |
+| Review, Ink | Hide Ink | `.uno:ReviewHideInk` | `FID_REVIEW_HIDE_INK` (+412) |
+| View, Workbook Views | Page Layout | `.uno:ViewPageLayout` | `FID_VIEW_PAGE_LAYOUT` (+413) |
+| View, Workbook Views | Custom Views | `.uno:ViewCustomViews` | `FID_VIEW_CUSTOM_VIEWS` (+414) |
+| View, Show | Ruler | `.uno:ViewRuler` | `FID_VIEW_RULER` (+415) |
+| View, Window | Arrange All | `.uno:ViewArrangeAll` | `FID_VIEW_ARRANGE_ALL` (+416) |
+| View, Window | Hide | `.uno:ViewWindowVisibility?Action:string=hide` | `FID_VIEW_WINDOW_VISIBILITY` (+417) |
+| View, Window | Unhide | `.uno:ViewWindowVisibility?Action:string=unhide` | `FID_VIEW_WINDOW_VISIBILITY` (+417) |
+| View, Window | View Side by Side | `.uno:ViewSideBySide?Action:string=toggle` | `FID_VIEW_SIDE_BY_SIDE` (+418) |
+| View, Window | Synchronous Scrolling | `.uno:ViewSideBySide?Action:string=sync` | `FID_VIEW_SIDE_BY_SIDE` (+418) |
+| View, Window | Reset Window Position | `.uno:ViewSideBySide?Action:string=reset` | `FID_VIEW_SIDE_BY_SIDE` (+418) |
+| View, Sheet View | Default | `.uno:ViewSheetView?Action:string=switch` | `FID_VIEW_SHEET_VIEW` (+421) |
+| View, Sheet View | Keep | `.uno:ViewSheetView?Action:string=keep` | `FID_VIEW_SHEET_VIEW` (+421) |
+| View, Sheet View | Exit | `.uno:ViewSheetView?Action:string=exit` | `FID_VIEW_SHEET_VIEW` (+421) |
+| View, Sheet View | New | `.uno:ViewSheetView?Action:string=new` | `FID_VIEW_SHEET_VIEW` (+421) |
+| View, Sheet View | Options | `.uno:ViewSheetView?Action:string=options` | `FID_VIEW_SHEET_VIEW` (+421) |
+| Help, Help | Feedback | `.uno:HelpFeedback` | `FID_HELP_FEEDBACK` (+419) |
+| Help, Community | Blog | `.uno:HelpBlog` | `FID_HELP_BLOG` (+420) |

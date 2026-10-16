@@ -41,7 +41,11 @@ Design source: `product/docs/design/calc-data-tab-layout.txt`.
   Data. "Advanced Filter" on the tab runs LibreOffice's Advanced Filter (`.uno:DataFilterSpecialFilter`);
   it only shares its icon with Standard Filter.
 - The old compact "Data" overflow menu of the upstream page is gone; its items are reachable from
-  the new sections and the menu bar.
+  the new sections and the menu bar. In Tabbed Office mode the full menu bar is toggled with the first
+  quick-access button (`.uno:Menubar`, `sc/uiconfig/scalc/toolbar/notebookbarshortcuts.xml`), and Data >
+  Standard Filter is in its Data menu. The menu button at the top right opens a short menu of about 10 items
+  (`sc/uiconfig/scalc/popupmenu/notebookbar.xml`: recent files, close, toolbars, customize, options, Help,
+  Donate, About) with no Data menu.
 - All 8 sections are visible at 1920 px. Narrower windows collapse sections from the right into ">>"
   (see section 6).
 
