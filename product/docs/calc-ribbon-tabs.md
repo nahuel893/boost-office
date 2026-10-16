@@ -254,12 +254,11 @@ screenshots are T3b.
 children between generated `product:Formulas-begin/end` markers. That page had no overflow menu object, so
 `remove_objects` is empty. Five sections in Excel's order: Function Library, Python, Defined Names, Formula
 Auditing, Calculation (verbatim spec: `product/docs/design/calc-formulas-tab-layout.txt`). Icons, the 1920 px
-fit and screenshots are T4b; the eight function-category menus are the design's static fallback until T4c.
+fit and screenshots are T4b; the eight function-category menus are T4c (below).
 
-- **Static category menus**: `.uno:Formulas{RecentlyUsed,Financial,Logical,Text,DateTime,Lookup,Math,MoreFunctions}Menu`
-  are dropdowns without a slot (Popup + ToolBox nodes in `Controller.xcu`, `popupmenu/formulas_*.xml`), each listing
-  "Function..." (`.uno:FunctionDialog`) and "Function List" (`.uno:FunctionBox`). T4c replaces the Popup nodes by one
-  C++ controller that fills them from the function manager.
+- **Category menus**: `.uno:Formulas{RecentlyUsed,Financial,Logical,Text,DateTime,Lookup,Math,MoreFunctions}Menu`
+  are dropdowns without a slot (Popup + ToolBox nodes in `Controller.xcu`). T4a gave them static popups ("Function..."
+  and "Function List"); T4c replaced those by one C++ controller that lists the functions of each category.
 - **Other dropdowns**: Use in Formula (Paste Names), Remove Arrows (all traces, precedents, dependents), Error
   Checking (placeholder item "Error Checking" `FID_FORMULAS_ERROR_CHECKING`, then Trace Error), Calculation Options.
 - **AutoSum split**: `.uno:FormulasAutoSum` = `FID_FORMULAS_AUTOSUM` = `SID_NEW_SLOTS+15` (was unused). The body
@@ -334,3 +333,47 @@ fit and screenshots are T4b; the eight function-category menus are the design's 
   Calculation fold.
 - **Real-window menus**: the AutoSum arrow lists Sum, Average, Count Numbers, Max, Min, a separator and Function...;
   Calculation Options lists Automatic (checked) and Manual (unchecked) with check boxes.
+
+### Function-category menus (T4c)
+
+- **One controller**: `sc/source/ui/unoobj/funcmenucontroller.cxx`, a `svt::PopupMenuControllerBase`
+  (implementation `com.sun.star.comp.Calc.FunctionMenuController`, constructor
+  `Calc_FunctionMenuController_get_implementation` in `sc/util/sc.component`, built into `libsclo`). The eight Popup
+  nodes of `Controller.xcu` name it and carry no `Value`; the ToolBox nodes (`GenericPopupToolbarController`) are
+  unchanged. The eight static `popupmenu/formulas_*.xml` files and their `UIConfig_scalc.mk` lines are gone (nothing
+  else used them).
+- **Category from the command** (`CATEGORY_MENUS`, ids of `sc/inc/scfuncs.hxx`): Financial 3, Logical 5, Text 10,
+  Date & Time 2, Lookup & Reference = Spreadsheet 9, Math & Trig = Mathematical 6; Recently Used reads the LRU list of
+  `ScAppOptions` (`ScFunctionMgr::fillLastRecentlyUsedFunctions`). More Functions has five submenus whose items carry
+  the commands `.uno:Formulas{Statistical,Engineering,Information,Database,Array}Menu` (labels in `CalcCommands.xcu`;
+  Engineering is LibreOffice's Add-in category 11), categories 8, 11, 4, 1, 7. These five commands have no slot and no
+  controller node: they only name a category and a label.
+- **Built when the menu opens**: `PopupMenuToolbarController` calls `updatePopupMenu()` on every open, and the controller
+  fills the menu then from `ScGlobal::GetStarCalcFunctionMgr()` (sorted by name, upper-case names in the language of
+  the formulas, hidden functions left out as in the Function Wizard). `VCLXMenu::clear()` keeps every submenu it was
+  given, so More Functions makes its five submenus once and refills only their items.
+- **Items**: each function dispatches `.uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0`
+  (`SID_INS_FUNCTION` finds the name among all functions, starts input mode and inserts `=NAME(` with the argument
+  names, like the Functions sidebar) and, like the sidebar, puts the function at the top of the recently used list.
+  Typing a formula updates that list too (`ScViewFunc::EnterData`). Every menu ends with a separator and
+  "Function..." (`.uno:FunctionDialog`). The tooltip (`setTipHelpText`) is the signature and the short description
+  of the Function Wizard (no new strings); add-in functions read from the configuration get the description only.
+- **Selection**: VCL tells only the menu that holds the item, so the controller also listens to each submenu and reads
+  the command from the event's `Source`. It dispatches through `PopupMenuControllerBase::dispatchCommand`
+  (asynchronous). The items are not enabled or disabled by state (no `MenuBarManager`): with a drawing object
+  selected an item does nothing, because `InsertFunction` is disabled there.
+- **Real window (gtk3, headless sway, 1920 px light)**: Financial opens a native menu of its functions (ACCRINT ...
+  NPV ..., including the Analysis add-in's `_ADD` variants, which are LibreOffice's Financial category too); it is
+  taller than the screen, so GTK places it from the top edge with a scroll arrow. Logical lists AND ... XOR, a separator
+  and Function...; a click on IF leaves A1 in edit mode with `=IF(Test` and "Test" selected. More Functions lists the five
+  submenus and Function...; hovering Information opens CELL ... TYPE to the right, and a click on ISBLANK there inserts
+  `=ISBLANK(Value)` (the submenu listener path). Recently Used then lists the picked function first (AND, SUM, AVERAGE,
+  MIN, MAX, IF). The tooltips do not show in the GTK native menus: `GtkSalMenu` implements no `SetItemTooltip` and
+  blocks tooltips while a native popup runs; the text is set on the VCL menu (UITest) for the other VCL plugins.
+- **Tests**: `FunctionMenuControllerTest` in `test_calc_formulas_ui.py` (Popup nodes, component registration, the
+  category table against the design, submenu order and labels, the item URL, the removed popups) and five UITests:
+  each single-category menu lists exactly the functions `com.sun.star.sheet.FunctionDescriptions` gives for its
+  category and ends with Function...; Financial (PMT, NPV, tooltip) and Lookup & Reference (VLOOKUP, INDEX);
+  More Functions' five submenus; a SUM item, selected through the controller, starts input mode with `=SUM(`; Recently
+  Used lists a typed function and then a function picked from a menu, first. They build the popup through
+  `PopupMenuControllerFactory` without a `Value` and select an item by calling the controller's `itemSelected`.

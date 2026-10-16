@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """The Formulas tab: layout vs product/docs/design/calc-formulas-tab-layout.txt, labels, menus,
-the static function-category menus (the design's config-only fallback) and the AutoSum split."""
+the function-category menu controller (C++, T4c) and the AutoSum split."""
 import json
 import re
 import unittest
@@ -48,19 +48,18 @@ DESIGN = {
 }
 SHAPES = {"FunctionLibrary": [1] * 10, "Python": [1, 3], "DefinedNames": [1, 3],
           "Auditing": [3, 3, 1], "Calculation": [1, 2]}
-FUNCTION_ITEMS = [".uno:FunctionDialog", ".uno:FunctionBox"]
-MENUS = {  # popup command: (label, popup resource, popup items in order)
+MENUS = {  # popup command: (label, popup resource, popup items in order); None: built by C++
     "FormulasAutoSumMenu": ("AutoSum", "formulas_autosum",
                             [".uno:AutoSum", AUTOSUM + "average", AUTOSUM + "count", AUTOSUM + "max",
                              AUTOSUM + "min", SEP, ".uno:FunctionDialog"]),
-    "FormulasRecentlyUsedMenu": ("Recently Used", "formulas_recentlyused", FUNCTION_ITEMS),
-    "FormulasFinancialMenu": ("Financial", "formulas_financial", FUNCTION_ITEMS),
-    "FormulasLogicalMenu": ("Logical", "formulas_logical", FUNCTION_ITEMS),
-    "FormulasTextMenu": ("Text", "formulas_text", FUNCTION_ITEMS),
-    "FormulasDateTimeMenu": ("Date & Time", "formulas_datetime", FUNCTION_ITEMS),
-    "FormulasLookupMenu": ("Lookup & Reference", "formulas_lookup", FUNCTION_ITEMS),
-    "FormulasMathMenu": ("Math & Trig", "formulas_math", FUNCTION_ITEMS),
-    "FormulasMoreFunctionsMenu": ("More Functions", "formulas_morefunctions", FUNCTION_ITEMS),
+    "FormulasRecentlyUsedMenu": ("Recently Used", None, None),
+    "FormulasFinancialMenu": ("Financial", None, None),
+    "FormulasLogicalMenu": ("Logical", None, None),
+    "FormulasTextMenu": ("Text", None, None),
+    "FormulasDateTimeMenu": ("Date & Time", None, None),
+    "FormulasLookupMenu": ("Lookup & Reference", None, None),
+    "FormulasMathMenu": ("Math & Trig", None, None),
+    "FormulasMoreFunctionsMenu": ("More Functions", None, None),
     "FormulasUseInFormulaMenu": ("Use in Formula", "formulas_useinformula", [".uno:InsertName"]),
     "FormulasRemoveArrowsMenu": ("Remove Arrows", "formulas_removearrows",
                                  [".uno:ClearArrows", ".uno:ClearArrowPrecedents",
@@ -80,6 +79,19 @@ PLACEHOLDER_LABELS = {
 FORMULAS_SLOTS = range(403, 408)
 VARIANT_LABELS = {AUTOSUM + "average": "Average", AUTOSUM + "count": "Count Numbers",
                   AUTOSUM + "max": "Max", AUTOSUM + "min": "Min"}
+# T4c: one C++ popup menu controller fills the eight Function Library menus (design: "Menu of
+# .uno:Formulas*Menu"). Category ids of sc/inc/scfuncs.hxx; 0 is the recently used list.
+FUNCTION_MENU_CONTROLLER = "com.sun.star.comp.Calc.FunctionMenuController"
+FUNCTION_MENU_SOURCE = "sc/source/ui/unoobj/funcmenucontroller.cxx"
+DESIGN_CATEGORIES = {"FormulasRecentlyUsedMenu": 0, "FormulasFinancialMenu": 3, "FormulasLogicalMenu": 5,
+                     "FormulasTextMenu": 10, "FormulasDateTimeMenu": 2, "FormulasLookupMenu": 9,
+                     "FormulasMathMenu": 6}
+# More Functions: (submenu command, label, category) in the design's order
+MORE_FUNCTIONS = [("FormulasStatisticalMenu", "Statistical", 8), ("FormulasEngineeringMenu", "Engineering", 11),
+                  ("FormulasInformationMenu", "Information", 4), ("FormulasDatabaseMenu", "Database", 1),
+                  ("FormulasArrayMenu", "Array", 7)]
+STATIC_CATEGORY_POPUPS = ["formulas_recentlyused", "formulas_financial", "formulas_logical", "formulas_text",
+                          "formulas_datetime", "formulas_lookup", "formulas_math", "formulas_morefunctions"]
 
 
 def read(path):
@@ -192,7 +204,7 @@ class CalcFormulasUiTest(unittest.TestCase):
     def test_every_formulas_placeholder_button_is_on_the_page_without_a_controller(self):
         controlled = {v["Command"] for v in controller_nodes().values()}
         used = {g.item_url(i) for i in self.items()}
-        in_menus = {url for _l, _r, items in MENUS.values() for url in items}
+        in_menus = {url for _l, _r, items in MENUS.values() for url in items or []}
         for url in PLACEHOLDER_LABELS:
             self.assertIn(url, used | in_menus, url)
             self.assertNotIn(url, controlled, url)
@@ -218,11 +230,12 @@ class CalcFormulasUiTest(unittest.TestCase):
         for cmd, (_label, resource, _items) in MENUS.items():
             ours = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd]
             kinds = {v["Controller"].rsplit(".", 1)[1]: v for v in ours}
-            expected = {"ResourceMenuController"}
+            popup = "ResourceMenuController" if resource else "FunctionMenuController"
+            expected = {popup}
             if cmd != "FormulasAutoSumMenu":  # the AutoSum arrow is the body's controller
                 expected.add("GenericPopupToolbarController")
             self.assertEqual(expected, set(kinds), cmd)
-            self.assertEqual(resource, kinds["ResourceMenuController"]["Value"])
+            self.assertEqual(resource, kinds[popup].get("Value"), cmd)
             for kind in kinds.values():
                 self.assertEqual("com.sun.star.sheet.SpreadsheetDocument", kind["Module"])
             if "GenericPopupToolbarController" in kinds:
@@ -251,6 +264,8 @@ class CalcFormulasUiTest(unittest.TestCase):
     def test_popup_files_exist_are_registered_and_list_the_design_items(self):
         mk = read("sc/UIConfig_scalc.mk")
         for _label, resource, items in MENUS.values():
+            if resource is None:
+                continue
             path = POPUPMENU / (resource + ".xml")
             self.assertTrue(path.exists(), resource)
             self.assertIn("sc/uiconfig/scalc/popupmenu/" + resource + " \\", mk)
@@ -258,12 +273,12 @@ class CalcFormulasUiTest(unittest.TestCase):
 
     def test_every_formulas_popup_file_is_one_of_the_design_menus(self):
         files = {p.stem for p in POPUPMENU.glob("formulas_*.xml")}
-        self.assertEqual({r for _l, r, _i in MENUS.values()}, files)
+        self.assertEqual({r for _l, r, _i in MENUS.values() if r}, files)
 
     def test_every_popup_item_is_a_known_command(self):
         labels = commands_xcu()
         for _label, _resource, items in MENUS.values():
-            for url in items:
+            for url in items or []:
                 if url != SEP:
                     self.assertIn(url, labels, url)
 
@@ -284,15 +299,6 @@ class CalcFormulasUiTest(unittest.TestCase):
         self.assertIn("bCheckmark = ( bCheckmark == bArgument );", src)
         self.assertLess(src.index("bCheckmark = ( bCheckmark == bArgument );"),
                         src.index("m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );"))
-
-    def test_the_category_menus_are_static_and_name_the_function_dialog_and_list(self):
-        # T4c replaces them by a C++ controller: until then no controller but the resource one
-        nodes = controller_nodes()
-        for cmd in CATEGORY_MENUS:
-            popups = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd
-                      and v["Controller"].endswith("ResourceMenuController")]
-            self.assertEqual(1, len(popups), cmd)
-            self.assertEqual(FUNCTION_ITEMS, MENUS[cmd][2])
 
     def test_suppr_has_an_entry_for_every_button(self):
         suppr = SUPPR.read_text(encoding="utf-8")
@@ -316,6 +322,83 @@ class CalcFormulasUiTest(unittest.TestCase):
         self.assertEqual(self.office, regenerated)
         suppr = SUPPR.read_text(encoding="utf-8")
         self.assertEqual(suppr, g.sync_suppr(suppr, "sc/uiconfig/scalc/ui/notebookbar_office.ui", regenerated))
+
+
+class FunctionMenuControllerTest(unittest.TestCase):
+    """The eight Function Library menus come from one sc popup menu controller (T4c)."""
+
+    def source(self):
+        return read(FUNCTION_MENU_SOURCE)
+
+    def category_ids(self):
+        return {m.group(1): int(m.group(2))
+                for m in re.finditer(r"#define\s+(ID_FUNCTION_GRP_\w+)\s+(\d+)", read("sc/inc/scfuncs.hxx"))}
+
+    def test_the_eight_category_menus_have_the_function_menu_controller_and_no_resource(self):
+        nodes = controller_nodes()
+        for cmd in CATEGORY_MENUS:
+            popups = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd
+                      and not v["Controller"].endswith("ToolbarController")]
+            self.assertEqual(1, len(popups), cmd)
+            self.assertEqual(FUNCTION_MENU_CONTROLLER, popups[0]["Controller"], cmd)
+            self.assertEqual("com.sun.star.sheet.SpreadsheetDocument", popups[0]["Module"], cmd)
+            self.assertNotIn("Value", popups[0], cmd)
+        users = {v["Command"] for v in nodes.values() if v["Controller"] == FUNCTION_MENU_CONTROLLER}
+        self.assertEqual({".uno:" + cmd for cmd in CATEGORY_MENUS}, users)
+
+    def test_the_dropdowns_keep_their_toolbar_controllers(self):
+        nodes = controller_nodes()
+        for cmd in CATEGORY_MENUS:
+            tools = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd
+                     and v["Controller"].endswith("GenericPopupToolbarController")]
+            self.assertEqual(1, len(tools), cmd)
+            self.assertNotIn("Value", tools[0], cmd)
+
+    def test_the_controller_is_an_sc_uno_component_with_a_constructor(self):
+        component = ET.parse(ROOT / "sc/util/sc.component").getroot()
+        ns = "{http://openoffice.org/2010/uno-components}"
+        impls = [i for i in component.iter(ns + "implementation") if i.get("name") == FUNCTION_MENU_CONTROLLER]
+        self.assertEqual(1, len(impls))
+        self.assertEqual("Calc_FunctionMenuController_get_implementation", impls[0].get("constructor"))
+        self.assertEqual(["com.sun.star.frame.PopupMenuController"],
+                         [s.get("name") for s in impls[0].iter(ns + "service")])
+        self.assertRegex(self.source(), r'extern "C" SAL_DLLPUBLIC_EXPORT css::uno::XInterface\*\s*'
+                                        r"Calc_FunctionMenuController_get_implementation\(")
+        self.assertIn('u"' + FUNCTION_MENU_CONTROLLER + '"_ustr', self.source())
+        self.assertIn("    sc/source/ui/unoobj/funcmenucontroller \\\n", read("sc/Library_sc.mk"))
+
+    def test_the_controller_derives_the_category_of_each_menu_from_its_command_as_designed(self):
+        ids = self.category_ids()
+        table = {m.group(1): m.group(2) for m in re.finditer(
+            r'\{\s*u"\.uno:(\w+)",\s*(ID_FUNCTION_GRP_\w+|RECENTLY_USED)\s*\}', self.source())}
+        found = {cmd: 0 if name == "RECENTLY_USED" else ids[name] for cmd, name in table.items()}
+        expected = dict(DESIGN_CATEGORIES, **{cmd: cat for cmd, _label, cat in MORE_FUNCTIONS})
+        self.assertEqual(expected, found)
+        self.assertNotIn(0, ids.values())  # RECENTLY_USED cannot clash with a category
+
+    def test_more_functions_lists_the_five_design_submenus_in_order_with_labels(self):
+        match = re.search(r"MORE_FUNCTIONS_SUBMENUS\[\]\s*=\s*\{([^}]*)\}", self.source())
+        self.assertIsNotNone(match)
+        self.assertEqual([cmd for cmd, _l, _c in MORE_FUNCTIONS], re.findall(r'u"\.uno:(\w+)"', match.group(1)))
+        self.assertIn('MORE_FUNCTIONS = u".uno:FormulasMoreFunctionsMenu"', self.source())
+        labels = commands_xcu()
+        for cmd, label, _cat in MORE_FUNCTIONS:
+            self.assertEqual(label, labels[".uno:" + cmd], cmd)
+
+    def test_every_function_item_inserts_the_function_by_name_from_the_all_category(self):
+        # SID_INS_FUNCTION (cellsh1.cxx) looks the upper-case name up in category 0, all functions
+        src = self.source()
+        self.assertRegex(src, r'"\.uno:InsertFunction\?FunctionName:string="\s*\+\s*aName\s*\+\s*'
+                              r'"&FunctionCategory:short=0"')
+        self.assertIn('FUNCTION_DIALOG = u".uno:FunctionDialog"_ustr', src)
+
+    def test_the_static_category_popups_are_gone(self):
+        mk = read("sc/UIConfig_scalc.mk")
+        for resource in STATIC_CATEGORY_POPUPS:
+            self.assertFalse((POPUPMENU / (resource + ".xml")).exists(), resource)
+            self.assertNotIn("popupmenu/" + resource + " ", mk, resource)
+        self.assertNotIn("formulas_", read("officecfg/registry/data/org/openoffice/Office/UI/Controller.xcu")
+                         .split("FormulasMoreFunctionsMenuPopup")[1].split("</node>")[0])
 
 
 class AutoSumSplitTest(unittest.TestCase):

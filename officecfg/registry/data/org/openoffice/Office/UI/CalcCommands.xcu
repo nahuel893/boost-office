@@ -4148,6 +4148,31 @@
           <value>1</value>
         </prop>
       </node>
+      <node oor:name=".uno:FormulasStatisticalMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Statistical</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:FormulasEngineeringMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Engineering</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:FormulasInformationMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Information</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:FormulasDatabaseMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Database</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:FormulasArrayMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Array</value>
+        </prop>
+      </node>
       <node oor:name=".uno:FormulasUseInFormulaMenu" oor:op="replace">
         <prop oor:name="Label" oor:type="xs:string">
           <value xml:lang="en-US">Use in Formula</value>

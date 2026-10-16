@@ -23,6 +23,10 @@
       constructor="Calc_FilterOptionsDialog_get_implementation">
     <service name="com.sun.star.ui.dialogs.FilterOptionsDialog"/>
   </implementation>
+  <implementation name="com.sun.star.comp.Calc.FunctionMenuController"
+      constructor="Calc_FunctionMenuController_get_implementation">
+    <service name="com.sun.star.frame.PopupMenuController"/>
+  </implementation>
   <implementation name="com.sun.star.comp.Calc.SpreadsheetDocument"
     constructor="Calc_SpreadsheetDocument_get_implementation">
     <service name="com.sun.star.sheet.SpreadsheetDocument"/>

@@ -666,6 +666,7 @@ $(eval $(call gb_Library_add_exception_objects,sc,\
     sc/source/ui/unoobj/filtuno \
     sc/source/ui/unoobj/fmtuno \
     sc/source/ui/unoobj/forbiuno \
+    sc/source/ui/unoobj/funcmenucontroller \
     sc/source/ui/unoobj/funcuno \
     sc/source/ui/unoobj/linkuno \
     sc/source/ui/unoobj/listenercalls \

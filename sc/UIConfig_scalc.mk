@@ -35,16 +35,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/formulabar \
 	sc/uiconfig/scalc/popupmenu/formulas_autosum \
 	sc/uiconfig/scalc/popupmenu/formulas_calcoptions \
-	sc/uiconfig/scalc/popupmenu/formulas_datetime \
 	sc/uiconfig/scalc/popupmenu/formulas_errorchecking \
-	sc/uiconfig/scalc/popupmenu/formulas_financial \
-	sc/uiconfig/scalc/popupmenu/formulas_logical \
-	sc/uiconfig/scalc/popupmenu/formulas_lookup \
-	sc/uiconfig/scalc/popupmenu/formulas_math \
-	sc/uiconfig/scalc/popupmenu/formulas_morefunctions \
-	sc/uiconfig/scalc/popupmenu/formulas_recentlyused \
 	sc/uiconfig/scalc/popupmenu/formulas_removearrows \
-	sc/uiconfig/scalc/popupmenu/formulas_text \
 	sc/uiconfig/scalc/popupmenu/formulas_useinformula \
 	sc/uiconfig/scalc/popupmenu/freezepanes \
 	sc/uiconfig/scalc/popupmenu/graphic \

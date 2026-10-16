@@ -21,6 +21,10 @@ from libreoffice.uno.propertyvalue import mkPropertyValues
 from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
+CALC_MODULE = "com.sun.star.sheet.SpreadsheetDocument"
+FUNCTION_DIALOG = ".uno:FunctionDialog"
+# what a Function Library menu item dispatches (T4c): the upper-case name, looked up in category 0 (all)
+INSERT_FUNCTION = ".uno:InsertFunction?FunctionName:string=%s&FunctionCategory:short=0"
 
 # Tab position -> page. Excel's order: File, Home, Insert, Page Layout, Formulas, Data, Review,
 # View; the contextual tabs (Image .. Form, positions 8-13) only show with their object, and
@@ -303,24 +307,31 @@ class NotebookbarOffice(UITestCase):
                          "CharmapControl"):
                 self.assertTrue(self.dispatch_enabled(name), name)
 
-    def popup_of(self, command, resource):
-        """The awt popup menu the ribbon dropdown `command` shows, built by its menu controller."""
+    def menu_controller(self, command, resource=None):
+        """The menu controller of the ribbon dropdown `command` and the awt popup menu it built.
+
+        `resource` is the popup file a ResourceMenuController reads (its "Value"); the Function
+        Library menus (T4c) need none: their controller builds them from the command."""
         xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.xContext)
         xFrame = xDesktop.getCurrentFrame()
         xFactory = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
-        self.assertTrue(xFactory.hasController(command, "com.sun.star.sheet.SpreadsheetDocument"), command)
+        self.assertTrue(xFactory.hasController(command, CALC_MODULE), command)
+        args = {"Frame": xFrame, "CommandURL": command, "ModuleIdentifier": CALC_MODULE}
+        if resource is not None:
+            args["Value"] = resource
         xController = xFactory.createInstanceWithArgumentsAndContext(
-            command, mkPropertyValues({"Frame": xFrame, "CommandURL": command,
-                                       "Value": resource,
-                                       "ModuleIdentifier": "com.sun.star.sheet.SpreadsheetDocument"}),
-            self.xContext)
+            command, mkPropertyValues(args), self.xContext)
         self.assertIsNotNone(xController, command)
         xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
         xController.setPopupMenu(xPopup)
         xController.updatePopupMenu()
-        return xPopup
+        return xController, xPopup
+
+    def popup_of(self, command, resource):
+        """The awt popup menu the ribbon dropdown `command` shows, built by its menu controller."""
+        return self.menu_controller(command, resource)[1]
 
     def popup_commands(self, xPopup):
         commands = []
@@ -769,7 +780,7 @@ class NotebookbarOffice(UITestCase):
         with self.ui_test.create_doc_in_start_center("calc"):
             xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
             xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
-            for name in ("FunctionDialog", "FunctionBox",                   # Function Library menus
+            for name in ("FunctionDialog", "InsertFunction",                # Function Library menus
                          "FormulasAutoSum", "AutoSum",                       # AutoSum
                          "InsertName",                                       # Use in Formula
                          "ClearArrows", "ClearArrowPrecedents", "ClearArrowDependents",
@@ -781,16 +792,11 @@ class NotebookbarOffice(UITestCase):
 
     def test_formulas_dropdown_popups_list_their_items(self):
         with self.ui_test.create_doc_in_start_center("calc"):
-            functions = [".uno:FunctionDialog", ".uno:FunctionBox"]
-            for command, resource in (
-                    ("FormulasRecentlyUsedMenu", "formulas_recentlyused"),
-                    ("FormulasFinancialMenu", "formulas_financial"),
-                    ("FormulasLogicalMenu", "formulas_logical"), ("FormulasTextMenu", "formulas_text"),
-                    ("FormulasDateTimeMenu", "formulas_datetime"),
-                    ("FormulasLookupMenu", "formulas_lookup"), ("FormulasMathMenu", "formulas_math"),
-                    ("FormulasMoreFunctionsMenu", "formulas_morefunctions")):
-                xPopup = self.popup_of(".uno:" + command, resource)
-                self.assertEqual(functions, self.popup_commands(xPopup), command)
+            for command in ("FormulasRecentlyUsedMenu", "FormulasFinancialMenu", "FormulasLogicalMenu",
+                            "FormulasTextMenu", "FormulasDateTimeMenu", "FormulasLookupMenu",
+                            "FormulasMathMenu", "FormulasMoreFunctionsMenu"):
+                xPopup = self.menu_controller(".uno:" + command)[1]
+                self.assertEqual(FUNCTION_DIALOG, self.popup_commands(xPopup)[-1], command)
             expected = {
                 ("FormulasAutoSumMenu", "formulas_autosum"): [
                     ".uno:AutoSum", ".uno:AutoSum?Function:string=average",
@@ -829,6 +835,142 @@ class NotebookbarOffice(UITestCase):
             for automatic in (True, False, False, True, True):
                 self.xUITest.executeCommand(auto + str(automatic).lower())
                 self.assertEqual(automatic, document.isAutomaticCalculationEnabled())
+
+    def functions_by_category(self):
+        """{category id: {upper-case name: description}} as Calc's FunctionDescriptions service lists them."""
+        xDescriptions = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.sheet.FunctionDescriptions", self.xContext)
+        out = {}
+        for i in range(xDescriptions.getCount()):
+            props = {p.Name: p.Value for p in xDescriptions.getByIndex(i)}
+            out.setdefault(props["Category"], {})[props["Name"].upper()] = props["Description"]
+        return out
+
+    def function_items(self, xPopup):
+        """The function names a Function Library menu lists (checking each item's command), and the
+        commands after its separator."""
+        names, tail, past_separator = [], [], False
+        for pos in range(xPopup.getItemCount()):
+            nId = xPopup.getItemId(pos)
+            if nId == 0:  # the separator
+                past_separator = True
+            elif past_separator:
+                tail.append(xPopup.getCommand(nId))
+            else:
+                name = xPopup.getItemText(nId)
+                self.assertEqual(INSERT_FUNCTION % name, xPopup.getCommand(nId))
+                names.append(name)
+        return names, tail
+
+    def item_id(self, xPopup, text):
+        for pos in range(xPopup.getItemCount()):
+            if xPopup.getItemText(xPopup.getItemId(pos)) == text:
+                return xPopup.getItemId(pos)
+        self.fail("no menu item " + text)
+
+    def select_item(self, xController, xMenu, nId):
+        """What a click on the item does: the menu tells its listener, the controller."""
+        aEvent = uno.createUnoStruct("com.sun.star.awt.MenuEvent")
+        aEvent.Source = xMenu
+        aEvent.MenuId = nId
+        xController.itemSelected(aEvent)
+
+    def test_formulas_function_menus_list_their_category_and_end_with_the_function_dialog(self):
+        # T4c: the design's category of each menu; the items are the functions of the category in
+        # the UI language, each inserting itself, then "Function..." after a separator
+        with self.ui_test.create_doc_in_start_center("calc"):
+            functions = self.functions_by_category()
+            for command, category in (("FormulasFinancialMenu", 3), ("FormulasLogicalMenu", 5),
+                                      ("FormulasTextMenu", 10), ("FormulasDateTimeMenu", 2),
+                                      ("FormulasLookupMenu", 9), ("FormulasMathMenu", 6)):
+                names, tail = self.function_items(self.menu_controller(".uno:" + command)[1])
+                expected = set(functions[category])
+                if category == 2:
+                    expected.discard("WEEKNUM_OOO")  # hidden, as in the Function Wizard
+                self.assertEqual(sorted(expected), sorted(names), command)
+                self.assertEqual(len(names), len(set(names)), command)
+                self.assertEqual([FUNCTION_DIALOG], tail, command)
+
+    def test_formulas_financial_and_lookup_menus_list_excels_functions(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            descriptions = self.functions_by_category()[3]
+            xPopup = self.menu_controller(".uno:FormulasFinancialMenu")[1]
+            names, tail = self.function_items(xPopup)
+            self.assertTrue({"PMT", "NPV", "FV", "PV", "RATE", "IRR"} <= set(names), names)
+            self.assertEqual("Function...", self.command_label(tail[-1]))
+            self.assertEqual("Function...", xPopup.getItemText(xPopup.getItemId(xPopup.getItemCount() - 1))
+                             .replace("~", ""))
+            # the tooltip: the signature, then the short description of the Function Wizard
+            tip = xPopup.getTipHelpText(self.item_id(xPopup, "PMT"))
+            self.assertTrue(tip.startswith("PMT("), tip)
+            self.assertTrue(tip.endswith("\n" + descriptions["PMT"]), tip)
+            names, _tail = self.function_items(self.menu_controller(".uno:FormulasLookupMenu")[1])
+            self.assertTrue({"VLOOKUP", "HLOOKUP", "INDEX", "MATCH", "XLOOKUP"} <= set(names), names)
+
+    def test_formulas_more_functions_has_the_five_category_submenus(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            functions = self.functions_by_category()
+            xPopup = self.menu_controller(".uno:FormulasMoreFunctionsMenu")[1]
+            submenus = [(".uno:FormulasStatisticalMenu", "Statistical", 8),
+                        (".uno:FormulasEngineeringMenu", "Engineering", 11),
+                        (".uno:FormulasInformationMenu", "Information", 4),
+                        (".uno:FormulasDatabaseMenu", "Database", 1),
+                        (".uno:FormulasArrayMenu", "Array", 7)]
+            self.assertEqual([c for c, _l, _n in submenus] + [FUNCTION_DIALOG], self.popup_commands(xPopup))
+            self.assertEqual(0, xPopup.getItemId(len(submenus)), "a separator before Function...")
+            listed = {}
+            for pos, (command, label, category) in enumerate(submenus):
+                nId = xPopup.getItemId(pos)
+                self.assertEqual(label, self.command_label(command))
+                self.assertEqual(label, xPopup.getItemText(nId).replace("~", ""))
+                xSubmenu = xPopup.getPopupMenu(nId)
+                self.assertIsNotNone(xSubmenu, command)
+                names, tail = self.function_items(xSubmenu)
+                self.assertEqual(sorted(functions[category]), sorted(names), command)
+                self.assertEqual([], tail, command)
+                listed[label] = set(names)
+            self.assertTrue({"AVERAGEIF", "STDEV", "MEDIAN"} <= listed["Statistical"])
+            self.assertTrue({"CONVERT", "DEC2BIN", "BESSELJ"} <= listed["Engineering"])
+            self.assertTrue({"ISBLANK", "CELL"} <= listed["Information"])
+
+    def test_formulas_function_item_inserts_the_function_like_the_sidebar(self):
+        # SID_INS_FUNCTION starts input mode and inserts "=NAME(" plus the argument names, as the
+        # Functions sidebar does; nothing is entered until the user confirms
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xCalcDoc = self.xUITest.getTopFocusWindow()
+            xGrid = xCalcDoc.getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            xController, xPopup = self.menu_controller(".uno:FormulasMathMenu")
+            nId = self.item_id(xPopup, "SUM")
+            self.assertEqual(INSERT_FUNCTION % "SUM", xPopup.getCommand(nId))
+            self.select_item(xController, xPopup, nId)
+            xInput = xCalcDoc.getChild("sc_input_window")
+            self.wait_for(lambda: get_state_as_dict(xInput)["Text"].startswith("=SUM("),
+                          "the input line shows: " + get_state_as_dict(xInput)["Text"])
+            xGrid.executeAction("TYPE", mkPropertyValues({"KEYCODE": "ESC"}))
+            self.assertEqual("", document.Sheets.getByIndex(0).getCellRangeByName("B2").Formula)
+
+    def test_formulas_recently_used_lists_a_function_after_it_is_used(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xCalcDoc = self.xUITest.getTopFocusWindow()
+            xGrid = xCalcDoc.getChild("grid_window")
+            enter_text_to_cell(xGrid, "A1", "=DEGREES(1)")  # a typed formula (ScViewFunc::EnterData)
+            xRecentController, xRecent = self.menu_controller(".uno:FormulasRecentlyUsedMenu")
+            names, tail = self.function_items(xRecent)
+            self.assertEqual("DEGREES", names[0], names)
+            self.assertEqual([FUNCTION_DIALOG], tail)
+            # picked from a menu, like the Functions sidebar does
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B1"}))
+            xController, xPopup = self.menu_controller(".uno:FormulasTextMenu")
+            self.select_item(xController, xPopup, self.item_id(xPopup, "REPT"))
+            xInput = xCalcDoc.getChild("sc_input_window")
+            self.wait_for(lambda: get_state_as_dict(xInput)["Text"].startswith("=REPT("), "REPT not inserted")
+            xGrid.executeAction("TYPE", mkPropertyValues({"KEYCODE": "ESC"}))
+            # the dropdown rebuilds its menu each time it opens (PopupMenuToolbarController)
+            xRecentController.updatePopupMenu()
+            names, tail = self.function_items(xRecent)
+            self.assertEqual(["REPT", "DEGREES"], names[:2])
+            self.assertEqual([FUNCTION_DIALOG], tail)
 
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which
