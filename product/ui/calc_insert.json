@@ -23,36 +23,36 @@
     {"name": "Charts", "caption": "Charts", "rows": 3, "columns": [
       [{"id": "Chart", "style": "large", "items": [{"cmd": "InsertObjectChart"}]}],
       [{"id": "ChartColumnBar", "style": "small", "items": [
-          {"cmd": "ChartColumnBar", "action": ".uno:InsertChartType?Type:string=columnbar"}]},
+          {"cmd": "ChartColumnBar", "icon": "cmd/sc_insertcharttype_columnbar.png", "action": ".uno:InsertChartType?Type:string=columnbar"}]},
        {"id": "ChartLineArea", "style": "small", "items": [
-          {"cmd": "ChartLineArea", "action": ".uno:InsertChartType?Type:string=linearea"}]},
+          {"cmd": "ChartLineArea", "icon": "cmd/sc_insertcharttype_linearea.png", "action": ".uno:InsertChartType?Type:string=linearea"}]},
        {"id": "ChartPie", "style": "small", "items": [
-          {"cmd": "ChartPie", "action": ".uno:InsertChartType?Type:string=piedoughnut"}]}],
+          {"cmd": "ChartPie", "icon": "cmd/sc_insertcharttype_piedoughnut.png", "action": ".uno:InsertChartType?Type:string=piedoughnut"}]}],
       [{"id": "ChartHierarchy", "style": "small", "items": [
-          {"cmd": "ChartHierarchy", "action": ".uno:InsertChartType?Type:string=hierarchy"}]},
+          {"cmd": "ChartHierarchy", "icon": "cmd/sc_insertcharttype_hierarchy.png", "action": ".uno:InsertChartType?Type:string=hierarchy"}]},
        {"id": "ChartStatistic", "style": "small", "items": [
-          {"cmd": "ChartStatistic", "action": ".uno:InsertChartType?Type:string=statistic"}]},
+          {"cmd": "ChartStatistic", "icon": "cmd/sc_insertcharttype_statistic.png", "action": ".uno:InsertChartType?Type:string=statistic"}]},
        {"id": "ChartScatter", "style": "small", "items": [
-          {"cmd": "ChartScatter", "action": ".uno:InsertChartType?Type:string=scatterbubble"}]}],
+          {"cmd": "ChartScatter", "icon": "cmd/sc_insertcharttype_scatterbubble.png", "action": ".uno:InsertChartType?Type:string=scatterbubble"}]}],
       [{"id": "ChartWaterfall", "style": "small", "items": [
-          {"cmd": "ChartWaterfall", "action": ".uno:InsertChartType?Type:string=waterfall"}]},
+          {"cmd": "ChartWaterfall", "icon": "cmd/sc_insertcharttype_waterfall.png", "action": ".uno:InsertChartType?Type:string=waterfall"}]},
        {"id": "ChartCombo", "style": "small", "items": [
-          {"cmd": "ChartCombo", "action": ".uno:InsertChartType?Type:string=combo"}]}],
+          {"cmd": "ChartCombo", "icon": "cmd/sc_insertcharttype_combo.png", "action": ".uno:InsertChartType?Type:string=combo"}]}],
       [{"id": "ChartMap", "style": "large", "items": [
-          {"cmd": "ChartMap", "action": ".uno:InsertChartType?Type:string=map"}]}],
+          {"cmd": "ChartMap", "icon": "cmd/32/insertcharttype_map.png", "action": ".uno:InsertChartType?Type:string=map"}]}],
       [{"id": "PivotChart", "style": "large", "items": [{"cmd": "InsertPivotChart"}]}]
     ]},
     {"name": "Sparklines", "caption": "Sparklines", "rows": 3, "columns": [
-      [{"id": "SparklineLine", "style": "large", "items": [
-          {"cmd": "SparklineLine", "action": ".uno:InsertSparkline?Type:string=line"}]}],
-      [{"id": "SparklineColumn", "style": "large", "items": [
-          {"cmd": "SparklineColumn", "action": ".uno:InsertSparkline?Type:string=column"}]}],
-      [{"id": "SparklineWinLoss", "style": "large", "items": [
-          {"cmd": "SparklineWinLoss", "action": ".uno:InsertSparkline?Type:string=stacked"}]}]
+      [{"id": "SparklineLine", "style": "small-label", "items": [
+          {"cmd": "SparklineLine", "icon": "cmd/sc_insertsparkline_line.png", "action": ".uno:InsertSparkline?Type:string=line"}]},
+       {"id": "SparklineColumn", "style": "small-label", "items": [
+          {"cmd": "SparklineColumn", "icon": "cmd/sc_insertsparkline_column.png", "action": ".uno:InsertSparkline?Type:string=column"}]},
+       {"id": "SparklineWinLoss", "style": "small-label", "items": [
+          {"cmd": "SparklineWinLoss", "icon": "cmd/sc_insertsparkline_stacked.png", "action": ".uno:InsertSparkline?Type:string=stacked"}]}]
     ]},
     {"name": "Filters", "caption": "Filters", "rows": 3, "columns": [
-      [{"id": "Slicer", "style": "large", "items": [{"cmd": "InsertSlicer"}]}],
-      [{"id": "Timeline", "style": "large", "items": [{"cmd": "InsertTimeline"}]}]
+      [{"id": "Slicer", "style": "small-label", "items": [{"cmd": "InsertSlicer"}]},
+       {"id": "Timeline", "style": "small-label", "items": [{"cmd": "InsertTimeline"}]}]
     ]},
     {"name": "Links", "caption": "Links", "rows": 3, "columns": [
       [{"id": "Hyperlink", "style": "large", "items": [{"cmd": "HyperlinkDialog"}]}]

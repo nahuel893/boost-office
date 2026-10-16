@@ -38,8 +38,9 @@ DESIGN = {
         + [("small", [CHART + v]) for v in ("columnbar", "linearea", "piedoughnut", "hierarchy",
                                             "statistic", "scatterbubble", "waterfall", "combo")]
         + [("large", [CHART + "map"]), ("large", [".uno:InsertPivotChart"])]),
-    "Sparklines": ("Sparklines", [("large", [SPARK + v]) for v in ("line", "column", "stacked")]),
-    "Filters": ("Filters", [("large", [".uno:InsertSlicer"]), ("large", [".uno:InsertTimeline"])]),
+    # fit ladder F1/F2 of the design (1920 px): Filters and Sparklines are one column of small labelled buttons
+    "Sparklines": ("Sparklines", [("small-label", [SPARK + v]) for v in ("line", "column", "stacked")]),
+    "Filters": ("Filters", [("small-label", [".uno:InsertSlicer"]), ("small-label", [".uno:InsertTimeline"])]),
     "Links": ("Links", [("large", [".uno:HyperlinkDialog"])]),
     "Comments": ("Comments", [("large", [".uno:InsertAnnotation"])]),
     "Text": ("Text", [("large", [u]) for u in (".uno:DrawText", ".uno:EditHeaderAndFooter",
@@ -163,6 +164,12 @@ class CalcInsertUiTest(unittest.TestCase):
             self.assertEqual(label, labels[url], url)
             self.assertEqual(label + " (not available yet)", tips[url], url)
 
+    def test_place_in_cell_is_a_labelled_placeholder_and_sits_before_image_in_the_pictures_menu(self):
+        self.assertIn(".uno:InsertPictureInCell", INSERT_PLACEHOLDERS)
+        self.assertEqual(INSERT_PLACEHOLDERS[".uno:InsertPictureInCell"], commands_xcu()[".uno:InsertPictureInCell"])
+        self.assertLess(MENUS["InsertPicturesMenu"][2].index(".uno:InsertPictureInCell"),
+                        MENUS["InsertPicturesMenu"][2].index(".uno:InsertGraphic"))
+
     def test_the_registry_labels_every_insert_slot_and_variant(self):
         for entry in placeholders.load():
             if entry["offset"] not in range(389, 399):
@@ -213,10 +220,6 @@ class CalcInsertUiTest(unittest.TestCase):
         root = ET.parse(POPUPMENU / "insert_shapes.xml").getroot()
         line = next(m for m in root.iter(MENU + "menu") if m.get(MENU + "id") == ".uno:ShapesLineMenu")
         self.assertEqual(LINE_MENU, self.menu_ids(line.find(MENU + "menupopup")))
-
-    def test_pictures_menu_has_place_in_cell_before_the_image_item(self):
-        # a placeholder item inside a menu: it exists, is labelled, stays disabled by its slot
-        self.assertIn(".uno:InsertPictureInCell", INSERT_PLACEHOLDERS)
 
     def test_suppr_has_an_entry_for_every_insert_button(self):
         suppr = SUPPR.read_text(encoding="utf-8")

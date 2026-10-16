@@ -4136,6 +4136,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=columnbar</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_columnbar.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4160,6 +4161,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=linearea</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_linearea.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4184,6 +4186,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=piedoughnut</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_piedoughnut.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4208,6 +4211,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=hierarchy</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_hierarchy.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4232,6 +4236,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=statistic</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_statistic.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4256,6 +4261,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=scatterbubble</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_scatterbubble.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4280,6 +4286,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=waterfall</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_waterfall.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4304,6 +4311,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=combo</property>
+                                    <property name="icon_name">cmd/sc_insertcharttype_combo.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4330,6 +4338,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertChartType?Type:string=map</property>
+                                    <property name="icon_name">cmd/32/insertcharttype_map.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4407,7 +4416,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <child>
-                          <!-- n-columns=4 n-rows=4 -->
+                          <!-- n-columns=2 n-rows=4 -->
                           <object class="GtkGrid" id="gdInsertSparklines">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
@@ -4431,88 +4440,82 @@
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">3</property>
-                                <property name="width">3</property>
+                                <property name="width">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxInsertSparklineLine">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">center</property>
-                                <property name="vexpand">True</property>
-                                <property name="toolbar-style">both</property>
+                                <property name="toolbar-style">both-horiz</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">1</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnInsertSparklineLine">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertSparkline?Type:string=line</property>
+                                    <property name="icon_name">cmd/sc_insertsparkline_line.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">False</property>
+                                    <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">0</property>
-                                <property name="height">3</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxInsertSparklineColumn">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">center</property>
-                                <property name="vexpand">True</property>
-                                <property name="toolbar-style">both</property>
+                                <property name="toolbar-style">both-horiz</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">1</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnInsertSparklineColumn">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertSparkline?Type:string=column</property>
+                                    <property name="icon_name">cmd/sc_insertsparkline_column.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">False</property>
+                                    <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
-                                <property name="left-attach">1</property>
-                                <property name="top-attach">0</property>
-                                <property name="height">3</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxInsertSparklineWinLoss">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">center</property>
-                                <property name="vexpand">True</property>
-                                <property name="toolbar-style">both</property>
+                                <property name="toolbar-style">both-horiz</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">1</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnInsertSparklineWinLoss">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:InsertSparkline?Type:string=stacked</property>
+                                    <property name="icon_name">cmd/sc_insertsparkline_stacked.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">False</property>
+                                    <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
-                                <property name="left-attach">2</property>
-                                <property name="top-attach">0</property>
-                                <property name="height">3</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -4522,7 +4525,7 @@
                                 <property name="orientation">vertical</property>
                               </object>
                               <packing>
-                                <property name="left-attach">3</property>
+                                <property name="left-attach">1</property>
                                 <property name="top-attach">0</property>
                                 <property name="height">4</property>
                               </packing>
@@ -4552,7 +4555,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <child>
-                          <!-- n-columns=3 n-rows=4 -->
+                          <!-- n-columns=2 n-rows=4 -->
                           <object class="GtkGrid" id="gdInsertFilters">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
@@ -4576,18 +4579,16 @@
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">3</property>
-                                <property name="width">2</property>
+                                <property name="width">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxInsertSlicer">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">center</property>
-                                <property name="vexpand">True</property>
-                                <property name="toolbar-style">both</property>
+                                <property name="toolbar-style">both-horiz</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">1</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnInsertInsertSlicer">
                                     <property name="visible">True</property>
@@ -4596,25 +4597,22 @@
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">False</property>
+                                    <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="left-attach">0</property>
                                 <property name="top-attach">0</property>
-                                <property name="height">3</property>
                               </packing>
                             </child>
                             <child>
                               <object class="sfxlo-NotebookbarToolBox" id="bxInsertTimeline">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="valign">center</property>
-                                <property name="vexpand">True</property>
-                                <property name="toolbar-style">both</property>
+                                <property name="toolbar-style">both-horiz</property>
                                 <property name="show-arrow">False</property>
-                                <property name="icon_size">5</property>
+                                <property name="icon_size">1</property>
                                 <child>
                                   <object class="GtkToolButton" id="btnInsertInsertTimeline">
                                     <property name="visible">True</property>
@@ -4623,14 +4621,13 @@
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="homogeneous">False</property>
+                                    <property name="homogeneous">True</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
-                                <property name="left-attach">1</property>
-                                <property name="top-attach">0</property>
-                                <property name="height">3</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
@@ -4640,7 +4637,7 @@
                                 <property name="orientation">vertical</property>
                               </object>
                               <packing>
-                                <property name="left-attach">2</property>
+                                <property name="left-attach">1</property>
                                 <property name="top-attach">0</property>
                                 <property name="height">4</property>
                               </packing>
