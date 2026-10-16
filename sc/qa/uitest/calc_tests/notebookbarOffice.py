@@ -310,14 +310,15 @@ class NotebookbarOffice(UITestCase):
                          "CharmapControl"):
                 self.assertTrue(self.dispatch_enabled(name), name)
 
-    def menu_controller(self, command, resource=None):
+    def menu_controller(self, command, resource=None, frame=None):
         """The menu controller of the ribbon dropdown `command` and the awt popup menu it built.
 
         `resource` is the popup file a ResourceMenuController reads (its "Value"); the Function
-        Library menus (T4c) need none: their controller builds them from the command."""
+        Library menus (T4c) need none: their controller builds them from the command. `frame`
+        is the window it serves, by default the current one."""
         xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.xContext)
-        xFrame = xDesktop.getCurrentFrame()
+        xFrame = xDesktop.getCurrentFrame() if frame is None else frame
         xFactory = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
         self.assertTrue(xFactory.hasController(command, CALC_MODULE), command)
@@ -1246,6 +1247,27 @@ class NotebookbarOffice(UITestCase):
             self.select_rows(document, "A1")
             xController.updatePopupMenu()
             self.assertEqual({True}, self.function_item_states(xPopup))
+
+    def test_formulas_function_menu_of_a_closed_window_is_built_with_its_items_disabled(self):
+        # T8a: the window (frame) a Function Library controller serves can be disposed before the
+        # controller. Building its menu again must not throw the frame's DisposedException; with
+        # no frame to ask, .uno:InsertFunction counts as disabled.
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xDesktop = self.ui_test.get_desktop()
+            xFirst = xDesktop.getCurrentFrame()
+            xSecond = self.ui_test.load_component_from_url("private:factory/scalc", "OnNew") \
+                .getCurrentController().getFrame()
+            try:
+                xController, xPopup = self.menu_controller(".uno:FormulasLogicalMenu", frame=xSecond)
+                self.assertEqual({True}, self.function_item_states(xPopup))
+            finally:
+                xSecond.close(True)  # disposes the frame; the controller keeps it
+                xDesktop.setActiveFrame(xFirst)
+            xController.updatePopupMenu()  # the dropdown opens again
+            names, tail = self.function_items(xPopup)
+            self.assertIn("IF", names)
+            self.assertEqual([FUNCTION_DIALOG], tail)
+            self.assertEqual({False}, self.function_item_states(xPopup))
 
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which

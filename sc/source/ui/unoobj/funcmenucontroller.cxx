@@ -19,6 +19,7 @@
 #include <com/sun/star/awt/XPopupMenu.hpp>
 #include <com/sun/star/frame/XDispatchProvider.hpp>
 #include <com/sun/star/frame/XFrame.hpp>
+#include <com/sun/star/lang/DisposedException.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/util/XURLTransformer.hpp>
 #include <svtools/popupmenucontrollerbase.hxx>
@@ -144,12 +145,21 @@ void FunctionMenuController::updateFunctionsEnabled(const uno::Reference<frame::
     util::URL aURL;
     aURL.Complete = INSERT_FUNCTION;
     m_xURLTransformer->parseStrict(aURL);
-    uno::Reference<frame::XDispatch> xDispatch = xProvider->queryDispatch(aURL, OUString(), 0);
-    if (!xDispatch.is())
-        return;
-    uno::Reference<frame::XStatusListener> xListener(this);
-    xDispatch->addStatusListener(xListener, aURL);
-    xDispatch->removeStatusListener(xListener, aURL);
+    try
+    {
+        // updateCommand asks the dispatch it got when the menu was set; this one asks the frame,
+        // which can be disposed before this controller (its window closed)
+        uno::Reference<frame::XDispatch> xDispatch = xProvider->queryDispatch(aURL, OUString(), 0);
+        if (!xDispatch.is())
+            return;
+        uno::Reference<frame::XStatusListener> xListener(this);
+        xDispatch->addStatusListener(xListener, aURL);
+        xDispatch->removeStatusListener(xListener, aURL);
+    }
+    catch (const lang::DisposedException&)
+    {
+        m_bFunctionsEnabled = false; // no window to insert into: the items are disabled
+    }
 }
 
 void FunctionMenuController::updatePopupMenu()
