@@ -106,7 +106,7 @@ class CalcReviewUiTest(unittest.TestCase):
         self.assertEqual(["CommentPrevious", "CommentNext"], [i["cmd"] for i in variants])
         for item in variants:
             base, value = re.match(r"\.uno:(\w+)\?\w+:\w+=(\w+)$", item["action"]).groups()
-            self.assertEqual("cmd/sc_%s_%s.png" % (base.lower(), value), item["icon"], item["cmd"])
+            self.assertEqual("cmd/32/%s_%s.png" % (base.lower(), value), item["icon"], item["cmd"])
 
     def test_the_old_review_page_and_its_overflow_menu_are_gone(self):
         self.assertIn("Menu Review", self.layout["remove_objects"])

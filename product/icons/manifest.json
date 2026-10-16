@@ -190,6 +190,21 @@
     {"name": "formulaswatchwindow", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "glasses"}]},
     {"name": "formulascalcoptionsmenu", "fill": {"color": "fill_cells"}, "large": true, "layers": [{"glyph": "calculator"}]},
     {"name": "calculate", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "calculator_arrow_clockwise"}]},
-    {"name": "formulascalculatesheet", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "calculator_multiple"}]}
+    {"name": "formulascalculatesheet", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "calculator_multiple"}]},
+    {"name": "spelldialog", "large": true, "layers": [{"glyph": "text_proofing_tools"}]},
+    {"name": "thesaurusdialog", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "book_open"}]},
+    {"name": "setdocumentproperties", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "data_usage"}]},
+    {"name": "reviewaccessibilitymenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "accessibility_checkmark"}]},
+    {"name": "reviewtranslate", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "translate"}]},
+    {"name": "deletenote", "fill": {"color": "fill_red"}, "large": true, "layers": [{"glyph": "comment_dismiss"}]},
+    {"name": "reviewgotocomment_previous", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_arrow_left"}]},
+    {"name": "reviewgotocomment_next", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_arrow_right"}]},
+    {"name": "showannotations", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_multiple"}]},
+    {"name": "reviewnotesmenu", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_note"}]},
+    {"name": "protect", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "lock_closed"}]},
+    {"name": "toolprotectiondocument", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "shield_lock"}]},
+    {"name": "reviewalloweditranges", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "lock_open"}]},
+    {"name": "sharedocument", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "people_swap"}]},
+    {"name": "reviewhideink", "large": true, "layers": [{"glyph": "ink_stroke"}]}
   ]
 }

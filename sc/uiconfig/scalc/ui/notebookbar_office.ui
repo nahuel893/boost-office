@@ -8922,7 +8922,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:ReviewGoToComment?Direction:string=previous</property>
-                                    <property name="icon_name">cmd/sc_reviewgotocomment_previous.png</property>
+                                    <property name="icon_name">cmd/32/reviewgotocomment_previous.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -8950,7 +8950,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:ReviewGoToComment?Direction:string=next</property>
-                                    <property name="icon_name">cmd/sc_reviewgotocomment_next.png</property>
+                                    <property name="icon_name">cmd/32/reviewgotocomment_next.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

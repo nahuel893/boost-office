@@ -416,3 +416,29 @@ screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
   Notes menu has the note-style actions. Both drive the same comments; Convert to Comments is omitted.
 - **UITests**: `test_review_*` (sections and toolboxes, placeholders disabled and inert, dropdown commands enabled
   once a comment/range exists, popup contents, placeholder labels). The drawn-disabled count is now 46 buttons.
+- `.uno:AutoFormat` in the Check Accessibility menu keeps LibreOffice's label "Table Styles" instead of the design's
+  "AutoFormat Styles..." (no such string exists; changing the shared label would rename other menus).
+
+### Review icons and fit (T5b)
+
+- **Icons**: 15 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as the other tabs), all
+  large: `spelldialog` (text_proofing_tools; the design's `text_proofing_tools_abc` does not exist in Fluent 1.1.344),
+  `thesaurusdialog` (book_open), `setdocumentproperties` (data_usage), `reviewaccessibilitymenu`
+  (accessibility_checkmark), `reviewtranslate` (translate), `deletenote` (comment_dismiss), `showannotations`
+  (comment_multiple), `reviewnotesmenu` (comment_note), `protect` (lock_closed), `toolprotectiondocument`
+  (shield_lock), `reviewalloweditranges` (lock_open), `sharedocument` (people_swap), `reviewhideink` (ink_stroke),
+  and the URL variants `reviewgotocomment_previous` / `_next` (comment_arrow_left / comment_arrow_right). Comment
+  reuses `insertannotation` from Insert.
+- The two Previous/Next Comment buttons are URL variants: json `icon` keys `cmd/32/reviewgotocomment_{previous,next}.png`
+  (T5a had `cmd/sc_`; the icon test checks the size prefix against the button size). The image flag was already on every
+  Review command, so the xcu is unchanged.
+- `test_icons.py`: every Review button resolves its icon in both themes (RED before: missing icons) and the
+  URL-variant icon names and sizes.
+- **Fit at 1920 px (measured on screenshots)**: all seven sections are visible with no ">>" and no fallback step was
+  needed. Section right edges: Proofing 218, Accessibility 358, Language 434, Comments 948, Notes 1016, Protect 1530,
+  Ink 1601 (design estimate 1564 px wide; usable width stops near 1830). At 1600 px (dark) Proofing to Protect stay
+  (last edge x = 1531) and Ink folds behind ">>". At 1366 px Proofing to Notes stay (last edge x = 1016); Protect and
+  Ink fold.
+- **Real-window menus**: the popup menus list only enabled items. On an empty cell the Notes menu shows just
+  "Insert Comment" and the Check Accessibility menu shows "[No selection possible]" (its four items need an object, a
+  range or a merged cell). The full item lists are covered by the UITests, not by a screenshot.

@@ -19,10 +19,10 @@
       [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation"}]}],
       [{"id": "DeleteComment", "style": "large", "items": [{"cmd": "DeleteNote"}]}],
       [{"id": "CommentPrevious", "style": "large", "items": [
-          {"cmd": "CommentPrevious", "icon": "cmd/sc_reviewgotocomment_previous.png",
+          {"cmd": "CommentPrevious", "icon": "cmd/32/reviewgotocomment_previous.png",
            "action": ".uno:ReviewGoToComment?Direction:string=previous"}]}],
       [{"id": "CommentNext", "style": "large", "items": [
-          {"cmd": "CommentNext", "icon": "cmd/sc_reviewgotocomment_next.png",
+          {"cmd": "CommentNext", "icon": "cmd/32/reviewgotocomment_next.png",
            "action": ".uno:ReviewGoToComment?Direction:string=next"}]}],
       [{"id": "ShowComments", "style": "large", "items": [{"cmd": "ShowAnnotations"}]}]
     ]},
