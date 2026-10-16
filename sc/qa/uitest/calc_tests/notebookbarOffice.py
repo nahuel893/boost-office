@@ -231,8 +231,9 @@ class NotebookbarOffice(UITestCase):
                                 self.assertEqual(labels[url], get_state_as_dict(xItem)["Text"].replace("~", ""))
                                 buttons.append((labels[url], xItem))
         # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families),
-        # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet)
-        self.assertEqual(41, len(buttons))
+        # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet),
+        # Review 5 (Translate, Previous and Next Comment, Allow Edit Ranges, Hide Ink)
+        self.assertEqual(46, len(buttons))
         return buttons
 
     def check_placeholder_buttons_are_drawn_disabled(self, src):
@@ -813,6 +814,76 @@ class NotebookbarOffice(UITestCase):
             for (command, resource), items in expected.items():
                 xPopup = self.popup_of(".uno:" + command, resource)
                 self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_review_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_review.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(7, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_review_placeholders_are_disabled_and_inert(self):
+        # 5 slots: Check Accessibility (a menu item), Translate, the Previous/Next Comment family
+        # (2 variants), Allow Edit Ranges and Hide Ink
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 408 <= e["offset"] <= 412)
+        self.assertEqual(6, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_review_each_dropdown_has_an_enabled_command(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            for name in ("InsertAnnotation",                                  # Comments, Notes
+                         "SpellDialog", "Protect", "ToolProtectionDocument", "ShareDocument"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+            # AutoFormat (Check Accessibility menu) needs a range of cells
+            document.getCurrentController().select(document.Sheets.getByIndex(0).getCellRangeByName("A1:C3"))
+            self.assertTrue(self.dispatch_enabled("AutoFormat"), "AutoFormat")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            # the commands that need a comment: disabled without one, enabled once B2 has one
+            for name in ("DeleteNote", "EditAnnotation", "ShowAllNotes", "HideAllNotes"):
+                self.assertFalse(self.dispatch_enabled(name), name)
+            address = document.Sheets.getByIndex(0).getCellRangeByName("B2").CellAddress
+            document.Sheets.getByIndex(0).Annotations.insertNew(address, "a comment")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            for name in ("DeleteNote", "EditAnnotation", "ShowAllNotes", "HideAllNotes", "NoteVisible"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_review_dropdown_popups_list_their_items(self):
+        goto = ".uno:ReviewGoToComment?Direction:string="
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:ReviewAccessibilityMenu", "review_accessibility")
+            self.assertEqual([".uno:ReviewCheckAccessibility", ".uno:ObjectTitleDescription",
+                              ".uno:AutoFormat", ".uno:SplitCell"], self.popup_commands(xPopup))
+            xPopup = self.popup_of(".uno:ReviewNotesMenu", "review_notes")
+            self.assertEqual([".uno:InsertAnnotation", ".uno:EditAnnotation", goto + "previous",
+                              goto + "next", ".uno:NoteVisible", ".uno:ShowAllNotes",
+                              ".uno:HideAllNotes", ".uno:DeleteAllNotes"], self.popup_commands(xPopup))
+
+    def test_review_menu_placeholders_resolve_their_labels_and_are_disabled(self):
+        goto = ".uno:ReviewGoToComment?Direction:string="
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.assertEqual("Check Accessibility", self.command_label(".uno:ReviewCheckAccessibility"))
+            self.assertEqual("Previous Comment", self.command_label(goto + "previous"))
+            self.assertEqual("Next Comment", self.command_label(goto + "next"))
+            # the items are the always-disabled placeholder slots (a popup built by its controller
+            # alone does not refresh item states, so ask the frame, as a status listener would)
+            for name in ("ReviewCheckAccessibility", "ReviewGoToComment?Direction:string=previous",
+                         "ReviewGoToComment?Direction:string=next"):
+                self.assertFalse(self.dispatch_enabled(name), name)
 
     def test_formulas_variant_menu_items_resolve_their_labels(self):
         with self.ui_test.create_doc_in_start_center("calc"):

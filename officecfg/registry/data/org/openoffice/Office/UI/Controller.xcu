@@ -1168,6 +1168,34 @@
           <value>conditional_easy</value>
         </prop>
       </node>
+      <node oor:name="ReviewAccessibilityMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewAccessibilityMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_accessibility</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewNotesMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewNotesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_notes</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3065,6 +3093,28 @@
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.chart2.ChartColorPaletteControl</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewAccessibilityMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewAccessibilityMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewNotesMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewNotesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
         </prop>
       </node>
     </node>

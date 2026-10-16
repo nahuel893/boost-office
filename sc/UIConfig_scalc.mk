@@ -67,6 +67,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/pivot \
 	sc/uiconfig/scalc/popupmenu/preview \
 	sc/uiconfig/scalc/popupmenu/printranges \
+	sc/uiconfig/scalc/popupmenu/review_accessibility \
+	sc/uiconfig/scalc/popupmenu/review_notes \
 	sc/uiconfig/scalc/popupmenu/rowheader \
 	sc/uiconfig/scalc/popupmenu/row_operations \
 	sc/uiconfig/scalc/popupmenu/sheettab \

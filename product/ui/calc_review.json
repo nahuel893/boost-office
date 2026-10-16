@@ -1,0 +1,42 @@
+{
+  "page": "phbReview",
+  "id_prefix": "Review",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu Review"],
+  "sections": [
+    {"name": "Proofing", "caption": "Proofing", "rows": 3, "columns": [
+      [{"id": "Spelling", "style": "large", "items": [{"cmd": "SpellDialog"}]}],
+      [{"id": "Thesaurus", "style": "large", "items": [{"cmd": "ThesaurusDialog"}]}],
+      [{"id": "Properties", "style": "large", "items": [{"cmd": "SetDocumentProperties"}]}]
+    ]},
+    {"name": "Accessibility", "caption": "Accessibility", "rows": 3, "columns": [
+      [{"id": "CheckAccessibility", "style": "large", "items": [{"cmd": "ReviewAccessibilityMenu", "kind": "split"}]}]
+    ]},
+    {"name": "Language", "caption": "Language", "rows": 3, "columns": [
+      [{"id": "Translate", "style": "large", "items": [{"cmd": "ReviewTranslate"}]}]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation"}]}],
+      [{"id": "DeleteComment", "style": "large", "items": [{"cmd": "DeleteNote"}]}],
+      [{"id": "CommentPrevious", "style": "large", "items": [
+          {"cmd": "CommentPrevious", "icon": "cmd/sc_reviewgotocomment_previous.png",
+           "action": ".uno:ReviewGoToComment?Direction:string=previous"}]}],
+      [{"id": "CommentNext", "style": "large", "items": [
+          {"cmd": "CommentNext", "icon": "cmd/sc_reviewgotocomment_next.png",
+           "action": ".uno:ReviewGoToComment?Direction:string=next"}]}],
+      [{"id": "ShowComments", "style": "large", "items": [{"cmd": "ShowAnnotations"}]}]
+    ]},
+    {"name": "Notes", "caption": "Notes", "rows": 3, "columns": [
+      [{"id": "Notes", "style": "large", "items": [{"cmd": "ReviewNotesMenu", "kind": "split"}]}]
+    ]},
+    {"name": "Protect", "caption": "Protect", "rows": 3, "columns": [
+      [{"id": "ProtectSheet", "style": "large", "items": [{"cmd": "Protect"}]}],
+      [{"id": "ProtectWorkbook", "style": "large", "items": [{"cmd": "ToolProtectionDocument"}]}],
+      [{"id": "AllowEditRanges", "style": "large", "items": [{"cmd": "ReviewAllowEditRanges"}]}],
+      [{"id": "ShareWorkbook", "style": "large", "items": [{"cmd": "ShareDocument"}]}]
+    ]},
+    {"name": "Ink", "caption": "Ink", "rows": 3, "columns": [
+      [{"id": "HideInk", "style": "large", "items": [{"cmd": "ReviewHideInk"}]}]
+    ]}
+  ]
+}

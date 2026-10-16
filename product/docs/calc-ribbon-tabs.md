@@ -389,3 +389,30 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
   Used lists a typed function and then a function picked from a menu, first; with a drawing object selected (grid
   `SELECT OBJECT`) the function items are disabled, and enabled again with a cell. They build the popup through
   `PopupMenuControllerFactory` without a `Value` and select an item by calling the controller's `itemSelected`.
+
+## 8. Review tab (T5a)
+
+`product/ui/calc_review.json` (page `phbReview`, prefix `Review`) replaces the upstream Review page children
+between generated `product:Review-begin/end` markers and removes the overflow menu object `Menu Review`. Seven
+sections in Excel's order: Proofing, Accessibility, Language, Comments, Notes, Protect, Ink (spec:
+`product/docs/design/calc-review-tab-layout.txt`). Every control is a large button. Icons, the 1920 px fit and
+screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
+
+- **Dropdowns** (no slot): `.uno:ReviewAccessibilityMenu` ("Check Accessibility": placeholder item, Alt Text,
+  AutoFormat, Unmerge Cells) and `.uno:ReviewNotesMenu` ("Notes"). Popup files `review_accessibility.xml` and
+  `review_notes.xml`, `Controller.xcu` Popup + ToolBox nodes, registered in `UIConfig_scalc.mk`.
+- **Placeholders** (registry labels, tooltip "<Label> (not available yet)"): Check Accessibility (menu item only),
+  Translate, Previous/Next Comment (family `.uno:ReviewGoToComment?Direction:string=previous|next`, buttons in the
+  Comments group and the same two URLs as Notes menu items), Allow Edit Ranges, Hide Ink.
+- **R12 (duplicate ids)**: every generated id carries the page prefix (`btnReviewInsertAnnotation` vs
+  `btnInsertInsertAnnotation`), so a command on two pages (Comment on Insert and Review) is two widgets; the
+  whole-UI duplicate-id test and a shared-command test cover it. Navigator is not on this page.
+- **R14 (buttons that leave the tab)**: Automatic Spell Checking, Hyphenation, Track Changes (Record, Manage),
+  Compare/Merge Document and Redact have no Review button any more; `test_the_menu_bar_keeps_every_command_that_left_the_tab`
+  asserts each stays in `menubar.xml` (Tools, Edit > Track Changes, File). Edit/Show All/Hide All/Delete All Comments
+  moved into the Notes menu (Edit and Delete All also remain in the menu bar).
+- **Comments vs Notes**: LibreOffice has one comment type (it behaves like Excel's notes). The Comments group has
+  Comment (`InsertAnnotation`), Delete Comment (`DeleteNote`), Previous/Next, Show Comments (`ShowAnnotations`); the
+  Notes menu has the note-style actions. Both drive the same comments; Convert to Comments is omitted.
+- **UITests**: `test_review_*` (sections and toolboxes, placeholders disabled and inert, dropdown commands enabled
+  once a comment/range exists, popup contents, placeholder labels). The drawn-disabled count is now 46 buttons.

@@ -225,12 +225,14 @@
  {
   "slot": "FID_REVIEW_CHECK_ACCESSIBILITY",
   "offset": 408,
-  "command": "ReviewCheckAccessibility"
+  "command": "ReviewCheckAccessibility",
+  "label": "Check Accessibility"
  },
  {
   "slot": "FID_REVIEW_TRANSLATE",
   "offset": 409,
-  "command": "ReviewTranslate"
+  "command": "ReviewTranslate",
+  "label": "Translate"
  },
  {
   "slot": "FID_REVIEW_GOTO_COMMENT",
@@ -239,17 +241,23 @@
   "variants": [
    "Direction:string=previous",
    "Direction:string=next"
-  ]
+  ],
+  "variant_labels": {
+   "Direction:string=previous": "Previous Comment",
+   "Direction:string=next": "Next Comment"
+  }
  },
  {
   "slot": "FID_REVIEW_ALLOW_EDIT_RANGES",
   "offset": 411,
-  "command": "ReviewAllowEditRanges"
+  "command": "ReviewAllowEditRanges",
+  "label": "Allow Edit Ranges"
  },
  {
   "slot": "FID_REVIEW_HIDE_INK",
   "offset": 412,
-  "command": "ReviewHideInk"
+  "command": "ReviewHideInk",
+  "label": "Hide Ink"
  },
  {
   "slot": "FID_VIEW_PAGE_LAYOUT",
