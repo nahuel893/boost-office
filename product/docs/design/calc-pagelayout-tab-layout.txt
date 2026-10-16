@@ -1,0 +1,488 @@
+CALC - PAGE LAYOUT TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+======================================================================
+Status: DESIGN for task T3; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 2; images in
+/mnt/games/libreoffice/assets/excel-ref/page-layout/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: the 2024+ per-group crops page-layout-bettersolutions-1..5.png (no full-width 365
+screenshot exists for this tab); page-layout-exceldemy-1.png (2023, narrow) shows the order.
+This page replaces LibreOffice's "Layout" tab; T1 renames it "Page Layout".
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | Insert | PAGE LAYOUT | Formulas | Data | Review | View | Extension | Tools | Help
+  -----+------+--------+=============+--------------------------------------------------------
+
+  Themes                       Page Setup
+  +-------------+ (x) Theme    +-------++-----------++----++-------++------++----------++-------+
+  | Spreadsheet | (x) Fonts [P]|Margins||Orientation||Size||Print  ||Breaks||Background||Print  |
+  |    Theme    | (x) Effects  |   v   ||     v     || v  ||Area v ||  v   ||   [P]    ||Titles |
+  +-------------+     [P]      +-------++-----------++----++-------++------++----------++-------+
+
+  Scale to Fit      Sheet Options
+  (x) Width   [P]   +-------------+  (x) View Grid Lines   (x) View Headers
+  (x) Height  [P]   | Sheet Right-|  (x) Print Gridlines   (x) Print Headings
+  (x) Scale   [P]   |   To-Left   |         [P]                   [P]
+                    +-------------+
+
+  Arrange
+  +---------+ +----------+ +-----------+ +-------+ +-------+ +--------+
+  |  Bring  | |   Send   | | Navigator | | Align | | Group | | Rotate |
+  | Forward | | Backward | |           | |   v   | |   v   | |   v    |
+  |    v    | |    v     | |           | |       | |       | |        |
+  +---------+ +----------+ +-----------+ +-------+ +-------+ +--------+
+  Five sections in Excel's order. All fit at 1920 px without reductions (FIT PLAN).
+
+LAYOUT FILE
+-----------
+  product/ui/calc_pagelayout.json: page "phbLayout", id_prefix "PageLayout", context "TabbedCalc",
+  remove_objects ["Menu Page"].
+  The page keeps its id phbLayout (only the tab label changes, T1). The upstream sections Page,
+  Print Area, Sheet, Objects and the "Layout-LayoutButton:Menu Page" overflow button go away;
+  "Menu Page" is removed like "Menu Data".
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    Themes          Themes              rows 3   ~202 px
+    PageSetup       Page Setup          rows 3   ~527 px
+    ScaleToFit      Scale to Fit        rows 3   ~76 px
+    SheetOptions    Sheet Options       rows 3   ~359 px
+    Arrange         Arrange             rows 3   ~476 px
+                    total                        ~1641 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - THEMES
+------------------
+  +-------------+  (x) Theme
+  | Spreadsheet |  (x) Fonts   [P]
+  |    Theme    |  (x) Effects [P]
+  +-------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Themes (L, dd)                               L btn    existing    "Spreadsheet Theme"
+       .uno:ChooseDesign
+       icon C paint_brush
+  2  c2r1  Colors (S, dd)                               S btn    existing    "Theme"
+       .uno:ThemeDialog
+       icon N color
+  3  c2r2  Fonts (S, dd)                                S btn    PLACEHOLDER "Fonts"
+       .uno:PageLayoutThemePart?Part:string=fonts   [family slot +399 FID_PAGELAYOUT_THEME_PART]
+       icon N text_font   json id ThemeFonts
+  4  c2r3  Effects (S, dd)                              S btn    PLACEHOLDER "Effects"
+       .uno:PageLayoutThemePart?Part:string=effects   [family slot +399 FID_PAGELAYOUT_THEME_PART]
+       icon N text_effects   json id ThemeEffects
+
+  Notes
+  - Themes -> .uno:ChooseDesign ("Spreadsheet Theme": applies one of LibreOffice's predefined cell
+    style sets to the whole document, the closest to Excel's whole-workbook theme gallery).
+  - Colors -> .uno:ThemeDialog ("Theme": Format > Theme, LibreOffice's document theme, which is a
+    set of theme colors, i.e. Excel's Colors list). Calc implements SID_THEME_DIALOG (tabvwsh.sdi).
+  - Fonts, Effects: one family placeholder, .uno:PageLayoutThemePart?Part:string=fonts|effects.
+    LibreOffice's theme model already has a font scheme but no UI for it; Fonts is the likely
+    first implementation. Excel shows all three as dropdowns; LibreOffice's are plain buttons.
+  - Open question 2 (which LibreOffice command is "Themes" and which is "Colors").
+
+
+SECTION 2 - PAGE SETUP
+----------------------
+  +---------+ +-------------+ +------+ +------------+ +--------+ +------------+ +--------------+
+  | Margins | | Orientation | | Size | | Print Area | | Breaks | | Background | | Print Titles |
+  |    v    | |      v      | |  v   | |     v      | |   v    | |    [P]     | |              |
+  +---------+ +-------------+ +------+ +------------+ +--------+ +------------+ +--------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Margins (L, dd)                              L dd     NEW DD      "Margins"
+       .uno:PageLayoutMarginsMenu
+       icon N document_margins
+  2  c2    Orientation (L, dd)                          L dd     NEW DD      "Orientation"
+       .uno:PageLayoutOrientationMenu
+       icon N orientation
+  3  c3    Size (L, dd)                                 L dd     NEW DD      "Size"
+       .uno:PageLayoutSizeMenu
+       icon N document_one_page
+  4  c4    Print Area (L, dd)                           L dd     NEW DD      "Print Area"
+       .uno:PageLayoutPrintAreaMenu
+       icon N print
+  5  c5    Breaks (L, dd)                               L dd     NEW DD      "Breaks"
+       .uno:PageLayoutBreaksMenu
+       icon N document_page_break
+  6  c6    Background (L, btn)                          L btn    PLACEHOLDER "Background"
+       .uno:PageLayoutBackground   [slot +400 FID_PAGELAYOUT_BACKGROUND]
+       icon N image
+  7  c7    Print Titles (L, btn)                        L btn    NEW ALIAS   "Print Titles"
+       .uno:PageLayoutPrintTitles   [slot +16 FID_PAGELAYOUT_PRINT_TITLES]
+       icon N table_bottom_row
+
+  Menu of .uno:PageLayoutMarginsMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_margins.xml)
+    Normal (spike)
+        .uno:CalcPageMargin?Page.LeftMargin:long=1778&Page.RightMargin:long=1778&
+        Page.UpperMargin:long=1905&Page.LowerMargin:long=1905
+    Wide (spike)
+        .uno:CalcPageMargin?Page.LeftMargin:long=2540&Page.RightMargin:long=2540&
+        Page.UpperMargin:long=2540&Page.LowerMargin:long=2540
+    Narrow (spike)
+        .uno:CalcPageMargin?Page.LeftMargin:long=635&Page.RightMargin:long=635&
+        Page.UpperMargin:long=1905&Page.LowerMargin:long=1905
+    --------------------
+    Page Style... (= Custom Margins...)
+        .uno:PageFormatDialog
+  Menu of .uno:PageLayoutOrientationMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_orientation.xml)
+    Portrait
+        .uno:Orientation?isLandscape:bool=false
+    Landscape
+        .uno:Orientation?isLandscape:bool=true
+  Menu of .uno:PageLayoutSizeMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_size.xml)
+    Letter
+        .uno:CalcPageSize?PaperFormat:short=8
+    Legal
+        .uno:CalcPageSize?PaperFormat:short=9
+    Tabloid
+        .uno:CalcPageSize?PaperFormat:short=10
+    Executive
+        .uno:CalcPageSize?PaperFormat:short=23
+    Statement
+        .uno:CalcPageSize?PaperFormat:short=38
+    A3
+        .uno:CalcPageSize?PaperFormat:short=3
+    A4
+        .uno:CalcPageSize?PaperFormat:short=4
+    A5
+        .uno:CalcPageSize?PaperFormat:short=5
+    B4 (JIS)
+        .uno:CalcPageSize?PaperFormat:short=34
+    B5 (JIS)
+        .uno:CalcPageSize?PaperFormat:short=35
+    Envelope #10
+        .uno:CalcPageSize?PaperFormat:short=28
+    Envelope DL
+        .uno:CalcPageSize?PaperFormat:short=17
+    --------------------
+    Page Style... (= More Paper Sizes...)
+        .uno:PageFormatDialog
+  Menu of .uno:PageLayoutPrintAreaMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_printarea.xml)
+    Define (= Set Print Area)
+        .uno:DefinePrintArea
+    Clear (= Clear Print Area)
+        .uno:DeletePrintArea
+    Add (= Add to Print Area)
+        .uno:AddPrintArea
+    Edit... (LO extra)
+        .uno:EditPrintArea
+  Menu of .uno:PageLayoutBreaksMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_breaks.xml)
+    Insert Page Break > Row Break, Column Break
+        .uno:InsertBreakMenu submenu: .uno:InsertRowBreak .uno:InsertColumnBreak
+    Delete Page Break > Row Break, Column Break
+        .uno:DelBreakMenu submenu: .uno:DeleteRowbreak .uno:DeleteColumnbreak
+    Delete Page Breaks (= Reset All Page Breaks)
+        .uno:DeleteAllBreaks
+
+  Notes
+  - Orientation: verified. Calc's document shell implements .uno:Orientation with the boolean
+    argument isLandscape (sc/sdi/docsh.sdi:88, sc/source/ui/docshell/docsh4.cxx:603; svx.sdi
+    declares "SfxBoolItem isLandscape"). The two items are URL variants with labels "Portrait" and
+    "Landscape" in CalcCommands.xcu. TRAP: never put .uno:Orientation itself on the ribbon:
+    Controller.xcu registers a module-less toolbox controller for it (lo.writer.
+    PageOrientationToolBoxControl, in the Writer library). Menu items are not affected.
+  - Size: verified. .uno:CalcPageSize (SID_SC_ATTR_PAGE_SIZE, docsh.sdi:90, docsh4.cxx:665) takes
+    PaperFormat (UInt16 = the i18nutil "Paper" enum, include/i18nutil/paper.hxx: A3=3, A4=4, A5=5,
+    LETTER=8, LEGAL=9, TABLOID=10, ENV_DL=17, EXECUTIVE=23, ENV_10=28, B4_JIS=34, B5_JIS=35,
+    STATEMENT=38). Each size is a URL variant with Excel's name as label. "More Paper Sizes..."
+    is LibreOffice's Page Style dialog.
+  - Margins: SPIKE in T3. .uno:CalcPageMargin (SID_SC_ATTR_PAGE_MARGIN, docsh4.cxx:727) needs an
+    SvxLRSpaceItem and an SvxULSpaceItem (both declared "Page" in scalc.sdi:6659). sfx2 accepts
+    complex arguments as "<Name>.<Member>" properties (sfx2/source/appl/appuno.cxx:350) and URL
+    arguments as name:type=value (sfx2/source/control/unoctitm.cxx:431), so the three presets
+    are written as URL variants with 1/100 mm values (Excel Normal: left/right 0.7", top/bottom
+    0.75"; Wide: 1" all; Narrow: left/right 0.25", top/bottom 0.75"; header/footer distances
+    are not set by this command). If the spike fails, drop the three presets: the menu keeps
+    "Page Style..." only. Do NOT spend placeholder slots on them (budget).
+  - Print Area v: LibreOffice's four print-range commands. In a menu LibreOffice shows the
+    ContextLabel, so the items read "Define", "Clear", "Add", "Edit..." (as in the menu bar's
+    Format > Print Ranges). "Edit..." is a LibreOffice extra.
+  - Breaks v: Excel's "Insert Page Break" acts on the row and column of the cell cursor;
+    LibreOffice has separate row and column breaks, so the menu uses the menu bar's two submenus
+    (.uno:InsertBreakMenu, .uno:DelBreakMenu; their items' ContextLabels both read "Row Break" /
+    "Column Break", which is why submenus are needed) plus "Delete Page Breaks" (Excel: Reset All
+    Page Breaks).
+  - Background: placeholder. A page style has a background, but it only prints; Excel's sheet
+    background is a picture shown behind the cells on screen.
+  - Print Titles: NEW ALIAS .uno:PageLayoutPrintTitles, slot SID_NEW_SLOTS+16
+    (FID_PAGELAYOUT_PRINT_TITLES), label "Print Titles". It mirrors SID_OPENDLG_EDIT_PRINTAREA
+    (.uno:EditPrintArea, whose label is just "Edit"): the Edit Print Ranges dialog has "Rows to
+    repeat" and "Columns to repeat". Mirror the slot in every interface that lists the original:
+    TableSelection (docsh.sdi:23, Execute/GetState in tabvwsh3.cxx), drawsh.sdi:35 and
+    drtxtob.sdi:32 (StateDisableItems). Simplest Execute: dispatch SID_OPENDLG_EDIT_PRINTAREA.
+    No code calls Invalidate(SID_OPENDLG_EDIT_PRINTAREA) on its own (checked with rg), so no
+    invalidation mirror is needed. Config-only fallback if T3 wants no C++: a URL variant
+    ".uno:EditPrintArea?PrintTitles:bool=true" with its own label (verify that the slot ignores
+    the unknown argument and keeps its state).
+  - Excel's Page Setup dialog launcher is not built (no launchers in gen_ribbon); the Margins and
+    Size menus end with "Page Style...", which is the same dialog.
+
+
+SECTION 3 - SCALE TO FIT
+------------------------
+  (x) Width   [P]      Excel: "Width:" and "Height:" combo boxes (Automatic, 1..9 pages, More
+  (x) Height  [P]      Pages...) and a "Scale:" spin box (100 %). Here three small placeholder
+  (x) Scale   [P]      buttons with the same names until real controls exist.
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1r1  Width (S, combo)                             S btn    PLACEHOLDER "Width"
+       .uno:PageLayoutScaleToFit?Dimension:string=width   [family slot +401 FID_PAGELAYOUT_SCALE_TO_FIT]
+       icon N arrow_autofit_width   json id ScaleWidth
+  2  c1r2  Height (S, combo)                            S btn    PLACEHOLDER "Height"
+       .uno:PageLayoutScaleToFit?Dimension:string=height   [family slot +401 FID_PAGELAYOUT_SCALE_TO_FIT]
+       icon N arrow_autofit_height   json id ScaleHeight
+  3  c1r3  Scale (S, spin)                              S btn    PLACEHOLDER "Scale"
+       .uno:PageLayoutScaleToFit?Dimension:string=scale   [family slot +401 FID_PAGELAYOUT_SCALE_TO_FIT]
+       icon N scale_fit   json id ScalePercent
+
+  Notes
+  - Family placeholder .uno:PageLayoutScaleToFit?Dimension:string=width|height|scale. LibreOffice
+    has the same settings in Format > Page Style > Sheet > Scale (page style attributes
+    ATTR_PAGE_SCALE and ATTR_PAGE_SCALETO). The future feature is three toolbox controllers
+    (combo, combo, spin) that write those attributes. Launcher not built.
+
+
+SECTION 4 - SHEET OPTIONS
+-------------------------
+  +-------------+  (x) View Grid Lines    (x) View Headers
+  | Sheet Right-|  (x) Print Gridlines    (x) Print Headings
+  |  To-Left    |        [P]                     [P]
+  +-------------+
+  Excel puts the words "Gridlines" and "Headings" above two check boxes "View" and "Print".
+  gen_ribbon only makes tool buttons (no labels or check boxes), so each button carries its full
+  name and the check box becomes a toggle button (pressed = checked).
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Sheet Right-to-Left (L, tgl)                 L tgl    existing    "Sheet Right-To-Left"
+       .uno:SheetRightToLeft
+       icon C text_direction_horizontal_right
+  2  c2r1  Gridlines: View (S, chk)                     S tgl    existing    "View Grid Lines"
+       .uno:ToggleSheetGrid
+       icon C grid
+  3  c2r2  Gridlines: Print (S, chk)                    S btn    PLACEHOLDER "Print Gridlines"
+       .uno:PageLayoutPrintOption?Option:string=gridlines   [family slot +402 FID_PAGELAYOUT_PRINT_OPTION]
+       icon N print   json id PrintGridlines
+  4  c3r1  Headings: View (S, chk)                      S tgl    existing    "View Headers"
+       .uno:ViewRowColumnHeaders
+       icon C table_simple
+  5  c3r2  Headings: Print (S, chk)                     S btn    PLACEHOLDER "Print Headings"
+       .uno:PageLayoutPrintOption?Option:string=headings   [family slot +402 FID_PAGELAYOUT_PRINT_OPTION]
+       icon N print_add   json id PrintHeadings
+
+  Notes
+  - Sheet Right-to-Left: conditional in Excel (shown with a right-to-left editing language; it is
+    in the 2024+ crop, not in the 2023 en-US screenshot). LibreOffice's command exists and was on
+    today's Layout page, so it is kept. Open question 1.
+  - Gridlines View and Headings View are the same commands as View > Show > Gridlines / Headings
+    (Excel has them on both tabs too).
+  - Print Gridlines / Print Headings: family placeholder .uno:PageLayoutPrintOption?Option:string=
+    gridlines|headings. LibreOffice prints grid and headers from the page style (ATTR_PAGE_GRID,
+    ATTR_PAGE_HEADERS, Page Style > Sheet > Print); the future feature is two toggles for the
+    current sheet's page style. Labels "Print Gridlines" / "Print Headings" (Excel: "Print" under
+    a column caption; see the mini mock).
+  - Launcher not built.
+
+
+SECTION 5 - ARRANGE
+-------------------
+  +---------+ +----------+ +-----------+ +-------+ +-------+ +--------+
+  |  Bring  | |   Send   | | Navigator | | Align | | Group | | Rotate |
+  | Forward | | Backward | |           | |   v   | |   v   | |   v    |
+  |    v    | |    v     | |           | |       | |       | |        |
+  +---------+ +----------+ +-----------+ +-------+ +-------+ +--------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Bring Forward (L, split)                     L dd     NEW DD      "Bring Forward"
+       .uno:PageLayoutBringForwardMenu
+       icon N position_forward
+  2  c2    Send Backward (L, split)                     L dd     NEW DD      "Send Backward"
+       .uno:PageLayoutSendBackwardMenu
+       icon N position_backward
+  3  c3    Selection Pane (L, tgl)                      L tgl    existing    "Navigator"
+       .uno:Navigator
+       icon C panel_left
+  4  c4    Align (L, dd)                                L dd     NEW DD      "Align"
+       .uno:PageLayoutAlignMenu
+       icon N align_left
+  5  c5    Group (L, dd)                                L dd     NEW DD      "Group"
+       .uno:PageLayoutGroupMenu
+       icon N group
+  6  c6    Rotate (L, dd)                               L dd     NEW DD      "Rotate"
+       .uno:PageLayoutRotateMenu
+       icon N arrow_rotate_clockwise
+
+  Menu of .uno:PageLayoutBringForwardMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_bringforward.xml)
+    Forward One (= Bring Forward)
+        .uno:ObjectForwardOne
+    Bring to Front
+        .uno:BringToFront
+  Menu of .uno:PageLayoutSendBackwardMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_sendbackward.xml)
+    Back One (= Send Backward)
+        .uno:ObjectBackOne
+    Send to Back
+        .uno:SendToBack
+  Menu of .uno:PageLayoutAlignMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_align.xml)
+    Left
+        .uno:ObjectAlignLeft
+    Centered
+        .uno:AlignCenter
+    Right
+        .uno:ObjectAlignRight
+    --------------------
+    Top
+        .uno:AlignUp
+    Middle
+        .uno:AlignMiddle
+    Bottom
+        .uno:AlignDown
+    --------------------
+    Snap to Grid
+        .uno:GridUse
+    Display Grid (= View Gridlines)
+        .uno:GridVisible
+  Menu of .uno:PageLayoutGroupMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_group.xml)
+    Group
+        .uno:FormatGroup
+    Ungroup
+        .uno:FormatUngroup
+  Menu of .uno:PageLayoutRotateMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_rotate.xml)
+    Rotate (LO free rotation mode)
+        .uno:ToggleObjectRotateMode
+    Flip Vertically
+        .uno:ObjectMirrorVertical
+    Flip Horizontally
+        .uno:ObjectMirrorHorizontal
+    --------------------
+    Position and Size... (= More Rotation Options...)
+        .uno:TransformDialog
+
+  Notes
+  - Excel's Arrange group is disabled until a drawing object is selected; LibreOffice's commands
+    behave the same (drawsh.sdi). Bring Forward and Send Backward are splits in Excel; here they
+    are dropdowns, because a split whose body is disabled loses its arrow in VCL (known problem)
+    and the bodies are disabled most of the time.
+  - Selection Pane -> .uno:Navigator: LibreOffice's Navigator lists the sheet's drawing objects,
+    images and charts and selects them on double-click. The same command is View > Navigation.
+  - Align v: Distribute Horizontally / Vertically are omitted (Calc's drawing shell implements no
+    SID_DISTRIBUTE_* slot) and so is Snap to Shape (no Calc command). "View Gridlines" is
+    LibreOffice's drawing grid (.uno:GridVisible, ContextLabel "Display Grid").
+  - Group v: Regroup omitted (no LibreOffice command). Enter/Exit Group stay in the menu bar.
+  - Rotate v: Rotate Right 90 and Rotate Left 90 are omitted (Calc has no rotate-by-90 command for
+    shapes; SID_ROTATE_GRAPHIC_* is not in sc/sdi); LibreOffice's free "Rotate" mode is added
+    first instead. "More Rotation Options..." = Position and Size dialog (rotation tab).
+
+NEW COMMANDS (CalcCommands.xcu unless noted)
+--------------------------------------------
+  Dropdowns (config only, as on Data): PageLayoutMarginsMenu "Margins", PageLayoutOrientationMenu
+  "Orientation", PageLayoutSizeMenu "Size", PageLayoutPrintAreaMenu "Print Area",
+  PageLayoutBreaksMenu "Breaks", PageLayoutBringForwardMenu "Bring Forward",
+  PageLayoutSendBackwardMenu "Send Backward", PageLayoutAlignMenu "Align", PageLayoutGroupMenu
+  "Group", PageLayoutRotateMenu "Rotate" (10 popup xml files, names in the section menus above).
+  Alias (C++, Data split recipe without the menu): .uno:PageLayoutPrintTitles "Print Titles".
+  URL variants (label nodes only): Orientation x2 ("Portrait", "Landscape"), CalcPageSize x12
+  (Excel paper names), CalcPageMargin x3 ("Normal", "Wide", "Narrow"; spike).
+
+PLACEHOLDERS (4 slots, 8 controls)
+----------------------------------
+  SID_NEW_SLOTS+399 FID_PAGELAYOUT_THEME_PART    .uno:PageLayoutThemePart  ?Part:string=fonts "Fonts",
+                                                 ?Part:string=effects "Effects"
+  SID_NEW_SLOTS+400 FID_PAGELAYOUT_BACKGROUND    .uno:PageLayoutBackground "Background"
+  SID_NEW_SLOTS+401 FID_PAGELAYOUT_SCALE_TO_FIT  .uno:PageLayoutScaleToFit ?Dimension:string=width "Width",
+                                                 =height "Height", =scale "Scale"
+  SID_NEW_SLOTS+402 FID_PAGELAYOUT_PRINT_OPTION  .uno:PageLayoutPrintOption ?Option:string=gridlines
+                                                 "Print Gridlines", =headings "Print Headings"
+  Functional slot: SID_NEW_SLOTS+16 FID_PAGELAYOUT_PRINT_TITLES (alias, not a placeholder).
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB (today's Layout page + "Menu Page")
+------------------------------------------------------------------------------
+  Headers and Footers (.uno:EditHeaderAndFooter)  Insert tab > Text (as in Excel)
+  Table Styles / AutoFormat (.uno:AutoFormat)     Home tab > Styles > Format as Table; Review >
+                                                  Check Accessibility menu
+  Insert Sheet (.uno:Insert)                      menu Sheet > Insert Sheet; sheet tab context menu
+  Row / Column dropdowns (.uno:RowOperations,     Home tab > Cells > Insert / Delete / Format menus;
+    .uno:ColumnOperations)                        menu Sheet and Format > Rows / Columns
+  Select (.uno:SelectObject)                      LOST from the ribbon; Drawing toolbar (clicking an
+                                                  object selects it anyway)
+  Align Objects (.uno:ObjectAlign)                replaced by the Align menu (same six commands)
+  Insert Cells / Delete Cells (Menu Page)         Home tab > Cells
+  Print Ranges submenu (.uno:PrintRangesMenu)     Print Area menu; menu Format > Print Ranges
+  Rename Sheet (.uno:RenameTable)                 menu Sheet > Rename Sheet; sheet tab context menu
+  Page Style (.uno:PageFormatDialog)              stays: last item of the Margins and Size menus
+
+OMISSIONS (Excel controls or menu items not built)
+--------------------------------------------------
+  Dialog launchers (Page Setup, Scale to Fit, Sheet Options)  gen_ribbon has no launchers
+  Themes menu items Browse for Themes / Save Current Theme     no LibreOffice equivalent
+  Colors / Fonts / Effects galleries                           Colors opens LibreOffice's dialog
+  Margins > Last Custom Setting                                no LibreOffice equivalent
+  Background caption "Delete Background"                       placeholder has a fixed label
+  Align > Distribute Horizontally / Vertically, Snap to Shape  no Calc command (see notes)
+  Group > Regroup                                              no LibreOffice command
+  Rotate > Rotate Right 90 / Rotate Left 90                    no Calc command for shapes
+  Print Area > Add to Print Area is always listed (Excel shows it only when a print area exists)
+
+ICONS
+-----
+  25 controls, 25 boost icons to add: 20 required (N: every new command and .uno:ThemeDialog) and
+  5 with a Colibre fallback (ChooseDesign, SheetRightToLeft, ToggleSheetGrid, ViewRowColumnHeaders,
+  Navigator; the last three are shared with the View tab).
+
+1920 PX FIT PLAN
+----------------
+  Estimated total about 1641 px against a budget of about 1875 px (method in the Insert file):
+  every group at Excel's full size, no reduction needed, about 230 px to spare. If translations
+  push Arrange behind ">>", use Excel's reduced Page Setup form first (reference: "Margins L, then
+  two S columns of 3: (Orientation, Size, Print Area) and (Breaks, Background, Print Titles)").
+
+OPEN QUESTIONS
+--------------
+  1. Sheet Right-to-Left: keep it (current design: existing command, was on today's page, shown in
+     the 2024+ crop) or drop it like a default en-US Excel?
+  2. Themes = Spreadsheet Theme (cell style sets) and Colors = Theme (document theme colors) is a
+     judgement call; the reverse is possible. Both are LibreOffice dialogs, no slots involved.
+  3. Margin presets depend on the T3 spike (URL arguments for complex items); fallback drops them.

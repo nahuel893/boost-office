@@ -1,0 +1,514 @@
+CALC - INSERT TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+=================================================================
+Status: DESIGN for task T2; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 1; images in
+/mnt/games/libreoffice/assets/excel-ref/insert/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: insert/insert-msqa-2.png (full Insert tab, 1912 px, 2026), plus the per-group
+crops insert-bettersolutions-1..11.png and insert-mstechcommunity-1.png (Controls).
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | INSERT | Page Layout | Formulas | Data | Review | View | Extension | Tools | Help
+  -----+------+========+-----------------------------------------------------------------------
+
+  Tables                        Illustrations          Controls  Charts
+  +-------++-------------++----+ (x) Pictures v   (P)  +-------+ +-------+ (P)v (P)v (P)v +------++--------+
+  | Pivot ||  Recommended|| Ta-| (x) Shapes v     (P)  | Check-| | Chart | (P)v (P)v (P)v | Maps || Pivot- |
+  | Table ||  PivotTables|| ble| (x) Gallery      (P)  | box   | |       | (P)v (P)v      |  [P] || Chart  |
+  +-------++-----[P]-----++----+                       +--[P]--+ +-------+                +------++--[P]---+
+  ------------------------------ ---------------------- --------- -------------------------------------------
+             Tables                  Illustrations       Controls                    Charts
+
+  Sparklines            Filters           Links    Comments  Text                                             Symbols
+  +----++------++-----+ +------++--------+ +------+ +-------+ +----++---------++--------++---------++-------+ +-------++------+
+  |Line||Column||Win/ | |Slicer||Timeline| |Hyper-| |Comment| |Text||Headers  ||Insert  ||Signature||Insert | |Formula||Symbol|
+  |    ||      ||Loss | | [P]  ||  [P]   | | link | |       | |Box ||and Foot.||Fontwork||Line     ||OLE Obj| |Object ||  v   |
+  +----++------++-----+ +------++--------+ +------+ +-------+ +----++---------++--------++---------++-------+ +-------++------+
+
+  (P) = icon-only placeholder; the eight chart-type icons are greyed placeholders (Excel shows
+  them as icon+chevron dropdowns; a placeholder is a plain button, so no chevron until built).
+  Ten sections in Excel's order. Excel's Forms, Add-ins and Tours are not built (see OMISSIONS).
+
+LAYOUT FILE
+-----------
+  product/ui/calc_insert.json: page "phbInsert", id_prefix "Insert", context "TabbedCalc",
+  remove_objects ["Menu Insert"].
+  The upstream page is replaced wholesale (its sections Pivot Table, Range, Text, Objects, Shapes and
+  the "Insert-InsertButton:Menu Insert" overflow button); "Menu Insert" is removed like "Menu Data".
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    Tables          Tables              rows 3   ~290 px
+    Illustrations   Illustrations       rows 3   ~123 px
+    Controls        Controls            rows 3   ~74 px
+    Charts          Charts              rows 3   ~249 px
+    Sparklines      Sparklines          rows 3   ~172 px
+    Filters         Filters             rows 3   ~112 px
+    Links           Links               rows 3   ~73 px
+    Comments        Comments            rows 3   ~75 px
+    Text            Text                rows 3   ~505 px
+    Symbols         Symbols             rows 3   ~173 px
+                    total                        ~1847 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - TABLES
+------------------
+  +-------+  +-------------+  +-------+
+  | Pivot |  | Recommended |  | Table |
+  | Table |  | PivotTables |  |       |
+  +-------+  +-----[P]-----+  +-------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    PivotTable (L, split)                        L btn    existing    "Pivot Table"
+       .uno:DataDataPilotRun
+       icon C table_settings
+  2  c2    Recommended PivotTables (L, btn)             L btn    PLACEHOLDER "Recommended PivotTables"
+       .uno:InsertRecommendedPivotTables   [slot +389 FID_INSERT_RECOMMENDED_PIVOT]
+       icon N table_lightning
+  3  c3    Table (L, btn)                               L btn    existing    "Table"
+       .uno:InsertCalcTable
+       icon N table_add
+
+  Notes
+  - PivotTable: Excel's split menu (From Table/Range, From External Data Source, From Data Model,
+    From Power BI) is not built. LibreOffice's Pivot Table dialog starts with "Select Source"
+    (current selection, named range, data source registered in LibreOffice, external source),
+    which covers the first two items; From Data Model has no LibreOffice equivalent (the Data tab
+    already has "Manage Data Model [P]"); From Power BI is a Microsoft cloud service (omitted).
+    So the button is plain (same simplification as Data > Validity). A split would cost a slot.
+  - Table: .uno:InsertCalcTable is LibreOffice's own sheet "Table..." (SID_INSERT_CALCTABLE,
+    cellsh.sdi: ExecuteDB / GetDBState), the closest thing to Excel's Ctrl+T table.
+
+
+SECTION 2 - ILLUSTRATIONS
+-------------------------
+  (x) Pictures v    (P) 3D Models       Excel's reduced form for this group (reference: "Pictures,
+  (x) Shapes v      (P) SmartArt        Shapes, Icons become S in a column of 3"), with the second
+  (x) Gallery       (P) Screenshot      column icon-only: see FIT PLAN.
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1r1  Pictures (L, dd)                             S dd     NEW DD      "Pictures"
+       .uno:InsertPicturesMenu
+       icon N image_add
+  2  c1r2  Shapes (L, dd)                               S dd     NEW DD      "Shapes"
+       .uno:InsertShapesMenu
+       icon N shapes
+  3  c1r3  Icons (L, btn)                               S btn    existing    "Gallery"
+       .uno:Gallery
+       icon C image_multiple
+  4  c2r1  3D Models (S, split)                         I btn    PLACEHOLDER (icon) "3D Models"
+       .uno:Insert3DModels   [slot +391 FID_INSERT_3D_MODELS]
+       icon N cube_add
+  5  c2r2  SmartArt (S, btn)                            I btn    PLACEHOLDER (icon) "SmartArt"
+       .uno:InsertSmartArt   [slot +392 FID_INSERT_SMARTART]
+       icon N diagram
+  6  c2r3  Screenshot (S, dd)                           I btn    PLACEHOLDER (icon) "Screenshot"
+       .uno:InsertScreenshot   [slot +393 FID_INSERT_SCREENSHOT]
+       icon N screenshot
+
+  Menu of .uno:InsertPicturesMenu  (sc/uiconfig/scalc/popupmenu/insert_pictures.xml)
+    Place in Cell [P]
+        .uno:InsertPictureInCell
+    Image... (= Place over Cells > This Device)
+        .uno:InsertGraphic
+  Menu of .uno:InsertShapesMenu  (sc/uiconfig/scalc/popupmenu/insert_shapes.xml)
+    Line > (Line, Freeform Line, Freeform Line Filled, Curve, Curve Filled, Polygon, Polygon 45,
+    Polygon 45 Filled)
+        .uno:ShapesLineMenu submenu: .uno:Line .uno:Freeline_Unfilled .uno:Freeline
+        .uno:Bezier_Unfilled .uno:BezierFill .uno:Polygon_Unfilled .uno:Polygon_Diagonal_Unfilled
+        .uno:Polygon_Diagonal
+    Basic Shapes >
+        .uno:BasicShapes
+    Block Arrows >
+        .uno:ArrowShapes
+    Flowchart >
+        .uno:FlowChartShapes
+    Stars and Banners >
+        .uno:StarShapes
+    Callout Shapes >
+        .uno:CalloutShapes
+    Symbol Shapes > (LO extra)
+        .uno:SymbolShapes
+    Connectors > (LO extra)
+        .uno:ConnectorToolbox
+
+  Notes
+  - Pictures v: Excel's menu is "Place in Cell >" and "Place over Cells >", each with This
+    Device / Stock Images / Online Pictures. Stock Images and Online Pictures are Microsoft cloud
+    content (omitted), so the submenus collapse to one item each: Place in Cell [P] (LibreOffice
+    cannot put a picture inside a cell) and LibreOffice's "Image..." (= Place over Cells > This
+    Device).
+  - Shapes v: the same content as the menu bar's Insert > Shape. The Line submenu is copied from
+    menubar.xml (.uno:ShapesLineMenu with its 8 items); the other entries are single menu items
+    (.uno:BasicShapes, ...) that Controller.xcu already turns into submenus everywhere
+    (ToolbarAsMenuController, Module empty). Excel order kept where LibreOffice has the family
+    (Lines, Basic Shapes incl. rectangles, Block Arrows, Flowchart, Stars and Banners, Callouts);
+    Symbol Shapes and Connectors are LibreOffice extras at the end. First product popup with
+    submenus: verify in T2 that nested submenus open from a ribbon dropdown.
+  - Icons -> Gallery (LibreOffice's local clip art and icon gallery, sidebar deck). Excel's Icons
+    opens Microsoft's online icon library. The button reads "Gallery". Open question 1.
+  - 3D Models, SmartArt, Screenshot: placeholders, icon-only (FIT PLAN step 1). 3D Models (Excel
+    split) and Screenshot (Excel dropdown) are plain buttons while they are placeholders.
+
+
+SECTION 3 - CONTROLS
+--------------------
+  +----------+
+  | Checkbox |
+  +---[P]----+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Checkbox (L, btn)                            L btn    PLACEHOLDER "Checkbox"
+       .uno:InsertCellCheckbox   [slot +394 FID_INSERT_CELL_CHECKBOX]
+       icon N checkbox_checked
+
+  Notes
+  - Checkbox formats the selected cells as in-cell check boxes (Excel, 2024). LibreOffice has no
+    cell check box; its form-control check box (.uno:CheckBox) is a different feature and stays in
+    the menu bar under Insert > Form Control.
+
+
+SECTION 4 - CHARTS
+------------------
+  +-------+  (P)  (P)  (P)  +------+  +------------+
+  | Chart |  (P)  (P)  (P)  | Maps |  | PivotChart |
+  +-------+  (P)  (P)       +-[P]--+  +----[P]-----+
+             3-column grid of icon-only chart types (3 + 3 + 2), like Excel
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Recommended Charts (L, btn)                  L btn    existing    "Chart"
+       .uno:InsertObjectChart
+       icon C chart_multiple
+  2  c2r1  (Column/Bar chart icon) (I, dd)              I btn    PLACEHOLDER (icon) "Insert Column or Bar Chart"
+       .uno:InsertChartType?Type:string=columnbar   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_bar_vertical   json id ChartColumnBar
+  3  c2r2  (Line/Area chart icon) (I, dd)               I btn    PLACEHOLDER (icon) "Insert Line or Area Chart"
+       .uno:InsertChartType?Type:string=linearea   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_line   json id ChartLineArea
+  4  c2r3  (Pie/Doughnut chart icon) (I, dd)            I btn    PLACEHOLDER (icon) "Insert Pie or Doughnut Chart"
+       .uno:InsertChartType?Type:string=piedoughnut   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_pie   json id ChartPie
+  5  c3r1  (Hierarchy chart icon) (I, dd)               I btn    PLACEHOLDER (icon) "Insert Hierarchy Chart"
+       .uno:InsertChartType?Type:string=hierarchy   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_treemap   json id ChartHierarchy
+  6  c3r2  (Statistic chart icon) (I, dd)               I btn    PLACEHOLDER (icon) "Insert Statistic Chart"
+       .uno:InsertChartType?Type:string=statistic   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_histogram   json id ChartStatistic
+  7  c3r3  (Scatter/Bubble chart icon) (I, dd)          I btn    PLACEHOLDER (icon) "Insert Scatter (X, Y) or Bubble Chart"
+       .uno:InsertChartType?Type:string=scatterbubble   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_scatter   json id ChartScatter
+  8  c4r1  (Waterfall... chart icon) (I, dd)            I btn    PLACEHOLDER (icon) "Insert Waterfall, Funnel, Stock, Surface or Radar Chart"
+       .uno:InsertChartType?Type:string=waterfall   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_waterfall   json id ChartWaterfall
+  9  c4r2  (Combo chart icon) (I, dd)                   I btn    PLACEHOLDER (icon) "Insert Combo Chart"
+       .uno:InsertChartType?Type:string=combo   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N data_trending   json id ChartCombo
+  10 c5    Maps (L, dd)                                 L btn    PLACEHOLDER "Maps"
+       .uno:InsertChartType?Type:string=map   [family slot +395 FID_INSERT_CHART_TYPE]
+       icon N map   json id ChartMap
+  11 c6    PivotChart (L, split)                        L btn    PLACEHOLDER "PivotChart"
+       .uno:InsertPivotChart   [slot +396 FID_INSERT_PIVOT_CHART]
+       icon N data_pie
+
+  Notes
+  - Recommended Charts -> LibreOffice's chart wizard (.uno:InsertObjectChart, label "Chart"). It has
+    no recommendation step; the wizard's first page is the chart type list.
+  - The eight chart-type icons and Maps share ONE family slot: .uno:InsertChartType with
+    Type:string = columnbar, linearea, piedoughnut, hierarchy, statistic, scatterbubble, waterfall,
+    combo, map. Each variant has its own label/tooltip node in CalcCommands.xcu (tooltip
+    "<Label> (not available yet)"). .uno:InsertObjectChart takes no chart type argument
+    (svx.sdi: ColHeaders, RowHeaders, InNewTable, RangeList), so presetting a type is C++ work:
+    the future InsertChartType reads Type and opens the wizard on that type. LibreOffice already
+    has column, bar, line, area, pie/doughnut, scatter (X, Y), bubble, stock and net (radar);
+    treemap, sunburst, histogram, Pareto, box and whisker, waterfall, funnel and filled map are new
+    chart types. When built, each variant becomes a dropdown with Excel's sub-type menu.
+  - PivotChart: LibreOffice already makes a pivot chart when Insert Chart runs with the cursor in a
+    pivot table; the feature is a command that requires (or picks) a pivot table first.
+  - Excel's Charts dialog launcher (bottom-right arrow) is not built: gen_ribbon has no launchers.
+
+
+SECTION 5 - SPARKLINES
+----------------------
+  +------+  +--------+  +----------+
+  | Line |  | Column |  | Win/Loss |
+  +------+  +--------+  +----------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Line (L, btn)                                L btn    variant     "Line"
+       .uno:InsertSparkline?Type:string=line
+       icon N data_line   json id SparklineLine
+  2  c2    Column (L, btn)                              L btn    variant     "Column"
+       .uno:InsertSparkline?Type:string=column
+       icon N data_bar_vertical   json id SparklineColumn
+  3  c3    Win/Loss (L, btn)                            L btn    variant     "Win/Loss"
+       .uno:InsertSparkline?Type:string=stacked
+       icon N data_bar_vertical_ascending   json id SparklineWinLoss
+
+  Notes
+  - Line, Column and Win/Loss are URL variants of the existing .uno:InsertSparkline with
+    Type:string = line, column, stacked (LibreOffice's name for Win/Loss), labels "Line", "Column",
+    "Win/Loss" in CalcCommands.xcu. SID_INSERT_SPARKLINE takes no argument today
+    (scalc.sdi:2388, cellsh1.cxx:1178), so all three open LibreOffice's Sparkline dialog, where the
+    type is chosen: they WORK from day one. Small C++ follow-up (not a placeholder): read Type and
+    preset the dialog. T2 must check that the unknown argument is ignored (sfx2 appuno.cxx) and the
+    button stays enabled (state comes from GetBlockState of the base slot).
+
+
+SECTION 6 - FILTERS
+-------------------
+  +--------+  +----------+
+  | Slicer |  | Timeline |
+  +--[P]---+  +---[P]----+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Slicer (L, btn)                              L btn    PLACEHOLDER "Slicer"
+       .uno:InsertSlicer   [slot +397 FID_INSERT_SLICER]
+       icon N filter
+  2  c2    Timeline (L, btn)                            L btn    PLACEHOLDER "Timeline"
+       .uno:InsertTimeline   [slot +398 FID_INSERT_TIMELINE]
+       icon N timeline
+
+
+SECTION 7 - LINKS
+-----------------
+  +-----------+
+  | Hyperlink |
+  +-----------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Link (L, split)                              L btn    existing    "Hyperlink"
+       .uno:HyperlinkDialog
+       icon C link
+
+  Notes
+  - Link (Excel split: recent links + Insert Link...) -> plain .uno:HyperlinkDialog ("Hyperlink").
+
+
+SECTION 8 - COMMENTS
+--------------------
+  +---------+
+  | Comment |
+  +---------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Comment (L, btn)                             L btn    existing    "Comment"
+       .uno:InsertAnnotation
+       icon C comment_add
+
+  Notes
+  - Comment -> .uno:InsertAnnotation. LibreOffice has one kind of comment; it behaves like Excel's
+    notes. See product/docs/design/calc-review-tab-layout.txt for the comments/notes mapping.
+
+
+SECTION 9 - TEXT
+----------------
+  +----------+ +---------------------+ +-----------------+ +----------------+ +-------------------+
+  | Text Box | | Headers and Footers | | Insert Fontwork | | Signature Line | | Insert OLE Object |
+  +----------+ +---------------------+ +-----------------+ +----------------+ +-------------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Text Box (L, tgl)                            L tgl    existing    "Text Box"
+       .uno:DrawText
+       icon C textbox
+  2  c2    Header & Footer (L, btn)                     L btn    existing    "Headers and Footers"
+       .uno:EditHeaderAndFooter
+       icon C document_header_footer
+  3  c3    WordArt (L, dd)                              L btn    existing    "Insert Fontwork"
+       .uno:FontworkGalleryFloater
+       icon C text_effects
+  4  c4    Signature Line (L, split)                    L btn    existing    "Signature Line"
+       .uno:InsertSignatureLine
+       icon C signature
+  5  c5    Object (L, btn)                              L btn    existing    "Insert OLE Object"
+       .uno:InsertObject
+       icon C cube
+
+  Notes
+  - Header & Footer moves here from the old Layout page, as in Excel.
+  - WordArt (Excel: styles gallery) -> Fontwork gallery dialog (.uno:FontworkGalleryFloater,
+    label "Insert Fontwork"), LibreOffice's WordArt.
+  - Signature Line (Excel split: Microsoft Office Signature Line..., Add Signature Services...) ->
+    plain .uno:InsertSignatureLine; Add Signature Services is a Microsoft online store (omitted).
+  - Object -> .uno:InsertObject (OLE object dialog, label "Insert OLE Object").
+  - Text Box is a toggle in Excel and in LibreOffice (.uno:DrawText).
+
+
+SECTION 10 - SYMBOLS
+--------------------
+  +----------------+ +--------+
+  | Formula Object | | Symbol |
+  +----------------+ +---v----+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Equation (L, split)                          L btn    existing    "Formula Object"
+       .uno:InsertObjectStarMath
+       icon C math_formula
+  2  c2    Symbol (L, btn)                              L dd     existing    "Symbol"
+       .uno:CharmapControl
+       icon C symbols
+
+  Notes
+  - Equation (Excel split: equations gallery, Insert New Equation, Ink Equation) -> plain
+    .uno:InsertObjectStarMath, a LibreOffice Math formula object ("Formula Object").
+  - Symbol -> .uno:CharmapControl (label "Symbol"): it keeps LibreOffice's own dropdown controller
+    (recent and favourite characters + "More Characters..."), so it shows an arrow Excel does not.
+
+NEW COMMANDS (CalcCommands.xcu unless noted)
+--------------------------------------------
+  Dropdowns (config only: label, Controller.xcu Popup node with ResourceMenuController + the popup
+  xml, ToolBox node with GenericPopupToolbarController, UIConfig_scalc.mk entry for the xml):
+    .uno:InsertPicturesMenu   "Pictures"   insert_pictures.xml
+    .uno:InsertShapesMenu     "Shapes"     insert_shapes.xml
+  URL variants (label nodes only, no slot):
+    .uno:InsertSparkline?Type:string=line      "Line"
+    .uno:InsertSparkline?Type:string=column    "Column"
+    .uno:InsertSparkline?Type:string=stacked   "Win/Loss"
+  Placeholders: see PLACEHOLDERS. Every new label also gets Properties = 1 (image flag).
+
+PLACEHOLDERS (10 slots, 18 controls/menu items)
+-----------------------------------------------
+  Slot             define                        command (label)
+  SID_NEW_SLOTS+389 FID_INSERT_RECOMMENDED_PIVOT  .uno:InsertRecommendedPivotTables ("Recommended PivotTables")
+  SID_NEW_SLOTS+390 FID_INSERT_PICTURE_IN_CELL    .uno:InsertPictureInCell ("Place in Cell", Pictures menu item)
+  SID_NEW_SLOTS+391 FID_INSERT_3D_MODELS          .uno:Insert3DModels ("3D Models")
+  SID_NEW_SLOTS+392 FID_INSERT_SMARTART           .uno:InsertSmartArt ("SmartArt")
+  SID_NEW_SLOTS+393 FID_INSERT_SCREENSHOT         .uno:InsertScreenshot ("Screenshot")
+  SID_NEW_SLOTS+394 FID_INSERT_CELL_CHECKBOX      .uno:InsertCellCheckbox ("Checkbox")
+  SID_NEW_SLOTS+395 FID_INSERT_CHART_TYPE         .uno:InsertChartType, family of 9 variants:
+                      ?Type:string=columnbar      "Insert Column or Bar Chart"
+                      ?Type:string=linearea       "Insert Line or Area Chart"
+                      ?Type:string=piedoughnut    "Insert Pie or Doughnut Chart"
+                      ?Type:string=hierarchy      "Insert Hierarchy Chart"
+                      ?Type:string=statistic      "Insert Statistic Chart"
+                      ?Type:string=scatterbubble  "Insert Scatter (X, Y) or Bubble Chart"
+                      ?Type:string=waterfall      "Insert Waterfall, Funnel, Stock, Surface or Radar Chart"
+                      ?Type:string=combo          "Insert Combo Chart"
+                      ?Type:string=map            "Maps"
+  SID_NEW_SLOTS+396 FID_INSERT_PIVOT_CHART        .uno:InsertPivotChart ("PivotChart")
+  SID_NEW_SLOTS+397 FID_INSERT_SLICER             .uno:InsertSlicer ("Slicer")
+  SID_NEW_SLOTS+398 FID_INSERT_TIMELINE           .uno:InsertTimeline ("Timeline")
+  Recipe: product/docs/calc-data-redesign.md section 3 (scalc.sdi with Menu/ToolBox/AccelConfig
+  FALSE, cellsh.sdi StateMethod = GetState only, always-DisableItem case in cellsh.cxx, tooltip
+  "<Label> (not available yet)"). For a family the case list holds the one slot; every variant
+  URL gets its own label + tooltip node.
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB (today's upstream Insert page + its overflow menu)
+--------------------------------------------------------------------------------------------
+  Refresh Pivot Table (.uno:RecalcPivotTable)  Data tab > Connections > Refresh menu; menu Data > Pivot Table
+  Delete Pivot Table (.uno:DeletePivotTable)   menu Data > Pivot Table > Delete; pivot table context menu
+  Define Name (.uno:AddName)                   Formulas tab > Defined Names > Define Name
+  Manage Names (.uno:DefineName)               Formulas tab > Defined Names > Name Manager
+  Insert Named Range (.uno:InsertName)         Formulas tab > Use in Formula menu
+  Function (.uno:FunctionDialog)               Formulas tab > Insert Function
+  Function List (.uno:FunctionBox)             menu View > Function List
+  Vertical Text (.uno:VerticalText)            LOST from the ribbon; Drawing toolbar (Asian layout only)
+  Date / Time (.uno:InsertCurrentDate/Time)    menu Insert > Date / Time; Ctrl+; / Ctrl+Shift+; (en-US keys)
+  Lines and Arrows (.uno:ArrowsToolbox)        Drawing toolbar; menu Insert > Shape > Line (partly)
+  Curves and Polygons (.uno:LineToolbox)       Shapes menu > Line submenu (same shapes)
+  Rectangle / Ellipse (.uno:BasicShapes.*)     Shapes menu > Basic Shapes
+  Callouts (.uno:DrawCaption)                  Drawing toolbar; Shapes menu > Callout Shapes (shaped callouts)
+  Draw Functions (.uno:InsertDraw)             menu View > Toolbars > Drawing
+  Scan (.uno:TwainSelect)                      menu Insert > Media > Scan
+  Media (.uno:InsertAVMedia)                   menu Insert > Media > Audio or Video
+  QR and Barcode (.uno:InsertQrCode)           menu Insert > OLE Object > QR and Barcode
+  Insert Sheet from File (.uno:InsertSheetFromFile)  Data tab > Get External Data
+  Fill Random Number (.uno:RandomNumberGeneratorDialog)  menu Sheet > Fill Cells
+  "The menu bar" = the classic menus, shown with the first button of the quick access bar
+  (.uno:Menubar, sc/uiconfig/scalc/toolbar/notebookbarshortcuts.xml).
+
+OMISSIONS (Excel controls not built)
+------------------------------------
+  Tables > Forms            Microsoft Forms: work/school account and OneDrive only (ruling: cloud)
+  Add-ins group             moved to Home in 2024 (ruling); the 2026 screenshot's empty "A..."
+                            group is a residual container
+  Tours > 3D Map            absent in the 2026 full-width screenshot (ruling)
+  PivotTable menu           From Data Model (no data model in LibreOffice), From Power BI (cloud);
+                            the other two items are covered by the dialog's Select Source step
+  Pictures menu             Stock Images, Online Pictures, Mobile Device (Microsoft content/cloud)
+  Shapes menu               Recently Used Shapes, Equation Shapes (no LibreOffice equivalent)
+  Menus of placeholders     3D Models, Screenshot, chart types, Maps, PivotChart: plain buttons
+                            until built
+  Link menu                 recent links list (no LibreOffice equivalent)
+  Signature Line menu       Add Signature Services (Microsoft online store)
+  Equation menu             equations gallery, Ink Equation
+  Charts launcher           gen_ribbon has no dialog launchers (Recommended Charts opens the wizard)
+
+ICONS
+-----
+  35 controls, 35 boost icons to add: 23 required (N, nothing shows today: every new command plus
+  InsertCalcTable, which has no Colibre icon either) and 12 with a Colibre fallback (C). No Insert
+  command has a boost icon yet. Glyphs are listed per control above.
+
+1920 PX FIT PLAN
+----------------
+  Budget: about 1875 px for all sections. Measured on the Home screenshot at 1920 px
+  (assets/previews/final-light-1920.png): Home's sections span 1863 px and PriorityMergedHBox
+  reserves 30 px for the ">>" button (vcl/source/control/PriorityMergedHBox.cxx). Widths are
+  estimated with Noto Sans 9 pt (12 px) text metrics and the Home geometry (large = max(32,
+  text) + 10, small with label = text + 29, icon-only = 24, arrow +13); on Home's Clipboard, Cells
+  and Editing sections the estimate is within 2 px.
+
+  Excel's full form here is about 2015 px: LibreOffice labels are single-line ("Recommended
+  PivotTables" is two lines in Excel) and longer ("Headers and Footers", "Insert OLE Object").
+  Applied, in the ruling's order:
+    1. icon-only small buttons: 3D Models, SmartArt, Screenshot                     -68 px
+    2. Excel's own reduced Illustrations: Pictures, Shapes, Icons as an S column   -101 px
+  Result: about 1847 px, roughly 30 px to spare. That is tight, so T2 checks the 1920 px
+  screenshot; if Symbols (the last section) goes behind ">>", apply in order:
+    F1. Filters: Slicer, Timeline as an S column with labels                       -26 px
+    F2. Sparklines: Line, Column, Win/Loss as an S column with labels              -83 px
+  Spanish labels will be longer; as on Data, the right-most sections then fold into ">>".
+
+OPEN QUESTIONS
+--------------
+  1. Icons -> LibreOffice Gallery (works, but it is clip art, not Microsoft's icon library), or a
+     placeholder "Icons"? Gallery keeps a LibreOffice feature from today's page on the tab.
+  2. PivotTable as a plain button (current design) or a split with a dedicated body slot and a menu
+     of LibreOffice's pivot items (Pivot Table..., Refresh, Delete)? The split costs one slot.
+  3. One family slot for the nine chart-type placeholders (needed by the slot budget, see the
+     overview) bends the "one slot per placeholder" ruling; each control still has its own
+     command URL, label and tooltip.

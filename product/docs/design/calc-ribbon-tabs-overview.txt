@@ -1,0 +1,232 @@
+CALC - REMAINING RIBBON TABS: OVERVIEW (Tabbed Office, task L1)
+================================================================
+Status: DESIGN. Read with the six tab files (they are the verbatim specs for T2-T7):
+  product/docs/design/calc-insert-tab-layout.txt       T2
+  product/docs/design/calc-pagelayout-tab-layout.txt   T3
+  product/docs/design/calc-formulas-tab-layout.txt     T4
+  product/docs/design/calc-review-tab-layout.txt       T5
+  product/docs/design/calc-view-tab-layout.txt         T6
+  product/docs/design/calc-help-tab-layout.txt         T7
+Date: 2026-10-15. Reference: product/docs/research/2026-10-15-excel365-ribbon-reference.md.
+Feature doc: product/odd/tasks/calc-ribbon-tabs.md (rulings). Home and Data are unchanged.
+
+
+1. TAB ORDER AND LABELS (what T1 changes in notebookbar_office.ui)
+------------------------------------------------------------------
+  Today (page position: label, page id):
+    0 ~File (phbFile)   1 ~Home (phbHome)   2 ~Insert (phbInsert)   3 ~Layout (phbLayout)
+    4 ~Data (phbData)   5 ~Functions (phbFunctions, label id FunctionsLabel1)   6 ~Review (phbReview)
+    7 ~View (phbView)   8-13 contextual: Ima~ge, ~Draw, ~Object, ~Media, ~Print, Fo~rm
+    14 E~xtension   15 ~Tools (label id DevLabel)
+
+  Target (visible by default):
+    File | Home | Insert | Page Layout | Formulas | Data | Review | View | Extension | Tools | Help
+
+  T1 edits:
+    a. LayoutLabel text "~Layout" -> "Page ~Layout" (context TabbedCalc|LayoutTabLabel kept; the
+       page id stays phbLayout).
+    b. FunctionsLabel1 text "~Functions" -> "For~mulas" (context kept; page id stays phbFunctions).
+    c. Move the Functions page and its tab label before Data: swap the two <child>/<child
+       type="tab"> pairs and their "position" packing values (Functions 4, Data 5).
+    d. Add the Help page LAST (position 16, after Tools): <child> with sfxlo-PriorityHBox
+       id="phbHelp" holding <!-- product:Help-begin --> / <!-- product:Help-end --> (gen_ribbon
+       needs the markers or existing children to splice), and <child type="tab"> GtkLabel
+       id="HelpLabel", label "Hel~p", context "TabbedCalc|HelpTabLabel", use-underline True.
+       Until T7 runs, the page needs one valid child between the markers (an empty
+       sfxlo-PriorityMergedHBox id="pmhbHelp" is enough).
+    e. Contextual tabs, Extension and Tools stay untouched.
+  Why Help last: Excel's always-visible order ends "View, (Developer), Help", and LibreOffice's
+  Extension/Tools play Developer's role. Placing Help right after View would put Extension and
+  Tools after Help, which Excel never does. Cost: contextual tabs (Image, Draw...) show before
+  Help instead of after it, as Excel does; they are out of scope. Open question 2.
+  Mnemonics: P is taken by ~Print (contextual) and M by ~Media, so "Page ~Layout" keeps L,
+  "For~mulas" uses M like Excel (clash only while the Media tab shows), "Hel~p" uses P (clash only
+  while Print preview shows). Upstream already has clashes (F File/Functions, D Data/Draw, R
+  Review/Form).
+
+
+2. TOTALS PER TAB
+-----------------
+                 controls  placeholders  slots     new dd  splits  aliases  variants   new boost icons    est. width
+                           (+menu items)                                    ribbon/menu req.(N) +fallback(C)
+  Insert            35       17 (+1)      10          2       0       0       3 / 0     23 + 12 = 35     ~1847 px
+  Page Layout       25        8           4 (+1 A)   10       0       1       0 / 17    20 +  5 = 25     ~1641 px
+  Formulas          28        7 (+1)      5 (+1 S)   12       1       0       0 / 6     20 +  7 (+1 A)   ~1772 px
+  Review            16        5 (+1)      5           2       0       0       0 / 0      7 +  9 = 16     ~1564 px
+  View              25        9           6           3       0       0       0 / 0     13 + 12 = 25     ~1672 px
+  Help               7        2           2           0       0       0       0 / 0      5 +  2 =  7      ~574 px
+  Total            136       48 (+3)     32 (+2)     29       1       1       3 / 23    88 + 43 unique (+1 alias)
+
+  controls      every Excel control on the tab (each is a button on our ribbon)
+  placeholders  greyed placeholder buttons; "+menu items" = placeholder items inside menus (Place in
+                Cell, Error Checking, Check Accessibility). Including them: 51 placeholder controls.
+  slots         placeholder slots (families share one); +A alias slot, +S split body slot
+  new dd        new dropdown commands (no slot); Formulas' eight category menus share one new C++
+                popup controller, the other 21 have static popup xml files
+  variants      existing commands with URL arguments and their own xcu label (no slot):
+                on the ribbon (Sparkline Line/Column/Win-Loss) / inside menus (Orientation x2,
+                paper sizes x12, margin presets x3, AutoSum x4, Automatic/Manual x2)
+  icons         no command of these tabs has a boost icon yet. N = nothing shows until drawn
+                (every new command and a few existing ones without a Colibre icon); C = Colibre
+                icon shows meanwhile. 136 controls need 132 distinct icons (Navigator,
+                ToggleSheetGrid, ViewRowColumnHeaders, InsertAnnotation appear twice);
+                FormulasAutoSum is an alias of the existing "autosum".
+  width         estimate against a budget of about 1875 px at 1920 (method: Insert file, FIT PLAN)
+
+
+3. SLOT ID ALLOCATION (sc/inc/sc.hrc)
+-------------------------------------
+  Constraint: SID_NEW_SLOTS = SID_SC_START + 575, so +424 = 26999 is the last Calc slot id;
+  +425 is SID_SD_START (Draw/Impress). The fork block +380..+424 has 45 ids; Data uses
+  +380..+388, leaving 36 (+389..+424). One slot per placeholder control would need 51, plus 2
+  functional slots: 53 > 36. So placeholders that are one future feature share a FAMILY slot:
+  one always-disabled slot, several URL variants ".uno:Base?Arg:string=value", each with its own
+  label, tooltip ("<Label> (not available yet)") and icon. The future implementation reads the
+  argument (the same pattern as LibreOffice's ConditionalFormatEasy?FormatRule or AutoSum?Function).
+
+  Placeholders, +389 upward without gaps:
+    +389 FID_INSERT_RECOMMENDED_PIVOT    .uno:InsertRecommendedPivotTables
+    +390 FID_INSERT_PICTURE_IN_CELL      .uno:InsertPictureInCell          (Pictures menu item)
+    +391 FID_INSERT_3D_MODELS            .uno:Insert3DModels
+    +392 FID_INSERT_SMARTART             .uno:InsertSmartArt
+    +393 FID_INSERT_SCREENSHOT           .uno:InsertScreenshot
+    +394 FID_INSERT_CELL_CHECKBOX        .uno:InsertCellCheckbox
+    +395 FID_INSERT_CHART_TYPE           .uno:InsertChartType   family x9 (?Type:string=columnbar,
+                                         linearea, piedoughnut, hierarchy, statistic, scatterbubble,
+                                         waterfall, combo, map)
+    +396 FID_INSERT_PIVOT_CHART          .uno:InsertPivotChart
+    +397 FID_INSERT_SLICER               .uno:InsertSlicer
+    +398 FID_INSERT_TIMELINE             .uno:InsertTimeline
+    +399 FID_PAGELAYOUT_THEME_PART       .uno:PageLayoutThemePart     family x2 (?Part:string=fonts, effects)
+    +400 FID_PAGELAYOUT_BACKGROUND       .uno:PageLayoutBackground
+    +401 FID_PAGELAYOUT_SCALE_TO_FIT     .uno:PageLayoutScaleToFit    family x3 (?Dimension:string=width,
+                                         height, scale)
+    +402 FID_PAGELAYOUT_PRINT_OPTION     .uno:PageLayoutPrintOption   family x2 (?Option:string=gridlines,
+                                         headings)
+    +403 FID_FORMULAS_PYTHON             .uno:FormulasPython          family x4 (?Action:string=insert,
+                                         reset, editor, init)
+    +404 FID_FORMULAS_ERROR_CHECKING     .uno:FormulasErrorChecking   (Error Checking menu item)
+    +405 FID_FORMULAS_EVALUATE_FORMULA   .uno:FormulasEvaluateFormula
+    +406 FID_FORMULAS_WATCH_WINDOW       .uno:FormulasWatchWindow
+    +407 FID_FORMULAS_CALCULATE_SHEET    .uno:FormulasCalculateSheet
+    +408 FID_REVIEW_CHECK_ACCESSIBILITY  .uno:ReviewCheckAccessibility (Check Accessibility menu item)
+    +409 FID_REVIEW_TRANSLATE            .uno:ReviewTranslate
+    +410 FID_REVIEW_GOTO_COMMENT         .uno:ReviewGoToComment       family x2 (?Direction:string=previous,
+                                         next; also used in the Notes menu)
+    +411 FID_REVIEW_ALLOW_EDIT_RANGES    .uno:ReviewAllowEditRanges
+    +412 FID_REVIEW_HIDE_INK             .uno:ReviewHideInk
+    +413 FID_VIEW_PAGE_LAYOUT            .uno:ViewPageLayout
+    +414 FID_VIEW_CUSTOM_VIEWS           .uno:ViewCustomViews
+    +415 FID_VIEW_RULER                  .uno:ViewRuler
+    +416 FID_VIEW_ARRANGE_ALL            .uno:ViewArrangeAll
+    +417 FID_VIEW_WINDOW_VISIBILITY      .uno:ViewWindowVisibility    family x2 (?Action:string=hide, unhide)
+    +418 FID_VIEW_SIDE_BY_SIDE           .uno:ViewSideBySide          family x3 (?Action:string=toggle,
+                                         sync, reset)
+    +419 FID_HELP_FEEDBACK               .uno:HelpFeedback
+    +420 FID_HELP_BLOG                   .uno:HelpBlog
+    +421..+424                           spare (4 ids left in the whole Calc range)
+
+  Functional slots (not placeholders), next to the Data split bodies (+12..+14, an upstream gap):
+    +15  FID_FORMULAS_AUTOSUM            .uno:FormulasAutoSum         split body, mirrors SID_AUTO_SUM
+    +16  FID_PAGELAYOUT_PRINT_TITLES     .uno:PageLayoutPrintTitles   alias, mirrors SID_OPENDLG_EDIT_PRINTAREA
+  (Alternative: +421, +422 in the fork block; that leaves 2 spare ids.)
+
+  The fork block grows past +399: change the sc.hrc comment to "SID_NEW_SLOTS+380..+424 is
+  reserved for this fork's own slots (Data +380..+388, remaining tabs +389..+420, spare
+  +421..+424); +424 is the last Calc slot id". Every new name was checked unused in the xcu files
+  and sc/svx/sfx2 sdi.
+
+
+4. RECIPES USED (details in product/docs/calc-data-redesign.md section 3)
+-------------------------------------------------------------------------
+  Dropdown      CalcCommands.xcu label + Controller.xcu Popup node (ResourceMenuController, Value =
+                popup xml name) + ToolBox node (GenericPopupToolbarController) + popup xml in
+                sc/uiconfig/scalc/popupmenu/<tab>_<name>.xml + sc/UIConfig_scalc.mk. No slot.
+  Split         body slot with the original's Execute/state (+ invalidation mirrors) + "...Menu"
+                popup command; ToolBox node on the body with Value = the menu (as HomeMergeCenter).
+  Alias         like a split body without the menu: a new slot only to carry Excel's label.
+  Placeholder   scalc.sdi entry (Menu/ToolBox/AccelConfig FALSE), cellsh.sdi StateMethod only,
+                always-DisableItem case in cellsh.cxx, label + "(not available yet)" tooltip.
+                Family: one slot; one xcu node per variant URL (escape "&" as "&amp;" in xcu/xml).
+  URL variant   xcu node named with the full URL (precedent: .uno:ConditionalFormatEasy?FormatRule:
+                short=2, .uno:StyleApply?Style:string=...); on the ribbon the json item uses "cmd" =
+                a short id and "action" = the URL (gen_ribbon already supports "action").
+  Icons         boost manifest entries; for URL variants use the json "icon" key with a plain name
+                (cmd/32/<base>_<value>.png, cmd/sc_<base>_<value>.png) instead of LibreOffice's
+                escaped names (cmd/32/insertcharttype%3ftype%3astring=map.png).
+  Removed       remove_objects: "Menu Insert", "Menu Page", "Menu Review", "Menu View" (the GtkMenu
+                objects of the old overflow buttons; only those buttons referenced them). Keep
+                "Menu Help" (File tab) and "Menu Statistic" (unreferenced upstream leftover).
+
+
+5. RISKS FOR IMPLEMENTATION
+---------------------------
+  R1  Slot ceiling. After this slice 4 ids remain in the whole Calc range. A later fork-only
+      command that is not a placeholder must reuse a placeholder's slot or take an upstream gap
+      (+3..+9, +17..+19, +23, +25, +28..+30, +35, +48, +57, +75..+78, +89..+94), which upstream
+      could reuse. Families are what makes this fit; they bend the "one slot per placeholder" ruling.
+  R2  URL variants are new to the product tooling. gen_ribbon handles "action", but the unit tests
+      (labels, controllers, image flag, icon coverage, placeholder lists) and the UITests key on
+      ".uno:" + cmd. T2 extends them first; every family variant must be checked disabled.
+  R3  Unknown URL arguments: .uno:InsertSparkline?Type (T2) and the optional EditPrintArea alias
+      fallback rely on sfx2 ignoring an argument the slot does not declare. Verify on a dbgutil
+      build (no assertion, button still enabled). Placeholders have no Execute, so for them the
+      argument never matters.
+  R4  Margin presets: complex items (SvxLRSpaceItem/SvxULSpaceItem) through URL arguments are
+      unproven. T3 spike; fallback drops the three presets (no slot spent).
+  R5  Formulas' eight category menus need one new C++ popup menu controller (registration in
+      Controller.xcu and in a component file, function manager access, LRU list). Largest code
+      item of the slice. Fallback: static menus, no slot.
+  R6  First product popups with submenus (Shapes: ToolbarAsMenuController submenus; Breaks:
+      menu-bar submenus; More Functions: dynamic submenus) opened from a ribbon dropdown. Verify early.
+  R7  Switch Windows reuses framework's WindowListMenuController under a new command name. Verify;
+      fallback is a static popup.
+  R8  .uno:Orientation has a module-less Writer toolbox controller: it must never appear as a
+      ribbon item (only as menu items with arguments).
+  R9  Menu check marks for Automatic/Manual (two variants sharing one boolean state) may both show
+      checked; fallback to one AutoCalculate toggle.
+  R10 Width: Insert is estimated at ~1847 of ~1875 px; T2 measures at 1920 and applies the fallback
+      ladder (Filters, then Sparklines to small columns). Spanish labels will push the right-most
+      sections of every tab behind ">>" sooner.
+  R11 Icons: 88 icons must exist before their tab ships (otherwise large buttons show only text and
+      change width); 43 more for consistency. That is about twice the Home icon set. Each tab task
+      carries its own icons; the C ones may follow in a polish pass.
+  R12 Widget ids must be unique in the whole .ui. Prefixes differ per page, but T-tasks should run a
+      whole-file duplicate id check (two pages use .uno:Navigator, .uno:ToggleSheetGrid and
+      .uno:ViewRowColumnHeaders under different prefixes, which is fine).
+  R13 New strings (three tab labels and about 115 new CalcCommands.xcu nodes for dropdowns,
+      placeholders and variants) are en-US only; translations are out of scope but block
+      shipping, as for Home and Data.
+  R14 LibreOffice-only buttons leave the tabs; several are reachable only from the classic menu
+      bar, which in this mode is shown with the first quick access button (.uno:Menubar). The
+      most used one is Automatic Spell Checking (Review); see each tab's list.
+  R15 Size: each tab task (layout + xcu + popups + slots + icons + tests) will exceed the 400-line
+      heuristic; plan chained PRs per tab.
+
+
+6. RULINGS APPLIED AND JUDGEMENT CALLS
+--------------------------------------
+  Omitted by ruling: Insert > Forms, Add-ins, Tours/3D Map; Review > Performance, Insights/Smart
+  Lookup, Changes/Show Changes; the Automate tab. Omitted by the cloud rule as well: View > Sheet
+  View (OneDrive/SharePoint only) and View > Show > Data Type Icons (online data types), and cloud
+  menu items (Power BI, Stock Images, Online Pictures, Signature Services).
+  Conditional controls included: Insert > Controls > Checkbox [P], Formulas > Python [P x4],
+  Page Layout > Sheet Right-to-Left (existing), View > Dark Mode (existing), View > Focus Cell
+  (existing Column/Row Highlighting), Review > Translate [P].
+  Simplifications: dialog launchers and in-group separators are not built (gen_ribbon has none);
+  Excel check boxes are toggle buttons; Excel's "Gridlines"/"Headings" column captions are folded
+  into the button labels; placeholders are plain buttons even where Excel has a menu; some Excel
+  splits are dropdowns because their body would often be disabled (VCL arrow problem) or would be
+  a placeholder. Placeholder label "Blog" instead of "Excel Blog".
+
+
+7. OPEN QUESTIONS (for the user; each tab file has details)
+-----------------------------------------------------------
+  1. Family slots for placeholders (needed by the slot ceiling): accept?
+  2. Help tab last (after Tools, current design) or right after View?
+  3. View > Sheet View: omitted (cloud rule) although it is the first group of Excel's View tab;
+     build it as greyed placeholders in Excel's reduced form instead?
+  4. Review: LibreOffice's single comment type drives both Excel's Comments group and Notes menu.
+  5. Formulas: accept the C++ popup controller for the function-category menus in T4?
+  6. Keep Sheet Right-to-Left and Dark Mode (conditional in Excel); keep Translate as a placeholder?
+  7. Insert: Icons -> LibreOffice Gallery; PivotTable as a plain button (no split).

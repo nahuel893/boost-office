@@ -1,0 +1,362 @@
+CALC - VIEW TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+===============================================================
+Status: DESIGN for task T6; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 5; images in
+/mnt/games/libreoffice/assets/excel-ref/view/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: view-msqa-1.png (2025 user screenshot: Sheet View, Workbook Views, Show),
+view-mstechcommunity-1..3.png (Show with Navigation and Focus Cell, Dark Mode group) and the
+2024+ crops view-bettersolutions-1..6.png (Zoom, Window, Macros).
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | Insert | Page Layout | Formulas | Data | Review | VIEW | Extension | Tools | Help
+  -----+------+--------+-------------+----------+------+--------+======+-----------------------
+
+  Workbook Views                         Dark Mode  Show
+  +------++------++--------++--------+  +-------+  +---------+ (x) Ruler [P]        (x) View Headers
+  |Normal||Page  ||Page    ||Custom  |  | Dark  |  |Navigator| (x) View Grid Lines  (x) Column/Row
+  |View  ||Break ||Layout  ||Views   |  | Mode  |  |         | (x) Formula Bar          Highlighting
+  +------++------++--[P]---++--[P]---+  +-------+  +---------+
+
+  Zoom                    Window                                                                       Macros
+  +----++----++-------+   +------++-------++-------+ (x) Split Window  (x) View Side by Side [P]  +---------+ +------+
+  |Zoom||100%||Optimal|   |New   ||Arrange||Freeze | (x) Hide     [P]  (x) Synchronous Scr. [P]  |Switch   | |Macros|
+  |    ||    ||       |   |Window||All [P]||Panes v| (x) Unhide   [P]  (x) Reset Window Pos.[P]  |Windows v| |  v   |
+  +----++----++-------+   +------++-------++-------+                                             +---------+ +------+
+
+  Six sections. Excel's Sheet View group (OneDrive/SharePoint only) is not built (OMISSIONS).
+
+LAYOUT FILE
+-----------
+  product/ui/calc_view.json: page "phbView", id_prefix "View", context "TabbedCalc",
+  remove_objects ["Menu View"].
+  The upstream sections Panes, Zoom, View, Options and the "View-ViewButton:Menu View" overflow
+  button are replaced; "Menu View" is removed. Note: today's page carries an id with the wrong
+  prefix (btnInsertDesignerDialog); it disappears with the page.
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    WorkbookViews   Workbook Views      rows 3   ~342 px
+    DarkMode        Dark Mode           rows 3   ~81 px
+    Show            Show                rows 3   ~370 px
+    Zoom            Zoom                rows 3   ~155 px
+    Window          Window              rows 3   ~651 px
+    Macros          Macros              rows 3   ~73 px
+                    total                        ~1672 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - WORKBOOK VIEWS
+--------------------------
+  +-------------+ +------------+ +-------------+ +--------------+
+  | Normal View | | Page Break | | Page Layout | | Custom Views |
+  +-------------+ +------------+ +-----[P]-----+ +-----[P]------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Normal (L, tgl)                              L tgl    existing    "Normal View"
+       .uno:NormalViewMode
+       icon C grid
+  2  c2    Page Break Preview (L, tgl)                  L tgl    existing    "Page Break"
+       .uno:PagebreakMode
+       icon C document_page_break
+  3  c3    Page Layout (L, tgl)                         L tgl    PLACEHOLDER "Page Layout"
+       .uno:ViewPageLayout   [slot +413 FID_VIEW_PAGE_LAYOUT]
+       icon N document_one_page
+  4  c4    Custom Views (L, btn)                        L btn    PLACEHOLDER "Custom Views"
+       .uno:ViewCustomViews   [slot +414 FID_VIEW_CUSTOM_VIEWS]
+       icon N eye
+
+  Notes
+  - Normal / Page Break Preview -> .uno:NormalViewMode ("Normal View") / .uno:PagebreakMode
+    ("Page Break"), both toggles like Excel's radio-like buttons.
+  - Page Layout view: placeholder (+413). LibreOffice has no editable paged view; Print Preview
+    (read-only) stays on the File tab.
+  - Custom Views: placeholder (+414).
+
+
+SECTION 2 - DARK MODE
+---------------------
+  +-----------+
+  | Dark Mode |
+  +-----------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Switch Modes (L, tgl)                        L tgl    existing    "Dark Mode"
+       .uno:ChangeTheme
+       icon C dark_theme
+
+  Notes
+  - Excel shows this group only when the Office theme is Black (or follows a dark Windows
+    setting). LibreOffice's .uno:ChangeTheme ("Dark Mode", tooltip "Toggle between dark and light
+    modes") was on today's View page and the product ships Boost Light/Dark, so the group is kept
+    (open question 2).
+
+
+SECTION 3 - SHOW
+----------------
+  +-----------+  (x) Ruler            [P]   (x) View Headers
+  | Navigator |  (x) View Grid Lines        (x) Column/Row Highlighting
+  +-----------+  (x) Formula Bar
+  Excel's six check boxes (2 x 3, Data Type Icons omitted) become toggle buttons.
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Navigation (L, tgl)                          L tgl    existing    "Navigator"
+       .uno:Navigator
+       icon C panel_left
+  2  c2r1  Ruler (S, chk)                               S btn    PLACEHOLDER "Ruler"
+       .uno:ViewRuler   [slot +415 FID_VIEW_RULER]
+       icon N ruler
+  3  c2r2  Gridlines (S, chk)                           S tgl    existing    "View Grid Lines"
+       .uno:ToggleSheetGrid
+       icon C grid
+  4  c2r3  Formula Bar (S, chk)                         S tgl    existing    "Formula Bar"
+       .uno:InputLineVisible
+       icon C window_header_horizontal
+  5  c3r1  Headings (S, chk)                            S tgl    existing    "View Headers"
+       .uno:ViewRowColumnHeaders
+       icon C table_simple
+  6  c3r2  Focus Cell (S, split)                        S tgl    existing    "Column/Row Highlighting"
+       .uno:ViewColumnRowHighlighting
+       icon N table_cursor
+
+  Notes
+  - Navigation -> .uno:Navigator (also Page Layout > Selection Pane).
+  - Ruler: placeholder (+415). Calc has no ruler; Excel greys Ruler in Normal view, so the greyed
+    button looks the same as Excel's default.
+  - Gridlines, Formula Bar, Headings -> .uno:ToggleSheetGrid ("View Grid Lines"),
+    .uno:InputLineVisible ("Formula Bar"), .uno:ViewRowColumnHeaders ("View Headers").
+  - Data Type Icons: omitted. Excel's linked data types (Stocks, Geography) come from a Microsoft
+    online service (cloud ruling; open question 3).
+  - Focus Cell -> .uno:ViewColumnRowHighlighting ("Column/Row Highlighting"): LibreOffice's
+    highlight of the cursor's row and column is Excel's Focus Cell. Excel's split menu (Focus Cell
+    Color >, Show Auto-Highlight) is dropped; the color is set in Tools > Options > Application
+    Colors.
+
+
+SECTION 4 - ZOOM
+----------------
+  +------+ +------+ +---------+
+  | Zoom | | 100% | | Optimal |
+  +------+ +------+ +---------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Zoom (L, btn)                                L btn    existing    "Zoom"
+       .uno:Zoom
+       icon C zoom_in
+  2  c2    100% (L, btn)                                L btn    existing    "100%"
+       .uno:Zoom100Percent
+       icon C ratio_one_to_one
+  3  c3    Zoom to Selection (L, btn)                   L btn    existing    "Optimal"
+       .uno:ZoomOptimal
+       icon C zoom_fit
+
+  Notes
+  - Zoom to Selection -> .uno:ZoomOptimal ("Optimal"): zooms so the selected cells fill the window.
+
+
+SECTION 5 - WINDOW
+------------------
+  +------------+ +-------------+ +--------------+ (x) Split Window   (x) View Side by Side     [P] +----------------+
+  | New Window | | Arrange All | | Freeze Panes | (x) Hide      [P]  (x) Synchronous Scrolling [P] | Switch Windows |
+  +------------+ +-----[P]-----+ +------v-------+ (x) Unhide    [P]  (x) Reset Window Position [P] +-------v--------+
+  Excel draws a separator between the two small columns; not built (no separators inside a section).
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    New Window (L, btn)                          L btn    existing    "New Window"
+       .uno:NewWindow
+       icon C window_new
+  2  c2    Arrange All (L, btn)                         L btn    PLACEHOLDER "Arrange All"
+       .uno:ViewArrangeAll   [slot +416 FID_VIEW_ARRANGE_ALL]
+       icon N window_multiple
+  3  c3    Freeze Panes (L, dd)                         L dd     NEW DD      "Freeze Panes"
+       .uno:ViewFreezePanesMenu
+       icon N table_freeze_column_and_row
+  4  c4r1  Split (S, tgl)                               S tgl    existing    "Split Window"
+       .uno:SplitWindow
+       icon C split_horizontal
+  5  c4r2  Hide (S, btn)                                S btn    PLACEHOLDER "Hide"
+       .uno:ViewWindowVisibility?Action:string=hide   [family slot +417 FID_VIEW_WINDOW_VISIBILITY]
+       icon N eye_off   json id WindowHide
+  6  c4r3  Unhide (S, btn)                              S btn    PLACEHOLDER "Unhide"
+       .uno:ViewWindowVisibility?Action:string=unhide   [family slot +417 FID_VIEW_WINDOW_VISIBILITY]
+       icon N eye   json id WindowUnhide
+  7  c5r1  View Side by Side (S, tgl)                   S tgl    PLACEHOLDER "View Side by Side"
+       .uno:ViewSideBySide?Action:string=toggle   [family slot +418 FID_VIEW_SIDE_BY_SIDE]
+       icon N split_vertical   json id SideBySide
+  8  c5r2  Synchronous Scrolling (S, tgl)               S tgl    PLACEHOLDER "Synchronous Scrolling"
+       .uno:ViewSideBySide?Action:string=sync   [family slot +418 FID_VIEW_SIDE_BY_SIDE]
+       icon N arrow_sync   json id SyncScrolling
+  9  c5r3  Reset Window Position (S, btn)               S btn    PLACEHOLDER "Reset Window Position"
+       .uno:ViewSideBySide?Action:string=reset   [family slot +418 FID_VIEW_SIDE_BY_SIDE]
+       icon N arrow_reset   json id ResetWindowPosition
+  10 c6    Switch Windows (L, dd)                       L dd     NEW DD      "Switch Windows"
+       .uno:ViewSwitchWindowsMenu
+       icon N window_multiple_swap
+
+  Menu of .uno:ViewFreezePanesMenu  (sc/uiconfig/scalc/popupmenu/view_freezepanes.xml)
+    Freeze Rows and Columns (= Freeze Panes, toggle)
+        .uno:FreezePanes
+    Freeze First Row (= Freeze Top Row)
+        .uno:FreezePanesRow
+    Freeze First Column
+        .uno:FreezePanesColumn
+  Menu of .uno:ViewSwitchWindowsMenu  (no xml: Popup controller
+    com.sun.star.comp.framework.WindowListMenuController)
+    <open windows, dynamic: framework WindowListMenuController>
+        (popup controller com.sun.star.comp.framework.WindowListMenuController)
+
+  Notes
+  - New Window -> .uno:NewWindow. Arrange All: placeholder (+416), LibreOffice cannot tile windows.
+  - Freeze Panes v: Freeze Rows and Columns (.uno:FreezePanes, a toggle: Excel's "Unfreeze Panes"
+    is the same item when frozen), Freeze First Row (= Freeze Top Row), Freeze First Column.
+  - Split -> .uno:SplitWindow ("Split Window", toggle).
+  - Hide / Unhide (workbook windows): family placeholder .uno:ViewWindowVisibility?Action:string=
+    hide|unhide (+417). LibreOffice's .uno:Hide hides SHEETS, a different thing.
+  - View Side by Side, Synchronous Scrolling, Reset Window Position: family placeholder
+    .uno:ViewSideBySide?Action:string=toggle|sync|reset (+418). In Excel the last two are greyed
+    until Side by Side is on, so greyed placeholders match Excel's default look.
+  - Switch Windows v: NEW DROPDOWN .uno:ViewSwitchWindowsMenu whose Popup node uses the existing
+    framework controller com.sun.star.comp.framework.WindowListMenuController (Controller.xcu
+    registers it today for the menu bar's .uno:WindowList). No xml. Verify in T6 that it fills a
+    popup opened from a ribbon dropdown; fallback: a popup xml with .uno:NewWindow and
+    .uno:CloseWin (still no slot).
+
+
+SECTION 6 - MACROS
+------------------
+  +--------+
+  | Macros |
+  |   v    |
+  +--------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Macros (L, split)                            L dd     NEW DD      "Macros"
+       .uno:ViewMacrosMenu
+       icon N code
+
+  Menu of .uno:ViewMacrosMenu  (sc/uiconfig/scalc/popupmenu/view_macros.xml)
+    Macro Manager... (= View Macros)
+        .uno:MacroManager
+    Record Macro
+        .uno:MacroRecorder
+    --------------------
+    Run Macro... (LO extra)
+        .uno:RunMacro
+    Edit Macros... (LO extra)
+        .uno:BasicIDEAppear
+
+  Notes
+  - Excel: split (body View Macros). Here a dropdown, no slot: Macro Manager... (.uno:MacroManager
+    = View Macros), Record Macro (.uno:MacroRecorder; enabled only with Tools > Options >
+    Advanced > Enable macro recording), then LibreOffice extras Run Macro... and Edit Macros....
+    Use Relative References is omitted (no LibreOffice equivalent). The Tools tab keeps its own
+    macro buttons.
+
+NEW COMMANDS (CalcCommands.xcu unless noted)
+--------------------------------------------
+  Dropdowns (config only): .uno:ViewFreezePanesMenu "Freeze Panes" (view_freezepanes.xml),
+  .uno:ViewSwitchWindowsMenu "Switch Windows" (WindowListMenuController, no xml),
+  .uno:ViewMacrosMenu "Macros" (view_macros.xml).
+
+PLACEHOLDERS (6 slots, 9 controls)
+----------------------------------
+  SID_NEW_SLOTS+413 FID_VIEW_PAGE_LAYOUT        .uno:ViewPageLayout "Page Layout" (toggle)
+  SID_NEW_SLOTS+414 FID_VIEW_CUSTOM_VIEWS       .uno:ViewCustomViews "Custom Views"
+  SID_NEW_SLOTS+415 FID_VIEW_RULER              .uno:ViewRuler "Ruler"
+  SID_NEW_SLOTS+416 FID_VIEW_ARRANGE_ALL        .uno:ViewArrangeAll "Arrange All"
+  SID_NEW_SLOTS+417 FID_VIEW_WINDOW_VISIBILITY  .uno:ViewWindowVisibility ?Action:string=hide "Hide",
+                                                =unhide "Unhide"
+  SID_NEW_SLOTS+418 FID_VIEW_SIDE_BY_SIDE       .uno:ViewSideBySide ?Action:string=toggle "View Side by Side",
+                                                =sync "Synchronous Scrolling", =reset "Reset Window Position"
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB (today's View page + "Menu View")
+----------------------------------------------------------------------------
+  Entire Page, Page Width (.uno:ZoomPage, .uno:ZoomPageWidth)  menu View > Zoom; status bar zoom
+  Full Screen (.uno:FullScreen)                     menu View > Full Screen (Ctrl+Shift+J)
+  Menubar (.uno:Menubar)                            quick access bar, first button
+                                                    (notebookbarshortcuts.xml): still reachable
+  Value Highlighting (.uno:ViewValueHighlighting)   menu View > Value Highlighting (Ctrl+F8)
+  Show Formulas (.uno:ToggleFormula)                Formulas tab > Formula Auditing (as in Excel)
+  Hidden Row/Column Indicator (.uno:ViewHiddenColRow)  menu View
+  Styles (.uno:DesignerDialog)                      menu Styles > Manage Styles (F11)
+  Sidebar (.uno:Sidebar)                            menu View > Sidebar (Ctrl+F5)
+  Status Bar (.uno:StatusBarVisible)                menu View > Status Bar
+  Images and Charts (.uno:ShowGraphics, Menu View)  not in the Calc menu bar; Tools > Options >
+                                                    LibreOffice Calc > View > Objects
+
+OMISSIONS (Excel controls or menu items not built)
+--------------------------------------------------
+  Sheet View group (view combo, Keep, Exit, New, Options)  works only for files on OneDrive or
+                       SharePoint (cloud ruling). It is the first group of Excel's View tab, so
+                       its absence is visible: open question 1
+  Show > Data Type Icons   Microsoft online data types (cloud ruling)
+  Focus Cell menu          Focus Cell Color >, Show Auto-Highlight (plain toggle)
+  Macros > Use Relative References   no LibreOffice equivalent
+  Separator in Window      no separators inside a gen_ribbon section
+
+ICONS
+-----
+  25 controls, 25 boost icons: 13 required (N: the new commands and ViewColumnRowHighlighting,
+  which has no Colibre icon) and 12 with a Colibre fallback. Navigator, ToggleSheetGrid and
+  ViewRowColumnHeaders are shared with Page Layout (one icon each).
+
+1920 PX FIT PLAN
+----------------
+  About 1672 px of the ~1875 px budget, every group full size, about 200 px to spare. Without the
+  omitted Sheet View group (~320 px in Excel) there is no pressure. If needed later: Excel's
+  reduced forms (Workbook Views: Page Layout and Custom Views as an S column; Window: New Window,
+  Arrange All, Freeze Panes as an S column, small columns icon-only).
+
+OPEN QUESTIONS
+--------------
+  1. Sheet View: omitted by the cloud ruling, but it is the first group of every default Excel
+     View tab (shown greyed for local files). To match the look it could be greyed placeholders
+     on one family slot (a "Default" view button instead of the combo, which gen_ribbon cannot
+     make, plus Keep, Exit, New, Options). At full size (~270 px) the tab would overflow
+     (~1940 px); with Excel's reduced form (four icon-only buttons, ~170 px) it fits (~1840 px).
+  2. Dark Mode group: kept (LibreOffice command exists, product has dark mode) although Excel
+     shows it only with the Black theme.
+  3. Data Type Icons: omitted (cloud). A greyed placeholder would complete Excel's 2 x 3 grid.

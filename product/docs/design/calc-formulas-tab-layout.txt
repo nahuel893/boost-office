@@ -1,0 +1,464 @@
+CALC - FORMULAS TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+===================================================================
+Status: DESIGN for task T4; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 3; images in
+/mnt/games/libreoffice/assets/excel-ref/formulas/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: the 2024+ per-group crops formulas-bettersolutions-1..6.png; formulas-exceldemy-1.png
+(2023, narrow) shows Excel's reduced forms. This page replaces LibreOffice's "Functions" tab
+(page id phbFunctions kept); T1 renames it "Formulas" and moves it before Data.
+Supersedes product/odd/tasks/calc-formulas-tab.md (feature ruling).
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | Insert | Page Layout | FORMULAS | Data | Review | View | Extension | Tools | Help
+  -----+------+--------+-------------+==========+-----------------------------------------------
+
+  Function Library
+  +--------++-------++--------++---------++-------++----++-------++-----------++-------++---------+
+  |Function||AutoSum||Recently||Financial||Logical||Text||Date & ||Lookup &   ||Math & ||More     |
+  |        ||  |v   ||Used v  ||    v    ||   v   || v  ||Time v ||Reference v||Trig v ||Functions|
+  +--------++-------++--------++---------++-------++----++-------++-----------++-------++---v-----+
+
+  Python                     Defined Names                    Formula Auditing                         Calculation
+  +-------+ (x) Reset   [P]  +-------+ (x) Define Name        (x) Trace Precedents  (x)   +-------+  +-----------+ (x)
+  |Insert | (x) Editor  [P]  |Manage | (x) Use in Formula v   (x) Trace Dependents  (x)v  | Watch |  |Calculation| (P)
+  |Python | (x) Initial.[P]  |Names  | (x) Create Names       (x) Remove Arrows v   (P)   |Window |  | Options v |
+  +--[P]--+                  +-------+                                                    +--[P]--+  +-----------+
+
+  Formula Auditing column 2 (Show Formulas, Error Checking v, Evaluate Formula [P]) and the
+  Calculation column (Recalculate, Calculate Sheet [P]) are icon-only: Excel's own reduced forms,
+  needed to fit 1920 px (FIT PLAN). Five sections; Excel's Solutions group is not built.
+
+LAYOUT FILE
+-----------
+  product/ui/calc_formulas.json: page "phbFunctions", id_prefix "Formulas", context "TabbedCalc",
+  remove_objects [].
+  The page keeps its id phbFunctions; id_prefix "Formulas" (generated ids pmhbFormulas, obFormulas...).
+  The upstream sections Goal Seeker, Detective and Statistics are replaced. The page has no
+  overflow menu button today and "Menu Statistic" is not referenced by any button: nothing to remove.
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    FunctionLibrary Function Library    rows 3   ~891 px
+    Python          Python              rows 3   ~197 px
+    DefinedNames    Defined Names       rows 3   ~238 px
+    Auditing        Formula Auditing    rows 3   ~278 px
+    Calculation     Calculation         rows 3   ~169 px
+                    total                        ~1772 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - FUNCTION LIBRARY
+----------------------------
+  +----------+ +---------+ +----------+ +-----------+ +---------+ +------+ +-----------+
+  | Function | | AutoSum | | Recently | | Financial | | Logical | | Text | |  Date &   | ...
+  |          | |   |v    | |  Used v  | |     v     | |    v    | |  v   | |  Time v   |
+  +----------+ +---------+ +----------+ +-----------+ +---------+ +------+ +-----------+
+  ... +--------------------+ +-------------+ +----------------+
+      | Lookup & Reference | | Math & Trig | | More Functions |
+      |         v          | |      v      | |       v        |
+      +--------------------+ +-------------+ +----------------+
+  Excel draws a thin separator after Insert Function; gen_ribbon has no separator inside a
+  section, so it is not built.
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Insert Function (L, btn)                     L btn    existing    "Function"
+       .uno:FunctionDialog
+       icon C math_formula
+  2  c2    AutoSum (L, split)                           L split  NEW SPLIT   "AutoSum"
+       .uno:FormulasAutoSum   [slot +15 FID_FORMULAS_AUTOSUM]
+       icon A autosum
+  3  c3    Recently Used (L, dd)                        L dd     NEW DD      "Recently Used"
+       .uno:FormulasRecentlyUsedMenu
+       icon N history
+  4  c4    Financial (L, dd)                            L dd     NEW DD      "Financial"
+       .uno:FormulasFinancialMenu
+       icon N money
+  5  c5    Logical (L, dd)                              L dd     NEW DD      "Logical"
+       .uno:FormulasLogicalMenu
+       icon N question_circle
+  6  c6    Text (L, dd)                                 L dd     NEW DD      "Text"
+       .uno:FormulasTextMenu
+       icon N text_t
+  7  c7    Date & Time (L, dd)                          L dd     NEW DD      "Date & Time"
+       .uno:FormulasDateTimeMenu
+       icon N calendar_clock
+  8  c8    Lookup & Reference (L, dd)                   L dd     NEW DD      "Lookup & Reference"
+       .uno:FormulasLookupMenu
+       icon N book_search
+  9  c9    Math & Trig (L, dd)                          L dd     NEW DD      "Math & Trig"
+       .uno:FormulasMathMenu
+       icon N math_symbols
+  10 c10   More Functions (L, dd)                       L dd     NEW DD      "More Functions"
+       .uno:FormulasMoreFunctionsMenu
+       icon N more_horizontal
+
+  Split .uno:FormulasAutoSum: body = Sum (same code path as .uno:AutoSum, SID_AUTO_SUM); arrow opens
+    .uno:FormulasAutoSumMenu  (sc/uiconfig/scalc/popupmenu/formulas_autosum.xml)
+    Sum
+        .uno:AutoSum
+    Average
+        .uno:AutoSum?Function:string=average
+    Count Numbers
+        .uno:AutoSum?Function:string=count
+    Max
+        .uno:AutoSum?Function:string=max
+    Min
+        .uno:AutoSum?Function:string=min
+    --------------------
+    Function... (= More Functions...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasRecentlyUsedMenu  (dynamic: new C++ function-category popup controller)
+    <last used functions (ScAppOptions LRU list), dynamic>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function...
+        .uno:FunctionDialog
+  Menu of .uno:FormulasFinancialMenu  (dynamic: function-category controller)
+    <functions of LO category 3 Financial, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasLogicalMenu  (dynamic: function-category controller)
+    <functions of LO category 5 Logical, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasTextMenu  (dynamic: function-category controller)
+    <functions of LO category 10 Text, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasDateTimeMenu  (dynamic: function-category controller)
+    <functions of LO category 2 Date&Time, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasLookupMenu  (dynamic: function-category controller)
+    <functions of LO category 9 Spreadsheet, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasMathMenu  (dynamic: function-category controller)
+    <functions of LO category 6 Mathematical, dynamic, localized names>
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    --------------------
+    Function... (= Insert Function...)
+        .uno:FunctionDialog
+  Menu of .uno:FormulasMoreFunctionsMenu  (dynamic: function-category controller, submenus)
+    Statistical >
+        category 8
+    Engineering > (LO category "Add-in")
+        category 11
+    Information >
+        category 4
+    Database > (LO extra)
+        category 1
+    Array > (LO extra)
+        category 7
+    --------------------
+    Function...
+        .uno:FunctionDialog
+
+  Notes
+  - Insert Function -> .uno:FunctionDialog (LibreOffice's Function Wizard, label "Function").
+  - AutoSum |v: NEW SPLIT. Body .uno:FormulasAutoSum, slot SID_NEW_SLOTS+15 (FID_FORMULAS_AUTOSUM),
+    same Execute as SID_AUTO_SUM (cellsh.sdi:296 ExecuteEdit, cellsh1.cxx:3247); SID_AUTO_SUM has
+    no StateMethod, so the mirror has none and needs no invalidation mirror. Arrow: popup command
+    .uno:FormulasAutoSumMenu. The menu items are URL variants of .uno:AutoSum: verified,
+    cellsh1.cxx:3250 reads the "Function" string argument and accepts "average", "count", "min",
+    "max" (locale independent). Labels "Average", "Count Numbers", "Max", "Min" go in
+    CalcCommands.xcu; "Sum" is .uno:AutoSum's own label. The body icon is an alias of the boost
+    "autosum" icon (manifest "aliases"). Home > Editing > AutoSum stays a plain button (Home slice).
+  - Recently Used, Financial, Logical, Text, Date & Time, Lookup & Reference, Math & Trig, More
+    Functions: eight NEW DROPDOWNS whose menus are filled at run time by ONE new C++ popup menu
+    controller (a PopupMenuController registered in Controller.xcu Popup nodes for the eight
+    commands; the category comes from the command name). This is the only sizeable C++ of the
+    slice. It reads ScGlobal::GetStarCalcFunctionMgr() (category ids in sc/inc/scfuncs.hxx:
+    1 Database, 2 Date&Time, 3 Financial, 4 Information, 5 Logical, 6 Mathematical, 7 Array,
+    8 Statistical, 9 Spreadsheet, 10 Text, 11 Add-in) and, for Recently Used, the LRU list of
+    ScAppOptions. Each item dispatches
+        .uno:InsertFunction?FunctionName:string=<NAME>&FunctionCategory:short=0
+    verified: SID_INS_FUNCTION (scalc.sdi:3252, cellsh1.cxx:2147) starts input mode and inserts
+    "=NAME(arg names)" into the cell, exactly what the Functions sidebar does. Category 0 is the
+    "all functions" list, and the controller passes the localized name it got from the function
+    manager, so the lookup works in every UI language. The last item of each menu is
+    "Function..." (.uno:FunctionDialog, Excel's "Insert Function..."). Mapping: Lookup &
+    Reference = LibreOffice "Spreadsheet" (9); Math & Trig = "Mathematical" (6). More Functions has
+    submenus Statistical (8), Engineering (LibreOffice "Add-in", 11: the Analysis add-in), Information
+    (4), plus LibreOffice extras Database (1) and Array (7); Excel's Cube, Compatibility and Web
+    submenus are omitted (no LibreOffice category).
+    Config-only fallback if T4 cannot take the C++: each dropdown gets a static popup xml with
+    "Function..." (.uno:FunctionDialog) and "Function List" (.uno:FunctionBox); still no slot.
+
+
+SECTION 2 - PYTHON
+------------------
+  +---------------+  (x) Reset           [P]
+  | Insert Python |  (x) Editor          [P]
+  +------[P]------+  (x) Initialization  [P]
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Insert Python (L, btn)                       L btn    PLACEHOLDER "Insert Python"
+       .uno:FormulasPython?Action:string=insert   [family slot +403 FID_FORMULAS_PYTHON]
+       icon N code_py   json id PythonInsert
+  2  c2r1  Reset (S, split)                             S btn    PLACEHOLDER "Reset"
+       .uno:FormulasPython?Action:string=reset   [family slot +403 FID_FORMULAS_PYTHON]
+       icon N arrow_reset   json id PythonReset
+  3  c2r2  Editor (S, btn)                              S btn    PLACEHOLDER "Editor"
+       .uno:FormulasPython?Action:string=editor   [family slot +403 FID_FORMULAS_PYTHON]
+       icon N code_text_edit   json id PythonEditor
+  4  c2r3  Initialization (S, btn)                      S btn    PLACEHOLDER "Initialization"
+       .uno:FormulasPython?Action:string=init   [family slot +403 FID_FORMULAS_PYTHON]
+       icon N settings   json id PythonInit
+
+  Notes
+  - Python in Excel (Insert Python, Reset |v, Editor, Initialization) is shown on a default 2025+
+    business desktop, so it is built as one family placeholder,
+    .uno:FormulasPython?Action:string=insert|reset|editor|init. LibreOffice runs Python only as
+    macros, not as cell formulas. Excel's Reset split is a plain button while it is a placeholder.
+
+
+SECTION 3 - DEFINED NAMES
+-------------------------
+  +--------------+  (x) Define Name
+  | Manage Names |  (x) Use in Formula v
+  +--------------+  (x) Create Names
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Name Manager (L, btn)                        L btn    existing    "Manage Names"
+       .uno:DefineName
+       icon C tag_multiple
+  2  c2r1  Define Name (S, split)                       S btn    existing    "Define Name"
+       .uno:AddName
+       icon C tag_add
+  3  c2r2  Use in Formula (S, dd)                       S dd     NEW DD      "Use in Formula"
+       .uno:FormulasUseInFormulaMenu
+       icon N tag
+  4  c2r3  Create from Selection (S, btn)               S btn    existing    "Create Names"
+       .uno:CreateNames
+       icon N tag_edit
+
+  Menu of .uno:FormulasUseInFormulaMenu  (sc/uiconfig/scalc/popupmenu/formulas_useinformula.xml)
+    Named Range or Expression... (= Paste Names...)
+        .uno:InsertName
+
+  Notes
+  - Name Manager -> .uno:DefineName ("Manage Names", Ctrl+F3).
+  - Define Name -> .uno:AddName ("Define Name"). Excel's split adds "Apply Names...": LibreOffice
+    declares .uno:ApplyNames (FID_APPLY_NAME) but no Calc shell implements it, so the button is
+    plain and Apply Names is omitted.
+  - Use in Formula v: static menu with "Named Range or Expression..." (.uno:InsertName = Excel's
+    "Paste Names..."). The live list of defined names is a follow-up for the same C++ controller.
+  - Create from Selection -> .uno:CreateNames ("Create Names"). Its CalcCommands.xcu entry has no
+    Properties value: add Properties = 1 or no icon ever shows (Data rule).
+
+
+SECTION 4 - FORMULA AUDITING
+----------------------------
+  (x) Trace Precedents     (x)      Show Formulas            +--------------+
+  (x) Trace Dependents     (x) v    Error Checking           | Watch Window |
+  (x) Remove Arrows v      (P)      Evaluate Formula         +-----[P]------+
+                           (icon-only column, FIT PLAN)
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1r1  Trace Precedents (S, btn)                    S btn    existing    "Trace Precedents"
+       .uno:ShowPrecedents
+       icon C arrow_enter
+  2  c1r2  Trace Dependents (S, btn)                    S btn    existing    "Trace Dependents"
+       .uno:ShowDependents
+       icon C arrow_export
+  3  c1r3  Remove Arrows (S, split)                     S dd     NEW DD      "Remove Arrows"
+       .uno:FormulasRemoveArrowsMenu
+       icon N dismiss
+  4  c2r1  Show Formulas (S, tgl)                       I tgl    existing    (icon) "Show Formulas"
+       .uno:ToggleFormula
+       icon C math_format_linear
+  5  c2r2  Error Checking (S, split)                    I dd     NEW DD      (icon) "Error Checking"
+       .uno:FormulasErrorCheckingMenu
+       icon N warning
+  6  c2r3  Evaluate Formula (S, btn)                    I btn    PLACEHOLDER (icon) "Evaluate Formula"
+       .uno:FormulasEvaluateFormula   [slot +405 FID_FORMULAS_EVALUATE_FORMULA]
+       icon N math_format_professional
+  7  c3    Watch Window (L, tgl)                        L tgl    PLACEHOLDER "Watch Window"
+       .uno:FormulasWatchWindow   [slot +406 FID_FORMULAS_WATCH_WINDOW]
+       icon N glasses
+
+  Menu of .uno:FormulasRemoveArrowsMenu  (sc/uiconfig/scalc/popupmenu/formulas_removearrows.xml)
+    Remove All Traces (= Remove Arrows)
+        .uno:ClearArrows
+    Remove Precedents
+        .uno:ClearArrowPrecedents
+    Remove Dependents
+        .uno:ClearArrowDependents
+  Menu of .uno:FormulasErrorCheckingMenu  (sc/uiconfig/scalc/popupmenu/formulas_errorchecking.xml)
+    Error Checking [P]
+        .uno:FormulasErrorChecking
+    Trace Error
+        .uno:ShowErrors
+
+  Notes
+  - Remove Arrows: Excel split; here a dropdown (body would be .uno:ClearArrows; a dropdown costs
+    no slot and keeps all three commands one click away).
+  - Show Formulas -> .uno:ToggleFormula (moves here from LibreOffice's View tab, as in Excel).
+  - Error Checking v: Excel split whose body opens the Error Checking dialog, which LibreOffice
+    lacks; a placeholder body would disable the split arrow, so it is a dropdown whose first item
+    is the placeholder "Error Checking" (SID_NEW_SLOTS+404) and whose second is LibreOffice's
+    "Trace Error" (.uno:ShowErrors). Circular References > is omitted (no LibreOffice list).
+  - Evaluate Formula and Watch Window are placeholders (+405, +406). LibreOffice's Function Wizard
+    shows intermediate results, but not step-by-step evaluation; there is no watch window.
+
+
+SECTION 5 - CALCULATION
+-----------------------
+  +---------------------+  (x)  Recalculate (Calculate Now)
+  | Calculation Options |  (P)  Calculate Sheet
+  |          v          |  (icon-only column, FIT PLAN)
+  +---------------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Calculation Options (L, dd)                  L dd     NEW DD      "Calculation Options"
+       .uno:FormulasCalcOptionsMenu
+       icon N calculator
+  2  c2r1  Calculate Now (S, btn)                       I btn    existing    (icon) "Recalculate"
+       .uno:Calculate
+       icon C calculator_arrow_clockwise
+  3  c2r2  Calculate Sheet (S, btn)                     I btn    PLACEHOLDER (icon) "Calculate Sheet"
+       .uno:FormulasCalculateSheet   [slot +407 FID_FORMULAS_CALCULATE_SHEET]
+       icon N table_calculator
+
+  Menu of .uno:FormulasCalcOptionsMenu  (sc/uiconfig/scalc/popupmenu/formulas_calcoptions.xml)
+    Automatic
+        .uno:AutomaticCalculation?AutomaticCalculation:bool=true
+    Manual
+        .uno:AutomaticCalculation?AutomaticCalculation:bool=false
+
+  Notes
+  - Calculation Options v: "Automatic" = .uno:AutomaticCalculation?AutomaticCalculation:bool=true,
+    "Manual" = ...=false. Verified: docsh4.cxx:425 uses the boolean argument when it is present
+    (otherwise it toggles). Verify in T4 that the menu checks only the matching item (both
+    variants share the slot's boolean state); fallback: one "AutoCalculate" toggle item
+    (.uno:AutomaticCalculation). Excel's "Partial" (automatic except data tables) and "Format
+    Stale Values" are omitted (no LibreOffice equivalent).
+  - Calculate Now -> .uno:Calculate ("Recalculate", F9). Calculate Sheet is a placeholder (+407):
+    LibreOffice recalculates the whole document; .uno:CalculateHard (Recalculate Hard) is a
+    different command and stays on the Data tab's Refresh menu.
+
+NEW COMMANDS (CalcCommands.xcu unless noted)
+--------------------------------------------
+  Split: .uno:FormulasAutoSum "AutoSum" (slot SID_NEW_SLOTS+15) + .uno:FormulasAutoSumMenu
+         (popup formulas_autosum.xml; ToolBox node on FormulasAutoSum with Value = the menu,
+         like HomeMergeCenter).
+  Dropdowns: FormulasRecentlyUsedMenu "Recently Used", FormulasFinancialMenu "Financial",
+         FormulasLogicalMenu "Logical", FormulasTextMenu "Text", FormulasDateTimeMenu "Date & Time",
+         FormulasLookupMenu "Lookup & Reference", FormulasMathMenu "Math & Trig",
+         FormulasMoreFunctionsMenu "More Functions" (Popup controller: the new C++ controller),
+         FormulasUseInFormulaMenu "Use in Formula", FormulasRemoveArrowsMenu "Remove Arrows",
+         FormulasErrorCheckingMenu "Error Checking", FormulasCalcOptionsMenu "Calculation Options"
+         (popup xml files named in the section menus).
+  URL variants (label nodes only): AutoSum x4, AutomaticCalculation x2.
+  xcu fix: .uno:CreateNames Properties = 1.
+
+PLACEHOLDERS (5 slots, 8 controls/menu items)
+---------------------------------------------
+  SID_NEW_SLOTS+403 FID_FORMULAS_PYTHON            .uno:FormulasPython ?Action:string=insert "Insert Python",
+                                                   =reset "Reset", =editor "Editor", =init "Initialization"
+  SID_NEW_SLOTS+404 FID_FORMULAS_ERROR_CHECKING    .uno:FormulasErrorChecking "Error Checking" (menu item)
+  SID_NEW_SLOTS+405 FID_FORMULAS_EVALUATE_FORMULA  .uno:FormulasEvaluateFormula "Evaluate Formula"
+  SID_NEW_SLOTS+406 FID_FORMULAS_WATCH_WINDOW      .uno:FormulasWatchWindow "Watch Window"
+  SID_NEW_SLOTS+407 FID_FORMULAS_CALCULATE_SHEET   .uno:FormulasCalculateSheet "Calculate Sheet"
+  Functional slot: SID_NEW_SLOTS+15 FID_FORMULAS_AUTOSUM (split body, not a placeholder).
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB (today's Functions page)
+-------------------------------------------------------------------
+  Goal Seek, Solver (.uno:GoalSeekDialog, .uno:SolverDialog)  Data tab > Forecast > What-If Analysis
+  Mark Invalid Data (.uno:ShowInvalid)                       menu Tools > Detective
+  Fill Mode (.uno:AuditingFillMode)                          menu Tools > Detective
+  Chi-square, F-, t-, z-test, ANOVA, Descriptive Statistics,
+    Regression, Fourier, Correlation, Covariance dialogs     Data tab > Analyze > Statistics; menu Data > Statistics
+  Remove Precedents / Dependents, Trace Error                stay (Remove Arrows and Error Checking menus)
+
+OMISSIONS (Excel controls or menu items not built)
+--------------------------------------------------
+  Solutions group               only with the Euro Currency Tools add-in
+  Separator after Insert Function  no separators inside a gen_ribbon section
+  Define Name > Apply Names     .uno:ApplyNames is not implemented by any Calc shell
+  Use in Formula: live names    follow-up (static "Paste Names" item now)
+  More Functions > Cube, Compatibility, Web, Azure   no LibreOffice category
+  Error Checking > Circular References   no LibreOffice list
+  Calculation Options > Partial, Format Stale Values  no LibreOffice equivalent
+  Python > Reset menu (Reset Runtime)    placeholder is plain
+
+ICONS
+-----
+  28 controls, 28 boost icons: 20 required (N), 7 with a Colibre fallback (FunctionDialog, DefineName,
+  AddName, ShowPrecedents, ShowDependents, ToggleFormula, Calculate), 1 alias (FormulasAutoSum ->
+  boost "autosum"). CreateNames also needs the xcu image flag.
+
+1920 PX FIT PLAN
+----------------
+  Excel's full form is about 1953 px here (Function Library alone ~891 px: Excel wraps "Date &
+  Time", "Lookup & Reference", "Math & Trig" on two lines, LibreOffice cannot). The reference says
+  Excel itself reduces Formulas at 1920 px when Python is shown. Applied (Excel's own reduced
+  forms recorded in the reference, icon-only first):
+    1. Calculation: Calculate Now / Calculate Sheet icon-only                     -92 px
+    2. Formula Auditing column 2 (Show Formulas, Error Checking, Evaluate) icon-only -89 px
+  Result: about 1772 px of a ~1875 px budget (about 100 px to spare, like Data). Next step if
+  needed: Function Library as in Excel's reduced form (Insert Function L, then S columns of 3).
+
+OPEN QUESTIONS
+--------------
+  1. The eight function-category menus need one C++ popup controller (the design above). Accept it
+     in T4, or ship the config-only fallback first (static menu with Function... / Function List)?
+  2. Python group: Excel shows it on business/enterprise licences only. Kept as four placeholders
+     on one family slot; drop it if the target is a consumer Excel.
+  3. Calculation Options check marks (Automatic/Manual share one boolean state): verify, else
+     fall back to one AutoCalculate toggle.

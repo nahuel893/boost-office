@@ -66,17 +66,27 @@ Home and Data are done. The other tabs (Insert, Layout, Functions, Review, View,
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
 | R1 | Reference research: Excel 365 ribbon inventory per tab (groups, buttons, sizes, splits, menus), screenshots outside the repo, report in `product/docs/research/` | delegated (research worker, opus) | [x] 6 main tabs inventoried with screenshots (64 images, outside the repo); 365 Data diff; brief tabs. Parent spot check: Insert matches the 2026 full-width screenshot | ee62c96b2 | passive (docs) |
-| L1 | Layout and command map per tab (`product/docs/design/calc-<tab>-tab-layout.txt`): LO command per button, placeholders, splits, missing icons | delegated (opus) | [ ] dispatched | | |
-| T1 | Tab order and names: Page Layout, Formulas before Data, Help tab added | delegated | [ ] | | |
-| T2 | Insert tab | delegated | [ ] | | |
-| T3 | Page Layout tab | delegated | [ ] | | |
-| T4 | Formulas tab | delegated | [ ] | | |
-| T5 | Review tab | delegated | [ ] | | |
-| T6 | View tab | delegated | [ ] | | |
-| T7 | Help tab | delegated | [ ] | | |
-| T8 | Docs (`product/docs/calc-ribbon-tabs.md`), width fit at 1920 px, light/dark screenshots, user gate | delegated | [ ] | | |
+| L1 | Layout and command map per tab (`product/docs/design/calc-<tab>-tab-layout.txt` + `calc-ribbon-tabs-overview.txt`): LO command per button, placeholders, splits, missing icons | delegated (opus) | [x] 136 controls, 48 placeholders (+3 menu items) on 32 family slots, 29 dropdowns, 1 split, 1 alias, 132 icons; all tabs estimated to fit at 1920 px | see below | passive (docs) |
+| T1 | Tab order and labels (Page Layout, Formulas before Data, Help page last) driven by the generator; tooling for URL variants and placeholder families in tests; ALL placeholder slots of the slice (+389..+421) in one sc rebuild | delegated (Sonnet) | [ ] | | |
+| T2a / T2b | Insert: a = layout, xcu labels, popups, placeholders' labels, tests, UITests; b = icons, 1920 fit, screenshots | delegated | [ ] | | |
+| T3a / T3b | Page Layout (a includes the Print Titles alias slot +16 and the margin-presets spike) | delegated | [ ] | | |
+| T4a / T4b / T4c | Formulas (a includes the AutoSum split slot +15 with static category menus; c = C++ function-category popup controller replacing the static menus) | delegated | [ ] | | |
+| T5a / T5b | Review | delegated | [ ] | | |
+| T6a / T6b | View (Sheet View group as placeholders, family slot +421) | delegated | [ ] | | |
+| T7 | Help | delegated | [ ] | | |
+| T8 | Docs (`product/docs/calc-ribbon-tabs.md`), fix the Data doc's menu-bar note, final light/dark screenshots, user gate | delegated | [ ] | | |
 
-Each tab task includes its placeholders, menus, icons and tests. A tab task can be split if it grows.
+L1 open questions, ruled while the user is away (overturnable):
+
+1. Family slots: accepted. The Calc slot range ends at +424, and one slot per placeholder would need 53 ids.
+2. The Help tab goes last, after Tools, matching Excel's "(Developer), Help".
+3. View > Sheet View: built as greyed placeholders, family slot +421. It is the first group of Excel's View tab, and it can be implemented without a cloud.
+4. Comments and Notes both drive LibreOffice's single comment type.
+5. Formulas: the C++ category popup controller is accepted, as T4c, after static menus ship in T4a.
+6. Sheet Right-to-Left, Dark Mode and Translate (placeholder) are kept.
+7. Icons opens LibreOffice's Gallery. PivotTable is a plain button.
+
+Slots: the functional slots +15 and +16 go in the upstream gap next to Data's +12..+14. Upstream appends new ids at the top and rarely refills old holes. That leaves 3 spare fork ids, +422..+424.
 
 ## Progress / evidence
 

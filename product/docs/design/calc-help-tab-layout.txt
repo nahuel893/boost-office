@@ -1,0 +1,168 @@
+CALC - HELP TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+===============================================================
+Status: DESIGN for task T7; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 6; images in
+/mnt/games/libreoffice/assets/excel-ref/help/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: help-bettersolutions-1..2.png (2024+) and help-exceldemy-1.png (2023); both agree.
+This is a NEW page: T1 creates the empty page phbHelp with the generator markers, T7 fills it.
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | Insert | Page Layout | Formulas | Data | Review | View | Extension | Tools | HELP
+  -----+------+--------+-------------+----------+------+--------+------+-----------+-------+====
+
+  Help                                                                   Community
+  +-------------++----------------++----------++-------------++--------+ +--------------++------+
+  | LibreOffice || Get Help Online || Feedback || User Guides || What's | | Get Involved || Blog |
+  |    Help     ||                 ||   [P]    ||             ||  New   | |              || [P]  |
+  +-------------++----------------++----------++-------------++--------+ +--------------++------+
+  Two sections, Excel's Help and Community, all large buttons, no menus, no launchers.
+
+LAYOUT FILE
+-----------
+  product/ui/calc_help.json: page "phbHelp", id_prefix "Help", context "TabbedCalc",
+  remove_objects [].
+  New page: product/ui/calc_help.json, page "phbHelp", id_prefix "Help", remove_objects [].
+  T1 adds the page skeleton (sfxlo-PriorityHBox id="phbHelp" with <!-- product:Help-begin/end -->
+  and a tab label "HelpLabel", context "TabbedCalc|HelpTabLabel"); gen_ribbon.py splices between
+  the markers (it cannot fill a page that has no <child> and no markers). "Menu Help" (used by the
+  File tab's Help button) stays untouched.
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    Help            Help                rows 3   ~439 px
+    Community       Community           rows 3   ~135 px
+                    total                        ~574 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - HELP
+----------------
+  +------------------+ +-----------------+ +----------+ +-------------+ +------------+
+  | LibreOffice Help | | Get Help Online | | Feedback | | User Guides | | What's New |
+  +------------------+ +-----------------+ +---[P]----+ +-------------+ +------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Help (L, btn)                                L btn    existing    "LibreOffice Help"
+       .uno:HelpIndex
+       icon C question_circle
+  2  c2    Contact Support (L, btn)                     L btn    existing    "Get Help Online"
+       .uno:QuestionAnswers
+       icon C person_support
+  3  c3    Feedback (L, btn)                            L btn    PLACEHOLDER "Feedback"
+       .uno:HelpFeedback   [slot +419 FID_HELP_FEEDBACK]
+       icon N person_feedback
+  4  c4    Show Training (L, btn)                       L btn    existing    "User Guides"
+       .uno:Documentation
+       icon N hat_graduation
+  5  c5    What's New (L, btn)                          L btn    existing    "What's New"
+       .uno:WhatsNew
+       icon N sparkle
+
+  Notes
+  - Help -> .uno:HelpIndex ("%PRODUCTNAME Help", so it shows the product name; F1).
+  - Contact Support -> .uno:QuestionAnswers ("Get Help Online": Ask LibreOffice).
+  - Feedback: placeholder (+419). This tree has no feedback command (.uno:SendFeedback does not
+    exist in any xcu or sdi); the future command opens the product's feedback page.
+  - Show Training -> .uno:Documentation ("User Guides").
+  - What's New -> .uno:WhatsNew ("What's New": opens the release notes of the installed version).
+
+
+SECTION 2 - COMMUNITY
+---------------------
+  +--------------+ +------+
+  | Get Involved | | Blog |
+  +--------------+ +-[P]--+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Community (L, btn)                           L btn    existing    "Get Involved"
+       .uno:GetInvolved
+       icon N people_community
+  2  c2    Excel Blog (L, btn)                          L btn    PLACEHOLDER "Blog"
+       .uno:HelpBlog   [slot +420 FID_HELP_BLOG]
+       icon N news
+
+  Notes
+  - Community -> .uno:GetInvolved ("Get Involved").
+  - Excel Blog: placeholder (+420) labelled "Blog", not "Excel Blog": the label must not carry
+    Microsoft's product name. The future command opens the product blog.
+
+NEW COMMANDS
+------------
+  None besides the two placeholders. No dropdowns, splits or variants.
+
+PLACEHOLDERS (2 slots, 2 controls)
+----------------------------------
+  SID_NEW_SLOTS+419 FID_HELP_FEEDBACK  .uno:HelpFeedback "Feedback"
+  SID_NEW_SLOTS+420 FID_HELP_BLOG      .uno:HelpBlog "Blog"
+  These two are application-level ideas; like the Data placeholders they live in cellsh.sdi
+  (always-disabled state). When implemented they move to an application or view shell.
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB
+-------------------------------------------
+  None: the page is new. LibreOffice's other Help menu items are not added (Excel has no such
+  buttons) and stay in the menu bar's Help menu: What's This?, Tip of the Day, Search Commands,
+  Restart in Troubleshoot Mode, Donate, License Information, About. The menu button at the top
+  right (popupmenu/notebookbar.xml) keeps Help, Donate and About; the File tab keeps its Help
+  button.
+
+OMISSIONS
+---------
+  None. All seven Excel controls are on the tab.
+
+ICONS
+-----
+  7 controls, 7 boost icons: 5 required (N: the two placeholders, Documentation, WhatsNew,
+  GetInvolved have no Colibre icon) and 2 with a Colibre fallback (HelpIndex, QuestionAnswers).
+
+1920 PX FIT PLAN
+----------------
+  About 574 px of the ~1875 px budget. Nothing to reduce.
+
+OPEN QUESTIONS
+--------------
+  1. Where do Feedback and Blog point once implemented (product site, LibreOffice pages)? This
+     decides whether they stay placeholders or become simple URL commands.

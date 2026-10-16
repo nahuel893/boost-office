@@ -1,0 +1,342 @@
+CALC - REVIEW TAB LAYOUT (Tabbed Office, remaining tabs, task L1)
+=================================================================
+Status: DESIGN for task T5; the implementer follows this file verbatim. Nothing built yet.
+Date: 2026-10-15. Reference: Excel for Microsoft 365, Windows, 2024+ look, window 1920 px:
+product/docs/research/2026-10-15-excel365-ribbon-reference.md section 4; images in
+/mnt/games/libreoffice/assets/excel-ref/review/ (never committed).
+Same tools and rules as product/docs/design/calc-data-tab-layout.txt: gen_ribbon.py layout,
+Fluent "boost" icons, compact rows. Every Excel control is on the tab, in Excel's order: an
+existing LibreOffice command, a new dropdown/split command, or a greyed PLACEHOLDER (a real
+always-disabled slot, label = Excel label, tooltip "<Label> (not available yet)").
+Every .uno: command named here was checked against CalcCommands.xcu / GenericCommands.xcu and
+sc/sdi + svx/sdi + sfx2/sdi (exists, and a Calc shell implements it) unless marked "verify".
+Ground truth: review-exceldemy-1.png (2023, full tab) and the 2024+ crops
+review-bettersolutions-1..8.png; review-mssupport-1.png is probably Excel for the web.
+
+LEGEND
+------
+  +--------+
+  | ICON   |    L  LARGE button: 32 px icon, label below          (json style "large")
+  +--------+
+  (x) Label     S  SMALL button: 16 px icon, label to the right   ("small-label")
+  (x)           I  SMALL button: icon only, tooltip = the name    ("small")
+  v             DROPDOWN: the whole button opens a menu
+  |v            SPLIT: the body runs an action, the arrow opens a menu
+  [P]           PLACEHOLDER: greyed out until the feature is implemented
+
+  Columns of the control tables:
+    #, pos      order on the tab; c<column>r<row> inside the section
+    Excel       Excel's control, size (L/S/I) and kind (btn, tgl, chk, dd, split, combo, spin)
+    here        size and kind on our ribbon (dd = dropdown, tgl = toggle shown pressed;
+                checkboxes become toggle buttons: gen_ribbon only makes tool buttons)
+    kind        existing   LibreOffice command used as is (LibreOffice's own label)
+                variant    existing command with URL arguments (".uno:X?Arg:type=v"), with its
+                           own label/tooltip node in CalcCommands.xcu; config only, no new slot
+                NEW DD     new dropdown command: CalcCommands.xcu label, Controller.xcu Popup +
+                           ToolBox (GenericPopupToolbarController) nodes, popup xml; no slot
+                NEW SPLIT  new body slot (Data recipe, same Execute/state as the original) +
+                           new "...Menu" popup command opened by the arrow
+                NEW ALIAS  new slot that mirrors an existing slot only to carry Excel's label
+                PLACEHOLDER always-disabled slot (Data recipe); a "family slot" is one slot shared
+                           by several URL variants ".uno:Base?Arg:string=value", each with its own
+                           label and tooltip (see the overview: the slot budget forces this)
+                "slot +N" = SID_NEW_SLOTS+N in sc/inc/sc.hrc (allocation table in the overview)
+    label       text on the button: LibreOffice's "Label" without "~" and "..." for existing
+                commands (as on the Data tab), Excel's label for new commands
+    icon        B boost icon exists; A alias of an existing boost icon (no new art);
+                C Colibre icon exists and shows today, boost icon to add for consistency;
+                N no icon anywhere, boost icon required before the tab ships.
+                Then the Fluent 1.1.344 glyph (every name checked in
+                /mnt/games/libreoffice/assets/fluent/package/icons/).
+    json id     for URL variants the json "cmd" is a short id and "action" holds the URL;
+                the icon comes from the item's "icon" key (e.g. "cmd/32/insertcharttype_map.png",
+                boost manifest name "<base>_<value>"), which avoids the escaped "%3f" file names.
+
+TAB MOCK (left to right)
+------------------------
+  File | Home | Insert | Page Layout | Formulas | Data | REVIEW | View | Extension | Tools | Help
+  -----+------+--------+-------------+----------+------+========+-------------------------------
+
+  Proofing                         Accessibility   Language    Comments
+  +--------++---------++----------+ +-------------+ +---------+ +-------++--------++--------++-------++--------+
+  |Spelling||Thesaurus||Properties| |    Check    | |Translate| |Comment||Delete  ||Previous||Next   ||Show    |
+  |        ||         ||          | |Accessibility| |   [P]   | |       ||Comment ||Comment ||Comment||Comments|
+  +--------++---------++----------+ +------v------+ +---------+ +-------++--------++--[P]---++--[P]--++--------+
+
+  Notes     Protect                                                          Ink
+  +-------+ +-------++----------------------++----------++-------------+ +--------+
+  | Notes | |Protect||Protect Spreadsheet   ||Allow Edit||Share        | |Hide Ink|
+  |   v   | |Sheet  ||Structure             ||Ranges [P]||Spreadsheet  | |  [P]   |
+  +-------+ +-------++----------------------++----------++-------------+ +--------+
+
+  Seven sections. Excel's Performance, Insights and Changes groups are not built (OMISSIONS).
+
+LAYOUT FILE
+-----------
+  product/ui/calc_review.json: page "phbReview", id_prefix "Review", context "TabbedCalc",
+  remove_objects ["Menu Review"].
+  The upstream sections Spelling, Comments, Track Changes, Document and the
+  "Review-ReviewButton:Menu Review" overflow button are replaced; "Menu Review" is removed.
+
+  COMMENTS AND NOTES. Excel has threaded "comments" (Comments group) and legacy "notes" (Notes
+  menu). LibreOffice has one kind, called comments, that behaves like Excel's notes (yellow box,
+  shown/hidden per cell; written to .xlsx as notes). Both Excel controls therefore drive the same
+  LibreOffice comments: the Comments group has the everyday buttons, the Notes menu the
+  note-style actions (show/hide one, show/hide all, delete all). Previous/Next are one family
+  placeholder used in both places. Convert to Comments is omitted (only one kind exists).
+  Sections (json name / caption / rows / estimated width at 1920 px):
+    Proofing        Proofing            rows 3   ~207 px
+    Accessibility   Accessibility       rows 3   ~137 px
+    Language        Language            rows 3   ~71 px
+    Comments        Comments            rows 3   ~510 px
+    Notes           Notes               rows 3   ~65 px
+    Protect         Protect             rows 3   ~509 px
+    Ink             Ink                 rows 3   ~66 px
+                    total                        ~1564 px  (budget ~1875 px, see FIT PLAN)
+
+
+SECTION 1 - PROOFING
+--------------------
+  +----------+ +-----------+ +------------+
+  | Spelling | | Thesaurus | | Properties |
+  +----------+ +-----------+ +------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Spelling (L, btn)                            L btn    existing    "Spelling"
+       .uno:SpellDialog
+       icon C text_proofing_tools_abc
+  2  c2    Thesaurus (L, btn)                           L btn    existing    "Thesaurus"
+       .uno:ThesaurusDialog
+       icon C book_open
+  3  c3    Workbook Statistics (L, btn)                 L btn    existing    "Properties"
+       .uno:SetDocumentProperties
+       icon C data_usage
+
+  Notes
+  - Workbook Statistics -> .uno:SetDocumentProperties ("Properties"): LibreOffice shows the
+    workbook statistics (sheets, cells, formula groups, pages) on the Statistics tab of File >
+    Properties. A follow-up could open that tab directly.
+
+
+SECTION 2 - ACCESSIBILITY
+-------------------------
+  +---------------------+
+  | Check Accessibility |
+  |          v          |
+  +---------------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Check Accessibility (L, split)               L dd     NEW DD      "Check Accessibility"
+       .uno:ReviewAccessibilityMenu
+       icon N accessibility_checkmark
+
+  Menu of .uno:ReviewAccessibilityMenu  (sc/uiconfig/scalc/popupmenu/review_accessibility.xml)
+    Check Accessibility [P]
+        .uno:ReviewCheckAccessibility
+    Alt Text...
+        .uno:ObjectTitleDescription
+    AutoFormat Styles... (= Format as Table)
+        .uno:AutoFormat
+    Unmerge Cells
+        .uno:SplitCell
+
+  Notes
+  - Check Accessibility: Excel split. LibreOffice has an accessibility checker for Writer only
+    (.uno:AccessibilityCheck exists in WriterCommands.xcu, not in Calc), so the body would be a
+    placeholder and a disabled split body loses its arrow: it is a dropdown whose first item is
+    the placeholder "Check Accessibility" (SID_NEW_SLOTS+408), followed by Excel's other items
+    that LibreOffice has: Alt Text (.uno:ObjectTitleDescription, needs a selected object), Format
+    as Table (.uno:AutoFormat, menu label "AutoFormat Styles..."), Unmerge Cells (.uno:SplitCell).
+    Accessibility Options and Accessibility Help are omitted.
+
+
+SECTION 3 - LANGUAGE
+--------------------
+  +-----------+
+  | Translate |
+  +----[P]----+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Translate (L, btn)                           L btn    PLACEHOLDER "Translate"
+       .uno:ReviewTranslate   [slot +409 FID_REVIEW_TRANSLATE]
+       icon N translate
+
+  Notes
+  - Translate is a placeholder. No LibreOffice translate command exists in Calc (none in the xcu
+    files or sdi of this tree). Excel's Translate uses Microsoft Translator but needs no account,
+    so it is not dropped by the cloud ruling (open question 2).
+
+
+SECTION 4 - COMMENTS
+--------------------
+  +---------+ +----------------+ +------------------+ +--------------+ +---------------+
+  | Comment | | Delete Comment | | Previous Comment | | Next Comment | | Show Comments |
+  +---------+ +----------------+ +-------[P]--------+ +-----[P]------+ +---------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    New Comment (L, btn)                         L btn    existing    "Comment"
+       .uno:InsertAnnotation
+       icon C comment_add
+  2  c2    Delete (L, btn)                              L btn    existing    "Delete Comment"
+       .uno:DeleteNote
+       icon C comment_dismiss
+  3  c3    Previous Comment (L, btn)                    L btn    PLACEHOLDER "Previous Comment"
+       .uno:ReviewGoToComment?Direction:string=previous   [family slot +410 FID_REVIEW_GOTO_COMMENT]
+       icon N comment_arrow_left   json id CommentPrevious
+  4  c4    Next Comment (L, btn)                        L btn    PLACEHOLDER "Next Comment"
+       .uno:ReviewGoToComment?Direction:string=next   [family slot +410 FID_REVIEW_GOTO_COMMENT]
+       icon N comment_arrow_right   json id CommentNext
+  5  c5    Show Comments (L, tgl)                       L tgl    existing    "Show Comments"
+       .uno:ShowAnnotations
+       icon C comment_multiple
+
+  Notes
+  - New Comment -> .uno:InsertAnnotation ("Comment"); Delete -> .uno:DeleteNote ("Delete Comment",
+    enabled when the cell has a comment); Show Comments -> .uno:ShowAnnotations (label "Show
+    Comments": shows or hides all comments of the selected sheets, cellsh1.cxx:2873; disabled
+    when the sheet has none. Excel opens a Comments pane, which LibreOffice lacks).
+  - Previous Comment / Next Comment: family placeholder .uno:ReviewGoToComment?Direction:string=
+    previous|next (SID_NEW_SLOTS+410). LibreOffice has no "go to next comment" command; the
+    Navigator lists comments.
+
+
+SECTION 5 - NOTES
+-----------------
+  +-------+
+  | Notes |
+  |   v   |
+  +-------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Notes (L, dd)                                L dd     NEW DD      "Notes"
+       .uno:ReviewNotesMenu
+       icon N comment_note
+
+  Menu of .uno:ReviewNotesMenu  (sc/uiconfig/scalc/popupmenu/review_notes.xml)
+    Comment (= New Note)
+        .uno:InsertAnnotation
+    Edit Comment (LO extra, = Edit Note)
+        .uno:EditAnnotation
+    --------------------
+    Previous Comment [P] (= Previous Note)
+        .uno:ReviewGoToComment?Direction:string=previous
+    Next Comment [P] (= Next Note)
+        .uno:ReviewGoToComment?Direction:string=next
+    --------------------
+    Show Comment (= Show/Hide Note, toggle)
+        .uno:NoteVisible
+    Show All Comments (= Show All Notes)
+        .uno:ShowAllNotes
+    Hide All Comments (LO extra)
+        .uno:HideAllNotes
+    Delete All Comments (LO extra)
+        .uno:DeleteAllNotes
+
+  Notes
+  - New Note -> .uno:InsertAnnotation; Show/Hide Note -> .uno:NoteVisible (toggle, "Show
+    Comment"); Show All Notes -> .uno:ShowAllNotes. LibreOffice extras kept from today's page:
+    Edit Comment, Hide All Comments, Delete All Comments. Previous/Next Note reuse the Comments
+    group's family placeholder variants (same URLs, no extra slot).
+
+
+SECTION 6 - PROTECT
+-------------------
+  +---------------+ +-------------------------------+ +-------------------+ +-------------------+
+  | Protect Sheet | | Protect Spreadsheet Structure | | Allow Edit Ranges | | Share Spreadsheet |
+  +---------------+ +-------------------------------+ +--------[P]--------+ +-------------------+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Protect Sheet (L, btn)                       L btn    existing    "Protect Sheet"
+       .uno:Protect
+       icon C lock_closed
+  2  c2    Protect Workbook (L, tgl)                    L tgl    existing    "Protect Spreadsheet Structure"
+       .uno:ToolProtectionDocument
+       icon C shield_lock
+  3  c3    Allow Edit Ranges (L, btn)                   L btn    PLACEHOLDER "Allow Edit Ranges"
+       .uno:ReviewAllowEditRanges   [slot +411 FID_REVIEW_ALLOW_EDIT_RANGES]
+       icon N lock_open
+  4  c4    Unshare Workbook (L, btn)                    L btn    existing    "Share Spreadsheet"
+       .uno:ShareDocument
+       icon C people_swap
+
+  Notes
+  - Protect Workbook -> .uno:ToolProtectionDocument ("Protect Spreadsheet Structure", a toggle like
+    Excel's).
+  - Allow Edit Ranges: placeholder (+411). LibreOffice protects cells per style/format, with no
+    per-range passwords.
+  - Unshare Workbook -> .uno:ShareDocument ("Share Spreadsheet"): LibreOffice's shared
+    spreadsheet IS Excel's legacy shared workbook, and its dialog turns sharing on and off. Excel's
+    button is disabled unless the workbook is shared; LibreOffice's is enabled (it opens the dialog).
+
+
+SECTION 7 - INK
+---------------
+  +----------+
+  | Hide Ink |
+  +---[P]----+
+
+  #  pos   Excel control (size, kind)                   here     kind        label shown
+  1  c1    Hide Ink (L, split)                          L btn    PLACEHOLDER "Hide Ink"
+       .uno:ReviewHideInk   [slot +412 FID_REVIEW_HIDE_INK]
+       icon N ink_stroke
+
+  Notes
+  - Hide Ink: placeholder (+412); Excel's split menu (Delete All Ink on Sheet / in Workbook) is
+    dropped while it is a placeholder. LibreOffice has freehand lines, not ink.
+
+NEW COMMANDS (CalcCommands.xcu unless noted)
+--------------------------------------------
+  Dropdowns (config only): .uno:ReviewAccessibilityMenu "Check Accessibility"
+  (review_accessibility.xml), .uno:ReviewNotesMenu "Notes" (review_notes.xml).
+
+PLACEHOLDERS (5 slots, 6 controls/menu items; the Notes menu reuses two of them)
+-------------------------------------------------------------------------------
+  SID_NEW_SLOTS+408 FID_REVIEW_CHECK_ACCESSIBILITY .uno:ReviewCheckAccessibility "Check Accessibility" (menu item)
+  SID_NEW_SLOTS+409 FID_REVIEW_TRANSLATE           .uno:ReviewTranslate "Translate"
+  SID_NEW_SLOTS+410 FID_REVIEW_GOTO_COMMENT        .uno:ReviewGoToComment ?Direction:string=previous
+                                                   "Previous Comment", =next "Next Comment"
+  SID_NEW_SLOTS+411 FID_REVIEW_ALLOW_EDIT_RANGES   .uno:ReviewAllowEditRanges "Allow Edit Ranges"
+  SID_NEW_SLOTS+412 FID_REVIEW_HIDE_INK            .uno:ReviewHideInk "Hide Ink"
+
+LIBREOFFICE-ONLY BUTTONS THAT LEAVE THE TAB (today's Review page + "Menu Review")
+-------------------------------------------------------------------------------
+  Automatic Spell Checking (.uno:SpellOnline)   menu Tools > Automatic Spell Checking; Shift+F7.
+                                                Often used: candidate for the quick access bar
+  Hyphenation (.uno:Hyphenate)                  menu Tools > Language > Hyphenation
+  Track Changes: Record, Manage                 menu Edit > Track Changes > Record / Manage.
+    (.uno:TraceChangeMode, .uno:AcceptChanges)  Excel 365 also hides its legacy Track Changes
+  Compare / Merge Document                      menu File > Compare Document / Merge Document
+    (.uno:CompareDocuments, .uno:MergeDocuments)
+  Redact (.uno:RedactDoc)                       menu Tools > Redact
+  For All Text, Chinese / Hangul conversion,    menu Tools > Language
+    More Dictionaries (Menu Review)
+  Comment commands of today's page              stay (Comments group and Notes menu)
+
+OMISSIONS (Excel controls or menu items not built)
+--------------------------------------------------
+  Performance > Check Performance     ruling (listed with the cloud-only items)
+  Insights > Smart Lookup             retired by Microsoft on 1 January 2025 (ruling)
+  Changes > Show Changes              cell history of co-authored cloud workbooks (ruling)
+  Notes > Convert to Comments         LibreOffice has only one kind of comment
+  Check Accessibility > Accessibility Options, Accessibility Help   no Calc equivalent
+  Hide Ink menu, Start Inking         ink only; placeholder is plain
+
+ICONS
+-----
+  16 controls, 16 boost icons: 7 required (N: the new commands) and 9 with a Colibre fallback.
+  InsertAnnotation ("Comment") shares its icon with the Insert tab.
+
+1920 PX FIT PLAN
+----------------
+  About 1564 px of the ~1875 px budget: every group full size, about 310 px to spare (the three
+  omitted groups are what makes Excel itself tight here). If translations need room, Excel's
+  reduced forms apply: Proofing as one S column, then Previous / Next / Show Comments icon-only.
+
+OPEN QUESTIONS
+--------------
+  1. Comments and Notes both drive LibreOffice's single comment type (design above). Alternative:
+     treat Excel's threaded comments as five placeholders and put all LibreOffice comment
+     commands under Notes (more exact, but the main Comment buttons would be greyed).
+  2. Translate: placeholder (current) or omitted as a Microsoft cloud service?
+  3. Track Changes leaves the ribbon (as in Excel 365). LibreOffice users may miss it; it could
+     go into the Notes menu or stay reachable only from the menu bar.
