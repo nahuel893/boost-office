@@ -1,0 +1,125 @@
+Commit ID map for the GitHub import (2026-10-16)
+
+The local clone was shallow: its oldest commit was LibreOffice core 62abc2329, whose
+parents were not downloaded. GitHub refuses such a history, so that commit was
+recreated without parents (same tree, author, date and message) and every later
+commit got a new ID. The content of every commit is unchanged. Docs and notes written
+before the import cite the old IDs; this table maps them, oldest first.
+
+old        new        subject
+62abc2329  66b47fa8c  tdf#161794 add Cppunit test for grouping
+60b188762  10b3c32b1  chore(product): add capped build wrapper, dev profile and screenshot tools
+02aacbf01  84c2bdb9c  fix(product): render real light screenshots and fix sized Sway shots
+1e6895881  87647cad5  feat(sc): add Tabbed Office notebookbar variant for Calc
+58bd7e65b  597a494e1  docs(product): record spike 0a on declarative ribbon dropdown menus
+3aaa937f8  454825d30  docs(product): record spikes 0b-0d on theme reach, scheme switch, packaging
+a4593e5d6  dd8d74fa6  feat(product): add ribbon page generator with suppression sync
+6f81bdd89  050acd907  feat(sc): lay out the Tabbed Office Home tab in Excel's eight sections
+70f2938c3  8c080c01d  fix(sc): show arrows and 32 px icons on Home menu buttons
+6213acce3  43283630d  fix(sc): give Home menu buttons labelled dropdown commands
+c0684fa3a  a705fbc36  feat(product): build the boost icon themes from Fluent icons
+b385b5964  cd40b798c  feat(sc): move font grow/shrink to the second Font row
+ea6f42cd4  fb9fdcd7b  fix(product): trim only empty padding and draw thousands natively at 16px
+66eddd4df  8434bb12b  feat(product): compose badge and highlight icons
+8aee18222  d2917a0ed  feat(product): ship Boost light and dark color schemes as an extension
+8eb8a1dbc  17680d31f  feat(cui): list Tabbed Office in the user interface picker
+904266ebd  b6b912cd7  fix(cui): offer Tabbed Office in the UI picker for Calc only
+691a58788  b3c2897de  docs(product): record stage A validation and stage B list
+f5d8d9c63  3eceb3ad7  feat(product): add one-step Calc launcher with theme selection
+b83472cc0  3be294eea  feat(product): use the Calc green for the cell cursor in both schemes
+5ecf17ffd  90d9981ac  feat(vcl): draw a thin border around themed gtk3 entries and combo boxes
+59a2c7636  5d7e75fea  feat(vcl): make the selected themed gtk3 tab stand out with an accent line
+74469ab16  1608ed6bc  feat(vcl,product): paint ribbon separators with a gray separator color
+60b290784  916aa7bce  docs(product): document the Calc Home redesign and how to work on it
+0e3d8c44d  8ad4d75a1  feat(product): move the Calc cell style list to the bottom of Styles
+7c1dd97c5  fb6bcf37b  feat(vcl,sfx2): compact notebookbar toolbox rows
+8d85e0aae  6a2501f45  docs(product): document compact notebookbar rows
+f9c155c0d  8c0ebe544  fix(vcl): keep compact toolbox flag out of the public ToolBox layout
+45eb3b382  a4c82bb09  feat(sc): make Home Merge & Center a split button
+7f94c7d8a  9057ce69c  fix(sc): invalidate HomeMergeCenter with the other merge slots
+f9ed0f195  be176300a  feat(product): put the Calc cell style list below the Styles buttons
+c10f31972  ee64f7cef  feat(product): use 24 px buttons for the Calc Styles section
+140710dc8  624781fac  feat(vcl): make themed gtk3 scrollbar sliders visible at rest
+99aa23f56  2e726fedf  fix(vcl): scope scrollbar slider min sizes to axis, skip overlay
+da39e4c55  8c8d57059  feat(sc,product): Excel-style Data tab layout for Tabbed Office
+e00d2feb3  891ac24fd  feat(sc): Data tab split buttons and disabled placeholder slots
+d8c8cf945  1ae9b83b8  feat(product): boost icons for the Calc Data tab
+3f65bb51a  c75745289  feat(product): fit all Data sections at 1920 px, clearer filter icons
+1ae7c4ffc  349acc805  test(sc): keep one status listener across Ungroup and Merge Center changes
+e4baee882  449f9da4b  docs(product): document the Calc Data tab redesign
+f629c100c  a1f398732  docs(product): state the listener test limit and the Data test counts
+5f441f438  bed5c35a6  fix(calc): move Data placeholder slots to fork block, hide from Customize
+53e663964  2251bc675  fix(calc): give Insert Sheet from File the image flag, unfill detail icons
+4d851cbce  994b9e0ef  docs(calc): update Data tab redesign notes after final review
+d2f8c0d6e  bb9811b7e  docs(product): update the unit test count to 86
+01ab49af1  dd4e6afa7  docs: move project specs, plans, research and ODD tasks into product/
+808d3b651  4381849bb  docs: plan the remaining Calc ribbon tabs like Excel
+ee62c96b2  b670d9174  docs: add Excel 365 ribbon reference for the remaining tabs
+f339dc166  011e6d642  docs: record R1 outcome in the ribbon tabs plan
+a284bf27b  632b53e01  docs: design the remaining Calc ribbon tabs like Excel 365
+140c825d1  d6b53f363  feat(sc): placeholder slots for the remaining ribbon tabs
+1e617e331  244aedfda  feat(sc): Excel tab order, Page Layout and Formulas labels, Help tab
+87dff8f73  66d853740  docs: fix how the tab order UITest reads tabs; record T1
+7093b9168  d0bdd77fb  feat(sc): Insert tab like Excel with Pictures and Shapes dropdowns
+497d870ee  678048652  test(sc): UITests for the Insert tab placeholders, popups and sparklines
+f7215877d  f2da4f0ec  docs: record T2a in the ribbon tabs plan
+682b13cd0  43564c341  feat(icons): boost icons for every Insert tab control
+d7ba773f3  75a239d59  feat(sc): fit the Insert tab at 1920 px with small Sparklines and Filters
+45e2b13f8  4aaf6dce7  feat(dev): headless tab screenshot tool, Insert docs and T2a follow-ups
+1ad2a7269  d6d341266  fix(dev): shot-tab kills only the processes it started
+62b3d7c07  4dd2f60de  docs: record T2b and the pending Excel-labels task
+f9d4629c5  38195e46c  feat(sc): Print Titles alias slot mirroring Edit Print Ranges
+a175fcd86  6cfc5c73d  feat(sc): Page Layout tab like Excel with dropdown menus
+40373694f  b07d1f504  docs: fix margin preset member names in the Page Layout design
+b5df0b800  c95c093e7  fix(sc): disable Print Titles for every drawing subshell like its original
+d9c9852d0  5a2214ddf  docs: record T3a in the ribbon tabs plan
+0ecd4f28e  2a9b7ba61  feat(icons): Page Layout tab icons in the boost themes
+089ea27b7  c5a8c9003  fix(sfx2): keep a disabled state reported by the dispatch on toolbox items
+d32b9a8c5  0cda5e62f  docs: record T3b and the T1b bugfix in the ribbon tabs plan
+d9dcad297  d9ec82ec2  fix(sfx2): enable toolbox items of master commands as before
+2487e176e  f5eecd887  docs: record T1b and plan T1c in the ribbon tabs plan
+780338626  39ca2b01e  fix(sfx2): tell listeners on argument-variant URLs about later slot states
+46e9b6351  c95dab390  docs: record T1c in the ribbon tabs plan
+2b6e79645  0d9153005  feat(sc): AutoSum split body slot mirroring SID_AUTO_SUM
+a9b6c4ff2  54d5afcc9  feat(sc): Formulas tab like Excel with static function menus
+a5f5fd40b  ae8b228b0  docs: record T4a and plan T3c in the ribbon tabs plan
+b011a55a6  909375711  fix(framework): check single-bool-argument menu items by state==argument
+21575de6f  2badf8821  docs: record Calculation Options radio marks and unmarked Orientation
+aeff446fd  7089d27cf  docs: record T3c in the ribbon tabs plan
+48da15d7c  e0481359c  feat(icons): boost icons for every Formulas tab control
+0f83c8230  9aaf1b207  docs: record Formulas icons and 1920 px fit
+8d3ab49d5  059cb09f2  docs: record T4b in the ribbon tabs plan
+e200d29dc  327cdd29b  feat(sc): Formulas function menus list each category like Excel
+4c7834cff  7ae6f9b0c  fix(sc): export menu controller base and disable unusable function items
+68f206cba  ad36c130a  docs: record T4c in the ribbon tabs plan
+208481003  61935e729  feat(sc): build the Review tab like Excel's with placeholders and menus
+8bf4a3c57  e99200841  docs: record T5a in the ribbon tabs plan
+0a0354bd1  dbdab7c23  feat(sc): add Review tab icons and fit the tab at 1920 px
+f8bfe2fbd  7cd9a92a8  docs: record T5b and plan cross-tab polish in the ribbon tabs plan
+332a7f214  103789c1d  feat(sc): build the View tab like Excel's with Sheet View placeholders
+e639a7598  00857df6d  docs: record T6a in the ribbon tabs plan
+561e3d11d  77661aa08  feat(sc): add View tab icons and verify the tab fits at 1920 px
+2acf4044a  4bdd54d55  docs: record T6b in the ribbon tabs plan
+cb28b000e  3c5a13160  feat(sc): build the Help tab like Excel's with Feedback and Blog placeholders
+2269ac0ca  2f9557e42  feat(sc): add Help tab icons and verify the tab fits at 1920 px
+78b239f71  28d81d98e  docs: record T7 in the ribbon tabs plan
+bf8cef82a  d6699bc16  fix(product): put every ribbon section caption on one baseline
+8eddfc3e1  4e5a1ba06  refactor(sfx2): build the plain command's URL from the dispatch URL
+400df3dd6  1d4b8b503  fix(framework): read a menu item's bool type from its argument's type
+0a2fdae0c  e70cf9162  fix(sc): build the function menus of a closed window with items disabled
+d3158903f  eb26a2016  docs: record T8a caption baseline, dark disabled icons and review minors
+5ace51b39  cfd0ab7ff  docs: record T8a and plan T8b in the ribbon tabs plan
+1be81d47a  fbc2b58a3  fix(vcl): draw disabled images in a dark band on a dark face color
+d26c3188b  7562dbe93  docs: record T8b disabled icons in dark themes
+638d5478d  5451a6290  fix(vcl): set the dark disabled-image band by contrast, down to black
+1494b5fb9  2939a8beb  docs: record T8b in the ribbon tabs plan
+8b721205d  8235789c1  docs: reorganize the ribbon tabs reference and fix the Data menu note
+71997996f  ccd962ef5  docs: point the Data design's off-tab items at the menu bar
+c5672c456  3bb64f814  refactor(product): flag implemented placeholders, resolve labels like Calc
+172a5e632  7413e200f  test(product): walk toolboxes with gen_ribbon.boxes_of, footers included
+ec601f397  1256cd510  feat(product): regenerate all pages in one call, Extension and Tools baseline
+5cfb2cf4e  15f37ef1c  perf(sfx2): match listener keys by text instead of parsing each URL
+01bd18db3  d2848df91  docs(product): sweep the ribbon tabs docs after the final review
+8e1e9bc27  187a6b1b6  fix(framework): apply the single-bool menu rule to radio-style items only
+81759398e  246e795e0  docs: close the ribbon tabs plan pending the user gate
+43013e71d  182ee2c50  docs: record the slice review outcome in the ribbon tabs plan
