@@ -20,8 +20,9 @@ public:
 
         @param rFaceColor the color the image is drawn on (StyleSettings::GetFaceColor()).
         On a light face the result is a light grey (luminance mapped to 160-224, as it always
-        was); on a dark face it is a dark grey just above the face (luminance mapped to
-        face luminance + 0-47), so a disabled image looks dimmed in dark themes too. */
+        was); on a dark face it is a dark grey just above the face (luminance L mapped to the
+        grey at WCAG contrast 1 + L / 255 against the face, at most 2:1), so a disabled image
+        looks dimmed in dark themes too. */
     explicit BitmapDisabledImageFilter(const Color& rFaceColor = COL_LIGHTGRAY)
         : maFaceColor(rFaceColor)
     {

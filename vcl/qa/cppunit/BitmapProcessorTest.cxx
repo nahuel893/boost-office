@@ -19,6 +19,12 @@
 #include <vcl/settings.hxx>
 #include <vcl/virdev.hxx>
 
+#include <algorithm>
+#include <cmath>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include <bitmap/BitmapDisabledImageFilter.hxx>
 #include <vcl/BitmapWriteAccess.hxx>
 
@@ -28,6 +34,8 @@ class BitmapProcessorTest : public CppUnit::TestFixture
 {
     void testDisabledImage();
     void testDisabledImageOnDarkFace();
+    void testDisabledImageOnBlackFace();
+    void testDisabledImageOnVeryDarkFace();
     void testDisabledImageOnLightFace();
     void testDisabledImageOnDarkFaceKeepsAlpha();
     void testDisabledImageFollowsTheFaceColor();
@@ -35,6 +43,8 @@ class BitmapProcessorTest : public CppUnit::TestFixture
     CPPUNIT_TEST_SUITE(BitmapProcessorTest);
     CPPUNIT_TEST(testDisabledImage);
     CPPUNIT_TEST(testDisabledImageOnDarkFace);
+    CPPUNIT_TEST(testDisabledImageOnBlackFace);
+    CPPUNIT_TEST(testDisabledImageOnVeryDarkFace);
     CPPUNIT_TEST(testDisabledImageOnLightFace);
     CPPUNIT_TEST(testDisabledImageOnDarkFaceKeepsAlpha);
     CPPUNIT_TEST(testDisabledImageFollowsTheFaceColor);
@@ -57,6 +67,41 @@ const std::vector<Color> aTestColors{ COL_BLACK,
                                       Color(0x42, 0x42, 0x42), // a light-theme icon outline
                                       Color(0x00, 0x00, 0xFF),
                                       Color(0xE0, 0x40, 0x20) };
+
+// WCAG 2.1 contrast ratio of two colors.
+double lcl_contrast(const Color& rA, const Color& rB)
+{
+    auto toLinear = [](sal_uInt8 nValue) {
+        const double f = nValue / 255.0;
+        return f <= 0.04045 ? f / 12.92 : std::pow((f + 0.055) / 1.055, 2.4);
+    };
+    auto relativeLuminance = [&toLinear](const Color& rColor) {
+        return 0.2126 * toLinear(rColor.GetRed()) + 0.7152 * toLinear(rColor.GetGreen())
+               + 0.0722 * toLinear(rColor.GetBlue());
+    };
+    const double fA = relativeLuminance(rA) + 0.05;
+    const double fB = relativeLuminance(rB) + 0.05;
+    return std::max(fA, fB) / std::min(fA, fB);
+}
+
+// On a dark face, a disabled pixel of luminance L is a grey at contrast 1 + L / 255 against the
+// face (the face itself for black, 2:1 for white), whatever the dark face is, down to black.
+void lcl_checkDarkFace(const Color& rFace)
+{
+    Bitmap aDisabled(BitmapDisabledImageFilter(rFace).execute(lcl_makeRow(aTestColors)));
+    BitmapScopedReadAccess pReadAccess(aDisabled);
+    for (size_t i = 0; i < aTestColors.size(); ++i)
+    {
+        const Color aColor(pReadAccess->GetPixel(0, i));
+        std::ostringstream aMessage;
+        aMessage << "face " << rFace << ", pixel " << aTestColors[i] << " -> " << aColor;
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(aMessage.str(), int(aColor.GetRed()), int(aColor.GetGreen()));
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(aMessage.str(), int(aColor.GetRed()), int(aColor.GetBlue()));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(aMessage.str(),
+                                             1.0 + aTestColors[i].GetLuminance() / 255.0,
+                                             lcl_contrast(aColor, rFace), 0.02);
+    }
+}
 
 void BitmapProcessorTest::testDisabledImage()
 {
@@ -102,20 +147,25 @@ void BitmapProcessorTest::testDisabledImageOnDarkFace()
 {
     // A dark face (the dark ribbon background): a disabled pixel must stay in a band just above
     // the face, not turn light grey (luminance / 4 + 160) and stand out more than enabled icons.
-    const Color aFace(0x2B, 0x2B, 0x2B);
-    const sal_uInt8 nFace = aFace.GetLuminance();
-    Bitmap aDisabled(BitmapDisabledImageFilter(aFace).execute(lcl_makeRow(aTestColors)));
+    lcl_checkDarkFace(Color(0x2B, 0x2B, 0x2B));
+    lcl_checkDarkFace(Color(0x45, 0x45, 0x45));
+    Bitmap aDisabled(
+        BitmapDisabledImageFilter(Color(0x2B, 0x2B, 0x2B)).execute(lcl_makeRow(aTestColors)));
     BitmapScopedReadAccess pReadAccess(aDisabled);
-    for (size_t i = 0; i < aTestColors.size(); ++i)
-    {
-        const Color aColor(pReadAccess->GetPixel(0, i));
-        const sal_uInt8 nExpected = nFace + aTestColors[i].GetLuminance() * 3 / 16;
-        CPPUNIT_ASSERT_EQUAL(Color(nExpected, nExpected, nExpected), aColor);
-        CPPUNIT_ASSERT_GREATEREQUAL(int(nFace), int(aColor.GetLuminance()));
-        CPPUNIT_ASSERT_LESSEQUAL(int(nFace) + 48, int(aColor.GetLuminance()));
-    }
-    // white: 43 + 255 * 3 / 16
-    CPPUNIT_ASSERT_EQUAL(Color(90, 90, 90), Color(pReadAccess->GetPixel(0, 1)));
+    CPPUNIT_ASSERT_EQUAL(Color(0x2B, 0x2B, 0x2B), Color(pReadAccess->GetPixel(0, 0))); // black
+    CPPUNIT_ASSERT_EQUAL(Color(88, 88, 88), Color(pReadAccess->GetPixel(0, 1))); // white, 2:1
+}
+
+void BitmapProcessorTest::testDisabledImageOnBlackFace()
+{
+    // A black face (e.g. high contrast black): the band must not shrink to near invisible.
+    lcl_checkDarkFace(COL_BLACK);
+}
+
+void BitmapProcessorTest::testDisabledImageOnVeryDarkFace()
+{
+    // #1A1A1A: the first, fixed sRGB band was already dimmer here than on #2B2B2B.
+    lcl_checkDarkFace(Color(0x1A, 0x1A, 0x1A));
 }
 
 void BitmapProcessorTest::testDisabledImageOnLightFace()
@@ -152,7 +202,12 @@ void BitmapProcessorTest::testDisabledImageOnDarkFaceKeepsAlpha()
     Bitmap aDisabled(
         BitmapDisabledImageFilter(Color(0x2B, 0x2B, 0x2B)).execute(Bitmap(aBitmap, aMask)));
     BitmapScopedReadAccess pReadAccess(aDisabled);
-    CPPUNIT_ASSERT_EQUAL(Color(ColorAlpha, 0xAA, 90, 90, 90), Color(pReadAccess->GetPixel(0, 0)));
+    const Color aColor(pReadAccess->GetPixel(0, 0));
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0xAA), aColor.GetAlpha());
+    // 88 (2:1 against the face), give or take the rounding of the premultiplied alpha storage
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(88.0, double(aColor.GetRed()), 1.0);
+    CPPUNIT_ASSERT_EQUAL(aColor.GetRed(), aColor.GetGreen());
+    CPPUNIT_ASSERT_EQUAL(aColor.GetRed(), aColor.GetBlue());
 }
 
 void BitmapProcessorTest::testDisabledImageFollowsTheFaceColor()
@@ -177,7 +232,7 @@ void BitmapProcessorTest::testDisabledImageFollowsTheFaceColor()
         return pDev->GetPixel(Point(1, 1));
     };
     const Color aLight(223, 223, 223); // 255 / 4 + 160
-    const Color aDark(90, 90, 90); // 43 + 255 * 3 / 16
+    const Color aDark(88, 88, 88); // contrast 2:1 against #2B2B2B
     CPPUNIT_ASSERT_EQUAL(aLight, drawDisabledOn(Color(0xE4, 0xF2, 0xE8)));
     CPPUNIT_ASSERT_EQUAL(aDark, drawDisabledOn(Color(0x2B, 0x2B, 0x2B)));
     CPPUNIT_ASSERT_EQUAL(aLight, drawDisabledOn(Color(0xE4, 0xF2, 0xE8)));

@@ -598,15 +598,25 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
 - **Cause** (section 11): `BitmapDisabledImageFilter` mapped every pixel to grey `luminance / 4 + 160` whatever the
   background, so on a dark face a disabled icon was a light grey brighter than many enabled icons.
 - **Fix** (`vcl/source/bitmap/BitmapDisabledImageFilter.cxx`): the filter takes the face color it is drawn on. A light
-  face (`!IsDark()`) keeps `luminance / 4 + 160`, byte for byte. A dark face maps luminance to a band just above the
-  face: `face luminance + luminance * 3 / 16` (face .. face + 47). The band is narrower than the light one (1/4 of the
-  range) because WCAG contrast grows faster at the dark end; 3/16 was chosen by simulating the filter on the Boost
-  icons (1/8: 1.39:1, 3/16: 1.61:1, 1/4: 1.82:1 against #2B2B2B; light today: 1.55:1) and it stays at 1.49-1.60:1 for
-  any dark face from #1A1A1A to #5A5A5A. `Image::Draw` passes the output device's `StyleSettings::GetFaceColor()`
-  (the color VCL already uses to pick a dark or light toolbox arrow); `ImplImage` keys its cached disabled bitmap by
-  that face color too, so a theme switch at runtime makes it again.
+  face (`!IsDark()`) keeps `luminance / 4 + 160`, byte for byte. On a dark face a pixel of luminance L becomes the grey
+  whose WCAG contrast against the face is `1 + L / 255`: as light as the face for black, at most 2:1 for white
+  (#2B2B2B: 43..88; #000000: 0..63; #454545: 69..114). The band is set in contrast, not in sRGB levels: the first
+  version (`face + L * 3 / 16`, a fixed 48-level band) dimmed alike from #1F1F1F up but nearly vanished on black
+  (1.28:1 simulated, high contrast black), because the same sRGB step is less contrast near black. Simulated on the
+  Boost Dark icons (mean ink contrast, as in section 11), the contrast band gives 1.51:1 on #000000, 1.61:1 on
+  #1A1A1A, 1.63:1 on #2B2B2B to #5A5A5A (light today: 1.55:1). `Image::Draw` passes the output device's
+  `StyleSettings::GetFaceColor()` (the color VCL already uses to pick a dark or light toolbox arrow); `ImplImage`
+  keys its cached disabled bitmap by that face color too, so a theme switch at runtime makes it again.
+- **Intended**: a control that sets its own face color gets the band of that face. In a light theme, a disabled image
+  on a button with a dark background gets the dark band: `PushButton` draws with the face set to its control
+  background (vcl/source/control/button.cxx), and toolkit's `setButtonLikeFaceColor` sets the face of button-like
+  controls from their UNO background color (toolkit/source/awt/vclxwindows.cxx).
+- **Limitation**: the band follows the face color, not the surface actually painted under the image. A theme that
+  mixes a dark face with light menus or fields (`MenuColor`, `FieldColor`) would draw dark-on-light disabled icons
+  there.
 - **Measured** (1920 px screenshots, every icon that changed, WCAG contrast of its mean ink against the background,
-  as in section 11):
+  as in section 11; "dark after" is the first version of the band, Calc View re-measured with the contrast band:
+  1.59:1, range 1.47-1.81):
 
   | Screen | Light (before = after) | Dark before | Dark after |
   |---|---|---|---|
@@ -619,8 +629,10 @@ between the `product:Help-begin/end` markers. Two sections, all large buttons, n
   Highlighting: 2.33:1 light, 3.63:1 dark).
 - **Runtime switch**: one Calc process with system GTK colors (Adwaita), toggled light -> dark -> light by
   `.uno:ChangeTheme`: the disabled Ruler and Page Layout icons go from grey 176..255 on white to 45..93 on #2D2D2D
-  (1.63:1, 1.75:1; 7.19:1 and 7.99:1 without the fix) and back to the same light pixels. (With a LibreOffice color
+  (1.63:1, 1.75:1; 7.19:1 and 7.99:1 without the fix; measured with the first version of the band) and back to the
+  same light pixels. (With a LibreOffice color
   scheme such as Boost, a scheme change asks for a restart, so it is not a runtime switch.)
-- **Tests**: `vcl/qa/cppunit/BitmapProcessorTest.cxx` (`CppunitTest_vcl_bitmapprocessor_test`): a dark face keeps
-  each pixel in face .. face + 48; light faces give exactly today's output; alpha is kept; an image drawn disabled on
-  a light, a dark and again a light face gives the light, dark and light grey (the cache follows the face color).
+- **Tests**: `vcl/qa/cppunit/BitmapProcessorTest.cxx` (`CppunitTest_vcl_bitmapprocessor_test`): on #2B2B2B,
+  #454545, #1A1A1A and #000000 every disabled pixel is a grey at contrast `1 + L / 255` (within 0.02) against the face;
+  light faces give exactly today's output; alpha is kept; an image drawn disabled on a light, a dark and again a light
+  face gives the light, dark and light grey (the cache follows the face color).
