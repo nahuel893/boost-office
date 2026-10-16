@@ -367,6 +367,17 @@ class FunctionMenuControllerTest(unittest.TestCase):
         self.assertIn('u"' + FUNCTION_MENU_CONTROLLER + '"_ustr', self.source())
         self.assertIn("    sc/source/ui/unoobj/funcmenucontroller \\\n", read("sc/Library_sc.mk"))
 
+    def test_the_base_class_is_exported_even_when_the_libraries_are_merged(self):
+        # Release builds enable mergelibs (distro-configs): svt goes into the merged library, sc does
+        # not, so libsclo links against the base class only if it is exported unconditionally.
+        merged = read("solenv/gbuild/extensions/pre_MergedLibsList.mk")
+        self.assertRegex(merged, r"(?m)^\s+svt \\$")
+        self.assertNotRegex(merged, r"(?m)^\s+sc \\$")
+        header = read("include/svtools/popupmenucontrollerbase.hxx")
+        self.assertRegex(header, r"\bclass SVT_DLLPUBLIC PopupMenuControllerBase\b")
+        self.assertNotRegex(header, r"UNLESS_MERGELIBS\(\s*SVT_DLLPUBLIC\s*\)\s*PopupMenuControllerBase")
+        self.assertIn("#include <svtools/popupmenucontrollerbase.hxx>", self.source())
+
     def test_the_controller_derives_the_category_of_each_menu_from_its_command_as_designed(self):
         ids = self.category_ids()
         table = {m.group(1): m.group(2) for m in re.finditer(

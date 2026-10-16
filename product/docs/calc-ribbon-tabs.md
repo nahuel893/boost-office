@@ -55,6 +55,10 @@ argument the slot does not declare.
   and its page checked visible; tab texts are not exposed to UITests, so the names are checked
   only by the unit tests against the .ui), every placeholder URL disabled and inert, one family
   variant URL.
+- **Building**: a task that adds a UNO component (a `.component` entry) must run `product/dev/lo-make.sh Rdb_services`
+  after `postprocess.build`: a module build of postprocess has no component list and leaves `services.rdb` as it
+  was, so the new implementation cannot be created (T4c). `product/dev/uitest.sh` goes through the `UITest_calc_tests`
+  target, which first rebuilds whatever changed, so a RED UITest run already uses the new sources.
 
 ## 4. Insert tab (T2a)
 
@@ -360,8 +364,14 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
   of the Function Wizard (no new strings); add-in functions read from the configuration get the description only.
 - **Selection**: VCL tells only the menu that holds the item, so the controller also listens to each submenu and reads
   the command from the event's `Source`. It dispatches through `PopupMenuControllerBase::dispatchCommand`
-  (asynchronous). The items are not enabled or disabled by state (no `MenuBarManager`): with a drawing object
-  selected an item does nothing, because `InsertFunction` is disabled there.
+  (asynchronous). There is no `MenuBarManager` to follow states, so each build asks for the state of
+  `.uno:InsertFunction` once (a status listener added and removed, as `PopupMenuControllerBase::updateCommand` does)
+  and enables the function items by it: with a drawing object selected they are disabled, cannot be picked and so
+  never reach the recently used list. "Function..." is left enabled (its own slot decides when it is dispatched).
+- **Export**: `svt::PopupMenuControllerBase` was exported only without mergelibs (`UNLESS_MERGELIBS(SVT_DLLPUBLIC)`).
+  Release configurations enable mergelibs (`distro-configs/LibreOfficeLinux.conf`, Win, macOS) and svt is merged while
+  sc is not, so libsclo could not link there; the class is now `SVT_DLLPUBLIC` unconditionally (visibility only). The
+  dev build has mergelibs off, so that link is not exercised here; a unit test pins the export.
 - **Real window (gtk3, headless sway, 1920 px light)**: Financial opens a native menu of its functions (ACCRINT ...
   NPV ..., including the Analysis add-in's `_ADD` variants, which are LibreOffice's Financial category too); it is
   taller than the screen, so GTK places it from the top edge with a scroll arrow. Logical lists AND ... XOR, a separator
@@ -371,9 +381,11 @@ fit and screenshots are T4b; the eight function-category menus are T4c (below).
   MIN, MAX, IF). The tooltips do not show in the GTK native menus: `GtkSalMenu` implements no `SetItemTooltip` and
   blocks tooltips while a native popup runs; the text is set on the VCL menu (UITest) for the other VCL plugins.
 - **Tests**: `FunctionMenuControllerTest` in `test_calc_formulas_ui.py` (Popup nodes, component registration, the
-  category table against the design, submenu order and labels, the item URL, the removed popups) and five UITests:
+  category table against the design, submenu order and labels, the item URL, the removed popups, the unconditional
+  export of the base class) and six UITests:
   each single-category menu lists exactly the functions `com.sun.star.sheet.FunctionDescriptions` gives for its
   category and ends with Function...; Financial (PMT, NPV, tooltip) and Lookup & Reference (VLOOKUP, INDEX);
   More Functions' five submenus; a SUM item, selected through the controller, starts input mode with `=SUM(`; Recently
-  Used lists a typed function and then a function picked from a menu, first. They build the popup through
+  Used lists a typed function and then a function picked from a menu, first; with a drawing object selected (grid
+  `SELECT OBJECT`) the function items are disabled, and enabled again with a cell. They build the popup through
   `PopupMenuControllerFactory` without a `Value` and select an item by calling the controller's `itemSelected`.

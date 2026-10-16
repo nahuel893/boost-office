@@ -51,7 +51,7 @@ namespace svt
                         css::frame::XDispatchProvider      ,
                         css::frame::XDispatch > PopupMenuControllerBaseType;
 
-    class UNLESS_MERGELIBS(SVT_DLLPUBLIC) PopupMenuControllerBase : public PopupMenuControllerBaseType
+    class SVT_DLLPUBLIC PopupMenuControllerBase : public PopupMenuControllerBaseType
     {
         public:
             PopupMenuControllerBase( const css::uno::Reference< css::uno::XComponentContext >& xContext );

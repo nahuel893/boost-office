@@ -17,7 +17,10 @@
 
 #include <com/sun/star/awt/MenuEvent.hpp>
 #include <com/sun/star/awt/XPopupMenu.hpp>
+#include <com/sun/star/frame/XDispatchProvider.hpp>
+#include <com/sun/star/frame/XFrame.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
+#include <com/sun/star/util/XURLTransformer.hpp>
 #include <svtools/popupmenucontrollerbase.hxx>
 #include <toolkit/awt/vclxmenu.hxx>
 #include <unotools/charclass.hxx>
@@ -69,6 +72,7 @@ constexpr std::u16string_view MORE_FUNCTIONS_SUBMENUS[]
         u".uno:FormulasInformationMenu", u".uno:FormulasDatabaseMenu", u".uno:FormulasArrayMenu" };
 
 constexpr OUString FUNCTION_DIALOG = u".uno:FunctionDialog"_ustr;
+constexpr OUString INSERT_FUNCTION = u".uno:InsertFunction"_ustr;
 
 std::optional<sal_uInt16> categoryOf(std::u16string_view aCommand)
 {
@@ -102,8 +106,13 @@ public:
         return { u"com.sun.star.frame.PopupMenuController"_ustr };
     }
 
-    // XStatusListener: the menu commands have no slot, so no state ever arrives
-    void SAL_CALL statusChanged(const frame::FeatureStateEvent&) override {}
+    // XStatusListener: the menu commands have no slot; only the state of .uno:InsertFunction is
+    // asked for, once per build (updateFunctionsEnabled)
+    void SAL_CALL statusChanged(const frame::FeatureStateEvent& rEvent) override
+    {
+        if (rEvent.FeatureURL.Complete == INSERT_FUNCTION)
+            m_bFunctionsEnabled = rEvent.IsEnabled;
+    }
 
     // XPopupMenuController: called each time the dropdown opens
     void SAL_CALL updatePopupMenu() override;
@@ -112,22 +121,47 @@ public:
     void SAL_CALL itemSelected(const awt::MenuEvent& rEvent) override;
 
 private:
+    void updateFunctionsEnabled(const uno::Reference<frame::XFrame>& rxFrame);
     void fillCategory(VCLXPopupMenu& rMenu, sal_uInt16 nCategory, sal_Int16& rItemId);
-    void addFunction(VCLXPopupMenu& rMenu, const ScFuncDesc& rDesc, sal_Int16& rItemId);
+    void addFunction(VCLXPopupMenu& rMenu, const ScFuncDesc& rDesc, const CharClass& rCharClass,
+                     sal_Int16& rItemId);
 
     // The function (ScFuncDesc::nFIndex) of each function item, for the recently used list. Item
-    // ids are unique across the menu and its submenus. Guarded by the SolarMutex.
+    // ids are unique across the menu and its submenus. Guarded by the SolarMutex, like the next.
     std::unordered_map<sal_Int16, sal_uInt16> m_aFunctionOfItem;
+    // Whether .uno:InsertFunction, which every function item dispatches, is enabled
+    bool m_bFunctionsEnabled = false;
 };
+
+void FunctionMenuController::updateFunctionsEnabled(const uno::Reference<frame::XFrame>& rxFrame)
+{
+    // as PopupMenuControllerBase::updateCommand does: a status listener that is added and removed
+    // again is told the current state once (statusChanged sets m_bFunctionsEnabled)
+    m_bFunctionsEnabled = false;
+    uno::Reference<frame::XDispatchProvider> xProvider(rxFrame, uno::UNO_QUERY);
+    if (!xProvider.is())
+        return;
+    util::URL aURL;
+    aURL.Complete = INSERT_FUNCTION;
+    m_xURLTransformer->parseStrict(aURL);
+    uno::Reference<frame::XDispatch> xDispatch = xProvider->queryDispatch(aURL, OUString(), 0);
+    if (!xDispatch.is())
+        return;
+    uno::Reference<frame::XStatusListener> xListener(this);
+    xDispatch->addStatusListener(xListener, aURL);
+    xDispatch->removeStatusListener(xListener, aURL);
+}
 
 void FunctionMenuController::updatePopupMenu()
 {
     rtl::Reference<VCLXPopupMenu> xMenu;
+    uno::Reference<frame::XFrame> xFrame;
     OUString aCommand, aModule;
     {
         std::unique_lock aLock(m_aMutex);
         throwIfDisposed(aLock);
         xMenu = m_xPopupMenu;
+        xFrame = m_xFrame;
         aCommand = m_aCommandURL;
         aModule = m_aModuleName;
     }
@@ -137,6 +171,8 @@ void FunctionMenuController::updatePopupMenu()
         return;
 
     m_aFunctionOfItem.clear();
+    // e.g. disabled while a drawing object is selected: the function items cannot be picked then
+    updateFunctionsEnabled(xFrame);
     if (aCommand == MORE_FUNCTIONS)
     {
         // VCLXMenu holds on to every submenu it is given, clear() included, so the submenus are
@@ -188,36 +224,38 @@ void FunctionMenuController::fillCategory(VCLXPopupMenu& rMenu, sal_uInt16 nCate
                                           sal_Int16& rItemId)
 {
     const ScFunctionMgr* pFuncMgr = ScGlobal::GetStarCalcFunctionMgr();
+    // SID_INS_FUNCTION looks the upper-case name up among all functions (category 0), with this
+    // character class
+    const CharClass& rCharClass = *(ScGlobal::GetStarCalcFunctionList()->IsEnglishFunctionNames()
+                                        ? ScCompiler::GetCharClassEnglish()
+                                        : ScCompiler::GetCharClassLocalized());
     if (nCategory == RECENTLY_USED)
     {
         std::vector<const formula::IFunctionDescription*> aRecent;
         pFuncMgr->fillLastRecentlyUsedFunctions(aRecent);
         for (const formula::IFunctionDescription* pDesc : aRecent)
             if (auto pFuncDesc = dynamic_cast<const ScFuncDesc*>(pDesc))
-                addFunction(rMenu, *pFuncDesc, rItemId);
+                addFunction(rMenu, *pFuncDesc, rCharClass, rItemId);
         return;
     }
     // sorted by name, like the Function Wizard and the Functions sidebar
     for (const ScFuncDesc* pDesc = pFuncMgr->First(nCategory); pDesc; pDesc = pFuncMgr->Next())
-        addFunction(rMenu, *pDesc, rItemId);
+        addFunction(rMenu, *pDesc, rCharClass, rItemId);
 }
 
 void FunctionMenuController::addFunction(VCLXPopupMenu& rMenu, const ScFuncDesc& rDesc,
-                                         sal_Int16& rItemId)
+                                         const CharClass& rCharClass, sal_Int16& rItemId)
 {
     if (rDesc.isHidden()) // as in the Function Wizard
         return;
-    // SID_INS_FUNCTION looks the upper-case name up among all functions (category 0), with
-    // this character class. A function name is a formula identifier: it has no '&', '=' or '%'
-    // that would end or escape the URL argument.
-    const CharClass* pCharClass = ScGlobal::GetStarCalcFunctionList()->IsEnglishFunctionNames()
-                                      ? ScCompiler::GetCharClassEnglish()
-                                      : ScCompiler::GetCharClassLocalized();
-    const OUString aName = pCharClass->uppercase(rDesc.getFunctionName());
+    // A function name is a formula identifier: it has no '&', '=' or '%' that would end or escape
+    // the URL argument.
+    const OUString aName = rCharClass.uppercase(rDesc.getFunctionName());
     if (aName.isEmpty())
         return;
 
     rMenu.insertItem(rItemId, aName, 0, -1);
+    rMenu.enableItem(rItemId, m_bFunctionsEnabled);
     rMenu.setCommand(rItemId, ".uno:InsertFunction?FunctionName:string=" + aName
                                   + "&FunctionCategory:short=0");
     // The tooltip, as in Excel: the signature, then the short description. An add-in function
@@ -232,6 +270,10 @@ void FunctionMenuController::addFunction(VCLXPopupMenu& rMenu, const ScFuncDesc&
 
 void FunctionMenuController::itemSelected(const awt::MenuEvent& rEvent)
 {
+    {
+        std::unique_lock aLock(m_aMutex);
+        throwIfDisposed(aLock);
+    }
     OUString aCommand;
     {
         SolarMutexGuard aGuard;

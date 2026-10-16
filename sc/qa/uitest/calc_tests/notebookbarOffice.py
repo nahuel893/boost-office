@@ -972,6 +972,41 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual(["REPT", "DEGREES"], names[:2])
             self.assertEqual([FUNCTION_DIALOG], tail)
 
+    def function_item_states(self, xPopup):
+        """The set of enabled states of the function items (up to the separator)."""
+        states = set()
+        for pos in range(xPopup.getItemCount()):
+            nId = xPopup.getItemId(pos)
+            if nId == 0:
+                break
+            states.add(xPopup.isItemEnabled(nId))
+        return states
+
+    def test_formulas_function_items_are_disabled_while_insert_function_is(self):
+        # With a drawing object selected .uno:InsertFunction is disabled (no cell shell): a menu
+        # built then shows its function items disabled, so none can be picked (nor reach the
+        # recently used list); with a cell selected they are enabled.
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertTrue(self.dispatch_enabled("InsertFunction"))
+            xController, xPopup = self.menu_controller(".uno:FormulasLogicalMenu")
+            self.assertEqual({True}, self.function_item_states(xPopup))
+            xShape = document.createInstance("com.sun.star.drawing.RectangleShape")
+            xShape.Name = "T4cShape"
+            document.DrawPages.getByIndex(0).add(xShape)
+            xShape.setPosition(uno.createUnoStruct("com.sun.star.awt.Point", 1000, 1000))
+            xShape.setSize(uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000))
+            xGrid.executeAction("SELECT", mkPropertyValues({"OBJECT": "T4cShape"}))
+            self.assertFalse(self.dispatch_enabled("InsertFunction"))
+            xController.updatePopupMenu()  # the dropdown opens again
+            self.assertEqual({False}, self.function_item_states(xPopup))
+            xMore = self.menu_controller(".uno:FormulasMoreFunctionsMenu")[1]
+            self.assertEqual({False}, self.function_item_states(xMore.getPopupMenu(xMore.getItemId(0))))
+            self.select_rows(document, "A1")
+            xController.updatePopupMenu()
+            self.assertEqual({True}, self.function_item_states(xPopup))
+
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which
         # page shows. The texts are checked against the .ui by product/tests/test_calc_tabs.py
