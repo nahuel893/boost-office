@@ -304,3 +304,33 @@ fit and screenshots are T4b; the eight function-category menus are the design's 
   variants), state equal to the original for cell, range, shape, image, OLE and edit mode, a status listener on each
   hearing the same changes, the ribbon button drawn like its state, one real command per dropdown enabled, every
   popup listing its items, the Calculation Options toggle. The placeholder-button UITest now covers 41 buttons.
+
+### Formulas icons and fit (T4b)
+
+- **Icons**: 27 new boost/boost_dark manifest entries (Fluent glyphs, soft fills, same style as Home, Data, Insert and
+  Page Layout), one per control, plus the alias `formulasautosum` on the existing `autosum` entry. Large: `functiondialog`
+  (math_formula), `formulasrecentlyusedmenu` (history), `formulasfinancialmenu` (money), `formulaslogicalmenu`
+  (question_circle), `formulastextmenu` (text_t), `formulasdatetimemenu` (calendar_clock), `formulaslookupmenu`
+  (book_search), `formulasmathmenu` (math_symbols), `formulasmorefunctionsmenu` (more_horizontal),
+  `formulaspython_insert` (code_block), `definename` (tag_multiple, Manage Names), `formulaswatchwindow` (glasses),
+  `formulascalcoptionsmenu` (calculator). Small: `formulaspython_{reset,editor,init}` (arrow_reset, code_block_edit,
+  settings), `addname` (tag_add), `formulasuseinformulamenu` (tag), `createnames` (tag_edit), `showprecedents`
+  (arrow_import), `showdependents` (arrow_export), `formulasremovearrowsmenu` (dismiss), `toggleformula`
+  (math_format_linear), `formulaserrorcheckingmenu` (warning), `formulasevaluateformula` (math_format_professional),
+  `calculate` (calculator_arrow_clockwise), `formulascalculatesheet` (calculator_multiple). Four glyphs differ from
+  the design because Fluent 1.1.344 lacks them at 24 px or at all: `code_py` -> `code_block`, `code_text_edit` ->
+  `code_block_edit`, `arrow_enter` -> `arrow_import`, `table_calculator` -> `calculator_multiple`.
+- The four Python buttons are URL variants: json `icon` keys `cmd/32/formulaspython_insert.png` (large) and
+  `cmd/sc_formulaspython_{reset,editor,init}.png`. T4a had given the large button a `cmd/sc_` key; it is `cmd/32/` now
+  (the icon test checks the size prefix against the button size). Regenerating `notebookbar_office.ui` changes only
+  that line. The image flag was already on every Formulas command (T4a, `CreateNames` included), so the xcu is unchanged.
+- `test_icons.py`: every Formulas button resolves its icon in both themes (RED before: 130 missing files), and the
+  URL-variant icon names and sizes.
+- **Fit at 1920 px (measured on screenshots)**: all five sections are visible with no ">>" and no fallback step was
+  needed (the design's two icon-only columns are already in the layout). Function Library ends at x = 882, Python 1081,
+  Defined Names 1322, Formula Auditing 1602, Calculation 1773 (usable width stops near 1830). At 1600 px (dark)
+  Function Library, Python and Defined Names stay visible (last edge x = 1322); Formula Auditing and Calculation fold
+  behind ">>". At 1366 px Function Library and Python stay (last edge x = 1081); Defined Names, Formula Auditing and
+  Calculation fold.
+- **Real-window menus**: the AutoSum arrow lists Sum, Average, Count Numbers, Max, Min, a separator and Function...;
+  Calculation Options lists Automatic (checked) and Manual (unchecked) with check boxes.
