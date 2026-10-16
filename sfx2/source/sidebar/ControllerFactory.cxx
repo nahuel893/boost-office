@@ -39,6 +39,29 @@ using namespace css::uno;
 
 namespace sfx2::sidebar {
 
+namespace {
+
+/// Whether the frame has a dispatch for the command, asked the way ToolboxController::bindListener
+/// asks it (the command, else its real command when it is an alias).
+bool HasDispatch(const Reference<frame::XFrame>& rxFrame, const OUString& rsCommandName)
+{
+    try
+    {
+        if (Tools::GetDispatch(rxFrame, Tools::GetURL(rsCommandName)).is())
+            return true;
+        auto aProperties = vcl::CommandInfoProvider::GetCommandProperties(rsCommandName,
+            vcl::CommandInfoProvider::GetModuleIdentifier(rxFrame));
+        const OUString sRealCommand(vcl::CommandInfoProvider::GetRealCommandForCommand(aProperties));
+        return !sRealCommand.isEmpty() && Tools::GetDispatch(rxFrame, Tools::GetURL(sRealCommand)).is();
+    }
+    catch (const Exception&)
+    {
+        return false;
+    }
+}
+
+}
+
 Reference<lang::XComponent> ControllerFactory::CreateImageController(
     const Reference<frame::XFrame>& rxFrame,
     const Reference<awt::XWindow>& rxParentWindow)
@@ -141,7 +164,12 @@ Reference<frame::XToolbarController> ControllerFactory::CreateToolBoxController(
                     rsCommandName, aProperties, rxFrame));
             if (pToolBox->GetQuickHelpText(nItemId).isEmpty())
                 pToolBox->SetQuickHelpText(nItemId, sTooltip);
-            pToolBox->EnableItem(nItemId);
+            // update() gave the item the state of its command. A command without a dispatch (a
+            // dropdown that only opens its popup) was reported disabled for that reason alone, so
+            // enable it. Keep a disabled state that a dispatch reported: nothing sends it again
+            // while it does not change, e.g. on a second toolbox that shows the same slot.
+            if (!pToolBox->IsItemEnabled(nItemId) && !HasDispatch(rxFrame, rsCommandName))
+                pToolBox->EnableItem(nItemId);
         }
     }
 

@@ -194,6 +194,71 @@ class NotebookbarOffice(UITestCase):
         self.assertEqual(61, len(names))  # 42 slots, 19 extra family variants
         self.check_placeholders_are_disabled_and_inert(names)
 
+    def placeholder_buttons(self, src):
+        """(label, toolbox item) of every placeholder button on the generated ribbon pages.
+
+        Reads the toolbox items themselves, not a status listener: what the ribbon draws.
+        """
+        labels = {}
+        for entry in json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8")):
+            base = ".uno:" + entry["command"]
+            if "label" in entry:
+                labels[base] = entry["label"]
+            for variant, label in entry.get("variant_labels", {}).items():
+                labels[base + "?" + variant] = label
+        xCalcDoc = self.xUITest.getTopFocusWindow()
+        buttons = []
+        for path in sorted((src / "product" / "ui").glob("calc_*.json")):
+            layout = json.loads(path.read_text(encoding="utf-8"))
+            for section in layout.get("sections", []):
+                for column in section["columns"]:
+                    for box in column:
+                        xBox = xCalcDoc.getChild("bx" + layout["id_prefix"] + box["id"])
+                        for pos, item in enumerate(box["items"]):
+                            url = item.get("action") or ".uno:" + item["cmd"]
+                            if url in labels:
+                                # a box's items are inserted in order, item ids count from 1
+                                xItem = xBox.getChild("toolboxitem-%d" % (pos + 1))
+                                self.assertEqual(labels[url], get_state_as_dict(xItem)["Text"].replace("~", ""))
+                                buttons.append((labels[url], xItem))
+        # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families)
+        self.assertEqual(34, len(buttons))
+        return buttons
+
+    def check_placeholder_buttons_are_drawn_disabled(self, src):
+        buttons = self.placeholder_buttons(src)
+        # the bindings may push the slot state later than the controller is created: wait for it
+        enabled = lambda: [label for label, xItem in buttons if get_state_as_dict(xItem)["Enabled"] != "false"]
+        deadline = time.time() + 5
+        while enabled() and time.time() < deadline:
+            time.sleep(0.05)
+        self.assertEqual([], enabled(), "placeholder buttons drawn enabled")
+
+    def test_every_placeholder_button_is_drawn_disabled(self):
+        # Every variant of a family slot (Fonts/Effects, the nine chart types, ...) is its own
+        # button on the same always-disabled slot; each one must be drawn disabled, not only the first.
+        src = Path(os.environ["TDOC"]).parents[3]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_placeholder_buttons_are_drawn_disabled(src)
+            finally:
+                self.switch_to("Default")
+
+    def test_placeholder_buttons_stay_disabled_when_the_ribbon_is_built_again(self):
+        # A second build of the ribbon in the same window binds to slot states the window already
+        # knows; nothing pushes them again, so the controllers' first state must be kept.
+        src = Path(os.environ["TDOC"]).parents[3]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_placeholder_buttons_are_drawn_disabled(src)
+                self.switch_to("notebookbar_compact.ui")
+                self.switch_to(OFFICE_UI)
+                self.check_placeholder_buttons_are_drawn_disabled(src)
+            finally:
+                self.switch_to("Default")
+
     def test_insert_sections_and_toolboxes(self):
         src = Path(os.environ["TDOC"]).parents[3]
         layout = json.loads((src / "product" / "ui" / "calc_insert.json").read_text(encoding="utf-8"))
