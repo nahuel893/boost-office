@@ -220,13 +220,16 @@ class NotebookbarOffice(UITestCase):
         self.assertEqual(18, len(names))
         self.check_placeholders_are_disabled_and_inert(names)
 
-    def test_insert_dropdowns_and_menu_items_are_enabled(self):
+    def test_insert_existing_commands_are_enabled(self):
         with self.ui_test.create_doc_in_start_center("calc"):
             xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
             xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
             # the two dropdown commands have no slot: their popups are checked below
             for name in ("InsertGraphic", "Gallery", "InsertCalcTable", "InsertObjectChart",
-                         "DataDataPilotRun", "HyperlinkDialog", "InsertAnnotation", "DrawText"):
+                         "DataDataPilotRun", "HyperlinkDialog", "InsertAnnotation",
+                         "DrawText", "EditHeaderAndFooter", "FontworkGalleryFloater",
+                         "InsertSignatureLine", "InsertObject", "InsertObjectStarMath",
+                         "CharmapControl"):
                 self.assertTrue(self.dispatch_enabled(name), name)
 
     def popup_of(self, command, resource):

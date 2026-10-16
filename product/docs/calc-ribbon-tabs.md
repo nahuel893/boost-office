@@ -73,9 +73,54 @@ Comments, Text, Symbols (verbatim spec: `product/docs/design/calc-insert-tab-lay
   `action`. Placeholder tooltips read "<Label> (not available yet)".
 - **Registry**: every Insert placeholder entry in `product/tests/placeholders.json` now carries its
   `label` (family slot: `variant_labels`, one per variant); `placeholders.labels_by_url()` flattens them.
-- Icons, the 1920 px fit check and screenshots belong to T2b: the layout items have no `icon` yet.
+- **Icons (T2b)**: 35 boost/boost_dark manifest entries, one per Insert control (Fluent glyphs, soft fills,
+  same style as Home and Data): `datadatapilotrun`, `insertrecommendedpivottables`, `insertcalctable`,
+  `insertpicturesmenu`, `insertshapesmenu`, `gallery`, `insert3dmodels`, `insertsmartart`,
+  `insertscreenshot`, `insertcellcheckbox`, `insertobjectchart`, `insertpivotchart`, `insertslicer`,
+  `inserttimeline`, `hyperlinkdialog`, `insertannotation`, `drawtext`, `editheaderandfooter`,
+  `fontworkgalleryfloater`, `insertsignatureline`, `insertobject`, `insertobjectstarmath`,
+  `charmapcontrol`, plus the URL variants `insertcharttype_<type>` (nine) and `insertsparkline_<type>`
+  (three). Commands resolve their icon by name; each URL variant has an explicit `icon` key in
+  `calc_insert.json` (`cmd/sc_<name>.png` for small, `cmd/32/<name>.png` for large buttons), which avoids
+  the escaped `%3f` file names. Fluent has no 24 px `cube_add`, so 3D Models uses `cube_multiple`.
+  Every Insert command with no `icon` key already had the image flag (`Properties` = 1), so the xcu is
+  unchanged. `test_icons.py` checks every Insert button (RED before the manifest entries, 182 missing
+  files) and the variant icon names and sizes.
+- **Fit at 1920 px (measured on screenshots, Spanish-free English labels)**: the design's base layout
+  put the Symbols section behind ">>" (Text ended at x = 1715, Symbols needs about 173 px, the usable
+  width stops near 1830). The fallback ladder F1 (Filters) and F2 (Sparklines) as one column of small
+  labelled buttons saves about 109 px: all ten sections are visible, the last one ends at x = 1782,
+  no ">>". At 1600 and 1366 px (dark) Tables, Illustrations, Controls, Charts, Sparklines, Filters,
+  Links and Comments stay visible (last edge x = 1098); Text and Symbols fold behind ">>".
+- **Tab labels**: no literal "~" shows; the tab bar reads File, Home, Insert, Page Layout, Formulas,
+  Data, Review, View, Extension, Tools, Help (the "~" in the .ui labels is the mnemonic marker).
+  `calc_tabs.json` needed no change.
+- **R6 in a real window**: the Shapes arrow opens a popup with Line, Basic Shapes, Block Arrows,
+  Flowchart, Stars and Banners, Callout Shapes, Symbol Shapes, Connectors, each with a submenu arrow.
+  Hovering Basic Shapes opens the nested submenu (Rectangle ... Sinusoid, 30 entries in five groups
+  separated by lines). The entries show an empty check box and no shape glyph. That settles R6 for
+  nested submenus opening from a ribbon dropdown; whether a click on an entry draws the shape was
+  not exercised in the window.
 
-Risks settled in T2a: R6 (the Shapes popup builds its Line submenu and the seven toolbar-submenu
-entries from a ribbon dropdown), R3 (`InsertSparkline?Type:string=...` stays enabled and opens the
-Sparkline dialog; sfx2 ignores the undeclared argument) and R12 (no duplicate widget id in the
-whole office `.ui`). The UITests that prove them are in `notebookbarOffice.py`.
+Risks: R3 (`InsertSparkline?Type:string=...` stays enabled and opens the Sparkline dialog; sfx2 ignores
+the undeclared argument) and R12 (no duplicate widget id in the whole office `.ui`) are proven by
+UITests in `notebookbarOffice.py`. R6 is only half proven by those: they build the Shapes popup
+through the menu controller, which shows its items exist, not that a real window opens nested
+submenus from the ribbon button. The real-window check above (T2b) is what shows they open.
+
+## 5. Screenshot tool (`product/dev/shot-tab.sh`)
+
+```
+product/dev/shot-tab.sh THEME TAB OUT.png [WIDTH]     # light|dark, e.g. dark Insert /tmp/x.png 1600
+```
+
+Starts a private headless sway (`WLR_BACKENDS=headless`, one output of 1920x1080, 1600x900 or
+1366x768, its own Wayland and IPC sockets), the dev build in the dev profile with calc.sh's light or
+dark settings, clicks the tab and grabs the output with grim. The headless seat has no input device,
+so a small embedded Wayland client creates a `zwlr_virtual_pointer_v1` and clicks through a FIFO.
+The tab label is found by its ink on the tab bar and its position in the tab order (no OCR: this
+machine has no tesseract language data); `TAB` `-` keeps the tab Calc opens with. Only its own PIDs
+are killed, the whole run is under `timeout` (180 s), and it refuses to start while the dev profile is
+in use. `SHOT_AFTER='echo "click X Y" > "$SHOT_PTR"; sleep 2'` runs extra pointer commands (`move`,
+`click`, `press`, `release`, `wait`) before the capture, which is how the Shapes popup was captured;
+`SHOT_KEEP=1` leaves sway running. Screenshots belong outside the repository.
