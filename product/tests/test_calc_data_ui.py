@@ -35,7 +35,7 @@ SPLITS = {  # command: (label, body command, popup resource, popup items)
 }
 # split slot -> slot it mirrors (every invalidation of the original must also hit the new one)
 SPLIT_SLOTS = {"FID_DATA_REFRESH": "SID_REFRESH_DBAREA", "FID_DATA_GROUP": "SID_OUTLINE_MAKE",
-               "FID_DATA_UNGROUP": "SID_OUTLINE_REMOVE"}
+               "FID_DATA_UNGROUP": "SID_OUTLINE_REMOVE", "FID_FORMULAS_AUTOSUM": "SID_AUTO_SUM"}
 NO_IMAGE_OK = {"NumberFormatType"}  # Home's number-format dropdown shows text, not an image
 MENUS = {
     "DataOtherSourcesMenu": ("Other Sources", "data_othersources"),

@@ -543,6 +543,8 @@ static_assert(SID_PREVIEW_END < SID_KEYFUNC_START, "calc slots ids trampling inf
 #define FID_DATA_REFRESH        (SID_NEW_SLOTS+12)
 #define FID_DATA_GROUP          (SID_NEW_SLOTS+13)
 #define FID_DATA_UNGROUP        (SID_NEW_SLOTS+14)
+// Formulas tab AutoSum split body: same Execute (no state method) as SID_AUTO_SUM
+#define FID_FORMULAS_AUTOSUM    (SID_NEW_SLOTS+15)
 // Page Layout tab alias: only carries Excel's label "Print Titles", state/execute of SID_OPENDLG_EDIT_PRINTAREA
 #define FID_PAGELAYOUT_PRINT_TITLES (SID_NEW_SLOTS+16)
 

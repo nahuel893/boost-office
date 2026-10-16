@@ -7776,6 +7776,24 @@ SfxVoidItem AutoSum SID_AUTO_SUM
     GroupId = SfxGroupId::Intern;
 ]
 
+SfxVoidItem FormulasAutoSum FID_FORMULAS_AUTOSUM
+()
+[
+    AutoUpdate = FALSE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+
+    AccelConfig = FALSE,
+    MenuConfig = FALSE,
+    ToolBoxConfig = TRUE,
+    GroupId = SfxGroupId::Intern;
+]
+
 
 SfxVoidItem MoveKeepInsertMode FID_MOVE_KEEP_INSERT_MODE
 (SfxBoolItem Enable FID_MOVE_KEEP_INSERT_MODE)

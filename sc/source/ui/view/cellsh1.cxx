@@ -3245,6 +3245,7 @@ void ScCellShell::ExecuteEdit( SfxRequest& rReq )
             break;
 
         case SID_AUTO_SUM:
+        case FID_FORMULAS_AUTOSUM:
             {
                 const SfxItemSet *pArgs = rReq.GetArgs();
                 const OUString sFunction = pArgs ?
