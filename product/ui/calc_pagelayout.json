@@ -1,0 +1,57 @@
+{
+  "page": "phbLayout",
+  "id_prefix": "PageLayout",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu Page"],
+  "sections": [
+    {"name": "Themes", "caption": "Themes", "rows": 3, "columns": [
+      [{"id": "Themes", "style": "large", "items": [{"cmd": "ChooseDesign"}]}],
+      [{"id": "Colors", "style": "small-label", "items": [{"cmd": "ThemeDialog"}]},
+       {"id": "Fonts", "style": "small-label", "items": [
+          {"cmd": "ThemeFonts", "icon": "cmd/sc_pagelayoutthemepart_fonts.png",
+           "action": ".uno:PageLayoutThemePart?Part:string=fonts"}]},
+       {"id": "Effects", "style": "small-label", "items": [
+          {"cmd": "ThemeEffects", "icon": "cmd/sc_pagelayoutthemepart_effects.png",
+           "action": ".uno:PageLayoutThemePart?Part:string=effects"}]}]
+    ]},
+    {"name": "PageSetup", "caption": "Page Setup", "rows": 3, "columns": [
+      [{"id": "Margins", "style": "large", "items": [{"cmd": "PageLayoutMarginsMenu", "kind": "split"}]}],
+      [{"id": "Orientation", "style": "large", "items": [{"cmd": "PageLayoutOrientationMenu", "kind": "split"}]}],
+      [{"id": "Size", "style": "large", "items": [{"cmd": "PageLayoutSizeMenu", "kind": "split"}]}],
+      [{"id": "PrintArea", "style": "large", "items": [{"cmd": "PageLayoutPrintAreaMenu", "kind": "split"}]}],
+      [{"id": "Breaks", "style": "large", "items": [{"cmd": "PageLayoutBreaksMenu", "kind": "split"}]}],
+      [{"id": "Background", "style": "large", "items": [{"cmd": "PageLayoutBackground"}]}],
+      [{"id": "PrintTitles", "style": "large", "items": [{"cmd": "PageLayoutPrintTitles"}]}]
+    ]},
+    {"name": "ScaleToFit", "caption": "Scale to Fit", "rows": 3, "columns": [
+      [{"id": "ScaleWidth", "style": "small-label", "items": [
+          {"cmd": "ScaleWidth", "icon": "cmd/sc_pagelayoutscaletofit_width.png",
+           "action": ".uno:PageLayoutScaleToFit?Dimension:string=width"}]},
+       {"id": "ScaleHeight", "style": "small-label", "items": [
+          {"cmd": "ScaleHeight", "icon": "cmd/sc_pagelayoutscaletofit_height.png",
+           "action": ".uno:PageLayoutScaleToFit?Dimension:string=height"}]},
+       {"id": "ScalePercent", "style": "small-label", "items": [
+          {"cmd": "ScalePercent", "icon": "cmd/sc_pagelayoutscaletofit_scale.png",
+           "action": ".uno:PageLayoutScaleToFit?Dimension:string=scale"}]}]
+    ]},
+    {"name": "SheetOptions", "caption": "Sheet Options", "rows": 3, "columns": [
+      [{"id": "SheetRightToLeft", "style": "large", "items": [{"cmd": "SheetRightToLeft"}]}],
+      [{"id": "ViewGridLines", "style": "small-label", "items": [{"cmd": "ToggleSheetGrid"}]},
+       {"id": "PrintGridlines", "style": "small-label", "items": [
+          {"cmd": "PrintGridlines", "icon": "cmd/sc_pagelayoutprintoption_gridlines.png",
+           "action": ".uno:PageLayoutPrintOption?Option:string=gridlines"}]}],
+      [{"id": "ViewHeaders", "style": "small-label", "items": [{"cmd": "ViewRowColumnHeaders"}]},
+       {"id": "PrintHeadings", "style": "small-label", "items": [
+          {"cmd": "PrintHeadings", "icon": "cmd/sc_pagelayoutprintoption_headings.png",
+           "action": ".uno:PageLayoutPrintOption?Option:string=headings"}]}]
+    ]},
+    {"name": "Arrange", "caption": "Arrange", "rows": 3, "columns": [
+      [{"id": "BringForward", "style": "large", "items": [{"cmd": "PageLayoutBringForwardMenu", "kind": "split"}]}],
+      [{"id": "SendBackward", "style": "large", "items": [{"cmd": "PageLayoutSendBackwardMenu", "kind": "split"}]}],
+      [{"id": "SelectionPane", "style": "large", "items": [{"cmd": "Navigator"}]}],
+      [{"id": "Align", "style": "large", "items": [{"cmd": "PageLayoutAlignMenu", "kind": "split"}]}],
+      [{"id": "Group", "style": "large", "items": [{"cmd": "PageLayoutGroupMenu", "kind": "split"}]}],
+      [{"id": "Rotate", "style": "large", "items": [{"cmd": "PageLayoutRotateMenu", "kind": "split"}]}]
+    ]}
+  ]
+}

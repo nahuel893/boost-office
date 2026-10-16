@@ -49,6 +49,16 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/notebookbar \
 	sc/uiconfig/scalc/popupmenu/oleobject \
 	sc/uiconfig/scalc/popupmenu/pagebreak \
+	sc/uiconfig/scalc/popupmenu/pagelayout_align \
+	sc/uiconfig/scalc/popupmenu/pagelayout_breaks \
+	sc/uiconfig/scalc/popupmenu/pagelayout_bringforward \
+	sc/uiconfig/scalc/popupmenu/pagelayout_group \
+	sc/uiconfig/scalc/popupmenu/pagelayout_margins \
+	sc/uiconfig/scalc/popupmenu/pagelayout_orientation \
+	sc/uiconfig/scalc/popupmenu/pagelayout_printarea \
+	sc/uiconfig/scalc/popupmenu/pagelayout_rotate \
+	sc/uiconfig/scalc/popupmenu/pagelayout_sendbackward \
+	sc/uiconfig/scalc/popupmenu/pagelayout_size \
 	sc/uiconfig/scalc/popupmenu/pivot \
 	sc/uiconfig/scalc/popupmenu/preview \
 	sc/uiconfig/scalc/popupmenu/printranges \

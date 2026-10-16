@@ -141,12 +141,17 @@
   "variants": [
    "Part:string=fonts",
    "Part:string=effects"
-  ]
+  ],
+  "variant_labels": {
+   "Part:string=fonts": "Fonts",
+   "Part:string=effects": "Effects"
+  }
  },
  {
   "slot": "FID_PAGELAYOUT_BACKGROUND",
   "offset": 400,
-  "command": "PageLayoutBackground"
+  "command": "PageLayoutBackground",
+  "label": "Background"
  },
  {
   "slot": "FID_PAGELAYOUT_SCALE_TO_FIT",
@@ -156,7 +161,12 @@
    "Dimension:string=width",
    "Dimension:string=height",
    "Dimension:string=scale"
-  ]
+  ],
+  "variant_labels": {
+   "Dimension:string=width": "Width",
+   "Dimension:string=height": "Height",
+   "Dimension:string=scale": "Scale"
+  }
  },
  {
   "slot": "FID_PAGELAYOUT_PRINT_OPTION",
@@ -165,7 +175,11 @@
   "variants": [
    "Option:string=gridlines",
    "Option:string=headings"
-  ]
+  ],
+  "variant_labels": {
+   "Option:string=gridlines": "Print Gridlines",
+   "Option:string=headings": "Print Headings"
+  }
  },
  {
   "slot": "FID_FORMULAS_PYTHON",

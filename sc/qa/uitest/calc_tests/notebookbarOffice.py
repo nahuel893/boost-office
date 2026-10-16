@@ -295,6 +295,167 @@ class NotebookbarOffice(UITestCase):
         # listener hears "disabled" and a dispatch changes nothing (risk R3).
         self.check_placeholders_are_disabled_and_inert(["InsertChartType?Type:string=map"])
 
+    def page_style(self, document):
+        xSheet = document.Sheets.getByIndex(0)
+        return document.StyleFamilies.getByName("PageStyles").getByName(xSheet.PageStyle)
+
+    def test_pagelayout_margin_presets_work_through_url_arguments(self):
+        # risk R4 spike: complex items (SvxLRSpaceItem, SvxULSpaceItem) as "Page.<Member>" URL arguments
+        presets = {
+            "Normal": (1778, 1778, 1905, 1905), "Wide": (2540, 2540, 2540, 2540),
+            "Narrow": (635, 635, 1905, 1905)}
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            for name, (left, right, upper, lower) in presets.items():
+                self.xUITest.executeCommand(
+                    ".uno:CalcPageMargin?Page.LeftMargin:long=%d&Page.RightMargin:long=%d"
+                    "&Page.TopMargin:long=%d&Page.BottomMargin:long=%d" % (left, right, upper, lower))
+                xStyle = self.page_style(document)
+                got = (xStyle.LeftMargin, xStyle.RightMargin, xStyle.TopMargin, xStyle.BottomMargin)
+                self.assertEqual((left, right, upper, lower), got, name)
+
+    def test_pagelayout_orientation_and_size_variants_change_the_page_style(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.xUITest.executeCommand(".uno:Orientation?isLandscape:bool=true")
+            xStyle = self.page_style(document)
+            self.assertTrue(xStyle.IsLandscape)
+            self.assertGreater(xStyle.Width, xStyle.Height)
+            self.xUITest.executeCommand(".uno:Orientation?isLandscape:bool=false")
+            self.assertFalse(xStyle.IsLandscape)
+            self.assertLess(xStyle.Width, xStyle.Height)
+            self.xUITest.executeCommand(".uno:CalcPageSize?PaperFormat:short=8")  # Letter
+            self.assertEqual((21590, 27940), (xStyle.Width, xStyle.Height))
+
+    def test_pagelayout_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_pagelayout.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(5, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_pagelayout_placeholders_are_disabled_and_inert(self):
+        # 4 slots: Fonts/Effects, Background, Width/Height/Scale, Print Gridlines/Print Headings
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 399 <= e["offset"] <= 402)
+        self.assertEqual(8, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_pagelayout_print_titles_alias_follows_its_original_and_opens_the_same_dialog(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
+            self.assertTrue(self.dispatch_enabled("EditPrintArea"))
+            self.assertTrue(self.dispatch_enabled("PageLayoutPrintTitles"))
+            with self.ui_test.execute_modeless_dialog_through_command(
+                    ".uno:PageLayoutPrintTitles", close_button="cancel") as xDialog:
+                # the Edit Print Ranges dialog: print range, rows and columns to repeat
+                self.assertIsNotNone(xDialog.getChild("edprintarea"))
+                self.assertIsNotNone(xDialog.getChild("edrepeatrow"))
+                self.assertIsNotNone(xDialog.getChild("edrepeatcol"))
+            # with a drawing object selected the original is disabled, and so is the alias
+            xShape = self.select_new_shape(document, 1000)
+            self.assertIsNotNone(xShape)
+            self.assertFalse(self.dispatch_enabled("EditPrintArea"))
+            self.assertFalse(self.dispatch_enabled("PageLayoutPrintTitles"))
+            self.select_rows(document, "A1")  # selecting a cell range leaves drawing mode
+            self.assertEqual(self.dispatch_enabled("EditPrintArea"), self.dispatch_enabled("PageLayoutPrintTitles"))
+            self.assertTrue(self.dispatch_enabled("PageLayoutPrintTitles"))
+
+    def select_new_shape(self, document, x, count=1):
+        """Add `count` rectangles to the first sheet, select them all, return the last one."""
+        xPage = document.DrawPages.getByIndex(0)
+        xShapes = self.xContext.ServiceManager.createInstance("com.sun.star.drawing.ShapeCollection")
+        xShape = None
+        for n in range(count):
+            xShape = document.createInstance("com.sun.star.drawing.RectangleShape")
+            xPage.add(xShape)
+            xShape.setPosition(uno.createUnoStruct("com.sun.star.awt.Point", x + 4000 * n, 1000))
+            xShape.setSize(uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000))
+            xShapes.add(xShape)
+        document.CurrentController.select(xShapes)
+        return xShape
+
+    def test_pagelayout_each_dropdown_has_an_enabled_command(self):
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            for name in ("PageFormatDialog",                                  # Margins
+                         "Orientation?isLandscape:bool=true",                 # Orientation
+                         "CalcPageSize?PaperFormat:short=4",                  # Size
+                         "DefinePrintArea", "InsertRowBreak"):                # Print Area, Breaks
+                self.assertTrue(self.dispatch_enabled(name), name)
+            # the Arrange dropdowns act on drawing objects: disabled without one ...
+            for name in ("ObjectForwardOne", "BringToFront", "ObjectBackOne", "SendToBack",
+                         "ObjectAlignLeft", "FormatGroup", "ObjectMirrorVertical"):
+                self.assertFalse(self.dispatch_enabled(name), name)
+            # ... and enabled once two shapes are selected
+            self.select_new_shape(document, 1000, 2)
+            for name in ("ObjectForwardOne", "BringToFront", "ObjectBackOne", "SendToBack",
+                         "ObjectAlignLeft", "FormatGroup", "ObjectMirrorVertical", "TransformDialog"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_pagelayout_dropdown_popups_list_their_items(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            expected = {
+                ("PageLayoutMarginsMenu", "pagelayout_margins"): 4,
+                ("PageLayoutOrientationMenu", "pagelayout_orientation"): 2,
+                ("PageLayoutSizeMenu", "pagelayout_size"): 13,
+                ("PageLayoutPrintAreaMenu", "pagelayout_printarea"): 4,
+                ("PageLayoutBreaksMenu", "pagelayout_breaks"): 3,
+                ("PageLayoutBringForwardMenu", "pagelayout_bringforward"): 2,
+                ("PageLayoutSendBackwardMenu", "pagelayout_sendbackward"): 2,
+                ("PageLayoutAlignMenu", "pagelayout_align"): 8,
+                ("PageLayoutGroupMenu", "pagelayout_group"): 2,
+                ("PageLayoutRotateMenu", "pagelayout_rotate"): 4}
+            for (command, resource), count in expected.items():
+                xPopup = self.popup_of(".uno:" + command, resource)
+                self.assertEqual(count, len(self.popup_commands(xPopup)), command)
+
+    def command_label(self, url):
+        """The label the framework resolves for a command URL (what a menu item shows)."""
+        xDescriptions = self.xContext.getValueByName("/singletons/com.sun.star.frame.theUICommandDescription")
+        xModule = xDescriptions.getByName("com.sun.star.sheet.SpreadsheetDocument")
+        props = {p.Name: p.Value for p in xModule.getByName(url)}
+        return props["Label"].replace("~", "")
+
+    def test_pagelayout_variant_menu_items_resolve_their_labels_and_are_not_all_checked(self):
+        # risk R9: .uno:Orientation has one boolean state; both argument variants must not both show a check mark
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:PageLayoutOrientationMenu", "pagelayout_orientation")
+            commands = self.popup_commands(xPopup)
+            self.assertEqual([".uno:Orientation?isLandscape:bool=false", ".uno:Orientation?isLandscape:bool=true"],
+                             commands)
+            self.assertEqual(["Portrait", "Landscape"], [self.command_label(c) for c in commands])
+            checked = [xPopup.isItemChecked(xPopup.getItemId(pos)) for pos in range(xPopup.getItemCount())]
+            self.assertLess(sum(checked), 2, "both Orientation variants are checked: %s" % checked)
+            xPopup = self.popup_of(".uno:PageLayoutSizeMenu", "pagelayout_size")
+            self.assertEqual("Letter", self.command_label(self.popup_commands(xPopup)[0]))
+            xPopup = self.popup_of(".uno:PageLayoutMarginsMenu", "pagelayout_margins")
+            self.assertEqual(["Normal", "Wide", "Narrow"],
+                             [self.command_label(c) for c in self.popup_commands(xPopup)[:3]])
+
+    def test_pagelayout_breaks_dropdown_builds_its_submenus(self):
+        # risk R6, second half: the menu bar's own submenus inside a ribbon dropdown
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:PageLayoutBreaksMenu", "pagelayout_breaks")
+            self.assertEqual([".uno:InsertBreakMenu", ".uno:DelBreakMenu", ".uno:DeleteAllBreaks"],
+                             self.popup_commands(xPopup))
+            xInsert = xPopup.getPopupMenu(xPopup.getItemId(0))
+            self.assertEqual([".uno:InsertRowBreak", ".uno:InsertColumnBreak"], self.popup_commands(xInsert))
+            xDelete = xPopup.getPopupMenu(xPopup.getItemId(1))
+            self.assertEqual([".uno:DeleteRowbreak", ".uno:DeleteColumnbreak"], self.popup_commands(xDelete))
+
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which
         # page shows. The texts are checked against the .ui by product/tests/test_calc_tabs.py

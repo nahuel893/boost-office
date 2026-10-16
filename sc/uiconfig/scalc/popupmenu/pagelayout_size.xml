@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * This file is part of the LibreOffice project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+-->
+<menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=8"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=9"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=10"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=23"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=38"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=3"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=4"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=5"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=34"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=35"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=28"/>
+  <menu:menuitem menu:id=".uno:CalcPageSize?PaperFormat:short=17"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:PageFormatDialog"/>
+</menu:menupopup>

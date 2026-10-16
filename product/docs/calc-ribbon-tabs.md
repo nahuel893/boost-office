@@ -124,3 +124,38 @@ are killed, the whole run is under `timeout` (180 s), and it refuses to start wh
 in use. `SHOT_AFTER='echo "click X Y" > "$SHOT_PTR"; sleep 2'` runs extra pointer commands (`move`,
 `click`, `press`, `release`, `wait`) before the capture, which is how the Shapes popup was captured;
 `SHOT_KEEP=1` leaves sway running. Screenshots belong outside the repository.
+
+## 6. Page Layout tab (T3a)
+
+`product/ui/calc_pagelayout.json` (page `phbLayout`, prefix `PageLayout`) replaces the upstream Layout page
+and removes `Menu Page`. Five sections in Excel's order: Themes, Page Setup, Scale to Fit, Sheet Options,
+Arrange (verbatim spec: `product/docs/design/calc-pagelayout-tab-layout.txt`). Icons, the 1920 px fit and
+screenshots are T3b.
+
+- **Ten dropdowns** (`.uno:PageLayout{Margins,Orientation,Size,PrintArea,Breaks,BringForward,SendBackward,
+  Align,Group,Rotate}Menu`): config only, as on Data (label, `ResourceMenuController` + `GenericPopupToolbarController`
+  nodes, `popupmenu/pagelayout_*.xml` in `UIConfig_scalc.mk`). The Breaks popup reuses the menu bar's
+  `.uno:InsertBreakMenu` / `.uno:DelBreakMenu` submenus; R6 is now proven for them by a UITest.
+- **URL variants in menus** (config only, label nodes in `CalcCommands.xcu`): `Orientation?isLandscape:bool=`
+  (2), `CalcPageSize?PaperFormat:short=` (12), `CalcPageMargin?Page.LeftMargin:long=..` (3 presets).
+- **Placeholders**: Fonts, Effects (+399), Background (+400), Width, Height, Scale (+401), Print Gridlines,
+  Print Headings (+402) have labels, "(not available yet)" tooltips and registry labels
+  (`variant_labels` in `placeholders.json`). Variant buttons carry the icon key `cmd/sc_<base>_<value>.png`.
+- **Print Titles alias** `.uno:PageLayoutPrintTitles` = `FID_PAGELAYOUT_PRINT_TITLES` = `SID_NEW_SLOTS+16`
+  (was unused). Mirrors `SID_OPENDLG_EDIT_PRINTAREA`: same `Execute`/`GetState` (`tabvwsh3.cxx`, `tabvwsha.cxx`),
+  ReadOnlyDoc FALSE. The original is declared in `TableSelection` (docsh.sdi) and disabled in drawing modes by
+  drawsh.sdi/drtxtob.sdi; those files were outside T3a's edit surface, so the alias is declared in the sibling
+  interface `Tables` of the same shell (`tabvwsh.sdi`) and its `GetState` disables it when `bActiveDrawSh` or
+  `bActiveDrawTextSh` is set (same effect, one UITest compares it with the original). Nothing invalidates the
+  original (checked with rg), so there is no invalidation mirror; `PrintTitlesAliasTest` scans `sc/source` and
+  fails if one appears without its mirror.
+- **Spikes**
+  - R4 margin presets: they work through URL arguments, but the design's member names were wrong. The
+    `SvxULSpaceItem` members are `TopMargin` / `BottomMargin` (svxitems.sdi), not `UpperMargin` / `LowerMargin`.
+    The three presets stay (no slot spent); values are 1/100 mm and the page style reads them back unchanged
+    (UITest).
+  - R8: `.uno:Orientation` is never a ribbon item; unit test over every page layout and the office `.ui`.
+  - R9: the Orientation menu items (two variants of one boolean state) are not both checked (UITest, the
+    popup is built by the real menu controller). No check marks are part of the design.
+- Menu item texts of an awt popup built by the controller are empty until the menu is shown; the UITests resolve
+  labels through `theUICommandDescription` instead.

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * This file is part of the LibreOffice project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+-->
+<menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
+  <menu:menuitem menu:id=".uno:CalcPageMargin?Page.LeftMargin:long=1778&amp;Page.RightMargin:long=1778&amp;Page.TopMargin:long=1905&amp;Page.BottomMargin:long=1905"/>
+  <menu:menuitem menu:id=".uno:CalcPageMargin?Page.LeftMargin:long=2540&amp;Page.RightMargin:long=2540&amp;Page.TopMargin:long=2540&amp;Page.BottomMargin:long=2540"/>
+  <menu:menuitem menu:id=".uno:CalcPageMargin?Page.LeftMargin:long=635&amp;Page.RightMargin:long=635&amp;Page.TopMargin:long=1905&amp;Page.BottomMargin:long=1905"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:PageFormatDialog"/>
+</menu:menupopup>

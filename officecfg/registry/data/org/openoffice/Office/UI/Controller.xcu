@@ -512,6 +512,146 @@
           <value>data_othersources</value>
         </prop>
       </node>
+      <node oor:name="PageLayoutMarginsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutMarginsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_margins</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutOrientationMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutOrientationMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_orientation</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSizeMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSizeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_size</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutPrintAreaMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutPrintAreaMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_printarea</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBreaksMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBreaksMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_breaks</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBringForwardMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBringForwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_bringforward</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSendBackwardMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSendBackwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_sendbackward</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutAlignMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutAlignMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_align</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutGroupMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutGroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_group</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutRotateMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutRotateMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>pagelayout_rotate</value>
+        </prop>
+      </node>
       <node oor:name="InsertPicturesMenuPopup" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:InsertPicturesMenu</value>
@@ -2383,6 +2523,116 @@
       <node oor:name="DataOtherSourcesMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:DataOtherSourcesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutMarginsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutMarginsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutOrientationMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutOrientationMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSizeMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSizeMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutPrintAreaMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutPrintAreaMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBreaksMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBreaksMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBringForwardMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBringForwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSendBackwardMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSendBackwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutAlignMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutAlignMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutGroupMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutGroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutRotateMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutRotateMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>
