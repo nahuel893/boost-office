@@ -93,6 +93,11 @@ class IconThemeTest(unittest.TestCase):
         self.assertGreater(len(list(page.iter("object"))), 20)
         self.assertEqual([], self.missing_icons(page))
 
+    def test_every_help_button_has_an_icon(self):
+        page = tab_page("Help")
+        self.assertEqual(7, sum(1 for o in page.iter("object") if o.get("class") == "GtkToolButton"))
+        self.assertEqual([], self.missing_icons(page))
+
     def test_insert_url_variants_use_plain_icon_names_of_the_right_size(self):
         self.check_url_variant_icons("Insert")
 

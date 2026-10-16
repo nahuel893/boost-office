@@ -509,3 +509,25 @@ screenshots are T6b (the variant buttons already carry their icon names). No C++
 - **Real-window menu**: with New Window clicked once (two windows of one document), Switch Windows lists
   "Untitled 1" (selected, radio mark) and "Untitled 1 : 2", so the framework WindowListMenuController fills a popup
   opened from the ribbon button.
+
+## 10. Help tab (T7)
+
+`product/ui/calc_help.json` (page `phbHelp`, prefix `Help`, no `remove_objects`) fills the empty `pmhbHelp` box
+between the `product:Help-begin/end` markers. Two sections, all large buttons, no menus, no launchers
+(verbatim spec: `product/docs/design/calc-help-tab-layout.txt`):
+
+- **Help**: `.uno:HelpIndex` (shows "%PRODUCTNAME Help", so "LibreOffice Help"), `.uno:QuestionAnswers` ("Get Help
+  Online"), `.uno:HelpFeedback` (placeholder +419), `.uno:Documentation` ("User Guides"), `.uno:WhatsNew`.
+- **Community**: `.uno:GetInvolved`, `.uno:HelpBlog` (placeholder +420, labelled "Blog": the label must not carry
+  Microsoft's product name).
+- Labels: `Feedback` and `Blog` nodes in `CalcCommands.xcu` with the "(not available yet)" tooltips and the image
+  flag; the registry (`placeholders.json`) carries both labels. The five existing commands already had labels and
+  the image flag. No dropdown, so no Controller.xcu or popup file.
+- **Icons**: 7 boost/boost_dark manifest entries, all large: `helpindex` (question_circle), `questionanswers`
+  (person_support), `helpfeedback` (person_feedback), `documentation` (hat_graduation), `whatsnew` (sparkle),
+  `getinvolved` (people_community), `helpblog` (news).
+- **Fit at 1920 px**: the page ends at x = 611 of about 1875 px; nothing to reduce.
+- Tests: `test_calc_help_ui.py` (layout, labels, registry, ids, suppr, reproducibility), `test_icons.py` (every Help
+  button resolves its icon) and the `test_help_*` UITests (sections and toolboxes, both placeholders disabled and
+  inert and drawn disabled while the other five buttons are drawn enabled, labels). The drawn-disabled count is now
+  62 buttons.
