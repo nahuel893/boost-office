@@ -130,13 +130,15 @@ class CalcFormulasUiTest(unittest.TestCase):
         self.assertEqual(12 + 1, len([i for i in self.items() if i.get("kind") == "split"]))
 
     def test_url_variants_carry_a_short_id_the_url_as_action_and_a_plain_icon_name(self):
-        variants = [i for i in self.items() if "action" in i]
+        variants = [(b["style"], i) for s in self.layout["sections"] for b in self.boxes(s)
+                    for i in b["items"] if "action" in i]
         self.assertEqual(4, len(variants))
-        for item in variants:
+        for style, item in variants:
             self.assertRegex(item["cmd"], r"^[A-Za-z0-9]+$")
             base, value = re.match(r"\.uno:(\w+)\?\w+:\w+=(\w+)$", item["action"]).groups()
-            self.assertEqual("cmd/sc_%s_%s.png" % (base.lower(), value), item["icon"], item["cmd"])
-        self.assertEqual(len(variants), len({i["cmd"] for i in variants}))
+            prefix = "cmd/32/" if style == "large" else "cmd/sc_"
+            self.assertEqual("%s%s_%s.png" % (prefix, base.lower(), value), item["icon"], item["cmd"])
+        self.assertEqual(len(variants), len({i["cmd"] for _s, i in variants}))
 
     def test_the_old_functions_page_children_are_gone(self):
         for old in ("btnFunctionsAutoSum", "btnFunctionsSolverDialog", "btnFunctionsGoalSeekDialog",

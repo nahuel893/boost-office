@@ -6507,7 +6507,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="action-name">.uno:FormulasPython?Action:string=insert</property>
-                                    <property name="icon_name">cmd/sc_formulaspython_insert.png</property>
+                                    <property name="icon_name">cmd/32/formulaspython_insert.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

@@ -18,7 +18,7 @@
     ]},
     {"name": "Python", "caption": "Python", "rows": 3, "columns": [
       [{"id": "PythonInsert", "style": "large", "items": [
-          {"cmd": "PythonInsert", "icon": "cmd/sc_formulaspython_insert.png",
+          {"cmd": "PythonInsert", "icon": "cmd/32/formulaspython_insert.png",
            "action": ".uno:FormulasPython?Action:string=insert"}]}],
       [{"id": "PythonReset", "style": "small-label", "items": [
           {"cmd": "PythonReset", "icon": "cmd/sc_formulaspython_reset.png",
