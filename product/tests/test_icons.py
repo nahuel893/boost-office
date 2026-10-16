@@ -73,9 +73,21 @@ class IconThemeTest(unittest.TestCase):
         self.assertGreater(len(list(page.iter("object"))), 40)
         self.assertEqual([], self.missing_icons(page))
 
+    def test_every_page_layout_button_has_an_icon(self):
+        page = tab_page("PageLayout")
+        self.assertGreater(len(list(page.iter("object"))), 25)
+        self.assertEqual([], self.missing_icons(page))
+
     def test_insert_url_variants_use_plain_icon_names_of_the_right_size(self):
+        self.check_url_variant_icons("Insert")
+
+    def test_page_layout_url_variants_use_plain_icon_names_of_the_right_size(self):
+        self.check_url_variant_icons("PageLayout")
+
+    def check_url_variant_icons(self, tab):
         # json "icon" key: cmd/sc_<base>_<value>.png for small, cmd/32/<base>_<value>.png for large buttons
-        for box in tab_page("Insert").iter("object"):
+        variants = 0
+        for box in tab_page(tab).iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
             large = box.find("property[@name='icon_size']").text == "5"
@@ -85,10 +97,12 @@ class IconThemeTest(unittest.TestCase):
                 if "?" not in action:
                     self.assertIsNone(icon, action)
                     continue
+                variants += 1
                 self.assertRegex(icon.text, r"^cmd/32/[a-z0-9_]+\.png$" if large else r"^cmd/sc_[a-z0-9_]+\.png$", action)
                 for theme in self.zips:
                     self.assertTrue(self.has(theme, icon.text), f"{theme}:{icon.text}")
                     self.assertTrue(self.has(theme, icon.text.replace("cmd/32/", "cmd/lc_").replace("cmd/sc_", "cmd/lc_")))
+        self.assertGreater(variants, 0)
 
     def missing_icons(self, page):
         missing = []

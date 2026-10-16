@@ -159,3 +159,32 @@ screenshots are T3b.
     popup is built by the real menu controller). No check marks are part of the design.
 - Menu item texts of an awt popup built by the controller are empty until the menu is shown; the UITests resolve
   labels through `theUICommandDescription` instead.
+
+### Page Layout icons and fit (T3b)
+
+- **Icons**: 25 boost/boost_dark manifest entries, one per control (Fluent glyphs, soft fills, same style as
+  Home, Data and Insert): `choosedesign` (paint_brush), `themedialog` (color), `pagelayoutthemepart_{fonts,effects}`
+  (text_font, text_effects), `pagelayout{margins,orientation,size,printarea,breaks}menu` (document_margins,
+  orientation, document_one_page, print, document_page_break), `pagelayoutbackground` (image),
+  `pagelayoutprinttitles` (table_bottom_row), `pagelayoutscaletofit_{width,height,scale}`
+  (arrow_autofit_width, arrow_autofit_height, scale_fit), `sheetrighttoleft` (text_direction_horizontal_right),
+  `togglesheetgrid` (grid), `viewrowcolumnheaders` (table_simple), `pagelayoutprintoption_{gridlines,headings}`
+  (print, print_add), `pagelayout{bringforward,sendbackward,align,group,rotate}menu` (position_forward,
+  position_backward, align_left, group, arrow_rotate_clockwise) and `navigator` (panel_left). Menu-only
+  variants (Portrait, paper sizes, margin presets) have no icon, as designed. The variant buttons use the
+  json `icon` key (`cmd/sc_pagelayoutscaletofit_width.png`, ...). The xcu needed no change: the image flag
+  was already on every command without an `icon` key (existing test). `test_icons.py` now covers every Page
+  Layout button and the variant icon names (RED before: 116 missing files).
+- **Fit at 1920 px (measured on screenshots)**: all five sections are visible with no ">>" and no fallback
+  was needed. Themes ends at x = 214, Page Setup at 737, Scale to Fit at 817, Sheet Options at 1178, Arrange
+  at 1648 (usable width stops near 1830, so about 180 px spare, as the design estimated). At 1600 and 1366 px
+  (dark) Themes, Page Setup, Scale to Fit and Sheet Options stay visible (last edge x = 1178); Arrange folds
+  behind ">>".
+- **Real-window menu check**: the Size dropdown lists the twelve paper sizes plus a separator and "Page
+  Style...". The Breaks dropdown, opened with the cell cursor below row 1, shows only "Insert Page
+  Break" and its submenu (Row Break, Column Break). With the cursor on A1 the popup reads "[No selection
+  possible]": the popup hides disabled entries, and in a fresh sheet every Breaks entry is disabled (row
+  break at row 1, no breaks to delete). Excel would show them greyed. Known behavior of this popup, not fixed.
+- **Placeholder look**: of a placeholder family only the first variant (Fonts, Width, Print Gridlines) is drawn
+  greyed; the others (Effects, Height, Scale, Print Headings) are drawn like enabled buttons although their
+  slot is disabled (same on Insert's chart placeholders). Not caused by icons.
