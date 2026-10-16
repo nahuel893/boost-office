@@ -7,7 +7,7 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from product.tests import placeholders
+from product.tests import office, placeholders
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -98,11 +98,11 @@ class CalcDataUiTest(unittest.TestCase):
         self.assertNotIn('id="Menu Data"', text)
         self.assertNotIn('id="Data-Menu"', text)
 
-    def test_office_ui_is_upstream_plus_home_and_data(self):
-        text = UPSTREAM.read_text(encoding="utf-8")
-        for layout in (self.home, self.layout):
-            text = g.splice(text, layout, g.emit_page(layout))
-        self.assertEqual(text, OFFICE.read_text(encoding="utf-8"))
+    def test_office_ui_is_upstream_plus_tabs_home_and_data(self):
+        # tab operations first, then every generated page (Home, Data, and later tabs)
+        names = {layout["id_prefix"] for layout in office.page_layouts()}
+        self.assertTrue({"Home", "Data"} <= names)
+        self.assertEqual(office.expected_office_ui(), OFFICE.read_text(encoding="utf-8"))
 
     def test_refresh_group_ungroup_are_split_buttons_on_new_commands(self):
         by_cmd = {i["cmd"]: i for i in self.items()}

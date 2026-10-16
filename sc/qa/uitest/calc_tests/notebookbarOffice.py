@@ -22,6 +22,15 @@ from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
 
+# Tab position -> page. Excel's order: File, Home, Insert, Page Layout, Formulas, Data, Review,
+# View; the contextual tabs (Image .. Form, positions 8-13) only show with their object, and
+# Extension and Tools (Excel's Developer) stay where upstream has them. Help is last.
+TAB_PAGES = {0: "phbFile", 1: "phbHome", 2: "phbInsert", 3: "phbLayout", 4: "phbFunctions",
+             5: "phbData", 6: "phbReview", 7: "phbView", 14: "phbExtension", 15: "phbTools",
+             16: "phbHelp"}
+TAB_COUNT = 17
+
+
 def placeholder_urls(src, only=None):
     """Every command URL of the shared placeholder registry (product/tests/placeholders.json)."""
     entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
@@ -189,6 +198,24 @@ class NotebookbarOffice(UITestCase):
         # A URL variant of a family slot reaches the same always-disabled slot: the status
         # listener hears "disabled" and a dispatch changes nothing (risk R3).
         self.check_placeholders_are_disabled_and_inert(["InsertChartType?Type:string=map"])
+
+    def test_tabs_are_in_excels_order(self):
+        # The tab texts are not exposed to UITests; select each tab position and check which
+        # page shows. The texts are checked against the .ui by product/tests/test_calc_tabs.py
+        # and by screenshot.
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                xTabs = xCalcDoc.getChild("ContextContainer")
+                self.assertEqual(str(TAB_COUNT), get_state_as_dict(xTabs)["PageCount"])
+                for pos, page in TAB_PAGES.items():
+                    xTabs.executeAction("SELECT", mkPropertyValues({"POS": str(pos)}))
+                    self.wait_for(lambda: get_state_as_dict(xCalcDoc.getChild(page))["ReallyVisible"] == "true",
+                                  "tab %d does not show %s" % (pos, page))
+                    self.assertEqual(str(pos), get_state_as_dict(xTabs)["CurrPagePos"])
+            finally:
+                self.switch_to("Default")
 
     def select_rows(self, document, rows):
         document.CurrentController.select(document.Sheets.getByIndex(0).getCellRangeByName(rows))

@@ -304,6 +304,104 @@ def splice(ui_text, layout, generated):
     return "\n".join(lines)
 
 
+def child_span(lines, obj_id):
+    """(first, last) line indexes, inclusive, of the <child> element that wraps this object."""
+    first, last = find_object(lines, obj_id)
+    start = first - 1
+    if not lines[start].lstrip().startswith("<child"):
+        raise LayoutError(f"object {obj_id!r} is not wrapped in a <child>")
+    indent = lines[start][: len(lines[start]) - len(lines[start].lstrip())]
+    end = next(i for i in range(last + 1, len(lines)) if lines[i] == indent + "</child>")
+    return start, end
+
+
+def set_position(lines, obj_id, position):
+    """Set the packing "position" of the <child> that wraps this object (its own, not nested)."""
+    start, end = child_span(lines, obj_id)
+    indent = lines[start][: len(lines[start]) - len(lines[start].lstrip())] + INDENT * 2
+    wanted = indent + '<property name="position">'
+    for i in range(end - 1, start, -1):
+        if lines[i].startswith(wanted):
+            lines[i] = f'{wanted}{position}</property>'
+            return
+    raise LayoutError(f"{obj_id!r} has no packing position")
+
+
+def relabel(lines, obj_id, old, new):
+    """Change the text of a label. Already changed counts as done, so the operation can be re-run."""
+    first, last = find_object(lines, obj_id)
+    for i in range(first, last + 1):
+        if '<property name="label"' in lines[i]:
+            if f">{escape(new)}</property>" in lines[i]:
+                return
+            if f">{escape(old)}</property>" not in lines[i]:
+                raise LayoutError(f"{obj_id!r} reads neither {old!r} nor {new!r}")
+            lines[i] = lines[i].replace(f">{escape(old)}</property>", f">{escape(new)}</property>")
+            return
+    raise LayoutError(f"{obj_id!r} has no label")
+
+
+def move_pair_before(lines, page, tab, before):
+    """Move a tab page and its tab label (adjacent children) in front of another page."""
+    a, b = child_span(lines, page)[0], child_span(lines, tab)[1]
+    target = child_span(lines, before)[0]
+    if a < target:
+        return  # already in front
+    block = lines[a:b + 1]
+    del lines[a:b + 1]
+    lines[target:target] = block
+
+
+def page_lines(add, tab_indent):
+    """The lines of a new, empty tab page and its tab label; Home/Data-style markers inside."""
+    prefix = add["prefix"]
+    w = Writer()
+    w.level = 0
+    w.open("<child>")
+    w.open(f'<object class="sfxlo-PriorityHBox" id="{add["page"]}">')
+    w.prop("visible", "True")
+    w.prop("can-focus", "False")
+    w.prop("spacing", 6)
+    w.line(f"<!-- product:{prefix}-begin -->")
+    w.lines += [INDENT * w.level + text for text in emit_page({"id_prefix": prefix, "sections": []})]
+    w.line(f"<!-- product:{prefix}-end -->")
+    w.close("</object>")
+    w.packing(position=add["position"])
+    w.close("</child>")
+    w.open('<child type="tab">')
+    w.open(f'<object class="GtkLabel" id="{add["tab_id"]}">')
+    w.prop("visible", "True")
+    w.prop("can-focus", "False")
+    w.prop("label", add["label"], f' translatable="yes" context="{add["context"]}"')
+    w.prop("use-underline", "True")
+    w.close("</object>")
+    w.packing(position=add["position"], tab_fill="False")
+    w.close("</child>")
+    return [tab_indent + text for text in w.lines]
+
+
+def apply_tabs(ui_text, tabs):
+    """Apply the tab operations of calc_tabs.json: relabel, move, positions, add pages.
+
+    Each operation can be applied twice. Run it on the upstream notebookbar.ui, before the
+    generated pages are spliced in.
+    """
+    lines = ui_text.split("\n")
+    for op in tabs.get("relabel", []):
+        relabel(lines, op["id"], op["from"], op["to"])
+    for op in tabs.get("move", []):
+        move_pair_before(lines, op["page"], op["tab"], op["before"])
+    for obj_id, position in tabs.get("positions", {}).items():
+        set_position(lines, obj_id, position)
+    for add in tabs.get("add_pages", []):
+        if any(f'id="{add["page"]}"' in text for text in lines):
+            continue
+        _, end = child_span(lines, add["after_tab"])
+        indent = lines[end][: len(lines[end]) - len(lines[end].lstrip())]
+        lines[end + 1:end + 1] = page_lines(add, indent)
+    return "\n".join(lines)
+
+
 def sync_suppr(suppr_text, ui_rel_path, ui_text):
     """Drop suppressions for ids gone from the .ui; add button-no-label for new tool buttons."""
     present = set(re.findall(r'<object class="[^"]+" id="([^"]+)"', ui_text))
@@ -332,10 +430,14 @@ def main(argv=None):
     ap.add_argument("--layout", required=True, type=Path)
     ap.add_argument("--ui", required=True, help="repository-relative path of the .ui file")
     ap.add_argument("--suppr", required=True, type=Path)
+    ap.add_argument("--tabs", type=Path, help="calc_tabs.json: apply the tab order, label and page operations first")
     args = ap.parse_args(argv)
     layout = json.loads(args.layout.read_text(encoding="utf-8"))
     ui_path = Path(args.ui)
-    ui_text = splice(ui_path.read_text(encoding="utf-8"), layout, emit_page(layout))
+    ui_text = ui_path.read_text(encoding="utf-8")
+    if args.tabs:
+        ui_text = apply_tabs(ui_text, json.loads(args.tabs.read_text(encoding="utf-8")))
+    ui_text = splice(ui_text, layout, emit_page(layout))
     ui_path.write_text(ui_text, encoding="utf-8")
     args.suppr.write_text(sync_suppr(args.suppr.read_text(encoding="utf-8"), args.ui, ui_text),
                           encoding="utf-8")

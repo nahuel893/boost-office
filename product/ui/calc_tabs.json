@@ -1,0 +1,17 @@
+{
+  "relabel": [
+    {"id": "LayoutLabel", "from": "~Layout", "to": "Page ~Layout"},
+    {"id": "FunctionsLabel1", "from": "~Functions", "to": "For~mulas"}
+  ],
+  "move": [
+    {"page": "phbFunctions", "tab": "FunctionsLabel1", "before": "phbData"}
+  ],
+  "positions": {
+    "phbFunctions": 4, "FunctionsLabel1": 4,
+    "phbData": 5, "DataLabel": 5
+  },
+  "add_pages": [
+    {"page": "phbHelp", "prefix": "Help", "after_tab": "DevLabel", "position": 16,
+     "tab_id": "HelpLabel", "label": "Hel~p", "context": "TabbedCalc|HelpTabLabel"}
+  ]
+}
