@@ -17,7 +17,8 @@ LABELS = {"FileLabel": "~File", "HomeLabel": "~Home", "InsertLabel": "~Insert",
           "LayoutLabel": "Page ~Layout", "FunctionsLabel1": "For~mulas", "DataLabel": "~Data",
           "ReviewLabel": "~Review", "ViewLabel": "~View", "DevLabel": "~Tools", "HelpLabel": "Hel~p"}
 # phbInsert has a generated page since T2a, like phbHome and phbData; phbReview since T5a
-UNTOUCHED = CONTEXTUAL + ["phbFile", "phbExtension", "phbTools"]
+UNTOUCHED = CONTEXTUAL + ["phbFile"]
+BASELINE_ONLY = ["phbExtension", "phbTools"]  # only their box's valign changes (T-F1)
 
 
 def tab_children():
@@ -87,6 +88,16 @@ class CalcTabsTest(unittest.TestCase):
         for label in ("FileLabel", "ExtensionLabel", "DevLabel", "ReviewLabel", "ViewLabel"):
             a, b = g.child_span(up, label), g.child_span(mine, label)
             self.assertEqual(up[a[0]:a[1] + 1], mine[b[0]:b[1] + 1], label)
+
+    def test_extension_and_tools_differ_from_upstream_only_in_the_box_valign(self):
+        up, mine = self.upstream.split("\n"), self.office.split("\n")
+        for page in BASELINE_ONLY:
+            a, b = g.child_span(up, page), g.child_span(mine, page)
+            old, new = up[a[0]:a[1] + 1], mine[b[0]:b[1] + 1]
+            changed = [(x, y) for x, y in zip(old, new) if x != y]
+            self.assertEqual(len(old), len(new), page)
+            self.assertEqual([('                    <property name="valign">center</property>',
+                               '                    <property name="valign">fill</property>')], changed, page)
 
     def test_the_operations_can_be_applied_twice(self):
         once = g.apply_tabs(self.upstream, self.tabs)

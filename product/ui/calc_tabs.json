@@ -4,7 +4,9 @@
     {"id": "FunctionsLabel1", "from": "~Functions", "to": "For~mulas"}
   ],
   "properties": [
-    {"id": "phbLayout", "name": "valign", "from": "center", "to": "fill"}
+    {"id": "phbLayout", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbExtension", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbTools", "name": "valign", "from": "center", "to": "fill"}
   ],
   "move": [
     {"page": "phbFunctions", "tab": "FunctionsLabel1", "before": "phbData"}

@@ -15786,7 +15786,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbExtension">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <object class="NotebookBarAddonsToolMergePoint" id="AddonCommand">
@@ -15914,7 +15914,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbTools">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->

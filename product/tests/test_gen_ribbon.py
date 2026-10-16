@@ -1,8 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import contextlib
 import copy
+import io
+import json
+import shutil
+import tempfile
 import unittest
+from pathlib import Path
 from xml.etree import ElementTree as ET
 
 from product.tests import office
@@ -343,6 +349,14 @@ class CaptionBaselineTest(unittest.TestCase):
                     wrong[wid] = valign
         self.assertEqual({}, wrong)
 
+    def test_the_upstream_extension_and_tools_pages_fill_their_tab_page_too(self):
+        # not generated, but visible tabs: upstream centers their box, which would put their
+        # captions on another baseline than every other tab's (applied by calc_tabs.json)
+        root = ET.parse(office.OFFICE).getroot()
+        for wid in ("pmhbExtension", "pmhbTools"):
+            valign = [p.text for p in root.find(f".//object[@id='{wid}']").findall("property[@name='valign']")]
+            self.assertEqual(["fill"], valign, wid)
+
     def test_every_generated_section_has_its_caption_on_the_bottom_edge(self):
         root = ET.parse(office.OFFICE).getroot()
         layouts = office.page_layouts()
@@ -356,6 +370,41 @@ class CaptionBaselineTest(unittest.TestCase):
                 if rules:
                     broken.append((wid, rules))
         self.assertEqual([], broken)
+
+
+class RegenerateAllTest(unittest.TestCase):
+    """One call applies the tab operations and regenerates every page (T-F1)."""
+
+    def test_regenerate_all_rebuilds_the_committed_office_ui(self):
+        upstream = office.UPSTREAM.read_text(encoding="utf-8")
+        tabs = json.loads(office.TABS.read_text(encoding="utf-8"))
+        text = g.regenerate_all(upstream, tabs, g.page_layouts(office.UI_DIR))
+        self.assertEqual(office.OFFICE.read_text(encoding="utf-8"), text)
+        self.assertEqual(text, g.regenerate_all(text, tabs, g.page_layouts(office.UI_DIR)))  # idempotent
+
+    def test_page_layouts_skip_the_tab_operations_file(self):
+        ids = [layout["id_prefix"] for layout in g.page_layouts(office.UI_DIR)]
+        self.assertEqual(sorted(ids), ids)  # calc_<tab>.json in file-name order
+        self.assertIn("Home", ids)
+        self.assertEqual(len(ids), len(list(office.UI_DIR.glob("calc_*.json"))) - 1)
+
+    def test_all_mode_rewrites_the_office_ui_and_the_suppressions_from_upstream(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for rel in ("sc/uiconfig/scalc/ui/notebookbar.ui", "solenv/sanitizers/ui/modules/scalc.suppr"):
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(office.ROOT / rel, root / rel)
+            (root / "product/ui").mkdir(parents=True)
+            for path in office.UI_DIR.glob("calc_*.json"):
+                shutil.copy(path, root / "product/ui" / path.name)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(0, g.main(["--all", "--root", str(root)]))
+            self.assertEqual(office.OFFICE.read_text(encoding="utf-8"),
+                             (root / "sc/uiconfig/scalc/ui/notebookbar_office.ui").read_text(encoding="utf-8"))
+            self.assertEqual((office.ROOT / "solenv/sanitizers/ui/modules/scalc.suppr").read_text(encoding="utf-8"),
+                             (root / "solenv/sanitizers/ui/modules/scalc.suppr").read_text(encoding="utf-8"))
+            self.assertIn("notebookbar_office.ui", out.getvalue())
 
 
 class ItemUrlTest(unittest.TestCase):

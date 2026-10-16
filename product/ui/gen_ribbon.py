@@ -36,6 +36,11 @@ SUPPRESSED_CLASSES = ("GtkToolButton", "GtkMenuToolButton")
 # Styles that fill the section height: alone in their column, label below.
 LARGE_LIKE = ("large", "medium")
 INDENT = "  "
+TABS_FILE = "calc_tabs.json"
+ROOT = Path(__file__).resolve().parents[2]
+UPSTREAM_UI = "sc/uiconfig/scalc/ui/notebookbar.ui"
+OFFICE_UI = "sc/uiconfig/scalc/ui/notebookbar_office.ui"
+SUPPR = "solenv/sanitizers/ui/modules/scalc.suppr"
 OBJECT_OPEN = re.compile(r"<object\b")
 
 
@@ -438,6 +443,21 @@ def apply_tabs(ui_text, tabs):
     return "\n".join(lines)
 
 
+def page_layouts(ui_dir):
+    """Every page layout product/ui/calc_<tab>.json, in file-name order (calc_tabs.json is not one)."""
+    ui_dir = Path(ui_dir)
+    return [json.loads(path.read_text(encoding="utf-8"))
+            for path in sorted(ui_dir.glob("calc_*.json")) if path.name != TABS_FILE]
+
+
+def regenerate_all(upstream_text, tabs, layouts):
+    """The office .ui: the upstream one, the tab operations, then every generated page spliced in."""
+    text = apply_tabs(upstream_text, tabs)
+    for layout in layouts:
+        text = splice(text, layout, emit_page(layout))
+    return text
+
+
 def sync_suppr(suppr_text, ui_rel_path, ui_text):
     """Drop suppressions for ids gone from the .ui; add button-no-label for new tool buttons."""
     present = set(re.findall(r'<object class="[^"]+" id="([^"]+)"', ui_text))
@@ -461,13 +481,33 @@ def sync_suppr(suppr_text, ui_rel_path, ui_text):
     return "\n".join(out) + "\n"
 
 
+def regenerate_all_files(root):
+    """Rebuild notebookbar_office.ui from the upstream .ui, calc_tabs.json and every calc_*.json."""
+    root = Path(root)
+    ui_dir = root / "product/ui"
+    text = regenerate_all((root / UPSTREAM_UI).read_text(encoding="utf-8"),
+                          json.loads((ui_dir / TABS_FILE).read_text(encoding="utf-8")), page_layouts(ui_dir))
+    (root / OFFICE_UI).write_text(text, encoding="utf-8")
+    suppr = root / SUPPR
+    suppr.write_text(sync_suppr(suppr.read_text(encoding="utf-8"), OFFICE_UI, text), encoding="utf-8")
+    print(f"{OFFICE_UI}: {len(page_layouts(ui_dir))} generated pages")
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--layout", required=True, type=Path)
-    ap.add_argument("--ui", required=True, help="repository-relative path of the .ui file")
-    ap.add_argument("--suppr", required=True, type=Path)
+    ap.add_argument("--all", action="store_true",
+                    help="rebuild the office .ui from upstream: tab operations, then every calc_*.json page")
+    ap.add_argument("--root", type=Path, default=ROOT, help="with --all: the source tree (default: this one)")
+    ap.add_argument("--layout", type=Path)
+    ap.add_argument("--ui", help="repository-relative path of the .ui file")
+    ap.add_argument("--suppr", type=Path)
     ap.add_argument("--tabs", type=Path, help="calc_tabs.json: apply the tab order, label and page operations first")
     args = ap.parse_args(argv)
+    if args.all:
+        return regenerate_all_files(args.root)
+    if not (args.layout and args.ui and args.suppr):
+        ap.error("--layout, --ui and --suppr are required without --all")
     layout = json.loads(args.layout.read_text(encoding="utf-8"))
     ui_path = Path(args.ui)
     ui_text = ui_path.read_text(encoding="utf-8")

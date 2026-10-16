@@ -16,12 +16,10 @@ TABS = UI_DIR / "calc_tabs.json"
 
 def page_layouts():
     """Every product/ui/calc_<tab>.json page layout (calc_tabs.json is not one)."""
-    return [json.loads(p.read_text(encoding="utf-8"))
-            for p in sorted(UI_DIR.glob("calc_*.json")) if p != TABS]
+    return g.page_layouts(UI_DIR)
 
 
 def expected_office_ui():
-    text = g.apply_tabs(UPSTREAM.read_text(encoding="utf-8"), json.loads(TABS.read_text(encoding="utf-8")))
-    for layout in page_layouts():
-        text = g.splice(text, layout, g.emit_page(layout))
-    return text
+    """What `gen_ribbon.py --all` writes: upstream + tab operations + every generated page."""
+    return g.regenerate_all(UPSTREAM.read_text(encoding="utf-8"),
+                            json.loads(TABS.read_text(encoding="utf-8")), page_layouts())
