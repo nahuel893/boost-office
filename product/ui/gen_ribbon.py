@@ -67,7 +67,7 @@ def ids_of(layout):
     yield "pmhb" + p
     for section in layout["sections"]:
         name = section["name"]
-        yield from ("ob" + p + name, "gd" + p + name, "lb" + p + name)
+        yield from ("ob" + p + name, "gd" + p + name, "gc" + p + name, "lb" + p + name)
         for box in boxes_of(section):
             yield "bx" + p + box["id"]
             for item in box["items"]:
@@ -194,6 +194,14 @@ def emit_box(w, layout, box, col, row, large_rows, width=1):
 
 
 def emit_section(w, layout, section, position, priority):
+    """A section: its grid holds the toolboxes' grid, the caption under it and the separator.
+
+    The page box fills the page, so every section is as tall as the tallest page. The toolboxes'
+    grid is the only child that expands vertically: it takes all the extra height and the caption
+    ends on the section's bottom edge, on every section of every page. (VclGrid splits extra
+    height evenly between expanding rows and drops the remainder, so a caption under several
+    expanding rows ended up to 3 px higher than its neighbours.)
+    """
     p, ctx, name = layout["id_prefix"], layout["context"], section["name"]
     rows, ncols = section["rows"], len(section["columns"])
     w.open("<child>")
@@ -201,37 +209,45 @@ def emit_section(w, layout, section, position, priority):
     w.prop("visible", "True")
     w.prop("can-focus", "False")
     w.open("<child>")
-    w.line(f"<!-- n-columns={ncols + 1} n-rows={rows + 1} -->")
+    w.line("<!-- n-columns=2 n-rows=2 -->")
     w.open(f'<object class="GtkGrid" id="gd{p}{name}">')
     for prop_name, value in (("visible", "True"), ("can-focus", "False"),
                              ("margin-start", 6), ("margin-end", 3), ("margin-top", 6),
                              ("margin-bottom", 6), ("row-spacing", 3), ("column-spacing", 3)):
         w.prop(prop_name, value)
     w.open("<child>")
-    w.open(f'<object class="GtkLabel" id="lb{p}{name}">')
-    w.prop("visible", "True")
-    w.prop("can-focus", "False")
-    w.prop("valign", "end")
-    w.prop("vexpand", "True")
-    w.prop("label", section["caption"], f' translatable="yes" context="{ctx}|label{p}{name}"')
-    w.open("<attributes>")
-    w.line('<attribute name="scale" value="0.9"/>')
-    w.close("</attributes>")
-    w.close("</object>")
-    w.packing(left_attach=0, top_attach=rows, width=ncols)
-    w.close("</child>")
+    w.line(f"<!-- n-columns={ncols} n-rows={rows} -->")
+    w.open(f'<object class="GtkGrid" id="gc{p}{name}">')
+    for prop_name, value in (("visible", "True"), ("can-focus", "False"), ("vexpand", "True"),
+                             ("row-spacing", 3), ("column-spacing", 3)):
+        w.prop(prop_name, value)
     for col, column in enumerate(section["columns"]):
         for row, box in zip(rows_of(column), column):
             emit_box(w, layout, box, col, row, rows - ("footer" in section))
     if "footer" in section:
         emit_box(w, layout, section["footer"], 0, rows - 1, rows - 1, ncols)
+    w.close("</object>")
+    w.packing(left_attach=0, top_attach=0)
+    w.close("</child>")
+    w.open("<child>")
+    w.open(f'<object class="GtkLabel" id="lb{p}{name}">')
+    w.prop("visible", "True")
+    w.prop("can-focus", "False")
+    w.prop("valign", "end")
+    w.prop("label", section["caption"], f' translatable="yes" context="{ctx}|label{p}{name}"')
+    w.open("<attributes>")
+    w.line('<attribute name="scale" value="0.9"/>')
+    w.close("</attributes>")
+    w.close("</object>")
+    w.packing(left_attach=0, top_attach=1)
+    w.close("</child>")
     w.open("<child>")
     w.open('<object class="GtkSeparator">')
     w.prop("visible", "True")
     w.prop("can-focus", "False")
     w.prop("orientation", "vertical")
     w.close("</object>")
-    w.packing(left_attach=ncols, top_attach=0, height=rows + 1)
+    w.packing(left_attach=1, top_attach=0, height=2)
     w.close("</child>")
     w.open("<accessibility>")
     w.line(f'<relation type="labelled-by" target="lb{p}{name}"/>')
@@ -256,7 +272,7 @@ def emit_page(layout):
     w.open(f'<object class="sfxlo-PriorityMergedHBox" id="pmhb{p}">')
     w.prop("visible", "True")
     w.prop("can-focus", "False")
-    w.prop("valign", "center")
+    w.prop("valign", "fill")  # the tab page is as tall as the tallest page: so is every section
     for position, section in enumerate(sections):
         # The leftmost section has the highest priority, so it collapses last.
         emit_section(w, layout, section, position, len(sections) - position)
@@ -341,6 +357,23 @@ def relabel(lines, obj_id, old, new):
     raise LayoutError(f"{obj_id!r} has no label")
 
 
+def set_property(lines, obj_id, name, old, new):
+    """Change one of an object's own properties (not a nested object's). Already changed counts
+    as done, so the operation can be re-run."""
+    first, last = find_object(lines, obj_id)
+    indent = lines[first][: len(lines[first]) - len(lines[first].lstrip())] + INDENT
+    prefix = f'{indent}<property name="{name}">'
+    for i in range(first + 1, last):
+        if lines[i].startswith(prefix):
+            if lines[i] == f"{prefix}{escape(new)}</property>":
+                return
+            if lines[i] != f"{prefix}{escape(old)}</property>":
+                raise LayoutError(f"{obj_id!r} {name} is neither {old!r} nor {new!r}")
+            lines[i] = f"{prefix}{escape(new)}</property>"
+            return
+    raise LayoutError(f"{obj_id!r} has no {name} property")
+
+
 def move_pair_before(lines, page, tab, before):
     """Move a tab page and its tab label (adjacent children) in front of another page."""
     a, b = child_span(lines, page)[0], child_span(lines, tab)[1]
@@ -381,7 +414,8 @@ def page_lines(add, tab_indent):
 
 
 def apply_tabs(ui_text, tabs):
-    """Apply the tab operations of calc_tabs.json: relabel, move, positions, add pages.
+    """Apply the tab operations of calc_tabs.json: relabel, page properties, move, positions,
+    add pages.
 
     Each operation can be applied twice. Run it on the upstream notebookbar.ui, before the
     generated pages are spliced in.
@@ -389,6 +423,8 @@ def apply_tabs(ui_text, tabs):
     lines = ui_text.split("\n")
     for op in tabs.get("relabel", []):
         relabel(lines, op["id"], op["from"], op["to"])
+    for op in tabs.get("properties", []):
+        set_property(lines, op["id"], op["name"], op["from"], op["to"])
     for op in tabs.get("move", []):
         move_pair_before(lines, op["page"], op["tab"], op["before"])
     for obj_id, position in tabs.get("positions", {}).items():

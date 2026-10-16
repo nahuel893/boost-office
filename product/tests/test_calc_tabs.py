@@ -97,6 +97,30 @@ class CalcTabsTest(unittest.TestCase):
         with self.assertRaises(g.LayoutError):
             g.apply_tabs(self.upstream, {"relabel": [{"id": "LayoutLabel", "from": "~Nope", "to": "x"}]})
 
+    def test_page_layout_page_fills_its_tab_page_like_the_others(self):
+        # upstream centers phbLayout (valign center), which put its captions 3 px below the other
+        # tabs' (T8a); only that one own property changes
+        up, mine = self.upstream.split("\n"), self.office.split("\n")
+        a, b = g.find_object(up, "phbLayout")[0], g.find_object(mine, "phbLayout")[0]
+        own_up, own_mine = up[a:a + 5], mine[b:b + 5]  # the object line and its 4 own properties
+        self.assertIn('                <property name="valign">center</property>', own_up)
+        self.assertIn('                <property name="valign">fill</property>', own_mine)
+        self.assertEqual([line for line in own_up if "valign" not in line],
+                         [line for line in own_mine if "valign" not in line])
+
+    def test_set_property_changes_only_the_objects_own_property(self):
+        ui = g.apply_tabs(self.upstream, {"properties": [
+            {"id": "phbLayout", "name": "valign", "from": "center", "to": "fill"}]})
+        lines = ui.split("\n")
+        first, last = g.find_object(lines, "pmhbLayout")  # its child keeps its own valign
+        self.assertIn('                    <property name="valign">center</property>', lines[first:last])
+
+    def test_set_property_refuses_an_unexpected_value_or_a_missing_property(self):
+        for op in ({"id": "phbLayout", "name": "valign", "from": "start", "to": "fill"},
+                   {"id": "phbHome", "name": "valign", "from": "center", "to": "fill"}):
+            with self.assertRaises(g.LayoutError):
+                g.apply_tabs(self.upstream, {"properties": [op]})
+
 
 if __name__ == "__main__":
     unittest.main()

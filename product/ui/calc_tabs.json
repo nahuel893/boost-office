@@ -3,6 +3,9 @@
     {"id": "LayoutLabel", "from": "~Layout", "to": "Page ~Layout"},
     {"id": "FunctionsLabel1", "from": "~Functions", "to": "For~mulas"}
   ],
+  "properties": [
+    {"id": "phbLayout", "name": "valign", "from": "center", "to": "fill"}
+  ],
   "move": [
     {"page": "phbFunctions", "tab": "FunctionsLabel1", "before": "phbData"}
   ],

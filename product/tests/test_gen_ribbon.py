@@ -5,6 +5,7 @@ import copy
 import unittest
 from xml.etree import ElementTree as ET
 
+from product.tests import office
 from product.ui import gen_ribbon as g
 
 FIXTURE = """<?xml version="1.0" encoding="UTF-8"?>
@@ -67,6 +68,35 @@ def placed(root, obj_id):
     raise AssertionError(f"{obj_id} not found")
 
 
+def section_grid_rule(grid):
+    """(grid id, broken rules) of a section grid; no broken rule means the caption sits on the
+    section's bottom edge.
+
+    VclGrid splits extra height evenly between its expanding rows and drops the remainder, so
+    a caption under several expanding rows ends a few pixels above the bottom. The rule: two
+    rows, the toolboxes' grid alone on row 0 and the only child that expands vertically, the
+    caption on row 1, the separator spanning both."""
+    broken = []
+    cells = {}
+    for child in grid.findall("child"):
+        obj = child.find("object")
+        attach = tuple(int(child.findtext(f"packing/property[@name='{n}']", "0"))
+                       for n in ("left-attach", "top-attach"))
+        span = int(child.findtext("packing/property[@name='height']", "1"))
+        vexpand = obj.findtext("property[@name='vexpand']") == "True"
+        cells[obj.get("class")] = (attach, span, vexpand)
+    if set(cells) != {"GtkGrid", "GtkLabel", "GtkSeparator"} or len(grid.findall("child")) != 3:
+        broken.append(f"children {sorted(cells)}")
+    else:
+        if cells["GtkGrid"] != ((0, 0), 1, True):
+            broken.append(f"toolbox grid {cells['GtkGrid']}")
+        if cells["GtkLabel"] != ((0, 1), 1, False):
+            broken.append(f"caption {cells['GtkLabel']}")
+        if cells["GtkSeparator"] != ((1, 0), 2, False):
+            broken.append(f"separator {cells['GtkSeparator']}")
+    return grid.get("id"), broken
+
+
 class GenRibbonTest(unittest.TestCase):
 
     def test_output_is_well_formed_xml(self):
@@ -120,14 +150,29 @@ class GenRibbonTest(unittest.TestCase):
                           "bxHomeCopy": ("1", "1", "1", "both-horiz")}, got)
 
     def test_caption_and_separator_positions(self):
+        # the section grid: the toolboxes' grid on row 0, the caption under it, the separator on
+        # the right spanning both rows
         root = ET.fromstring(generate())
-        _, packing = placed(root, "lbHomeClipboard")
-        self.assertEqual(("0", "3", "2"), tuple(packing.find(f"property[@name='{n}']").text
-                                                for n in ("left-attach", "top-attach", "width")))
         grid = root.find(".//object[@id='gdHomeClipboard']")
+        self.assertEqual(section_grid_rule(grid), (grid.get("id"), []))
+        _, packing = placed(root, "lbHomeClipboard")
+        self.assertEqual(("0", "1"), tuple(packing.find(f"property[@name='{n}']").text
+                                           for n in ("left-attach", "top-attach")))
         sep_child = [c for c in grid.findall("child") if c.find("object").get("class") == "GtkSeparator"][0]
-        self.assertEqual(("2", "0", "4"), tuple(sep_child.find(f"packing/property[@name='{n}']").text
+        self.assertEqual(("1", "0", "2"), tuple(sep_child.find(f"packing/property[@name='{n}']").text
                                                 for n in ("left-attach", "top-attach", "height")))
+
+    def test_toolboxes_are_in_the_section_content_grid(self):
+        root = ET.fromstring(generate())
+        content = root.find(".//object[@id='gcHomeClipboard']")
+        self.assertEqual({"bxHomePaste", "bxHomeCut", "bxHomeCopy"},
+                         {c.find("object").get("id") for c in content.findall("child")})
+        self.assertIn("gcHomeClipboard", list(g.ids_of(LAYOUT)))
+
+    def test_page_box_fills_the_page_height(self):
+        # so every section of every page is as tall as the tallest page (the ribbon's height)
+        page = ET.fromstring(generate()).find(".//object[@id='pmhbHome']")
+        self.assertEqual(["fill"], [p.text for p in page.findall("property[@name='valign']")])
 
     def test_splice_is_idempotent(self):
         once = generate()
@@ -282,6 +327,35 @@ class GenRibbonTest(unittest.TestCase):
         self.assertIn("x.ui://GtkMenuToolButton[@id='btnHomePaste'] button-no-label", out)
         self.assertIn("x.ui://GtkToolButton[@id='btnHomeBold'] button-no-label", out)
         self.assertEqual(len(out), len(set(out)))
+
+
+class CaptionBaselineTest(unittest.TestCase):
+    """Every generated page of the office .ui puts its captions on one baseline (T8a)."""
+
+    def test_every_generated_page_fills_the_page_height(self):
+        # the tab page (upstream phbLayout was centered) and the generated box in it
+        root = ET.parse(office.OFFICE).getroot()
+        wrong = {}
+        for layout in office.page_layouts():
+            for wid, allowed in ((layout["page"], ([], ["fill"])), ("pmhb" + layout["id_prefix"], (["fill"],))):
+                valign = [p.text for p in root.find(f".//object[@id='{wid}']").findall("property[@name='valign']")]
+                if valign not in allowed:
+                    wrong[wid] = valign
+        self.assertEqual({}, wrong)
+
+    def test_every_generated_section_has_its_caption_on_the_bottom_edge(self):
+        root = ET.parse(office.OFFICE).getroot()
+        layouts = office.page_layouts()
+        self.assertEqual({"Home", "Insert", "PageLayout", "Formulas", "Data", "Review", "View", "Help"},
+                         {layout["id_prefix"] for layout in layouts})
+        broken = []
+        for layout in layouts:
+            for section in layout["sections"]:
+                grid = root.find(f".//object[@id='gd{layout['id_prefix']}{section['name']}']")
+                wid, rules = section_grid_rule(grid)
+                if rules:
+                    broken.append((wid, rules))
+        self.assertEqual([], broken)
 
 
 class ItemUrlTest(unittest.TestCase):
