@@ -77,7 +77,10 @@ Home and Data are done. The other tabs (Insert, Layout, Functions, Review, View,
 | T5a / T5b | Review | delegated (Sonnet) | a [x] 7 sections; Accessibility and Notes dropdowns; 5 placeholder slots (6 controls); the LO-only buttons that left the tab are asserted still in the menu bar; 227 unit tests, 59 UITests. Review Approved. Parked minors: note that AutoFormat keeps "Table Styles"; the weak test of the comments/notes mapping. b [x] 16 icons, all seven sections at 1920 px (Ink folds at 1600; Protect and Ink fold at 1366), 229 unit tests. Review Approved: the populated-menu capture is impossible while popups hide disabled entries (see T10); the UITests cover the item lists | a: 208481003; b: 0a0354bd1 | due: consent pending (user away) |
 | T6a / T6b | View (Sheet View group as placeholders, family slot +421) | delegated (Sonnet) | a [x] Sheet View group first (Default plus Keep/Exit/New/Options, Excel's reduced form) and six design sections; Freeze Panes and Macros popups; Switch Windows via WindowListMenuController (R7); 252 unit tests, 65 UITests. Review Approved. Known: ShowGraphics is now reachable only through Tools > Options; Macro Manager is hidden unless experimental mode is on. b [x] 27 icons, 2 glyph substitutes, all seven sections at 1920 px (Window and Macros fold at 1600/1366), Switch Windows lists two windows in a real window, 254 unit tests. Review Approved | a: 332a7f214; b: 561e3d11d | due: consent pending (user away) |
 | T7 | Help | delegated (Sonnet) | [x] Help section (Help, Get Help Online, Feedback [placeholder], User Guides, What's New) and Community section (Get Involved, Blog [placeholder]); 7 icons; ends at x~611 at 1920 px; 271 unit tests, 70 UITests. Review Approved | cb28b000e, 2269ac0ca | due: consent pending (user away) |
-| T8 | Docs (`product/docs/calc-ribbon-tabs.md`), fix the Data doc's menu-bar note, final light/dark screenshots, user gate | delegated | [ ] | | |
+| T8 | Docs (`product/docs/calc-ribbon-tabs.md`), fix the Data doc's menu-bar note, final light/dark screenshots, user gate | delegated (Sonnet) | [x] Reference doc reorganized with a table of every placeholder. Contact sheets in /mnt/games/libreoffice/assets/previews/calc-ribbon-tabs-{light,dark}.png. The Data design note was fixed by the controller. User gate pending | 8b721205d, 71997996f | passive (docs) |
+| Final | Whole-branch review (opus): Ready with follow-ups | — | [x] | — | — |
+| F1 | One fix dispatch for the final review's follow-ups:<br>- placeholder registry contract (`"implemented": true`, counts from the registry);<br>- Calc-over-Generic label lookup;<br>- footers in the per-tab tests;<br>- Extension/Tools caption baseline;<br>- `gen_ribbon.py --all`;<br>- T1c text match instead of parseStrict;<br>- T3c rule only for radio-style items, so Calculation Options draws radio dots;<br>- docs sweep | delegated (Sonnet) | [x] 295 unit tests, 71 UITests, check-ui clean. Scoped re-review: 7/8 resolved. Residual (parked as F2): three hard-coded placeholder expectations (notebookbarOffice.py:479 and :918-920, test_calc_insert_ui.py:149-153) would break when those placeholders are implemented | c5672c456, 172a5e632, ec601f397, 5cfb2cf4e, 01bd18db3, 8e1e9bc27 | due: consent pending |
+| F2 | Make the three remaining hard-coded placeholder expectations registry-driven. This is the first step of the "implement placeholders" phase | pending | [ ] | | |
 | T8a | Polish across tabs. Section captions on one baseline: Review's sit about 12 px higher because it has only large buttons. Plus the parked minors (T1c sfx2 micro-optimisations, T3c `:bool=` anchoring, T4c disposed-frame catch, dark-theme dimming of disabled icon-only buttons) | delegated (opus) | [x] Captions sit on one baseline on every tab, y=159 at 1920 px; ribbon height unchanged, Name Box at y=181. sfx2 StateChanged refactor. framework `:bool=` match anchored to the type. Function menus of a closed window are disabled. 279 unit tests, 71 UITests. Review Approved. The dark-theme disabled icons need a VCL change and moved to T8b | bf8cef82a, 8eddfc3e1, 400df3dd6, 0a2fdae0c, d3158903f | due: consent pending (user away) |
 | T8b | Disabled icons look disabled in dark themes: VCL BitmapDisabledImageFilter draws a fixed light grey (luminance/4+160) whatever the theme. Light output must stay byte-identical, and a theme switch must refresh the cache | delegated (opus) | [x] On a dark face, a disabled pixel of luminance L becomes the grey whose WCAG contrast against the face is 1 + L/255. Light faces still get luminance/4+160, pixel-identical. The cache is keyed by face colour, and a runtime switch was verified. Contrast before -> after: Calc dark 6.1 -> 1.6, Writer 6.2 -> 1.6, Impress 6.9 -> 1.7, black face 9.1 -> 1.51; light 1.55. CppUnit 7 OK. Review (opus) Needs fixes: pure black was 1.26:1 -> fix round 1 (contrast-defined band) -> re-review all addressed. Known: after a runtime theme switch the Sheet View buttons lose their icons (pre-existing) | 1be81d47a, d26c3188b, 638d5478d | due: consent pending (user away) |
 | T10 | Show disabled items greyed in popup menus, as Office does, instead of hiding them. LibreOffice's `DontHideDisabledEntry` defaults to hiding them; changing it affects every context menu | pending user decision | [ ] | | |
@@ -108,4 +111,19 @@ Slots: the functional slots +15 and +16 go in the upstream gap next to Data's +1
 
 ## Next step
 
-L1 layouts (dispatched), then T1.
+The slice is complete and every task is reviewed. Waiting for the user:
+
+1. **Visual gate** on the contact sheets in /mnt/games/libreoffice/assets/previews/calc-ribbon-tabs-light.png and calc-ribbon-tabs-dark.png.
+2. **RDD reviews:** consent was pending for every task while the user was away.
+3. **Decisions:**
+   - T9: Excel labels for existing commands.
+   - T10: show disabled menu items greyed.
+   - Tab mnemonics (Hel~p vs ~Print, For~mulas vs ~Media).
+   - Publishing: public GitHub fork or private repo.
+   - D6: the split-arrow behaviour.
+   - Overturn any ruling of this slice.
+
+Then the next phase is implementing the placeholders, starting with F2. Other follow-ups from the final review:
+- consolidate the per-tab tests into one base class;
+- prepare the upstream patches: T1b+T1c together with tests on upstream UIs, T3c with a CppUnit test, T8b with a high-contrast decision and a bug number;
+- plan the slot budget for the contextual tabs: only +422..+424 are spare.
