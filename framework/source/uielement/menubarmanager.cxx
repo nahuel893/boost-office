@@ -241,6 +241,33 @@ void SAL_CALL MenuBarManager::frameAction( const FrameActionEvent& Action )
     }
 }
 
+namespace
+{
+// A command URL such as ".uno:Orientation?isLandscape:bool=true" with exactly one argument that
+// is a boolean: returns true and its value. Every other URL (no argument, several, other types)
+// returns false.
+bool getSingleBoolArgument(std::u16string_view rItemURL, bool& rValue)
+{
+    const size_t nQuery = rItemURL.find(u'?');
+    if (nQuery == std::u16string_view::npos)
+        return false;
+    const std::u16string_view aArgs = rItemURL.substr(nQuery + 1);
+    if (aArgs.find(u'&') != std::u16string_view::npos)
+        return false;
+    const size_t nType = aArgs.find(u":bool=");
+    if (nType == std::u16string_view::npos || nType == 0)
+        return false;
+    const std::u16string_view aValue = aArgs.substr(nType + 6);
+    if (aValue == u"true")
+        rValue = true;
+    else if (aValue == u"false")
+        rValue = false;
+    else
+        return false;
+    return true;
+}
+}
+
 // XStatusListener
 void SAL_CALL MenuBarManager::statusChanged( const FeatureStateEvent& Event )
 {
@@ -295,6 +322,13 @@ void SAL_CALL MenuBarManager::statusChanged( const FeatureStateEvent& Event )
 
                 if ( Event.State >>= bCheckmark )
                 {
+                    // An item whose URL carries one boolean argument is one of the variants
+                    // of a single boolean slot (Orientation: portrait/landscape): it is checked
+                    // when the slot's state equals its argument, not when the state is true.
+                    bool bArgument = false;
+                    if ( getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument ) )
+                        bCheckmark = ( bCheckmark == bArgument );
+
                     // Checkmark or RadioButton
                     m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );
                     // If not already designated RadioButton set as CheckMark

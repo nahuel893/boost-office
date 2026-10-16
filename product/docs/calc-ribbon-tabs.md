@@ -274,14 +274,20 @@ fit and screenshots are T4b; the eight function-category menus are the design's 
   item. Labels, "(not available yet)" tooltips and registry labels (`variant_labels` for Python) as on Page Layout.
 - `.uno:CreateNames` had no image flag (`Properties` = 1), so no icon could ever show; added.
 - **Spikes**
-  - **R9 (settled, fallback applied)**: `.uno:AutomaticCalculation?AutomaticCalculation:bool=true|false` as
-    "Automatic"/"Manual" menu items both showed a check mark in automatic mode (screenshot of the real
-    dropdown). Cause: every listener of the slot, whatever its URL, is told the slot's boolean (true = automatic);
-    `MenuBarManager::statusChanged` (`framework/source/uielement/menubarmanager.cxx`) checks an item with that
-    boolean, so both items are checked in automatic mode and neither in manual mode. The popup an awt test builds has
-    no `MenuBarManager` until a real menu activation, so a UITest cannot read the marks; the UITest
-    `test_formulas_calculation_variant_urls_share_one_boolean_state` proves the shared state instead. Applied the
-    design's fallback: Calculation Options has one item, the `.uno:AutomaticCalculation` toggle ("AutoCalculate").
+  - **R9 (settled for Calculation Options; Orientation open)**: `.uno:AutomaticCalculation?AutomaticCalculation:bool=true|false`
+    as "Automatic"/"Manual" both showed a check mark in automatic mode (T4a fell back to one AutoCalculate toggle).
+    Cause: every listener of the slot, whatever its URL, is told the slot's boolean (true = automatic), and
+    `MenuBarManager::statusChanged` (`framework/source/uielement/menubarmanager.cxx`) checked an item with that
+    boolean. T3c rule: an item whose command URL has exactly one argument, of type bool, is checked only when the
+    slot's boolean state equals that argument (`getSingleBoolArgument`); every other URL behaves as before. The slot
+    honours the argument (`docsh4.cxx` FID_AUTO_CALC), so picking the current mode leaves it unchanged, and Calculation
+    Options is Excel's Automatic/Manual again (screenshots: only the current mode checked). `.uno:AutomaticCalculation`
+    keeps its "AutoCalculate" label. The popup an awt test builds has no `MenuBarManager` until a real menu activation,
+    so a UITest cannot read the marks; they are verified by screenshot.
+    **Orientation still shows no check mark**: the slot's state is not a boolean. `ScDocShell::GetState` for
+    `SID_ATTR_PAGE_ORIENTATION` puts the page style's `ATTR_PAGE` item (a `SvxPageItem`), which listeners receive as no
+    boolean at all (UITest: the state is `None`). The rule therefore has nothing to compare; a boolean
+    `SfxBoolItem(SID_ATTR_PAGE_ORIENTATION, bLandscape)` from `sc/source/ui/docshell/docsh4.cxx` is needed.
   - **R3 (settled)**: the only variants with an argument the slot does not declare would be the AutoSum body itself
     (`FormulasAutoSum` declares none). `.uno:FormulasAutoSum?Function:string=average` stays enabled and runs the plain
     sum: sfx2 ignores the undeclared argument. The other variants (`AutoSum?Function`, `AutomaticCalculation`) use

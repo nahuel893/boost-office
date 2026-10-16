@@ -4288,6 +4288,16 @@
           <value xml:lang="en-US">Min</value>
         </prop>
       </node>
+      <node oor:name=".uno:AutomaticCalculation?AutomaticCalculation:bool=true" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Automatic</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:AutomaticCalculation?AutomaticCalculation:bool=false" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Manual</value>
+        </prop>
+      </node>
     </node>
   </node>
 </oor:component-data>

@@ -761,7 +761,6 @@ class NotebookbarOffice(UITestCase):
             items = {name: self.dispatch_enabled(name) for name in (
                 "AutoSum", "AutoSum?Function:string=average", "AutoSum?Function:string=count",
                 "AutoSum?Function:string=max", "AutoSum?Function:string=min", "FunctionDialog")}
-            print("T4a arrow check, shape selected: body=%s items=%s" % (body, items))
             self.assertFalse(body)
             self.assertEqual([], [name for name, enabled in items.items() if enabled and not body],
                              "menu items usable while the body (and with it the arrow) is disabled")
@@ -802,7 +801,9 @@ class NotebookbarOffice(UITestCase):
                     ".uno:ClearArrows", ".uno:ClearArrowPrecedents", ".uno:ClearArrowDependents"],
                 ("FormulasErrorCheckingMenu", "formulas_errorchecking"): [
                     ".uno:FormulasErrorChecking", ".uno:ShowErrors"],
-                ("FormulasCalcOptionsMenu", "formulas_calcoptions"): [".uno:AutomaticCalculation"]}
+                ("FormulasCalcOptionsMenu", "formulas_calcoptions"): [
+                    ".uno:AutomaticCalculation?AutomaticCalculation:bool=true",
+                    ".uno:AutomaticCalculation?AutomaticCalculation:bool=false"]}
             for (command, resource), items in expected.items():
                 xPopup = self.popup_of(".uno:" + command, resource)
                 self.assertEqual(items, self.popup_commands(xPopup), command)
@@ -813,34 +814,21 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual(["Sum", "Average", "Count Numbers", "Max", "Min", "Function"],
                              [self.command_label(c).replace("...", "") for c in self.popup_commands(xPopup)])
 
-    def test_formulas_calculation_variant_urls_share_one_boolean_state(self):
-        # risk R9, the cause: Automatic (...bool=true) and Manual (...bool=false) are URL variants of
-        # one slot, and every listener is told the slot's boolean (true = automatic) whatever its
-        # URL. The menu bar manager checks an item with that boolean, so both items would show a check
-        # mark in automatic mode and neither in manual mode. Hence one AutoCalculate toggle item.
-        with self.ui_test.create_doc_in_start_center("calc") as document:
-            names = ("AutomaticCalculation", "AutomaticCalculation?AutomaticCalculation:bool=true",
-                     "AutomaticCalculation?AutomaticCalculation:bool=false")
-            for automatic in (True, False):
-                self.xUITest.executeCommand(
-                    ".uno:AutomaticCalculation?AutomaticCalculation:bool=" + str(automatic).lower())
-                self.assertEqual(automatic, document.isAutomaticCalculationEnabled())
-                states = []
-                for name in names:
-                    with self.watched_state(name) as listener:
-                        states.append(listener.state)
-                self.assertEqual([automatic] * 3, states, "one shared state for every variant URL")
-
-    def test_formulas_calculation_options_toggle_switches_automatic_calculation(self):
+    def test_formulas_calculation_options_automatic_and_manual_set_the_mode(self):
+        # risk R9: both items are URL variants of one boolean slot; the slot honours the argument,
+        # so picking the mode that is already current leaves it unchanged (it does not toggle).
+        # The check marks are set by MenuBarManager on a real menu activation, which an awt popup
+        # built here never gets: they are checked by screenshot (see the T3c report).
         with self.ui_test.create_doc_in_start_center("calc") as document:
             xPopup = self.popup_of(".uno:FormulasCalcOptionsMenu", "formulas_calcoptions")
-            self.assertEqual([".uno:AutomaticCalculation"], self.popup_commands(xPopup))
-            self.assertEqual("AutoCalculate", self.command_label(".uno:AutomaticCalculation"))
+            auto = ".uno:AutomaticCalculation?AutomaticCalculation:bool="
+            self.assertEqual([auto + "true", auto + "false"], self.popup_commands(xPopup))
+            self.assertEqual(["Automatic", "Manual"],
+                             [self.command_label(c) for c in self.popup_commands(xPopup)])
             self.assertTrue(document.isAutomaticCalculationEnabled())
-            self.xUITest.executeCommand(".uno:AutomaticCalculation")
-            self.assertFalse(document.isAutomaticCalculationEnabled())
-            self.xUITest.executeCommand(".uno:AutomaticCalculation")
-            self.assertTrue(document.isAutomaticCalculationEnabled())
+            for automatic in (True, False, False, True, True):
+                self.xUITest.executeCommand(auto + str(automatic).lower())
+                self.assertEqual(automatic, document.isAutomaticCalculationEnabled())
 
     def test_tabs_are_in_excels_order(self):
         # The tab texts are not exposed to UITests; select each tab position and check which

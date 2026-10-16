@@ -8,5 +8,6 @@
  *
 -->
 <menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
-  <menu:menuitem menu:id=".uno:AutomaticCalculation"/>
+  <menu:menuitem menu:id=".uno:AutomaticCalculation?AutomaticCalculation:bool=true"/>
+  <menu:menuitem menu:id=".uno:AutomaticCalculation?AutomaticCalculation:bool=false"/>
 </menu:menupopup>

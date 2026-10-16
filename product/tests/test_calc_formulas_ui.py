@@ -68,7 +68,8 @@ MENUS = {  # popup command: (label, popup resource, popup items in order)
     "FormulasErrorCheckingMenu": ("Error Checking", "formulas_errorchecking",
                                   [".uno:FormulasErrorChecking", ".uno:ShowErrors"]),
     "FormulasCalcOptionsMenu": ("Calculation Options", "formulas_calcoptions",
-                                [".uno:AutomaticCalculation"]),
+                                [".uno:AutomaticCalculation?AutomaticCalculation:bool=true",
+                                 ".uno:AutomaticCalculation?AutomaticCalculation:bool=false"]),
 }
 SPLIT_BODY = {"FormulasAutoSum": "FormulasAutoSumMenu"}
 PLACEHOLDER_LABELS = {
@@ -264,16 +265,23 @@ class CalcFormulasUiTest(unittest.TestCase):
                 if url != SEP:
                     self.assertIn(url, labels, url)
 
-    def test_calculation_options_is_one_autocalculate_toggle_not_two_variants_of_one_state(self):
-        # risk R9, observed: Automatic and Manual as URL variants of .uno:AutomaticCalculation both
-        # got the slot's boolean and both showed a check mark. The design's fallback is one toggle.
-        self.assertEqual([".uno:AutomaticCalculation"], MENUS["FormulasCalcOptionsMenu"][2])
-        self.assertEqual("Auto~Calculate", commands_xcu()[".uno:AutomaticCalculation"])
+    def test_calculation_options_offers_automatic_and_manual_as_variants_of_one_slot(self):
+        # risk R9: both are URL variants of .uno:AutomaticCalculation; MenuBarManager::statusChanged
+        # checks only the one whose argument equals the slot's boolean (see test_framework_menu_rule).
+        auto = ".uno:AutomaticCalculation?AutomaticCalculation:bool="
+        self.assertEqual([auto + "true", auto + "false"], MENUS["FormulasCalcOptionsMenu"][2])
+        labels = commands_xcu()
+        self.assertEqual("Automatic", labels[auto + "true"])
+        self.assertEqual("Manual", labels[auto + "false"])
+        self.assertEqual("Auto~Calculate", labels[".uno:AutomaticCalculation"])
         self.assertIn(".uno:AutomaticCalculation", flagged_commands())
-        for path in POPUPMENU.glob("formulas_*.xml"):
-            self.assertNotIn("AutomaticCalculation?", path.read_text(encoding="utf-8"), path.name)
-        self.assertNotIn(".uno:AutomaticCalculation?AutomaticCalculation:bool=true", commands_xcu())
-        self.assertNotIn(".uno:AutomaticCalculation?AutomaticCalculation:bool=false", commands_xcu())
+
+    def test_framework_menu_rule_checks_a_single_bool_argument_item_only_when_state_equals_it(self):
+        src = (ROOT / "framework/source/uielement/menubarmanager.cxx").read_text(encoding="utf-8")
+        self.assertIn("getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument )", src)
+        self.assertIn("bCheckmark = ( bCheckmark == bArgument );", src)
+        self.assertLess(src.index("bCheckmark = ( bCheckmark == bArgument );"),
+                        src.index("m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );"))
 
     def test_the_category_menus_are_static_and_name_the_function_dialog_and_list(self):
         # T4c replaces them by a C++ controller: until then no controller but the resource one
