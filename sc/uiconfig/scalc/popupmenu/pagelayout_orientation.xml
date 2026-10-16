@@ -8,6 +8,6 @@
  *
 -->
 <menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
-  <menu:menuitem menu:id=".uno:Orientation?isLandscape:bool=false"/>
-  <menu:menuitem menu:id=".uno:Orientation?isLandscape:bool=true"/>
+  <menu:menuitem menu:id=".uno:Orientation?isLandscape:bool=false" menu:style="radio"/>
+  <menu:menuitem menu:id=".uno:Orientation?isLandscape:bool=true" menu:style="radio"/>
 </menu:menupopup>

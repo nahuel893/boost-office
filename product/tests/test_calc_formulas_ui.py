@@ -331,10 +331,22 @@ class CalcFormulasUiTest(unittest.TestCase):
 
     def test_framework_menu_rule_checks_a_single_bool_argument_item_only_when_state_equals_it(self):
         src = MENUBARMANAGER.read_text(encoding="utf-8")
-        self.assertIn("getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument )", src)
+        # T3c opt-in: only an item with the radio style (menu:style="radio" -> RADIOCHECK) takes the rule
+        self.assertIn("( nBits & MenuItemBits::RADIOCHECK ) && getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument )",
+                      src)
+        self.assertEqual(1, src.count("getSingleBoolArgument( menuItemHandler->aParsedItemURL"))
         self.assertIn("bCheckmark = ( bCheckmark == bArgument );", src)
+        self.assertLess(src.index("MenuItemBits nBits = m_pVCLMenu->GetItemBits( menuItemHandler->nItemId );"),
+                        src.index("( nBits & MenuItemBits::RADIOCHECK ) && getSingleBoolArgument("))
         self.assertLess(src.index("bCheckmark = ( bCheckmark == bArgument );"),
                         src.index("m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );"))
+
+    def test_calculation_options_items_have_the_radio_style_the_rule_needs(self):
+        root = ET.parse(POPUPMENU / "formulas_calcoptions.xml").getroot()
+        items = [e for e in root if e.tag == MENU + "menuitem"]
+        self.assertEqual(2, len(items))
+        for item in items:
+            self.assertEqual("radio", item.get(MENU + "style"), item.get(MENU + "id"))
 
     def test_framework_menu_rule_reads_the_bool_type_from_the_arguments_type_segment(self):
         # T8a: getSingleBoolArgument, compiled from the source as it is and run on URLs. The type

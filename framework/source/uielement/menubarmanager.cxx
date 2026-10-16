@@ -330,17 +330,18 @@ void SAL_CALL MenuBarManager::statusChanged( const FeatureStateEvent& Event )
 
                 if ( Event.State >>= bCheckmark )
                 {
-                    // An item whose URL carries one boolean argument is one of the variants
-                    // of a single boolean slot (Orientation: portrait/landscape): it is checked
-                    // when the slot's state equals its argument, not when the state is true.
+                    // A radio-style item (menu:style="radio") whose URL carries one boolean
+                    // argument is one of the variants of a single boolean slot (Orientation:
+                    // portrait/landscape): it is checked when the slot's state equals its
+                    // argument, not when the state is true. Other items keep the plain rule.
+                    MenuItemBits nBits = m_pVCLMenu->GetItemBits( menuItemHandler->nItemId );
                     bool bArgument = false;
-                    if ( getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument ) )
+                    if ( ( nBits & MenuItemBits::RADIOCHECK ) && getSingleBoolArgument( menuItemHandler->aParsedItemURL, bArgument ) )
                         bCheckmark = ( bCheckmark == bArgument );
 
                     // Checkmark or RadioButton
                     m_pVCLMenu->CheckItem( menuItemHandler->nItemId, bCheckmark );
                     // If not already designated RadioButton set as CheckMark
-                    MenuItemBits nBits = m_pVCLMenu->GetItemBits( menuItemHandler->nItemId );
                     if (!(nBits & MenuItemBits::RADIOCHECK))
                         m_pVCLMenu->SetItemBits( menuItemHandler->nItemId, nBits | MenuItemBits::CHECKABLE );
 

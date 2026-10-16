@@ -362,6 +362,13 @@ class PrintTitlesAliasTest(unittest.TestCase):
             for m in re.finditer(r"Invalidate[^;]*?\b" + self.ORIGINAL + r"\b[^;]*;", text, re.S):
                 self.assertRegex(m.group(0), self.SLOT, name)
 
+    def test_orientation_items_have_the_radio_style_the_framework_rule_needs(self):
+        root = ET.parse(POPUPMENU / "pagelayout_orientation.xml").getroot()
+        items = [e for e in root if e.tag == MENU + "menuitem"]
+        self.assertEqual(2, len(items))
+        for item in items:
+            self.assertEqual("radio", item.get(MENU + "style"), item.get(MENU + "id"))
+
     def test_the_alias_is_a_functional_slot_not_a_placeholder(self):
         self.assertNotIn(self.SLOT, [e["slot"] for e in placeholders.load_all()])
         self.assertNotIn("PageLayoutPrintTitles", [e["command"] for e in placeholders.load_all()])
