@@ -184,7 +184,8 @@ SECTION 8 - ANALYZE
 
 OFF THE TAB
 -----------
-Still reachable from the menu button (top right) > Data, as today:
+Still reachable from the menu bar > Data (toggled with the first quick-access button,
+.uno:Menubar; the top-right menu button has only about 10 items and no Data menu):
   Standard Filter, Hide AutoFilter, Clear AutoFilter, Form..., Pivot Table items
   (Excel has them on Insert), Calculate submenu (Excel has it on Formulas), Table
   submenu.
