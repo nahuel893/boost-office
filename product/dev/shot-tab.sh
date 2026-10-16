@@ -27,22 +27,41 @@ core="$(cd "$(dirname "$0")/../.." && pwd)"
 profile="${LO_PROFILE:-/mnt/games/libreoffice/dev-profile}"
 soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"
-mkdir -p "$(dirname "$out")"
-work=$(mktemp -d)
-sway_pid=""; lo_pid=""
-
-cleanup() {
-    [ -n "$lo_pid" ] && kill "$lo_pid" 2>/dev/null || true
-    # soffice.bin is a child of the soffice wrapper: kill only the dev profile's instances
-    pkill -f "soffice.bin.*UserInstallation=file://$profile" 2>/dev/null || true
-    [ "${SHOT_KEEP:-0}" = 1 ] || { [ -n "$sway_pid" ] && kill "$sway_pid" 2>/dev/null || true; }
-    [ "${SHOT_KEEP:-0}" = 1 ] || rm -rf "$work"
-}
-trap cleanup EXIT
-
+# Guards first, before anything is started or any trap is installed: refusing must never touch a
+# running Calc. Never the user's own profile, never a profile that is in use.
+real_profile=$(realpath -m "$profile")
+if [ "$real_profile" = /mnt/games/libreoffice/try-profile ]; then
+    echo "refusing LO_PROFILE=$profile: that is the user's own Calc profile." >&2; exit 1
+fi
 if pgrep -f "soffice.bin.*UserInstallation=file://$profile" >/dev/null; then
     echo "Calc already runs with $profile: close it first." >&2; exit 1
 fi
+
+mkdir -p "$(dirname "$out")"
+work=$(mktemp -d)
+sway_pid=""; lo_pid=""; ptr_pid=""
+
+# Kill only what this run launched, by PID: Calc runs in its own session (setsid), so its whole
+# process group (soffice wrapper + soffice.bin) is ours; sway and the pointer client are single PIDs.
+cleanup() {
+    trap - EXIT
+    exec 8>&- || true
+    local pids="$ptr_pid"
+    [ -n "$lo_pid" ] && kill -TERM -- "-$lo_pid" 2>/dev/null || true
+    [ "${SHOT_KEEP:-0}" = 1 ] || pids="$pids $sway_pid"
+    for p in $pids; do kill -TERM "$p" 2>/dev/null || true; done
+    for _ in $(seq 25); do   # up to 5 s for a clean exit
+        alive=0
+        [ -n "$lo_pid" ] && kill -0 -- "-$lo_pid" 2>/dev/null && alive=1
+        for p in $pids; do kill -0 "$p" 2>/dev/null && alive=1; done
+        [ "$alive" = 0 ] && break
+        sleep 0.2
+    done
+    [ -n "$lo_pid" ] && kill -KILL -- "-$lo_pid" 2>/dev/null || true
+    for p in $pids; do kill -KILL "$p" 2>/dev/null || true; done
+    [ "${SHOT_KEEP:-0}" = 1 ] || rm -rf "$work"
+}
+trap cleanup EXIT
 
 # --- profile: same settings as calc.sh light|dark -------------------------------------------
 if [ "$theme" = light ]; then
@@ -54,7 +73,8 @@ env_arg="-env:UserInstallation=file://$profile"
 oxt="$core/product/themes/out/boost-schemes.oxt"
 [ -f "$oxt" ] || python3 -I "$core/product/themes/build_schemes.py" >/dev/null
 stamp="$profile/.boost-schemes-installed"
-if [ ! -f "$stamp" ] || [ "$oxt" -nt "$stamp" ] || ! "$unopkg" list "$env_arg" 2>/dev/null | rg -q org.boost.colorschemes; then
+installed=$("$unopkg" list "$env_arg" 2>/dev/null || true)   # capture first: rg -q under pipefail can SIGPIPE
+if [ ! -f "$stamp" ] || [ "$oxt" -nt "$stamp" ] || ! rg -q org.boost.colorschemes <<<"$installed"; then
     "$unopkg" add -f "$oxt" "$env_arg" >/dev/null
     mkdir -p "$profile" && touch "$stamp"
 fi
@@ -188,18 +208,26 @@ for line in sys.stdin:
 PYEOF
 mkfifo "$work/ptr"
 XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" python3 -I "$work/ptr.py" <"$work/ptr" >"$work/ptr.log" 2>&1 &
+ptr_pid=$!
 exec 8>"$work/ptr"
+for _ in $(seq 50); do
+    rg -q '^ready' "$work/ptr.log" 2>/dev/null && break
+    kill -0 "$ptr_pid" 2>/dev/null || break
+    sleep 0.2
+done
+rg -q '^ready' "$work/ptr.log" 2>/dev/null || { echo "virtual pointer client failed:" >&2; bat -p "$work/ptr.log" >&2; exit 1; }
 export SHOT_PTR="$work/ptr"   # SHOT_AFTER snippets write commands here, e.g. echo "click 100 50" > "$SHOT_PTR"
 click() { echo "move $(($1 - 4)) $(($2 - 4))" >&8; echo "click $1 $2" >&8; }
 
 # --- Calc inside it ----------------------------------------------------------------------------
 env -u DISPLAY XDG_CONFIG_HOME="$work/cfg" GDK_BACKEND=wayland GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 \
-    "$soffice" --calc --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
+    setsid "$soffice" --calc --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
 lo_pid=$!
 
 id=""
 for _ in $(seq 120); do
-    id=$(swaymsg -t get_tree | jq -r '[.. | objects | select(.pid? and .name? and (.type? == "con" or .type? == "floating_con"))][0].id // empty')
+    tree=$(swaymsg -t get_tree) || { echo "swaymsg get_tree failed (headless sway gone?)" >&2; exit 1; }
+    id=$(jq -r '[.. | objects | select(.pid? and .name? and (.type? == "con" or .type? == "floating_con"))][0].id // empty' <<<"$tree") || { echo "jq could not read the sway tree" >&2; exit 1; }
     [ -n "$id" ] && break
     sleep 0.5
 done
