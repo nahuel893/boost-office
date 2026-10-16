@@ -67,14 +67,14 @@ class CalcTabsTest(unittest.TestCase):
         self.assertEqual((5, 5), (positions["phbData"], positions["DataLabel"]))
         self.assertEqual((16, 16), (positions["phbHelp"], positions["HelpLabel"]))
 
-    def test_help_page_is_a_generated_page_with_markers_and_an_empty_box(self):
+    def test_help_page_is_a_generated_page_with_markers_and_its_buttons(self):
         self.assertEqual(1, self.office.count("<!-- product:Help-begin -->"))
         self.assertEqual(1, self.office.count("<!-- product:Help-end -->"))
         lines = self.office.split("\n")
         first, last = g.find_object(lines, "phbHelp")
         page = "\n".join(lines[first:last + 1])
         self.assertIn('class="sfxlo-PriorityMergedHBox" id="pmhbHelp"', page)
-        self.assertNotIn("sfxlo-NotebookbarToolBox", page)
+        self.assertEqual(7, page.count("sfxlo-NotebookbarToolBox"))  # filled by T7
         first, last = g.find_object(lines, "HelpLabel")
         label = "\n".join(lines[first:last + 1])
         self.assertIn('<property name="use-underline">True</property>', label)

@@ -314,12 +314,14 @@
  {
   "slot": "FID_HELP_FEEDBACK",
   "offset": 419,
-  "command": "HelpFeedback"
+  "command": "HelpFeedback",
+  "label": "Feedback"
  },
  {
   "slot": "FID_HELP_BLOG",
   "offset": 420,
-  "command": "HelpBlog"
+  "command": "HelpBlog",
+  "label": "Blog"
  },
  {
   "slot": "FID_VIEW_SHEET_VIEW",

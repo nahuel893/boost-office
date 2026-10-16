@@ -233,8 +233,9 @@ class NotebookbarOffice(UITestCase):
         # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families),
         # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet),
         # Review 5 (Translate, Previous and Next Comment, Allow Edit Ranges, Hide Ink),
-        # View 14 (5 Sheet View, Page Layout, Custom Views, Ruler, Arrange All, Hide, Unhide, 3 Side by Side)
-        self.assertEqual(60, len(buttons))
+        # View 14 (5 Sheet View, Page Layout, Custom Views, Ruler, Arrange All, Hide, Unhide, 3 Side by Side),
+        # Help 2 (Feedback, Blog)
+        self.assertEqual(62, len(buttons))
         return buttons
 
     def check_placeholder_buttons_are_drawn_disabled(self, src):
@@ -970,6 +971,72 @@ class NotebookbarOffice(UITestCase):
                     self.assertEqual(entry["label"], self.command_label(base))
                     count += 1
             self.assertEqual(14, count)
+
+    def test_help_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_help.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(2, len(layout["sections"]))
+                self.assertEqual("phbHelp", layout["page"])
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_help_placeholders_are_disabled_and_inert(self):
+        # 2 slots, no variants: Feedback and Blog
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 419 <= e["offset"] <= 420)
+        self.assertEqual(["HelpFeedback", "HelpBlog"], [n.removeprefix(".uno:") for n in names])
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_help_placeholder_buttons_are_drawn_disabled_and_the_others_enabled(self):
+        # what the ribbon draws: toolboxitem `Enabled`. Only the two placeholders are disabled.
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_help.json").read_text(encoding="utf-8"))
+        disabled = {"HelpFeedback", "HelpBlog"}
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                drawn = {}
+                for section in layout["sections"]:
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + layout["id_prefix"] + box["id"])
+                            drawn[box["items"][0]["cmd"]] = xBox.getChild("toolboxitem-1")
+                self.assertEqual(7, len(drawn))
+                self.wait_for(lambda: all((get_state_as_dict(x)["Enabled"] == "false") == (cmd in disabled)
+                                          for cmd, x in drawn.items()),
+                              "Help buttons not drawn as designed: " + str(
+                                  {c: get_state_as_dict(x)["Enabled"] for c, x in drawn.items()}))
+            finally:
+                self.switch_to("Default")
+
+    def test_help_existing_commands_are_enabled(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            for name in ("HelpIndex", "QuestionAnswers", "Documentation", "WhatsNew", "GetInvolved"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_help_placeholder_labels_resolve(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+        with self.ui_test.create_doc_in_start_center("calc"):
+            count = 0
+            for entry in entries:
+                if 419 <= entry["offset"] <= 420:
+                    self.assertEqual(entry["label"], self.command_label(".uno:" + entry["command"]))
+                    count += 1
+            self.assertEqual(2, count)
 
     def test_formulas_variant_menu_items_resolve_their_labels(self):
         with self.ui_test.create_doc_in_start_center("calc"):
