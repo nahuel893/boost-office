@@ -128,19 +128,21 @@ Size ImplImage::getSizePixel()
 }
 
 /// non-HiDPI compatibility method.
-Bitmap const & ImplImage::getBitmap(bool bDisabled)
+Bitmap const & ImplImage::getBitmap(bool bDisabled, const Color& rFaceColor)
 {
     getSizePixel(); // force load, and at unity scale.
     if (bDisabled)
     {
-        // Changed since we last generated this.
+        // Changed since we last generated this: the bitmap, or the face color (theme switch).
         BitmapChecksum aChecksum = maBitmap.GetChecksum();
         if (maBitmapChecksum != aChecksum ||
-            maDisabledBitmap.GetSizePixel() != maBitmap.GetSizePixel())
+            maDisabledBitmap.GetSizePixel() != maBitmap.GetSizePixel() ||
+            maDisabledFaceColor != rFaceColor)
         {
             maDisabledBitmap = maBitmap;
-            BitmapFilter::Filter(maDisabledBitmap, BitmapDisabledImageFilter());
+            BitmapFilter::Filter(maDisabledBitmap, BitmapDisabledImageFilter(rFaceColor));
             maBitmapChecksum = aChecksum;
+            maDisabledFaceColor = rFaceColor;
         }
         return maDisabledBitmap;
     }
@@ -160,7 +162,8 @@ bool ImplImage::isEqual(const ImplImage &ref) const
         return maBitmap == ref.maBitmap;
 }
 
-Bitmap const & ImplImage::getBitmapForHiDPI(bool bDisabled, SalGraphics* pGraphics)
+Bitmap const & ImplImage::getBitmapForHiDPI(bool bDisabled, SalGraphics* pGraphics,
+                                             const Color& rFaceColor)
 {
     if ((isStock() || mxMetaFile) && pGraphics)
     {   // check we have the right bitmap cached.
@@ -190,7 +193,7 @@ Bitmap const & ImplImage::getBitmapForHiDPI(bool bDisabled, SalGraphics* pGraphi
             }
         }
     }
-    return getBitmap(bDisabled);
+    return getBitmap(bDisabled, rFaceColor);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

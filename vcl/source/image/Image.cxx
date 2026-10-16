@@ -131,7 +131,9 @@ void Image::Draw(OutputDevice* pOutDev, const Point& rPos, DrawImageFlags nStyle
 
     Size aOutSize = pSize ? *pSize : pOutDev->PixelToLogic(mpImplData->getSizePixel());
 
-    Bitmap aRenderBmp = mpImplData->getBitmapForHiDPI(bool(nStyle & DrawImageFlags::Disable), pOutDev->GetGraphics());
+    Bitmap aRenderBmp = mpImplData->getBitmapForHiDPI(
+        bool(nStyle & DrawImageFlags::Disable), pOutDev->GetGraphics(),
+        pOutDev->GetSettings().GetStyleSettings().GetFaceColor());
 
     if (!(nStyle & DrawImageFlags::Disable) &&
         (nStyle & (DrawImageFlags::Highlight | DrawImageFlags::Deactive |

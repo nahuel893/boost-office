@@ -11,9 +11,25 @@
 #include <vcl/BitmapWriteAccess.hxx>
 #include <bitmap/BitmapDisabledImageFilter.hxx>
 
+#include <algorithm>
+
 Bitmap BitmapDisabledImageFilter::execute(Bitmap const& rBitmap) const
 {
     const Size aSize(rBitmap.GetSizePixel());
+
+    // A disabled image is a grey version of the image, close to the color it is drawn on.
+    // On a light face: luminance 0-255 remapped to 160-224, a light grey.
+    // On a dark face that light grey would stand out more than the enabled image does, so the
+    // luminance is remapped to a band just above the face instead: face to face + 47. The band
+    // is narrower than the light one because contrast grows faster at the dark end; this keeps
+    // a disabled icon at about the same contrast against a dark face as against a light one.
+    const bool bDarkFace = maFaceColor.IsDark();
+    const int nFaceLum = maFaceColor.GetLuminance();
+    auto toDisabledLum = [bDarkFace, nFaceLum](sal_uInt8 nLum) -> sal_uInt8 {
+        if (bDarkFace)
+            return std::min(255, nFaceLum + nLum * 3 / 16);
+        return nLum / 4 + 160;
+    };
 
     auto ePixelFormat = rBitmap.getPixelFormat();
     const BitmapPalette* pPal
@@ -31,9 +47,8 @@ Bitmap BitmapDisabledImageFilter::execute(Bitmap const& rBitmap) const
 
             for (sal_Int32 nX = 0; nX < sal_Int32(aSize.Width()); ++nX)
             {
-                // Get the luminance from RGB color and remap the value from 0-255 to 160-224
                 const BitmapColor aColor = pRead->GetPixelFromData(pReadScan, nX);
-                sal_uInt8 nLum(aColor.GetLuminance() / 4 + 160);
+                sal_uInt8 nLum(toDisabledLum(aColor.GetLuminance()));
                 BitmapColor aGreyValue(ColorAlpha, nLum, nLum, nLum, aColor.GetAlpha());
                 pGrey->SetPixelOnData(pGreyScan, nX, aGreyValue);
             }

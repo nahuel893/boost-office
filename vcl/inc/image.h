@@ -38,6 +38,8 @@ private:
     /// Original bitmap - or cache of a potentially scaled bitmap
     Bitmap maBitmap;
     Bitmap maDisabledBitmap;
+    /// the face color maDisabledBitmap was made for
+    Color maDisabledFaceColor;
 
     bool bOptional = false;
 
@@ -60,10 +62,11 @@ public:
 
     /// get size in co-ordinates not scaled for HiDPI
     Size getSizePixel();
-    /// Legacy - the original bitmap
-    Bitmap const & getBitmap(bool bDisabled = false);
+    /// Legacy - the original bitmap, or its disabled version for the face color rFaceColor
+    Bitmap const & getBitmap(bool bDisabled = false, const Color& rFaceColor = COL_LIGHTGRAY);
     /// Taking account of HiDPI scaling
-    Bitmap const & getBitmapForHiDPI(bool bDisabled, SalGraphics* pGraphics);
+    Bitmap const & getBitmapForHiDPI(bool bDisabled, SalGraphics* pGraphics,
+                                     const Color& rFaceColor);
 
     void SetOptional(bool bValue);
 
