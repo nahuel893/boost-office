@@ -262,22 +262,26 @@
  {
   "slot": "FID_VIEW_PAGE_LAYOUT",
   "offset": 413,
-  "command": "ViewPageLayout"
+  "command": "ViewPageLayout",
+  "label": "Page Layout"
  },
  {
   "slot": "FID_VIEW_CUSTOM_VIEWS",
   "offset": 414,
-  "command": "ViewCustomViews"
+  "command": "ViewCustomViews",
+  "label": "Custom Views"
  },
  {
   "slot": "FID_VIEW_RULER",
   "offset": 415,
-  "command": "ViewRuler"
+  "command": "ViewRuler",
+  "label": "Ruler"
  },
  {
   "slot": "FID_VIEW_ARRANGE_ALL",
   "offset": 416,
-  "command": "ViewArrangeAll"
+  "command": "ViewArrangeAll",
+  "label": "Arrange All"
  },
  {
   "slot": "FID_VIEW_WINDOW_VISIBILITY",
@@ -286,7 +290,11 @@
   "variants": [
    "Action:string=hide",
    "Action:string=unhide"
-  ]
+  ],
+  "variant_labels": {
+   "Action:string=hide": "Hide",
+   "Action:string=unhide": "Unhide"
+  }
  },
  {
   "slot": "FID_VIEW_SIDE_BY_SIDE",
@@ -296,7 +304,12 @@
    "Action:string=toggle",
    "Action:string=sync",
    "Action:string=reset"
-  ]
+  ],
+  "variant_labels": {
+   "Action:string=toggle": "View Side by Side",
+   "Action:string=sync": "Synchronous Scrolling",
+   "Action:string=reset": "Reset Window Position"
+  }
  },
  {
   "slot": "FID_HELP_FEEDBACK",
@@ -311,6 +324,20 @@
  {
   "slot": "FID_VIEW_SHEET_VIEW",
   "offset": 421,
-  "command": "ViewSheetView"
+  "command": "ViewSheetView",
+  "variants": [
+   "Action:string=switch",
+   "Action:string=keep",
+   "Action:string=exit",
+   "Action:string=new",
+   "Action:string=options"
+  ],
+  "variant_labels": {
+   "Action:string=switch": "Default",
+   "Action:string=keep": "Keep",
+   "Action:string=exit": "Exit",
+   "Action:string=new": "New",
+   "Action:string=options": "Options"
+  }
  }
 ]

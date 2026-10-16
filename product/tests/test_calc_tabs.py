@@ -17,7 +17,7 @@ LABELS = {"FileLabel": "~File", "HomeLabel": "~Home", "InsertLabel": "~Insert",
           "LayoutLabel": "Page ~Layout", "FunctionsLabel1": "For~mulas", "DataLabel": "~Data",
           "ReviewLabel": "~Review", "ViewLabel": "~View", "DevLabel": "~Tools", "HelpLabel": "Hel~p"}
 # phbInsert has a generated page since T2a, like phbHome and phbData; phbReview since T5a
-UNTOUCHED = CONTEXTUAL + ["phbFile", "phbView", "phbExtension", "phbTools"]
+UNTOUCHED = CONTEXTUAL + ["phbFile", "phbExtension", "phbTools"]
 
 
 def tab_children():

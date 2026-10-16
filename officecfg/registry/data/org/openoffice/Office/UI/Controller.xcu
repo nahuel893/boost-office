@@ -1196,6 +1196,45 @@
           <value>review_notes</value>
         </prop>
       </node>
+      <node oor:name="ViewFreezePanesMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewFreezePanesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>view_freezepanes</value>
+        </prop>
+      </node>
+      <node oor:name="ViewSwitchWindowsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewSwitchWindowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.WindowListMenuController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewMacrosMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewMacrosMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>view_macros</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3109,6 +3148,39 @@
       <node oor:name="ReviewNotesMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:ReviewNotesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewFreezePanesMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewFreezePanesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewSwitchWindowsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewSwitchWindowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewMacrosMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewMacrosMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>

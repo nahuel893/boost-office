@@ -200,7 +200,7 @@ class NotebookbarOffice(UITestCase):
     def test_every_placeholder_of_the_slice_is_disabled_and_inert(self):
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src)
-        self.assertEqual(61, len(names))  # 42 slots, 19 extra family variants
+        self.assertEqual(65, len(names))  # 42 slots, 23 extra family variants
         self.check_placeholders_are_disabled_and_inert(names)
 
     def placeholder_buttons(self, src):
@@ -232,8 +232,9 @@ class NotebookbarOffice(UITestCase):
                                 buttons.append((labels[url], xItem))
         # Data 9, Insert 17 (9 chart-type variants), Page Layout 8 (7 variants of 3 families),
         # Formulas 7 (4 Python variants, Evaluate Formula, Watch Window, Calculate Sheet),
-        # Review 5 (Translate, Previous and Next Comment, Allow Edit Ranges, Hide Ink)
-        self.assertEqual(46, len(buttons))
+        # Review 5 (Translate, Previous and Next Comment, Allow Edit Ranges, Hide Ink),
+        # View 14 (5 Sheet View, Page Layout, Custom Views, Ruler, Arrange All, Hide, Unhide, 3 Side by Side)
+        self.assertEqual(60, len(buttons))
         return buttons
 
     def check_placeholder_buttons_are_drawn_disabled(self, src):
@@ -884,6 +885,91 @@ class NotebookbarOffice(UITestCase):
             for name in ("ReviewCheckAccessibility", "ReviewGoToComment?Direction:string=previous",
                          "ReviewGoToComment?Direction:string=next"):
                 self.assertFalse(self.dispatch_enabled(name), name)
+
+    def test_view_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "calc_view.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("calc"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(7, len(layout["sections"]))
+                self.assertEqual("phbView", layout["page"])
+                self.assertEqual("Sheet View", layout["sections"][0]["caption"])
+                for section in layout["sections"]:
+                    xLabel = xCalcDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xCalcDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_view_placeholders_are_disabled_and_inert(self):
+        # 7 slots: Page Layout, Custom Views, Ruler, Arrange All, the Hide/Unhide family (2 variants),
+        # the Side by Side family (3) and the Sheet View family (5)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: 413 <= e["offset"] <= 418 or e["offset"] == 421)
+        self.assertEqual(14, len(names))
+        self.check_placeholders_are_disabled_and_inert(names)
+
+    def test_view_each_dropdown_has_an_enabled_command(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xGrid = self.xUITest.getTopFocusWindow().getChild("grid_window")
+            xGrid.executeAction("SELECT", mkPropertyValues({"CELL": "B2"}))
+            for name in ("FreezePanes", "FreezePanesRow", "FreezePanesColumn",   # Freeze Panes
+                         "MacroManager", "RunMacro", "BasicIDEAppear",           # Macros
+                         "NewWindow", "SplitWindow",                             # Window
+                         "NormalViewMode", "PagebreakMode", "ChangeTheme", "Navigator",
+                         "ToggleSheetGrid", "InputLineVisible", "ViewRowColumnHeaders",
+                         "ViewColumnRowHighlighting", "Zoom", "Zoom100Percent", "ZoomOptimal"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_view_dropdown_popups_list_their_items(self):
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xPopup = self.popup_of(".uno:ViewFreezePanesMenu", "view_freezepanes")
+            self.assertEqual([".uno:FreezePanes", ".uno:FreezePanesRow", ".uno:FreezePanesColumn"],
+                             self.popup_commands(xPopup))
+            xPopup = self.popup_of(".uno:ViewMacrosMenu", "view_macros")
+            # Macro Manager is flagged experimental: the framework hides it unless experimental mode
+            # is on, in the menu bar as here, so it is the first item only in that mode
+            commands = self.popup_commands(xPopup)
+            self.assertEqual([".uno:MacroRecorder", ".uno:RunMacro", ".uno:BasicIDEAppear"], commands[-3:])
+            self.assertIn(commands[:-3], ([], [".uno:MacroManager"]))
+
+    def test_view_switch_windows_dropdown_fills_with_the_open_windows(self):
+        # risk R7: the framework's window list controller, registered under the new command and
+        # without a popup file, must list the open windows when the dropdown opens
+        with self.ui_test.create_doc_in_start_center("calc"):
+            xController, xPopup = self.menu_controller(".uno:ViewSwitchWindowsMenu")
+            event = uno.createUnoStruct("com.sun.star.awt.MenuEvent")
+            event.Source = xPopup
+            xController.itemActivated(event)
+            windows = [xPopup.getItemId(pos) for pos in range(xPopup.getItemCount())
+                       if 4600 <= xPopup.getItemId(pos) <= 4699]
+            self.assertGreaterEqual(len(windows), 1)
+            texts = [xPopup.getItemText(nId) for nId in windows]
+            self.assertTrue(any("Untitled" in text for text in texts), texts)
+            self.assertEqual(1, sum(1 for nId in windows if xPopup.isItemChecked(nId)), "the active window")
+
+    def test_view_placeholder_labels_resolve_for_every_variant(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        entries = json.loads((src / "product" / "tests" / "placeholders.json").read_text(encoding="utf-8"))
+        with self.ui_test.create_doc_in_start_center("calc"):
+            count = 0
+            for entry in entries:
+                if not (413 <= entry["offset"] <= 418 or entry["offset"] == 421):
+                    continue
+                base = ".uno:" + entry["command"]
+                for variant, label in entry.get("variant_labels", {}).items():
+                    self.assertEqual(label, self.command_label(base + "?" + variant), variant)
+                    count += 1
+                if "label" in entry:
+                    self.assertEqual(entry["label"], self.command_label(base))
+                    count += 1
+            self.assertEqual(14, count)
 
     def test_formulas_variant_menu_items_resolve_their_labels(self):
         with self.ui_test.create_doc_in_start_center("calc"):

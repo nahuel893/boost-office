@@ -442,3 +442,45 @@ screenshots are T5b. No C++ and no new slot: slots +408..+412 already existed.
 - **Real-window menus**: the popup menus list only enabled items. On an empty cell the Notes menu shows just
   "Insert Comment" and the Check Accessibility menu shows "[No selection possible]" (its four items need an object, a
   range or a merged cell). The full item lists are covered by the UITests, not by a screenshot.
+
+## 9. View tab (T6a)
+
+`product/ui/calc_view.json` (page `phbView`, prefix `View`) replaces the upstream View page children between
+generated `product:View-begin/end` markers and removes the overflow menu object `Menu View`. Seven sections:
+Sheet View, Workbook Views, Dark Mode, Show, Zoom, Window, Macros (spec:
+`product/docs/design/calc-view-tab-layout.txt` plus the Sheet View group below). Icons, the 1920 px fit and
+screenshots are T6b (the variant buttons already carry their icon names). No C++ and no new slot: slots
++413..+418 and +421 already existed; this task gives them labels and variants.
+
+- **Sheet View group** (controller ruling, first group like Excel's). Excel's group is a "Switch Sheet View"
+  combo with Keep, Exit, New and Options under it (research reference section 5, `view-msqa-1.png`: with a
+  local file all of it is greyed). gen_ribbon only makes tool buttons, so the built form is Excel's reduced
+  form: a "Default" button in the top row (stands for the combo and shows its default text) and the four
+  buttons Keep, Exit, New, Options in one icon-only toolbox under it. All five are URL variants of the family
+  slot `.uno:ViewSheetView` (`?Action:string=switch|keep|exit|new|options`), labelled "Default", "Keep",
+  "Exit", "New", "Options" (tooltip "<Label> (not available yet)"). The width is about 170 px.
+- **Dropdowns** (no slot): `.uno:ViewFreezePanesMenu` ("Freeze Panes": Freeze Panes, Freeze First Row, Freeze
+  First Column; `view_freezepanes.xml`), `.uno:ViewMacrosMenu` ("Macros": Macro Manager, Record Macro,
+  separator, Run Macro, Edit Macros; `view_macros.xml`) and `.uno:ViewSwitchWindowsMenu` ("Switch Windows").
+  Controller.xcu Popup + ToolBox nodes, popup files registered in `UIConfig_scalc.mk`.
+- **Placeholders** (registry labels): Page Layout, Custom Views, Ruler, Arrange All, Hide/Unhide
+  (`.uno:ViewWindowVisibility?Action:string=hide|unhide`), View Side by Side / Synchronous Scrolling / Reset
+  Window Position (`.uno:ViewSideBySide?Action:string=toggle|sync|reset`) and the five Sheet View variants.
+- **R7 (Switch Windows)**: works. `WindowListMenuController` is registered under the new command with no
+  `Value` and no popup file; its `itemActivated` fills the popup with the open windows (ids 4600..4699, the
+  active one checked), as the UITest shows by building the popup through `PopupMenuControllerFactory` and
+  activating it. The static-popup fallback was not needed.
+- **R12 (duplicate ids)**: every generated id carries the page prefix, so Navigator, View Grid Lines and View
+  Headers are `btnViewNavigator` here and `btnPageLayoutNavigator` on Page Layout; the whole-UI duplicate-id
+  test and a shared-command test cover the three.
+- **R14 (buttons that leave the tab)**: Entire Page, Page Width, Full Screen, Value Highlighting, Hidden
+  Row/Column Indicator, Styles (Manage Styles), Sidebar and Status Bar stay in the menu bar (`menubar.xml`);
+  the Menubar toggle is the quick access bar's first button (`notebookbarshortcuts.xml`); Show Formulas is on the
+  Formulas tab. Images and Charts (`.uno:ShowGraphics`) was only in the removed `Menu View`: it is reachable
+  from Tools > Options > LibreOffice Calc > View > Objects (the design's ruling).
+- **Macro Manager is experimental**: `.uno:MacroManager` has `IsExperimental`, so the framework hides it from
+  the Macros menu (as from the menu bar) unless experimental mode is on; Record Macro, Run Macro and Edit
+  Macros always show.
+- **UITests**: `test_view_*` (sections and toolboxes, placeholders disabled and inert, enabled commands, popup
+  contents, Switch Windows fill, labels of every variant). The drawn-disabled count is now 60 buttons and the
+  slice-wide placeholder count 65.

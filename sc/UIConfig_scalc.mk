@@ -75,6 +75,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/scalc,\
 	sc/uiconfig/scalc/popupmenu/sparkline \
 	sc/uiconfig/scalc/popupmenu/sparklinemenu \
 	sc/uiconfig/scalc/popupmenu/statisticsmenu \
+	sc/uiconfig/scalc/popupmenu/view_freezepanes \
+	sc/uiconfig/scalc/popupmenu/view_macros \
 ))
 
 $(eval $(call gb_UIConfig_add_statusbarfiles,modules/scalc,\

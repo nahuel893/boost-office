@@ -1,0 +1,69 @@
+{
+  "page": "phbView",
+  "id_prefix": "View",
+  "context": "TabbedCalc",
+  "remove_objects": ["Menu View"],
+  "sections": [
+    {"name": "SheetView", "caption": "Sheet View", "rows": 3, "columns": [
+      [{"id": "SheetViewSwitch", "style": "small-label", "items": [
+          {"cmd": "SheetViewSwitch", "icon": "cmd/sc_viewsheetview_switch.png",
+           "action": ".uno:ViewSheetView?Action:string=switch"}]},
+       {"id": "SheetViewButtons", "style": "small", "items": [
+          {"cmd": "SheetViewKeep", "icon": "cmd/sc_viewsheetview_keep.png",
+           "action": ".uno:ViewSheetView?Action:string=keep"},
+          {"cmd": "SheetViewExit", "icon": "cmd/sc_viewsheetview_exit.png",
+           "action": ".uno:ViewSheetView?Action:string=exit"},
+          {"cmd": "SheetViewNew", "icon": "cmd/sc_viewsheetview_new.png",
+           "action": ".uno:ViewSheetView?Action:string=new"},
+          {"cmd": "SheetViewOptions", "icon": "cmd/sc_viewsheetview_options.png",
+           "action": ".uno:ViewSheetView?Action:string=options"}]}]
+    ]},
+    {"name": "WorkbookViews", "caption": "Workbook Views", "rows": 3, "columns": [
+      [{"id": "Normal", "style": "large", "items": [{"cmd": "NormalViewMode"}]}],
+      [{"id": "PageBreak", "style": "large", "items": [{"cmd": "PagebreakMode"}]}],
+      [{"id": "PageLayout", "style": "large", "items": [{"cmd": "ViewPageLayout"}]}],
+      [{"id": "CustomViews", "style": "large", "items": [{"cmd": "ViewCustomViews"}]}]
+    ]},
+    {"name": "DarkMode", "caption": "Dark Mode", "rows": 3, "columns": [
+      [{"id": "SwitchModes", "style": "large", "items": [{"cmd": "ChangeTheme"}]}]
+    ]},
+    {"name": "Show", "caption": "Show", "rows": 3, "columns": [
+      [{"id": "Navigation", "style": "large", "items": [{"cmd": "Navigator"}]}],
+      [{"id": "Ruler", "style": "small-label", "items": [{"cmd": "ViewRuler"}]},
+       {"id": "Gridlines", "style": "small-label", "items": [{"cmd": "ToggleSheetGrid"}]},
+       {"id": "FormulaBar", "style": "small-label", "items": [{"cmd": "InputLineVisible"}]}],
+      [{"id": "Headings", "style": "small-label", "items": [{"cmd": "ViewRowColumnHeaders"}]},
+       {"id": "FocusCell", "style": "small-label", "items": [{"cmd": "ViewColumnRowHighlighting"}]}]
+    ]},
+    {"name": "Zoom", "caption": "Zoom", "rows": 3, "columns": [
+      [{"id": "Zoom", "style": "large", "items": [{"cmd": "Zoom"}]}],
+      [{"id": "Zoom100", "style": "large", "items": [{"cmd": "Zoom100Percent"}]}],
+      [{"id": "ZoomToSelection", "style": "large", "items": [{"cmd": "ZoomOptimal"}]}]
+    ]},
+    {"name": "Window", "caption": "Window", "rows": 3, "columns": [
+      [{"id": "NewWindow", "style": "large", "items": [{"cmd": "NewWindow"}]}],
+      [{"id": "ArrangeAll", "style": "large", "items": [{"cmd": "ViewArrangeAll"}]}],
+      [{"id": "FreezePanes", "style": "large", "items": [{"cmd": "ViewFreezePanesMenu", "kind": "split"}]}],
+      [{"id": "Split", "style": "small-label", "items": [{"cmd": "SplitWindow"}]},
+       {"id": "Hide", "style": "small-label", "items": [
+          {"cmd": "WindowHide", "icon": "cmd/sc_viewwindowvisibility_hide.png",
+           "action": ".uno:ViewWindowVisibility?Action:string=hide"}]},
+       {"id": "Unhide", "style": "small-label", "items": [
+          {"cmd": "WindowUnhide", "icon": "cmd/sc_viewwindowvisibility_unhide.png",
+           "action": ".uno:ViewWindowVisibility?Action:string=unhide"}]}],
+      [{"id": "SideBySide", "style": "small-label", "items": [
+          {"cmd": "SideBySide", "icon": "cmd/sc_viewsidebyside_toggle.png",
+           "action": ".uno:ViewSideBySide?Action:string=toggle"}]},
+       {"id": "SyncScrolling", "style": "small-label", "items": [
+          {"cmd": "SyncScrolling", "icon": "cmd/sc_viewsidebyside_sync.png",
+           "action": ".uno:ViewSideBySide?Action:string=sync"}]},
+       {"id": "ResetWindowPosition", "style": "small-label", "items": [
+          {"cmd": "ResetWindowPosition", "icon": "cmd/sc_viewsidebyside_reset.png",
+           "action": ".uno:ViewSideBySide?Action:string=reset"}]}],
+      [{"id": "SwitchWindows", "style": "large", "items": [{"cmd": "ViewSwitchWindowsMenu", "kind": "split"}]}]
+    ]},
+    {"name": "Macros", "caption": "Macros", "rows": 3, "columns": [
+      [{"id": "Macros", "style": "large", "items": [{"cmd": "ViewMacrosMenu", "kind": "split"}]}]
+    ]}
+  ]
+}
