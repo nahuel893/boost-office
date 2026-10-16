@@ -159,13 +159,13 @@ SECTION 2 - PAGE SETUP
   Menu of .uno:PageLayoutMarginsMenu  (sc/uiconfig/scalc/popupmenu/pagelayout_margins.xml)
     Normal (spike)
         .uno:CalcPageMargin?Page.LeftMargin:long=1778&Page.RightMargin:long=1778&
-        Page.UpperMargin:long=1905&Page.LowerMargin:long=1905
+        Page.TopMargin:long=1905&Page.BottomMargin:long=1905
     Wide (spike)
         .uno:CalcPageMargin?Page.LeftMargin:long=2540&Page.RightMargin:long=2540&
-        Page.UpperMargin:long=2540&Page.LowerMargin:long=2540
+        Page.TopMargin:long=2540&Page.BottomMargin:long=2540
     Narrow (spike)
         .uno:CalcPageMargin?Page.LeftMargin:long=635&Page.RightMargin:long=635&
-        Page.UpperMargin:long=1905&Page.LowerMargin:long=1905
+        Page.TopMargin:long=1905&Page.BottomMargin:long=1905
     --------------------
     Page Style... (= Custom Margins...)
         .uno:PageFormatDialog
