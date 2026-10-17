@@ -1,142 +1,70 @@
-# LibreOffice
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/211/badge.svg)](https://scan.coverity.com/projects/211) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/307/badge)](https://www.bestpractices.dev/projects/307) [![Translation status](https://weblate.documentfoundation.org/widgets/libo_ui-master/-/svg-badge.svg)](https://weblate.documentfoundation.org/engage/libo_ui-master/?utm_source=widget)
+# Boost Office
 
-<img align="right" width="150" src="https://opensource.org/wp-content/uploads/2009/06/OSIApproved.svg">
+An office suite based on LibreOffice, with a ribbon that follows Microsoft 365.
+"Boost Office" is a working name.
 
-LibreOffice is an integrated office suite based on copyleft licenses
-and compatible with most document formats and standards. Libreoffice
-is backed by The Document Foundation, which represents a large
-independent community of enterprises, developers and other volunteers
-moved by the common goal of bringing to the market the best software
-for personal productivity. LibreOffice is open source, and free to
-download, use and distribute.
+The first application is Calc. Its Tabbed Office ribbon is being rebuilt to match
+Excel 365, section by section and button by button.
 
-A quick overview of the LibreOffice code structure.
+![Calc Home tab, light theme](product/docs/screenshots/home-light.png)
 
-## Overview
+## Status
 
-You can develop for LibreOffice in one of two ways, one
-recommended and one much less so. First the somewhat less recommended
-way: it is possible to use the SDK to develop an extension,
-for which you can read the [API docs](https://api.libreoffice.org/)
-and [Developers Guide](https://wiki.documentfoundation.org/Documentation/DevGuide).
-This re-uses the (extremely generic) UNO APIs that are also used by
-macro scripting in StarBasic.
+| Branch | Content |
+|---|---|
+| `main` | Calc Home and Data tabs, Fluent-based icons, light and dark color schemes |
+| `dev` | Everything on `main`, plus the other Calc tabs: Insert, Page Layout, Formulas, Review, View and Help. It moves to `main` after review |
 
-The best way to add a generally useful feature to LibreOffice
-is to work on the code base however. Overall this way makes it easier
-to compile and build your code, it avoids any arbitrary limitations of
-our scripting APIs, and in general is far more simple and intuitive -
-if you are a reasonably able C++ programmer.
+- Buttons for Excel features that LibreOffice lacks are shown greyed out. They are
+  placeholders for features still to be built. The lists are in
+  [calc-data-redesign.md](product/docs/calc-data-redesign.md) and, on `dev`, in
+  [calc-ribbon-tabs.md](https://github.com/nahuel893/boost-office/blob/dev/product/docs/calc-ribbon-tabs.md).
+- The new labels and tooltips are in English only.
+- Writer, Impress and the other applications are unchanged from LibreOffice.
 
-## The Build Chain and Runtime Baselines
+## Screenshots
 
-These are the current minimal operating system and compiler versions to
-run and compile LibreOffice, also used by the TDF builds:
+- [Home and Data tabs](product/docs/screenshots/README.md)
+- [Every tab (dev)](https://github.com/nahuel893/boost-office/blob/dev/product/docs/screenshots/README.md)
 
-* Windows:
-    * Runtime: Windows 10
-    * Build: [wsl-as-helper](https://wiki.documentfoundation.org/Development/BuildingOnWSLWindows) + Visual Studio 2022
-* macOS:
-    * Runtime: 11
-    * Build: macOS 14 with Xcode 16.2 or later (using latest version available for a given version of macOS)
-* Linux:
-    * Runtime: RHEL 9 or CentOS 9 and comparable
-    * Build: either GCC 13; or Clang 18 with libstdc++ 11
-* iOS (only for LibreOfficeKit):
-    * Runtime: 14.5 (only support for newer i devices == 64 bit)
-    * Build: Xcode 12.5 and iPhone SDK 14.5
-* Android:
-    * Build: NDK 27 and SDK 30.0.3
-* Emscripten / WASM:
-    * Runtime: a browser with SharedMemory support (threads + atomics)
-    * Build: Qt 5.15 with Qt supported Emscripten 1.39.8
-    * See [README.wasm](static/README.wasm.md)
+## Where things are
 
-Java is required for building many parts of LibreOffice. In TDF Wiki article
-[Development/Java](https://wiki.documentfoundation.org/Development/Java), the
-exact modules that depend on Java are listed.
+- `product/` holds what belongs to Boost Office and not to LibreOffice:
+  - `ui/`: the ribbon layouts and the generator that writes the ribbon pages;
+  - `icons/`: the icon theme builder;
+  - `themes/`: the color scheme builder;
+  - `dev/`: build, run, screenshot and test scripts;
+  - `tests/`: unit tests;
+  - `docs/`: design notes, research and decisions.
+- Everything else is LibreOffice core, plus the changes the ribbon needs. Most of
+  those are in `sc/uiconfig/`.
 
-The baseline for Java is Java Development Kit (JDK) Version 17 or later.
+## Build and run (Linux)
 
-The baseline for Python is version 3.11. It follows the version available
-in SUSE Linux Enterprise Desktop and the Maintenance Support version of
-Red Hat Enterprise Linux.
+1. Install LibreOffice's build dependencies, as described in
+   [Building on Linux](https://wiki.documentfoundation.org/Development/BuildingOnLinux).
+2. Put the configure options in `autogen.input`, then run `./autogen.sh`. The
+   development machine uses gtk3 only, without Java, help, Firebird or PostgreSQL.
+3. Build with `product/dev/lo-make.sh`. It runs `make` under a memory cap.
+4. After a full build, install the icon theme into the build:
+   `python3 -I product/icons/build_theme.py install --instdir instdir`.
+5. Open Calc with the product look:
+   `product/dev/calc.sh light --profile ~/boost-profile` (or `dark`). The script
+   rewrites that profile on each run.
 
-If you want to use Clang with the LibreOffice compiler plugins, the minimal
-version of Clang is 18. Since Xcode doesn't provide the compiler plugin
-headers, you have to compile your own Clang to use them on macOS.
+## Tests
 
-You can find the TDF configure switches in the `distro-configs/` directory.
+- Unit tests: `python3 -I -m unittest discover -s product/tests -t .`
+- One Calc UI test: `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test name>`
 
-To setup your initial build environment on Windows and macOS, we provide
-the LibreOffice Development Environment
-([LODE](https://wiki.documentfoundation.org/Development/lode)) scripts.
+## License
 
-For more information see the build instructions for your platform in the
-[TDF wiki](https://wiki.documentfoundation.org/Development/How_to_build).
+Same licenses as LibreOffice: see [COPYING](COPYING), [COPYING.MPL](COPYING.MPL)
+and [COPYING.LGPL](COPYING.LGPL).
 
-## The Important Bits of Code
+## LibreOffice
 
-Each module should have a `README.md` file inside it which has some
-degree of documentation for that module; patches are most welcome to
-improve those. We have those turned into a web page here:
-
-<https://docs.libreoffice.org/>
-
-However, there are two hundred modules, many of them of only
-peripheral interest for a specialist audience. So - where is the
-good stuff, the code that is most useful. Here is a quick overview of
-the most important ones:
-
-Module    | Description
-----------|-------------------------------------------------
-[sal/](sal)             | this provides a simple System Abstraction Layer
-[tools/](tools)         | this provides basic internal types: `Rectangle`, `Color` etc.
-[vcl/](vcl)             | this is the widget toolkit library and one rendering abstraction
-[framework/](framework) | UNO framework, responsible for building toolbars, menus, status bars, and the chrome around the document using widgets from VCL, and XML descriptions from `/uiconfig/` files
-[sfx2/](sfx2)           | legacy core framework used by Writer/Calc/Draw: document model / load/save / signals for actions etc.
-[svx/](svx)             | drawing model related helper code, including much of Draw/Impress
-
-Then applications
-
-Module    | Description
-----------|-------------------------------------------------
-[desktop/](desktop)  | this is where the `main()` for the application lives, init / bootstrap. the name dates back to an ancient StarOffice that also drew a desktop
-[sw/](sw/)           | Writer
-[sc/](sc/)           | Calc
-[sd/](sd/)           | Draw / Impress
-
-There are several other libraries that are helpful from a graphical perspective:
-
-Module    | Description
-----------|-------------------------------------------------
-[basegfx/](basegfx)  | algorithms and data-types for graphics as used in the canvas
-[canvas/](canvas)   | new (UNO) canvas rendering model with various backends
-[cppcanvas/](cppcanvas) | C++ helper classes for using the UNO canvas
-[drawinglayer/](drawinglayer) | View code to render drawable objects and break them down into primitives we can render more easily.
-
-## Rules for #include Directives (C/C++)
-
-Use the `"..."` form if and only if the included file is found next to the
-including file. Otherwise, use the `<...>` form. (For further details, see the
-mail [Re: C[++]: Normalizing include syntax ("" vs
-<>)](https://lists.freedesktop.org/archives/libreoffice/2017-November/078778.html).)
-
-The UNO API include files should consistently use double quotes, for the
-benefit of external users of this API.
-
-`loplugin:includeform (compilerplugins/clang/includeform.cxx)` enforces these rules.
-
-
-## Finding Out More
-
-Beyond this, you can read the `README.md` files, send us patches, ask
-on the mailing list libreoffice@lists.freedesktop.org (no subscription
-required) or poke people on IRC `#libreoffice-dev` on irc.libera.chat -
-we're a friendly and generally helpful mob. We know the code can be
-hard to get into at first, and so there are no silly questions.
-
-## SAST Tools
-
-[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
+This repository is a fork of LibreOffice core. LibreOffice's own README, with an
+overview of its code, is in [README-LibreOffice.md](README-LibreOffice.md).
+LibreOffice is a trademark of The Document Foundation. Boost Office is not
+affiliated with The Document Foundation.
