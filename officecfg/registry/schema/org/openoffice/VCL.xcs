@@ -138,6 +138,14 @@
                     <value>false</value>
                 </prop>
             </group>
+            <group oor:name="UIFont">
+                <prop oor:name="FamilyName" oor:type="xs:string" oor:nillable="false">
+                    <info>
+                        <desc>Font family of the user interface. Empty uses the desktop's font. The gtk3 VCL plugin replaces only the family and keeps the desktop's size. Read at start-up.</desc>
+                    </info>
+                    <value/>
+                </prop>
+            </group>
     </group>
   </component>
 </oor:component-schema>

@@ -27,6 +27,7 @@
 #include <scrollbarvalue.hxx>
 
 #include <IconThemeSelector.hxx>
+#include <officecfg/VCL.hxx>
 #include "custom-theme.hxx"
 #include <vcl/themecolors.hxx>
 #include "gtkcairo.hxx"
@@ -2217,6 +2218,41 @@ static vcl::Font getFont(GtkStyleContext* pStyle, const css::lang::Locale& rLoca
     const PangoFontDescription* font = gtk_style_context_get_font(pStyle, gtk_style_context_get_state(pStyle));
     return pango_to_vcl(font, rLocale);
 }
+
+// If VCLSettings/UIFont/FamilyName is set, replace the family of the desktop's UI font with it and
+// keep the desktop's size. Set by the application, gtk-font-name wins over XSETTINGS, GSettings and
+// the settings portal for this process only; native GTK widgets and the fonts that updateSettings
+// reads back from GTK all follow it. Empty (the default) changes nothing.
+static void applyConfiguredUIFontFamily(GtkSettings* pSettings)
+{
+    OUString aFamily;
+    try
+    {
+        aFamily = officecfg::VCL::VCLSettings::UIFont::FamilyName::get();
+    }
+    catch (const css::uno::Exception&)
+    {
+        SAL_WARN("vcl.gtk", "UIFont/FamilyName unreadable, keeping the desktop's UI font");
+    }
+    if (aFamily.isEmpty())
+        return;
+
+    // The family may be one installed with the office or in the profile's user/fonts. vcl adds
+    // those as fontconfig application fonts, but pango keeps the font list it read first: add them
+    // now and give GTK a fresh default font map that sees them.
+    FontConfigManager::get();
+    pango_cairo_font_map_set_default(nullptr);
+
+    gchar* pFontName = nullptr;
+    g_object_get(pSettings, "gtk-font-name", &pFontName, nullptr);
+    PangoFontDescription* pFontDesc = pango_font_description_from_string(pFontName ? pFontName : "");
+    g_free(pFontName);
+    pango_font_description_set_family(pFontDesc, OUStringToOString(aFamily, RTL_TEXTENCODING_UTF8).getStr());
+    gchar* pNewFontName = pango_font_description_to_string(pFontDesc);
+    pango_font_description_free(pFontDesc);
+    g_object_set(pSettings, "gtk-font-name", pNewFontName, nullptr);
+    g_free(pNewFontName);
+}
 #endif
 
 vcl::Font pango_to_vcl(const PangoFontDescription* font, const css::lang::Locale& rLocale)
@@ -2896,6 +2932,11 @@ GtkSalGraphics::GtkSalGraphics( GtkSalFrame *pFrame, GtkWidget *pWindow )
         return;
 
     style_loaded = true;
+
+#if !GTK_CHECK_VERSION(4, 0, 0)
+    // Before any style context below reads the font.
+    applyConfiguredUIFontFamily(gtk_widget_get_settings(mpWindow));
+#endif
 
     /* Load the GtkStyleContexts, it might be a bit slow, but usually,
      * gtk apps create a lot of widgets at startup, so, it shouldn't be
