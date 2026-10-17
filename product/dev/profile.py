@@ -4,10 +4,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Write registrymodifications.xcu for the isolated LibreOffice dev profile."""
 import argparse
+import shutil
 from pathlib import Path
 from xml.sax.saxutils import escape, quoteattr
 
 DEFAULT_PROFILE = Path("/mnt/games/libreoffice/dev-profile")
+FONTS = Path(__file__).resolve().parents[1] / "fonts"
 TOOLBAR_MODE = "/org.openoffice.Office.UI.ToolbarMode"
 CALC_APP = TOOLBAR_MODE + "/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Calc']"
 APPEARANCE = "/org.openoffice.Office.Common/Appearance"
@@ -23,9 +25,13 @@ UI_MODES = {
 }
 # Office.Common/Appearance/ApplicationAppearance: 0 system, 1 light, 2 dark.
 APPEARANCES = {"light": "1", "dark": "2"}
+# font choice -> VCLSettings/UIFont/FamilyName, which the gtk3 plugin puts in place of the
+# desktop's UI font family. "system" writes nothing and keeps the desktop's font.
+UI_FONT = "/org.openoffice.VCL/VCLSettings/UIFont"
+UI_FONTS = {"system": None, "selawik": "Selawik", "inter": "Inter"}
 
 
-def build_items(ui, appearance, icons=None, scheme=None, tint=None):
+def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system"):
     active, ui_file = UI_MODES[ui]
     items = [(CALC_APP, "Active", active)]
     if ui_file:
@@ -39,6 +45,8 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None):
         items.append(("/org.openoffice.Office.UI/ColorScheme", "CurrentColorScheme", scheme))
     if tint is not None:
         items.append((MISC, "NotebookbarColorTransparency", str(tint)))
+    if UI_FONTS[font]:
+        items.append((UI_FONT, "FamilyName", UI_FONTS[font]))
     # Keep screenshots free of first-start and tip dialogs.
     items.append((MISC, "FirstRun", "false"))
     items.append((MISC, "ShowTipOfTheDay", "false"))
@@ -66,6 +74,14 @@ def write(profile, items):
     return path
 
 
+def install_fonts(profile, font):
+    """Copy the bundled font into the profile's user/fonts, which VCL adds to the font path."""
+    dest = Path(profile) / "user" / "fonts"
+    dest.mkdir(parents=True, exist_ok=True)
+    for ttf in sorted((FONTS / font).glob("*.ttf")):
+        shutil.copyfile(ttf, dest / ttf.name)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--ui", choices=sorted(UI_MODES), required=True)
@@ -73,9 +89,13 @@ def main(argv=None):
     ap.add_argument("--icons")
     ap.add_argument("--scheme")
     ap.add_argument("--tint", type=int)
+    ap.add_argument("--font", choices=list(UI_FONTS), default="system")
     ap.add_argument("--profile", type=Path, default=DEFAULT_PROFILE)
     args = ap.parse_args(argv)
-    print(write(args.profile, build_items(args.ui, args.appearance, args.icons, args.scheme, args.tint)))
+    if UI_FONTS[args.font]:
+        install_fonts(args.profile, args.font)
+    print(write(args.profile, build_items(args.ui, args.appearance, args.icons, args.scheme, args.tint,
+                                          args.font)))
 
 
 if __name__ == "__main__":

@@ -13,11 +13,14 @@
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
 #      SHOT_AFTER="swaymsg-free shell snippet" runs after the tab click with $SWAYSOCK, $WAYLAND_DISPLAY,
 #      $SHOT_W, $SHOT_H exported (used for the Shapes dropdown capture).
+#      SHOT_FONT=system|selawik|inter picks the UI font, like calc.sh --font (default system).
 set -euo pipefail
 
 theme="${1:?theme light|dark}"; tab="${2:?tab}"; out="${3:?out.png}"; width="${4:-1920}"
 case "$theme" in light|dark) ;; *) echo "theme must be light or dark" >&2; exit 2 ;; esac
 case "$width" in 1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; *) echo "width: 1920|1600|1366" >&2; exit 2 ;; esac
+font="${SHOT_FONT:-system}"
+case "$font" in system|selawik|inter) ;; *) echo "SHOT_FONT must be system, selawik or inter" >&2; exit 2 ;; esac
 
 if [ -z "${SHOT_INNER:-}" ]; then
     exec timeout --kill-after=10 "${LO_SHOT_TIMEOUT:-180}" env SHOT_INNER=1 "$0" "$@"
@@ -69,6 +72,7 @@ if [ "$theme" = light ]; then
 else
     args=(--ui office --appearance dark --icons boost_dark --scheme "Boost Dark" --tint 255); gtk=adw-gtk3-dark
 fi
+[ "$font" = system ] || args+=(--font "$font")
 env_arg="-env:UserInstallation=file://$profile"
 oxt="$core/product/themes/out/boost-schemes.oxt"
 [ -f "$oxt" ] || python3 -I "$core/product/themes/build_schemes.py" >/dev/null

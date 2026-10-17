@@ -52,6 +52,32 @@ class CalcLauncherTest(unittest.TestCase):
         self.assertEqual(2, out.returncode)
         self.assertIn("usage", out.stderr.lower())
 
+    def test_font_inter_and_selawik_go_to_the_profile(self):
+        for font in ("inter", "selawik"):
+            out = dry_run("light", "--font", font)
+            self.assertEqual(0, out.returncode, out.stderr)
+            self.assertIn("--tint 255 --font %s --profile" % font, out.stdout)
+
+    def test_font_works_with_every_mode(self):
+        out = dry_run("--font", "inter", "tabbed")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("--ui tabbed --appearance dark --font inter --profile", out.stdout)
+
+    def test_no_font_and_system_font_change_nothing(self):
+        for mode in ("light", "dark", "tabbed"):
+            plain = dry_run(mode)
+            system = dry_run(mode, "--font", "system")
+            self.assertEqual(0, system.returncode, system.stderr)
+            self.assertEqual(plain.stdout, system.stdout)
+            self.assertNotIn("--font", plain.stdout)
+
+    def test_unknown_font_is_rejected_with_usage(self):
+        for args in (("--font", "comic"), ("light", "--font")):
+            out = dry_run(*args)
+            self.assertEqual(2, out.returncode, args)
+            self.assertIn("usage", out.stderr.lower())
+            self.assertIn("--font system|selawik|inter", out.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

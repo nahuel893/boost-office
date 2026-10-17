@@ -1,24 +1,27 @@
 #!/usr/bin/env bash
 # Open the dev build's Calc in one step, with a chosen look.
-# Usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--profile DIR] [--dry-run]
+# Usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
 #   light         Tabbed Office, Boost icons, "Boost Light" scheme (soft green)  [default]
 #   dark          Tabbed Office, Boost dark icons, "Boost Dark" scheme
 #   tabbed        LibreOffice's original Tabbed ribbon, dark, no product theme
 #   tabbed-light  LibreOffice's original Tabbed ribbon, light, no product theme
 #   compact       LibreOffice's Tabbed Compact ribbon, dark, no product theme
+#   --font        UI font: system (the desktop's, default), or bundled selawik or inter (any mode)
 # The profile (default /mnt/games/libreoffice/try-profile) is rewritten on each run;
 # missing icon zips and the color scheme extension are built and installed first.
 set -euo pipefail
 core="$(cd "$(dirname "$0")/../.." && pwd)"
 profile=/mnt/games/libreoffice/try-profile
 mode=light
+font=system
 dry=0
 
-usage() { echo "usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--profile DIR] [--dry-run]" >&2; exit 2; }
+usage() { echo "usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2; exit 2; }
 
 while [ $# -gt 0 ]; do
     case "$1" in
     --profile) [ $# -ge 2 ] || usage; profile="$2"; shift 2 ;;
+    --font) [ $# -ge 2 ] || usage; case "$2" in system|selawik|inter) font="$2" ;; *) usage ;; esac; shift 2 ;;
     --dry-run) dry=1; shift ;;
     light|dark|tabbed|tabbed-light|compact) mode="$1"; shift ;;
     *) usage ;;
@@ -35,6 +38,8 @@ tabbed)       args=(--ui tabbed --appearance dark); gtk=adw-gtk3-dark ;;
 tabbed-light) args=(--ui tabbed --appearance light); gtk=adw-gtk3 ;;
 compact)      args=(--ui compact --appearance dark); gtk=adw-gtk3-dark ;;
 esac
+# The font goes to the profile: the bundled TTFs into user/fonts and VCL's UIFont/FamilyName item.
+[ "$font" = system ] || args+=(--font "$font")
 
 soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"
