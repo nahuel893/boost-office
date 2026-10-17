@@ -15,7 +15,8 @@ SHOT_FONT=inter product/dev/shot-tab.sh light Home /tmp/home-inter.png 1920
   exactly what they were before the switch existed.
 - `--font selawik` or `--font inter` changes the whole UI: tab bar, ribbon labels, menus,
   dialogs, tooltips and status bar. The document and cell fonts do not change.
-- The font only changes the family. The size, weight and style stay the desktop's.
+- The font only changes the family. The size, weight and style are the desktop's at startup. While
+  a font is set, a desktop font change made while Calc runs applies only after a restart.
 - `--font` works with every mode of `calc.sh` (light, dark, tabbed, ...).
 
 ## What it does
@@ -55,3 +56,17 @@ the item in its own configuration layer. Users can change it in Tools > Options 
 Expert Configuration (`UIFont`). It applies after a restart.
 
 Only the gtk3 plugin reads the item. Other VCL plugins (gtk4, Qt, Windows, macOS) ignore it.
+
+## Known limitations
+
+These were found by reading the GTK and Pango sources and have not been reproduced:
+
+- pango's default font map is kept per thread. If a non-main thread creates the first window, for
+  example `soffice --invisible --accept=...`, native GTK widgets do not see the bundled font.
+- If fontconfig is reinitialized while Calc runs, for example because a font was installed, GTK3
+  drops the folders VCL added. Native GTK menus and dialogs then fall back to another sans, while
+  VCL widgets keep the trial font.
+- The family name is not validated. A misspelled name, or a font missing from `user/fonts`,
+  switches the UI to a fallback font, and nothing is logged.
+
+Fix these before the setting ships or goes upstream.

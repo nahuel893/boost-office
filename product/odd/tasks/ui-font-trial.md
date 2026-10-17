@@ -44,7 +44,7 @@ between them, so the user can pick one. After the pick, the screenshots are redo
 
 | ID | Task | Route | Status |
 |---|---|---|---|
-| T1 | Fonts in `product/fonts/`, and the `--font system\|selawik\|inter` switch in calc.sh and shot-tab.sh, with launcher tests | delegated (opus): mechanism research in vcl/GTK plus 2+ non-trivial files | pending |
+| T1 | Fonts in `product/fonts/`, and the `--font system\|selawik\|inter` switch in calc.sh and shot-tab.sh, with launcher tests | delegated (opus): mechanism research in vcl/GTK plus 2+ non-trivial files | done |
 | T2 | Comparison screenshots for each font: every tab, light and dark, at 1920; a 1366 check of the widest tabs for `>>` overflow | delegated (sonnet): mechanical runs | pending |
 | T3 | Comparison page with a Selawik/Inter toggle | inline: one page built from T2's images | pending |
 
@@ -74,5 +74,21 @@ between them, so the user can pick one. After the pick, the screenshots are redo
   `$UserInstallation/user/fonts` (vcl/unx/generic/print/helper.cxx:218), and that
   `StyleSettings::SetUseSystemUIFonts` exists in vcl/source/app/settings.cxx:1448.
 
+- 2026-10-17: T1 done.
+  - Commits 3c691b180 (fonts), 9a9d75d42 (vcl: `VCLSettings/UIFont/FamilyName`, read by
+    the gtk3 plugin) and 01fbf54e3 (launcher switch, tests, docs).
+  - Route (b): no configuration-only route works, because GTK `settings.ini` loses to GSettings
+    and XSETTINGS, and `UseSystemUIFonts` is never acted on. The plugin sets GTK's
+    `gtk-font-name` family for this process and resets pango's font map, which otherwise misses
+    the bundled fonts.
+  - Checks: unit tests 295 -> 309 OK (re-run by the controller: 309 OK). officecfg, vcl and
+    postprocess builds exit 0. Home, a menu and a dialog were captured per font.
+  - Task review (opus): spec compliant; quality approved with minor findings. The doc finding is
+    fixed. Three edge cases are parked as known limitations in product/docs/ui-font-trial.md:
+    the per-thread pango map, the fontconfig reinit, and the unvalidated family name.
+  - Parked follow-up: the UI size. Private-config launches (shot-tab.sh, light calc.sh) get
+    Noto Sans 11, while the user's desktop is 9. Office uses 9 pt, so the product may need to
+    set the size too.
+
 ## Next step
-T1.
+T2 (brief: .superpowers/sdd/2026-10-17-ui-font-trial/task-T2-brief.md), then T3.
