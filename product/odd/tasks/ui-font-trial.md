@@ -45,8 +45,8 @@ between them, so the user can pick one. After the pick, the screenshots are redo
 | ID | Task | Route | Status |
 |---|---|---|---|
 | T1 | Fonts in `product/fonts/`, and the `--font system\|selawik\|inter` switch in calc.sh and shot-tab.sh, with launcher tests | delegated (opus): mechanism research in vcl/GTK plus 2+ non-trivial files | done |
-| T2 | Comparison screenshots for each font: every tab, light and dark, at 1920; a 1366 check of the widest tabs for `>>` overflow | delegated (sonnet): mechanical runs | pending |
-| T3 | Comparison page with a Selawik/Inter toggle | inline: one page built from T2's images | pending |
+| T2 | Comparison screenshots for each font: every tab, light and dark, at 1920; a 1366 check of the widest tabs for `>>` overflow | delegated (sonnet): mechanical runs | done |
+| T3 | Comparison page with a Selawik/Inter toggle | inline: one page built from T2's images | done |
 
 ## Acceptance
 - With `--font selawik` or `--font inter`, the Calc UI (tab bar, ribbon labels, menus, dialogs)
@@ -90,5 +90,19 @@ between them, so the user can pick one. After the pick, the screenshots are redo
     Noto Sans 11, while the user's desktop is 9. Office uses 9 pt, so the product may need to
     set the size too.
 
+- 2026-10-18: T2 done.
+  - 72 shots (48 at 1920, 24 at 1366), all on the first try, every one with the right tab.
+  - 9 contact sheets in /mnt/games/libreoffice/assets/previews/font-trial/ (outside the repo).
+    Report: .superpowers/sdd/2026-10-17-ui-font-trial/task-T2-report.md.
+  - At 1366 the same sections collapse with all three fonts, except Formulas: Selawik keeps
+    Defined Names. All shots are at UI size 11 (private config), the same for every font.
+  - The agent's session ended before it returned, and the machine rebooted on 2026-10-18 12:10.
+    The report and the sheets survived; the raw shots in the scratchpad were lost.
+- 2026-10-18: T3 done. Comparison page with font, theme, width and zoom toggles:
+  https://claude.ai/artifact/1SnETGQjoKWUwQk2iG9yxr (private).
+- RDD for T1 (risk high, review due): START returned the consent envelope, and the consent
+  question was interrupted when the session ended. It is asked again on a fresh candidate.
+
 ## Next step
-T2 (brief: .superpowers/sdd/2026-10-17-ui-font-trial/task-T2-brief.md), then T3.
+The user picks a font. Then the pick becomes the product default, and the `dev` screenshots and
+the README are redone with it.
