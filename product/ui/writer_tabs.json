@@ -1,0 +1,6 @@
+{
+  "properties": [
+    {"id": "Home Tab", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "Layout Tab", "name": "valign", "from": "center", "to": "fill"}
+  ]
+}
