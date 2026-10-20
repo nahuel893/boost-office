@@ -45,7 +45,7 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
 
 | ID | Task | Route | Status |
 |---|---|---|---|
-| T1 | Thinner outline layers in build_theme.py, with a stroke-width test and a before/after preview sheet | delegated (opus): rendering judgment, code plus tests | pending |
+| T1 | Thinner outline layers in build_theme.py, with a stroke-width test and a before/after preview sheet | delegated (opus): rendering judgment, code plus tests | done |
 | T2 | Rebuild and install the themes, and retake all 8 dev screenshots, light and dark | delegated (sonnet, the T5 screenshot worker): mechanical runs | pending |
 | T3 | RDD consent for 5658d8546..HEAD, fast-forward `feature/calc-ribbon-tabs`, push to GitHub `dev` | inline: git state only | pending |
 
@@ -69,5 +69,30 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
 ## Progress
 - 2026-10-20: feature document created.
 
+- 2026-10-20: T1 done.
+  - Commit aefe1b1e3: outline layers are eroded through a round stroke mask over their contours,
+    rendered at 8x and box-filtered down. Measured widths:
+    - 24 px: 1.50 -> 1.00 px;
+    - 32 px: 2.00 -> 1.00 px;
+    - 16 px: unchanged at 1.00 px; all 230 PNGs per theme are byte-identical.
+  - Commit b7bb4328a, the fix for the user's feedback. The user asked for inner lines as thin as
+    the border. Their screenshot came from a Calc started before the install. The thin lines then
+    showed 1 px white bands, where Fluent's filled silhouette leaves gaps. Now a closed cell is
+    filled when the silhouette covers at least half of it.
+  - Accepted rulings:
+    - fills and highlight rects are trimmed with the outline, and the fill covers the outline's
+      area;
+    - the art at 32 px moves 0.5 px up-left so that strokes stay crisp;
+    - 16 px stays as it is.
+  - Known: at 24 px the frame and the inner lines cannot all be sharp, because their centres fall
+    on alternating quarter pixels.
+  - Checks:
+    - tests 313 -> 318 OK (the controller re-ran them: OK);
+    - the new width and gap tests were RED first;
+    - build and install exit 0;
+    - preview sheets in /mnt/games/libreoffice/assets/previews/icon-outlines/, looked at by the
+      worker and by the controller (cells icons at 4x).
+  - Report: .superpowers/sdd/2026-10-20-icon-thin-outlines/task-T1-report.md.
+
 ## Next step
-T1.
+T2: retake the dev screenshots with the new icons.
