@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Open the dev build's Calc in one step, with a chosen look.
 # Usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
-#   light         Tabbed Office, Boost icons, "Boost Light" scheme (soft green)  [default]
+#   light         Tabbed Office, Boost icons, "Boost Light" scheme (white)  [default]
 #   dark          Tabbed Office, Boost dark icons, "Boost Dark" scheme
 #   tabbed        LibreOffice's original Tabbed ribbon, dark, no product theme
 #   tabbed-light  LibreOffice's original Tabbed ribbon, light, no product theme

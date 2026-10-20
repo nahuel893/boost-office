@@ -9,19 +9,20 @@ from xml.etree import ElementTree as ET
 
 from product.themes import build_schemes as bs
 
-# Spec §4.3, verbatim: role -> (light, dark)
+# Spec §4.3: role -> (light, dark). On 2026-10-20 the user asked for a white light theme, so the
+# light surfaces moved from soft green to white and neutral greys; the accents stay green.
 SPEC = {
-    "WindowColor": ("#E4F2E8", "#2B2B2B"), "WindowTextColor": ("#242424", "#F2F2F2"),
+    "WindowColor": ("#FFFFFF", "#2B2B2B"), "WindowTextColor": ("#242424", "#F2F2F2"),
     "BaseColor": ("#FFFFFF", "#1F1F1F"), "FieldColor": ("#FFFFFF", "#1F1F1F"),
-    "FaceColor": ("#C3DECB", "#454545"), "ShadowColor": ("#828282", "#7A7A7A"),
-    "SeparatorColor": ("#9E9E9E", "#6A6A6A"), "ButtonColor": ("#E4F2E8", "#2B2B2B"),
+    "FaceColor": ("#E0E0E0", "#454545"), "ShadowColor": ("#828282", "#7A7A7A"),
+    "SeparatorColor": ("#9E9E9E", "#6A6A6A"), "ButtonColor": ("#FFFFFF", "#2B2B2B"),
     "ButtonTextColor": ("#242424", "#F2F2F2"), "AccentColor": ("#CFE8D7", "#1E4D2E"),
-    "DisabledColor": ("#D3E8DA", "#383838"), "DisabledTextColor": ("#A6A6A6", "#6E6E6E"),
+    "DisabledColor": ("#F0F0F0", "#383838"), "DisabledTextColor": ("#A6A6A6", "#6E6E6E"),
     "ActiveColor": ("#1B7A3E", "#5CC27E"), "ActiveTextColor": ("#FFFFFF", "#1F1F1F"),
-    "ActiveBorderColor": ("#1B7A3E", "#5CC27E"), "InactiveColor": ("#E4F2E8", "#2B2B2B"),
+    "ActiveBorderColor": ("#1B7A3E", "#5CC27E"), "InactiveColor": ("#FFFFFF", "#2B2B2B"),
     "InactiveTextColor": ("#A6A6A6", "#6E6E6E"), "InactiveBorderColor": ("#9E9E9E", "#6A6A6A"),
-    "MenuBarColor": ("#E4F2E8", "#2B2B2B"), "MenuBarTextColor": ("#242424", "#F2F2F2"),
-    "MenuBarHighlightColor": ("#D3E8DA", "#383838"), "MenuBarHighlightTextColor": ("#242424", "#F2F2F2"),
+    "MenuBarColor": ("#FFFFFF", "#2B2B2B"), "MenuBarTextColor": ("#242424", "#F2F2F2"),
+    "MenuBarHighlightColor": ("#F0F0F0", "#383838"), "MenuBarHighlightTextColor": ("#242424", "#F2F2F2"),
     "MenuColor": ("#FFFFFF", "#2B2B2B"), "MenuTextColor": ("#242424", "#F2F2F2"),
     "MenuHighlightColor": ("#F0F0F0", "#383838"), "MenuHighlightTextColor": ("#242424", "#F2F2F2"),
     "MenuBorderColor": ("#9E9E9E", "#6A6A6A"),
@@ -63,7 +64,7 @@ class SchemesTest(unittest.TestCase):
         root = ET.fromstring(bs.xcu(self.palette))
         self.assertEqual("UI", root.get(OOR + "name"))
         light = child(child(child(root, "ColorScheme"), "ColorSchemes"), "Boost Light")
-        self.assertEqual(str(0xE4F2E8), child(light, "WindowColor").find("prop/value").text)
+        self.assertEqual(str(0xFFFFFF), child(light, "WindowColor").find("prop/value").text)
 
     def test_calc_cell_focus_is_the_calc_green_with_ui_contrast(self):
         def child(node, name):

@@ -1,9 +1,9 @@
 {
   "schemes": ["Boost Light", "Boost Dark"],
   "tokens": {
-    "surface":         ["#E4F2E8", "#2B2B2B"],
-    "surface.hover":   ["#D3E8DA", "#383838"],
-    "surface.pressed": ["#C3DECB", "#454545"],
+    "surface":         ["#FFFFFF", "#2B2B2B"],
+    "surface.hover":   ["#F0F0F0", "#383838"],
+    "surface.pressed": ["#E0E0E0", "#454545"],
     "field":           ["#FFFFFF", "#1F1F1F"],
     "field.border":    ["#828282", "#7A7A7A"],
     "separator":       ["#9E9E9E", "#6A6A6A"],
