@@ -1,6 +1,7 @@
 # Screenshots
 
-Calc in Tabbed Office mode at 1920 px, taken on this build on 2026-10-16.
+Calc in Tabbed Office mode at 1920 px, taken on this build on 2026-10-20.
+The UI font is Inter.
 
 Greyed buttons are placeholders: features to build later. The full list is in
 [calc-ribbon-tabs.md](../calc-ribbon-tabs.md) and

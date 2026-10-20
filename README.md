@@ -50,7 +50,8 @@ Excel 365, section by section and button by button.
    `python3 -I product/icons/build_theme.py install --instdir instdir`.
 5. Open Calc with the product look:
    `product/dev/calc.sh light --profile ~/boost-profile` (or `dark`). The script
-   rewrites that profile on each run.
+   rewrites that profile on each run. The UI font is Inter (bundled, SIL OFL);
+   `product/dev/calc.sh light --font system` keeps the desktop's font.
 
 ## Tests
 
