@@ -102,9 +102,10 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
   excluded. Basis: Calc's ribbon-tabs slice (map-M1 section 7.1) scaled to 193 controls, 30 dropdowns and 24
   slots; the biggest parts are tests (about 1900), XCU labels and controllers (about 1500), docs (about 800),
   UITests (about 900) and slot declarations (about 500).
-- **Strategy:** ask-on-risk. The forecast is far over 400 lines, so the chain strategy (`stacked-to-main` or
-  `feature-branch-chain`) is asked once, before the first commit. No product remote exists yet; publishing waits
-  for the user's answer, as in Calc.
+- **Strategy:** controller ruling, 2026-10-20 (the user can overturn it). The feature branch takes one
+  work-unit commit per task. At the end of each slice, `dev` is fast-forwarded and pushed to GitHub
+  (nahuel893/boost-office) only when the user asks, as with Calc and the look work. There are no pull
+  requests; each slice below is the review candidate.
 - **Slices** (one pull request each, about 650-1000 lines):
 
 | Slice | Tasks | Forecast |
@@ -139,12 +140,12 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
 | W7a / W7b | Review | as W2 | [ ] | | |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
-| W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the accent if the user approves it | delegated (opus with the accent C++, else sonnet) | [ ] | | |
+| W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Word labels for existing commands (follows Calc's T9 answer) | pending user decision | [ ] | | |
 | T10w | Greyed disabled popup entries (follows Calc's T10 answer) | pending user decision | [ ] | | |
-| A1 | The accent: per-app underline (C++) or the fallback | pending user decision | [ ] | | |
+| A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
 Why this shape: the brief's shape, with W0 split in two (about 730 lines in one task would mix the shared
 generator with C++ and dev scripts) and Design paired with Layout and Help with View (Design has 10 controls and
