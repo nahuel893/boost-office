@@ -19,7 +19,7 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
   all on the 24 and 32 px buttons.
 
 ## Scope
-- Thinner outlines at every size (16, 24, 32) in both themes. Ruling: dark gets the same weight as
+- Thinner outlines at 24 and 32 px in both themes. 16 px already draws 1 px and stays as it is. Ruling: dark gets the same weight as
   light, so the two stay consistent.
 - Every outline layer is thinned, whatever its color, so badges keep the same weight as the base
   glyph.
@@ -47,7 +47,7 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
 |---|---|---|---|
 | T1 | Thinner outline layers in build_theme.py, with a stroke-width test and a before/after preview sheet | delegated (opus): rendering judgment, code plus tests | done |
 | T2 | Rebuild and install the themes, and retake all 8 dev screenshots, light and dark | delegated (sonnet, the T5 screenshot worker): mechanical runs | done |
-| T3 | RDD consent for 5658d8546..HEAD, fast-forward `feature/calc-ribbon-tabs`, push to GitHub `dev` | inline: git state only | pending |
+| T3 | RDD consent for 5658d8546..HEAD, fast-forward `feature/calc-ribbon-tabs`, push to GitHub `dev` | inline: git state only | done |
 
 ## Acceptance
 - The measured outline at 24 and 32 px is about 1 px: thinner than today, and never under 0.75 px.
@@ -98,6 +98,23 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
   thin icons. The worker compared the grids side by side and all 18 shots succeeded. The controller
   looked at home-light.png: white, Inter, thin outlines, and the right tab selected.
 
+- 2026-10-20: T3 done.
+  - RDD for 5658d8546..0cfba7df2 (high, 22 files, 480 lines): the user granted it. Four lenses ran,
+    and the review was approved and acknowledged (lineage review-39e056aca62b5807).
+  - Advisory findings, parked as later work:
+    - Warnings:
+      - the scope line contradicted the 16 px rule (fixed here);
+      - the fill erosion of the stripe icons is untested (build_theme.py:216-218);
+      - Pillow flattened-data use (build_theme.py:83).
+    - Suggestions:
+      - a duplicated anchor shift;
+      - band-thin order dependency;
+      - a KeyError on an unknown source size (build_theme.py:152);
+      - weak explicit-font and static `SHOT_FONT` tests;
+      - a test that pins a comment.
+  - `feature/calc-ribbon-tabs` was fast-forwarded and pushed: GitHub `dev` 79b72a8fc -> 0cfba7df2,
+    verified through the API. It carries the Inter UI font, the white light scheme and the thin
+    icons.
+
 ## Next step
-T3: RDD consent for 5658d8546..HEAD, then fast-forward `feature/calc-ribbon-tabs` and push it to
-GitHub `dev`.
+Done. The parked advisory findings wait for a later polish task.
