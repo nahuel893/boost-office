@@ -31,6 +31,16 @@ ET.register_namespace("", SVG_NS)
 SOURCE_SIZES = {16: [20, 16, 24], 24: [24, 20, 28], 32: [32, 28, 24]}
 FILE_PREFIX = {16: "cmd/sc_", 24: "cmd/lc_", 32: "cmd/32/"}
 THEMES = {"boost": "light", "boost_dark": "dark"}
+# Office's ribbon icons have hairline outlines; Fluent's regular strokes are heavier on big
+# buttons. Regular layers are thinned to TARGET_WEIGHT px; REGULAR_WEIGHT is Fluent's stroke
+# per design size (custom glyphs use the same weights on their grid). 16 px slots already
+# render 1 px or less and stay as they are.
+TARGET_WEIGHT = 1.0
+REGULAR_WEIGHT = {16: 1.0, 20: 1.0, 24: 1.5, 28: 1.5, 32: 2.0}
+# Thinned icons render at 8x and are box-filtered down: at 1x the erosion mask's partial
+# coverage multiplies the glyph's and leaves faint ghosts beside edges, and librsvg rounds
+# feMorphology radii up to whole device pixels (0.25 and 0.5 px are 2 and 4 at 8x).
+OVERSAMPLE = 8
 
 
 def load_manifest():
@@ -92,35 +102,93 @@ class Sources:
         raise FileNotFoundError(f"{glyph} ({style}) has no source for {size} px")
 
 
+def thinning(layer, src, k):
+    """Erosion in rendered px that brings a regular layer drawn at scale k down to TARGET_WEIGHT."""
+    if layer.get("style", "regular") != "regular":
+        return 0.0
+    return max(0.0, (REGULAR_WEIGHT[src] * k - TARGET_WEIGHT) / 2)
+
+
+def anchored(thin):
+    """True when thinning removes a whole pixel per stroke (2 px -> 1 px at 32). The art then
+    moves up-left by `thin`, so strokes that sat on the pixel grid keep their top/left edge and
+    stay crisp. A fractional loss (1.5 px -> 1 px at 24) stays centred: Fluent puts the
+    half-pixel edge on either side, so no shift could align every stroke."""
+    return bool(thin) and abs(2 * thin - round(2 * thin)) < 1e-6
+
+
+def placed(inner, x, y, k, paint, thin, mask_id, defs):
+    """Glyph markup at (x, y) scaled by k; thin > 0 erodes every edge by `thin` px through a
+    round mask over the outline's contours."""
+    if anchored(thin):
+        x, y = x - thin, y - thin
+    transform = f'translate({x:g} {y:g}) scale({k:g})'
+    markup = f'<g transform="{transform}" {paint}>{inner}</g>'
+    if not thin:
+        return markup
+    defs.append(f'<mask id="{mask_id}"><rect x="-50%" y="-50%" width="200%" height="200%" fill="#fff"/>'
+                f'<g transform="{transform}" fill="none" color="#fff" stroke="#000" '
+                f'stroke-width="{2 * thin / k:g}" stroke-linejoin="round">{inner}</g></mask>')
+    return f'<g mask="url(#{mask_id})">{markup}</g>'
+
+
 def compose(entry, colors, size, sources):
     s = size
     defs, body = [], []
+    stripe = entry.get("stripe")
+    # LibreOffice paints the chosen color over the bottom quarter
+    # (svx/source/tbxctrls/tbxcolorupdate.cxx:266-274): keep it empty.
+    # "scale" shrinks the art toward the top; "keep" cuts it below that fraction
+    # (text_color uses keep 0.6 to drop Fluent's own color bar).
+    opts = {"scale": 0.8, "keep": 0.75}
+    if isinstance(stripe, dict):
+        opts.update(stripe)
+    zoom = opts["scale"] if stripe else 1  # applied to the whole art after the layers
+    thinned, base_thin = False, 0.0
+    base = next((layer for layer in entry["layers"] if "glyph" in layer), None)
     fill = entry.get("fill")
     if fill:
         # Soft color under the outline, like Office's filled icons: the base
         # glyph's Fluent "filled" silhouette in the fill color. Shapes that the
         # filled variant leaves open stay unfilled, which keeps a touch of white.
-        base = next(layer for layer in entry["layers"] if "glyph" in layer)
         silhouette = dict(base, style="filled")
-        inner, src, pad = sources.load(entry["name"], silhouette, s, bool(entry.get("stripe")), also=("regular",))
+        inner, src, pad = sources.load(entry["name"], silhouette, s, bool(stripe), also=("regular",))
         k = s / (src - 2 * pad) * base.get("scale", 1)
-        dx, dy = base.get("dx", 0) * s - pad * k, base.get("dy", 0) * s - pad * k
-        body.append(f'<g transform="translate({dx:g} {dy:g}) scale({k:g})" '
-                    f'fill="{colors[fill["color"]]}">{inner}</g>')
+        thin = thinning(base, src, k * zoom) / zoom
+        thinned |= thin > 0
+        # The silhouette leaves gaps where the outline's inner strokes sit (grid lines, a
+        # lens's plus); thinner strokes would show them. A thinned icon fills the outline's
+        # area too, then trims the outer edge as much as the outline's (square erosion at 8x).
+        outline = sources.load(entry["name"], base, s, bool(stripe), also=("filled",))[0] if thin else ""
+        x, y = base.get("dx", 0) * s - pad * k, base.get("dy", 0) * s - pad * k
+        markup = (f'<g transform="translate({x:g} {y:g}) scale({k:g})" '
+                  f'fill="{colors[fill["color"]]}">{inner}{outline}</g>')
+        if thin:
+            shift = thin if anchored(thin) else 0
+            defs.append(f'<filter id="tf"><feMorphology operator="erode" radius="{thin:g}"/></filter>')
+            markup = f'<g transform="translate({-shift:g} {-shift:g})"><g filter="url(#tf)">{markup}</g></g>'
+        body.append(markup)
     for index, layer in enumerate(entry["layers"]):
         color = colors[layer.get("color", "line")]
         scale = layer.get("scale", 1)
         dx, dy = layer.get("dx", 0) * s, layer.get("dy", 0) * s
         if "rect" in layer:
+            # Highlight bands sit on the base glyph's frame, so they follow its thinning.
             x, y, w, h = (v * s for v in layer["rect"])
+            if not anchored(base_thin):
+                x, y = x + base_thin, y + base_thin
+            w, h = w - 2 * base_thin, h - 2 * base_thin
             markup = (f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" fill="{color}" '
                       f'fill-opacity="{layer.get("opacity", 1)}"/>')
         else:
             also = ("filled",) if fill and layer is base else ()
-            inner, src, pad = sources.load(entry["name"], layer, s, bool(entry.get("stripe")), also=also)
+            inner, src, pad = sources.load(entry["name"], layer, s, bool(stripe), also=also)
             k = s / (src - 2 * pad) * scale
-            markup = (f'<g transform="translate({dx - pad * k:g} {dy - pad * k:g}) scale({k:g})" '
-                      f'fill="{color}" color="{color}">{inner}</g>')
+            thin = thinning(layer, src, k * zoom) / zoom
+            thinned |= thin > 0
+            base_thin = thin if layer is base else base_thin
+            markup = placed(inner, dx - pad * k, dy - pad * k, k, f'fill="{color}" color="{color}"',
+                            thin, f"t{index}", defs)
         if layer.get("knockout"):
             # Cut a gap behind the badge so it stays legible over the base glyph.
             cx, cy, r = dx + scale * s / 2, dy + scale * s / 2, scale * s / 2
@@ -129,34 +197,31 @@ def compose(entry, colors, size, sources):
             body = [f'<g mask="url(#k{index})">{"".join(body)}</g>']
         body.append(markup)
     content = "".join(body)
-    stripe = entry.get("stripe")
     if stripe:
-        # LibreOffice paints the chosen color over the bottom quarter
-        # (svx/source/tbxctrls/tbxcolorupdate.cxx:266-274): keep it empty.
-        # "scale" shrinks the art toward the top; "keep" cuts it below that fraction
-        # (text_color uses keep 0.6 to drop Fluent's own color bar).
-        opts = {"scale": 0.8, "keep": 0.75}
-        if isinstance(stripe, dict):
-            opts.update(stripe)
         height = min(round(s * opts["keep"]), s - s // 4)
-        k = opts["scale"]
         defs.append(f'<clipPath id="top"><rect width="{s}" height="{height}"/></clipPath>')
-        content = (f'<g clip-path="url(#top)"><g transform="translate({s * (1 - k) / 2:g} 0) scale({k:g})">'
+        content = (f'<g clip-path="url(#top)"><g transform="translate({s * (1 - zoom) / 2:g} 0) scale({zoom:g})">'
                    f'{content}</g></g>')
-    return (f'<svg xmlns="{SVG_NS}" width="{s}" height="{s}" viewBox="0 0 {s} {s}">'
+    px = s * (OVERSAMPLE if thinned else 1)
+    return (f'<svg xmlns="{SVG_NS}" width="{px}" height="{px}" viewBox="0 0 {s} {s}">'
             f'<defs>{"".join(defs)}</defs>{content}</svg>')
 
 
 def render_png(svg_text, size, out):
+    """Render at the SVG's own pixel size, box-filtered down to `size` when it is oversampled."""
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile("w", suffix=".svg", delete=False, encoding="utf-8") as f:
         f.write(svg_text)
         tmp = Path(f.name)
     try:
-        subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), "-f", "png",
-                        "-o", str(out), str(tmp)], check=True)
+        subprocess.run(["rsvg-convert", "-f", "png", "-o", str(out), str(tmp)], check=True)
     finally:
         tmp.unlink()
+    with Image.open(out) as img:
+        if img.size == (size, size):
+            return
+        small = img.convert("RGBA").resize((size, size), Image.BOX)
+    small.save(out)
 
 
 def build(manifest, out):

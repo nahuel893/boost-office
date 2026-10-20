@@ -17,6 +17,11 @@ OFFICE = ROOT / "sc/uiconfig/scalc/ui/notebookbar_office.ui"
 # Rendered by toolbar controllers as list boxes; they show no icon.
 LIST_BOX_COMMANDS = {"charfontname", "fontheight", "numberformattype", "styleapply"}
 EXPECTED_SIZE = {"cmd/sc_": 16, "cmd/lc_": 24, "cmd/32/": 32}
+# (glyph, custom, scanline across straight strokes, outer runs only): "row" crosses vertical strokes
+# at y = pos * size, "col" crosses horizontal strokes at x = pos * size. The rings of "thousands"
+# touch each other, so only its outermost sides are single strokes.
+STROKE_PROBES = [("table", False, "row", 0.5, False), ("text_align_left", False, "col", 1 / 3, False),
+                 ("thousands", True, "row", 11 / 24, True)]
 
 
 def tab_page(tab):
@@ -242,6 +247,62 @@ class IconThemeTest(unittest.TestCase):
         self.assertEqual(["filter_sync"], glyphs("datafilterreapply"))
         self.assertNotEqual(glyphs("datafilterreapply"), glyphs("datafilterremovefilter"))
         self.assertNotIn("merge", glyphs("dataconsolidate"))
+
+    def render(self, entry, size, mode="light"):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "icon.png"
+            bt.render_png(bt.compose(entry, bt.load_manifest()["palette"][mode], size, bt.Sources()), size, out)
+            return Image.open(out).convert("RGBA").copy()
+
+    def stroke_widths(self, glyph, custom, axis, pos, outer, size, mode):
+        """Alpha coverage, in px, of each ink run along one scanline of a single-glyph icon."""
+        layer = {"glyph": glyph, "custom": True} if custom else {"glyph": glyph}
+        alpha = self.render({"name": "probe", "layers": [layer]}, size, mode).getchannel("A")
+        at = int(pos * size)
+        line = [alpha.getpixel((at, i) if axis == "col" else (i, at)) for i in range(size)] + [0]
+        runs, ink = [], 0
+        for a in line:
+            if a:
+                ink += a
+            elif ink:
+                runs.append(ink / 255)
+                ink = 0
+        self.assertGreaterEqual(len(runs), 3, f"{mode}:{glyph}@{size}")
+        return [runs[0], runs[-1]] if outer else runs
+
+    def test_outlines_are_about_one_pixel_at_24_and_32(self):
+        # Office-like hairlines: Fluent's regular strokes are 1.5 px at 24 and 2 px at 32.
+        for mode in ("light", "dark"):
+            for size in (24, 32):
+                for probe in STROKE_PROBES:
+                    widths = self.stroke_widths(*probe, size, mode)
+                    for width in widths:
+                        self.assertGreaterEqual(width, 0.75, f"{mode}:{probe[0]}@{size} {widths}")
+                        self.assertLessEqual(width, 1.1, f"{mode}:{probe[0]}@{size} {widths}")
+
+    def test_16px_outlines_are_no_heavier_than_before(self):
+        # Before the thinning every probe measured 1.0 px at 16 (20 px design trimmed 1:1, native 16 px).
+        for mode in ("light", "dark"):
+            for probe in STROKE_PROBES:
+                widths = self.stroke_widths(*probe, 16, mode)
+                self.assertLessEqual(max(widths), 1.02, f"{mode}:{probe[0]} {widths}")
+
+    def test_thin_outlines_keep_dots_and_stay_registered(self):
+        # Thinning must not erase small dots, and neither the soft fill nor a highlight band
+        # may peek out past the thinned outline.
+        bbox = lambda img: img.getchannel("A").point(lambda a: 255 if a > 40 else 0).getbbox()
+        band = {"rect": [0.125, 0.125, 0.75, 0.25], "opacity": 0.35}
+        for size in (24, 32):
+            dots = self.render({"name": "probe", "layers": [{"glyph": "more_horizontal"}]}, size).getchannel("A")
+            for third in range(3):
+                cells = dots.crop((third * size // 3, 0, (third + 1) * size // 3, size))
+                self.assertGreater(cells.getextrema()[1], 200, f"more_horizontal@{size}: dot {third} faded")
+            for glyph in ("copy", "clipboard_paste", "table"):
+                outline = bbox(self.render({"name": "probe", "layers": [{"glyph": glyph}]}, size))
+                filled = {"name": "probe", "fill": {"color": "fill_blue"}, "layers": [{"glyph": glyph}]}
+                self.assertEqual(outline, bbox(self.render(filled, size)), f"fill {glyph}@{size}")
+                banded = {"name": "probe", "layers": [{"glyph": glyph}, band]}
+                self.assertEqual(outline, bbox(self.render(banded, size)), f"band {glyph}@{size}")
 
     def test_vendored_glyphs_exist(self):
         for entry in bt.load_manifest()["icons"]:
