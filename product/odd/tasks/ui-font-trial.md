@@ -100,8 +100,12 @@ between them, so the user can pick one. After the pick, the screenshots are redo
     The report and the sheets survived; the raw shots in the scratchpad were lost.
 - 2026-10-18: T3 done. Comparison page with font, theme, width and zoom toggles:
   https://claude.ai/artifact/1SnETGQjoKWUwQk2iG9yxr (private).
-- RDD for T1 (risk high, review due): START returned the consent envelope, and the consent
-  question was interrupted when the session ended. It is asked again on a fresh candidate.
+- RDD for 79b72a8fc..789dabe3c (risk high, 22 files, 599 lines, review due): asked again on
+  2026-10-20, and the user declined it for this candidate. Off path for a high tier: the
+  writer's own checks plus the independent opus task review of T1 (approved, minor findings
+  fixed or parked) stand as the verification.
+- 2026-10-20: the planning request of 2026-10-18 (features "in the todo file", plus ADRs) was a
+  mistake by the user's account. Work returns to this feature.
 
 ## Next step
 The user picks a font. Then the pick becomes the product default, and the `dev` screenshots and
