@@ -46,7 +46,7 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
 | ID | Task | Route | Status |
 |---|---|---|---|
 | T1 | Thinner outline layers in build_theme.py, with a stroke-width test and a before/after preview sheet | delegated (opus): rendering judgment, code plus tests | done |
-| T2 | Rebuild and install the themes, and retake all 8 dev screenshots, light and dark | delegated (sonnet, the T5 screenshot worker): mechanical runs | pending |
+| T2 | Rebuild and install the themes, and retake all 8 dev screenshots, light and dark | delegated (sonnet, the T5 screenshot worker): mechanical runs | done |
 | T3 | RDD consent for 5658d8546..HEAD, fast-forward `feature/calc-ribbon-tabs`, push to GitHub `dev` | inline: git state only | pending |
 
 ## Acceptance
@@ -94,5 +94,10 @@ tamaño de los bordes. Todo borde negro tiene que ser más fino en iconos".
       worker and by the controller (cells icons at 4x).
   - Report: .superpowers/sdd/2026-10-20-icon-thin-outlines/task-T1-report.md.
 
+- 2026-10-20: T2 done. Commit e580d5e32 retakes all 8 dev screenshots, light and dark, with the
+  thin icons. The worker compared the grids side by side and all 18 shots succeeded. The controller
+  looked at home-light.png: white, Inter, thin outlines, and the right tab selected.
+
 ## Next step
-T2: retake the dev screenshots with the new icons.
+T3: RDD consent for 5658d8546..HEAD, then fast-forward `feature/calc-ribbon-tabs` and push it to
+GitHub `dev`.
