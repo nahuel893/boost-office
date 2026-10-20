@@ -4,7 +4,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Build the partial "boost" icon themes from vendored Fluent SVGs and a manifest."""
 import argparse
+import base64
 import functools
+import io
 import json
 import shutil
 import subprocess
@@ -14,7 +16,7 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 HERE = Path(__file__).resolve().parent
 FLUENT = HERE / "fluent"
@@ -64,6 +66,47 @@ def ring_ink(path, pad):
     size = alpha.width
     return sum(1 for i, a in enumerate(alpha.get_flattened_data())
                if a > 40 and min(i % size, i // size, size - 1 - i % size, size - 1 - i // size) < pad)
+
+
+@functools.lru_cache(maxsize=None)
+def filled_cells(outline, silhouette, transform, size, scale=4):
+    """PNG data URI masking the cells the outline encloses that the silhouette fills at least
+    half, or None. Fluent's filled shapes do not always follow the regular glyph's inner lines
+    (the filled table has 6/8/6 px columns, the outline 5/6/5 px cells), which leaves slivers
+    of no fill beside thin lines. Cut-outs and open shapes, which the silhouette leaves (mostly)
+    empty or which open to the outside, stay open."""
+    def alpha(inner):
+        svg = (f'<svg xmlns="{SVG_NS}" width="{size * scale}" height="{size * scale}" '
+               f'viewBox="0 0 {size} {size}"><g transform="{transform}">{inner}</g></svg>')
+        png = subprocess.run(["rsvg-convert", "-f", "png"], input=svg.encode(), capture_output=True,
+                             check=True).stdout
+        return list(Image.open(io.BytesIO(png)).convert("RGBA").getchannel("A").get_flattened_data())
+    line, fill = alpha(outline), alpha(silhouette)
+    n = size * scale
+    seen = [a >= 128 for a in line]
+    cells = bytearray(n * n)
+    for start in range(n * n):
+        if seen[start]:
+            continue
+        seen[start], stack, region, closed = True, [start], [], True
+        while stack:
+            i = stack.pop()
+            region.append(i)
+            x, y = i % n, i // n
+            closed &= 0 < x < n - 1 and 0 < y < n - 1
+            for j in (i - 1 if x else -1, i + 1 if x < n - 1 else -1, i - n, i + n):
+                if 0 <= j < n * n and not seen[j]:
+                    seen[j] = True
+                    stack.append(j)
+        if closed and 2 * sum(fill[i] >= 128 for i in region) >= len(region):
+            for i in region:
+                cells[i] = 255
+    if not any(cells):
+        return None
+    buf = io.BytesIO()
+    mask = Image.frombytes("L", (n, n), bytes(cells))
+    mask.filter(ImageFilter.MaxFilter(3)).save(buf, "PNG")  # tuck the edge under the line
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
 class Sources:
@@ -158,12 +201,18 @@ def compose(entry, colors, size, sources):
         thinned |= thin > 0
         # The silhouette leaves gaps where the outline's inner strokes sit (grid lines, a
         # lens's plus); thinner strokes would show them. A thinned icon fills the outline's
-        # area too, then trims the outer edge as much as the outline's (square erosion at 8x).
+        # area and its well-filled cells too, then trims the outer edge as much as the
+        # outline's (square erosion at 8x).
         outline = sources.load(entry["name"], base, s, bool(stripe), also=("filled",))[0] if thin else ""
         x, y = base.get("dx", 0) * s - pad * k, base.get("dy", 0) * s - pad * k
-        markup = (f'<g transform="translate({x:g} {y:g}) scale({k:g})" '
-                  f'fill="{colors[fill["color"]]}">{inner}{outline}</g>')
+        place = f'translate({x:g} {y:g}) scale({k:g})'
+        paint = colors[fill["color"]]
+        markup = f'<g transform="{place}" fill="{paint}">{inner}{outline}</g>'
         if thin:
+            cells = filled_cells(outline, inner, place, s)
+            if cells:
+                defs.append(f'<mask id="tc"><image href="{cells}" width="{s}" height="{s}"/></mask>')
+                markup += f'<rect width="{s}" height="{s}" fill="{paint}" mask="url(#tc)"/>'
             shift = thin if anchored(thin) else 0
             defs.append(f'<filter id="tf"><feMorphology operator="erode" radius="{thin:g}"/></filter>')
             markup = f'<g transform="translate({-shift:g} {-shift:g})"><g filter="url(#tf)">{markup}</g></g>'

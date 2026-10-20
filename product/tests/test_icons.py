@@ -304,6 +304,29 @@ class IconThemeTest(unittest.TestCase):
                 banded = {"name": "probe", "layers": [{"glyph": glyph}, band]}
                 self.assertEqual(outline, bbox(self.render(banded, size)), f"band {glyph}@{size}")
 
+    def test_cells_are_filled_up_to_their_thin_lines(self):
+        # Fluent's filled table has 6/8/6 px columns, the outline 5/6/5 px cells: the fill must
+        # still reach every thin line, with no transparent or white sliver beside it.
+        entry = next(e for e in bt.load_manifest()["icons"] if e["name"] == "insertcell")
+        for mode in ("light", "dark"):
+            for size in (24, 32):
+                icon = self.render(entry, size, mode)
+                lo, hi = round(size * 0.19), size // 2  # top-left cells, clear of the badge
+                for y in range(lo, hi):
+                    for x in range(lo, hi):
+                        r, g, b, a = icon.getpixel((x, y))
+                        self.assertGreaterEqual(a, 250, f"{mode}:insertcell@{size} gap at {x},{y}")
+                        self.assertLess(min(r, g, b), 240, f"{mode}:insertcell@{size} white at {x},{y}")
+
+    def test_inner_lines_match_the_border(self):
+        for mode in ("light", "dark"):
+            for size in (24, 32):
+                frame_left, *inner, frame_right = self.stroke_widths("table", False, "row", 0.5, False, size, mode)
+                self.assertEqual(2, len(inner), f"{mode}:table@{size} inner lines")
+                for width in inner:
+                    self.assertAlmostEqual(width, frame_left, delta=0.1, msg=f"{mode}:table@{size}")
+                    self.assertAlmostEqual(width, frame_right, delta=0.1, msg=f"{mode}:table@{size}")
+
     def test_vendored_glyphs_exist(self):
         for entry in bt.load_manifest()["icons"]:
             for layer in entry["layers"]:
