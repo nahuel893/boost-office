@@ -1,10 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Command labels, tooltips and image flags as LibreOffice resolves them for Calc.
+"""Command labels, tooltips and image flags as LibreOffice resolves them for one app (Calc by default).
 
-A command is looked up in CalcCommands.xcu first, then in GenericCommands.xcu; the other
-modules' files (Writer, Draw, ...) never apply to Calc. Every test reads commands through here.
+A command is looked up in the app's file first (CalcCommands.xcu, WriterCommands.xcu), then in
+GenericCommands.xcu; the other modules' files never apply. Every test reads commands through here.
 """
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -12,13 +12,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 UI_DIR = ROOT / "officecfg/registry/data/org/openoffice/Office/UI"
 OOR = "{http://openoffice.org/2001/registry}"
-LOOKUP_ORDER = ("CalcCommands.xcu", "GenericCommands.xcu")  # most specific first
+LOOKUP_ORDERS = {  # most specific first
+    "calc": ("CalcCommands.xcu", "GenericCommands.xcu"),
+    "writer": ("WriterCommands.xcu", "GenericCommands.xcu"),
+}
+LOOKUP_ORDER = LOOKUP_ORDERS["calc"]
 
 
-def properties(prop_name, ui_dir=UI_DIR):
-    """Command name -> the value of one property, the first file in LOOKUP_ORDER defining it wins."""
+def properties(prop_name, ui_dir=UI_DIR, app="calc"):
+    """Command name -> the value of one property, the first file of the app's lookup order defining it wins."""
     found = {}
-    for file in LOOKUP_ORDER:
+    for file in LOOKUP_ORDERS[app]:
         here = {}
         for node in ET.parse(Path(ui_dir) / file).iter("node"):
             name = node.get(OOR + "name")
@@ -31,18 +35,18 @@ def properties(prop_name, ui_dir=UI_DIR):
     return found
 
 
-def commands_xcu(ui_dir=UI_DIR):
-    """Label of every command Calc knows: ".uno:Name" (or a variant URL node) -> label."""
-    return properties("Label", ui_dir)
+def commands_xcu(ui_dir=UI_DIR, app="calc"):
+    """Label of every command the app knows: ".uno:Name" (or a variant URL node) -> label."""
+    return properties("Label", ui_dir, app)
 
 
-def tooltips(ui_dir=UI_DIR):
-    return properties("TooltipLabel", ui_dir)
+def tooltips(ui_dir=UI_DIR, app="calc"):
+    return properties("TooltipLabel", ui_dir, app)
 
 
-def flagged_commands(ui_dir=UI_DIR):
-    """Commands with the image flag (Properties bit 1) in the Calc lookup order."""
-    return {name for name, value in properties("Properties", ui_dir).items() if int(value) & 1}
+def flagged_commands(ui_dir=UI_DIR, app="calc"):
+    """Commands with the image flag (Properties bit 1) in the app's lookup order."""
+    return {name for name, value in properties("Properties", ui_dir, app).items() if int(value) & 1}
 
 
 def controller_nodes(controller_xcu=UI_DIR / "Controller.xcu"):

@@ -21,6 +21,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import NamedTuple
 from xml.sax.saxutils import escape
 
 # style -> (toolbar-style, icon_size); icon_size 5 = 32 px, 3 = 24 px, 1 = 16 px
@@ -36,12 +37,27 @@ SUPPRESSED_CLASSES = ("GtkToolButton", "GtkMenuToolButton")
 # Styles that fill the section height: alone in their column, label below.
 LARGE_LIKE = ("large", "medium")
 INDENT = "  "
-TABS_FILE = "calc_tabs.json"
 ROOT = Path(__file__).resolve().parents[2]
-UPSTREAM_UI = "sc/uiconfig/scalc/ui/notebookbar.ui"
-OFFICE_UI = "sc/uiconfig/scalc/ui/notebookbar_office.ui"
-SUPPR = "solenv/sanitizers/ui/modules/scalc.suppr"
 OBJECT_OPEN = re.compile(r"<object\b")
+
+
+class App(NamedTuple):
+    """The files of one app's ribbon. Paths are relative to the source tree, file names to product/ui."""
+    upstream: str  # the stock notebookbar.ui, never written
+    office: str  # notebookbar_office.ui: upstream + tab operations + every generated page
+    suppr: str  # gla11y suppressions, kept in sync with the office .ui
+    false: str | None  # gla11y false positives, kept in sync too; None: no line for the office .ui
+    prefix: str  # the page layouts are product/ui/<prefix>_<tab>.json
+    tabs: str  # the tab operations
+
+
+APPS = {
+    "calc": App("sc/uiconfig/scalc/ui/notebookbar.ui", "sc/uiconfig/scalc/ui/notebookbar_office.ui",
+                "solenv/sanitizers/ui/modules/scalc.suppr", None, "calc", "calc_tabs.json"),
+    "writer": App("sw/uiconfig/swriter/ui/notebookbar.ui", "sw/uiconfig/swriter/ui/notebookbar_office.ui",
+                  "solenv/sanitizers/ui/modules/swriter.suppr", "solenv/sanitizers/ui/modules/swriter.false",
+                  "writer", "writer_tabs.json"),
+}
 
 
 class LayoutError(ValueError):
@@ -419,8 +435,8 @@ def page_lines(add, tab_indent):
 
 
 def apply_tabs(ui_text, tabs):
-    """Apply the tab operations of calc_tabs.json: relabel, page properties, move, positions,
-    add pages.
+    """Apply the tab operations of an app's tabs file (calc_tabs.json, ...): relabel, page
+    properties, move, positions, add pages.
 
     Each operation can be applied twice. Run it on the upstream notebookbar.ui, before the
     generated pages are spliced in.
@@ -443,11 +459,11 @@ def apply_tabs(ui_text, tabs):
     return "\n".join(lines)
 
 
-def page_layouts(ui_dir):
-    """Every page layout product/ui/calc_<tab>.json, in file-name order (calc_tabs.json is not one)."""
-    ui_dir = Path(ui_dir)
+def page_layouts(ui_dir, app="calc"):
+    """Every page layout <prefix>_<tab>.json of an app, in file-name order (its tabs file is not one)."""
+    spec = APPS[app]
     return [json.loads(path.read_text(encoding="utf-8"))
-            for path in sorted(ui_dir.glob("calc_*.json")) if path.name != TABS_FILE]
+            for path in sorted(Path(ui_dir).glob(spec.prefix + "_*.json")) if path.name != spec.tabs]
 
 
 def regenerate_all(upstream_text, tabs, layouts):
@@ -458,13 +474,14 @@ def regenerate_all(upstream_text, tabs, layouts):
     return text
 
 
-def sync_suppr(suppr_text, ui_rel_path, ui_text):
-    """Drop suppressions for ids gone from the .ui; add button-no-label for new tool buttons."""
+def kept_lines(text, ui_rel_path, ui_text):
+    """The lines of a gla11y file without the .ui's duplicates and the lines whose id is gone from
+    the .ui; other files' lines stay as they are. Returns the lines and the .ui's lines kept."""
     present = set(re.findall(r'<object class="[^"]+" id="([^"]+)"', ui_text))
     prefix = ui_rel_path + ":"
     id_in_line = re.compile(r"@id='([^']+)'")
     out, existing = [], set()
-    for line in suppr_text.splitlines():
+    for line in text.splitlines():
         if line.startswith(prefix):
             match = id_in_line.search(line)
             if match and match.group(1) not in present:
@@ -473,6 +490,13 @@ def sync_suppr(suppr_text, ui_rel_path, ui_text):
                 continue
             existing.add(line)
         out.append(line)
+    return out, existing
+
+
+def sync_suppr(suppr_text, ui_rel_path, ui_text):
+    """Drop suppressions for ids gone from the .ui; add button-no-label for new tool buttons."""
+    prefix = ui_rel_path + ":"
+    out, existing = kept_lines(suppr_text, ui_rel_path, ui_text)
     for cls, wid in re.findall(r'<object class="(GtkToolButton|GtkMenuToolButton)" id="([^"]+)"', ui_text):
         line = f"{prefix}//{cls}[@id='{wid}'] button-no-label"
         if line not in existing:
@@ -481,33 +505,46 @@ def sync_suppr(suppr_text, ui_rel_path, ui_text):
     return "\n".join(out) + "\n"
 
 
-def regenerate_all_files(root):
-    """Rebuild notebookbar_office.ui from the upstream .ui, calc_tabs.json and every calc_*.json."""
-    root = Path(root)
+def sync_false(false_text, ui_rel_path, ui_text):
+    """Drop false positives for ids gone from the .ui. New widgets get suppressions, not these."""
+    return "\n".join(kept_lines(false_text, ui_rel_path, ui_text)[0]) + "\n"
+
+
+def regenerate_app(root, name):
+    """Rebuild an app's notebookbar_office.ui from its upstream .ui, tabs file and page layouts,
+    then bring its suppressions (and false positives, if it has them) in line with it."""
+    root, spec = Path(root), APPS[name]
     ui_dir = root / "product/ui"
-    text = regenerate_all((root / UPSTREAM_UI).read_text(encoding="utf-8"),
-                          json.loads((ui_dir / TABS_FILE).read_text(encoding="utf-8")), page_layouts(ui_dir))
-    (root / OFFICE_UI).write_text(text, encoding="utf-8")
-    suppr = root / SUPPR
-    suppr.write_text(sync_suppr(suppr.read_text(encoding="utf-8"), OFFICE_UI, text), encoding="utf-8")
-    print(f"{OFFICE_UI}: {len(page_layouts(ui_dir))} generated pages")
+    layouts = page_layouts(ui_dir, name)
+    text = regenerate_all((root / spec.upstream).read_text(encoding="utf-8"),
+                          json.loads((ui_dir / spec.tabs).read_text(encoding="utf-8")), layouts)
+    (root / spec.office).write_text(text, encoding="utf-8")
+    for rel, sync in ((spec.suppr, sync_suppr), (spec.false, sync_false)):
+        if rel:
+            path = root / rel
+            path.write_text(sync(path.read_text(encoding="utf-8"), spec.office, text), encoding="utf-8")
+    print(f"{spec.office}: {len(layouts)} generated pages")
     return 0
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--all", action="store_true",
-                    help="rebuild the office .ui from upstream: tab operations, then every calc_*.json page")
-    ap.add_argument("--root", type=Path, default=ROOT, help="with --all: the source tree (default: this one)")
+    whole = ap.add_mutually_exclusive_group()
+    whole.add_argument("--all", action="store_true",
+                       help="rebuild every app's office .ui from upstream: tab operations, then every page")
+    whole.add_argument("--app", choices=APPS, help="rebuild one app's office .ui the same way")
+    ap.add_argument("--root", type=Path, default=ROOT, help="with --all or --app: the source tree (default: this one)")
     ap.add_argument("--layout", type=Path)
     ap.add_argument("--ui", help="repository-relative path of the .ui file")
     ap.add_argument("--suppr", type=Path)
-    ap.add_argument("--tabs", type=Path, help="calc_tabs.json: apply the tab order, label and page operations first")
+    ap.add_argument("--tabs", type=Path, help="<app>_tabs.json: apply the tab order, label and page operations first")
     args = ap.parse_args(argv)
-    if args.all:
-        return regenerate_all_files(args.root)
+    if args.all or args.app:
+        for name in APPS if args.all else [args.app]:
+            regenerate_app(args.root, name)
+        return 0
     if not (args.layout and args.ui and args.suppr):
-        ap.error("--layout, --ui and --suppr are required without --all")
+        ap.error("--layout, --ui and --suppr are required without --all or --app")
     layout = json.loads(args.layout.read_text(encoding="utf-8"))
     ui_path = Path(args.ui)
     ui_text = ui_path.read_text(encoding="utf-8")

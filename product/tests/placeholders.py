@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""The one registry of ribbon placeholders, read by every product test.
+"""The registry of ribbon placeholders, one file per app, read by every product test.
 
 placeholders.json lists each placeholder slot once: slot name, SID_NEW_SLOTS offset, base
 command, URL variants for a family slot ("Arg:type=value", one per button) and, once a tab
@@ -11,11 +11,20 @@ To implement a placeholder, keep its entry here and add "implemented": true (see
 product/docs/calc-data-redesign.md). load(), labelled(), labels_by_url() and all_urls() then leave
 it out, so every "is a placeholder" check (disabled, inert, tooltip, always-disabled) skips it;
 load_all() still lists every slot of the fork block, implemented or not.
+
+Each app has its own registry file, given by registry(app); every function takes it as "path".
+The default is Calc's, placeholders.json.
 """
 import json
 from pathlib import Path
 
 REGISTRY = Path(__file__).with_name("placeholders.json")
+REGISTRIES = {"calc": REGISTRY, "writer": REGISTRY.with_name("placeholders_writer.json")}
+
+
+def registry(app):
+    """The registry file of one app's placeholders."""
+    return REGISTRIES[app]
 
 
 def load_all(path=REGISTRY):

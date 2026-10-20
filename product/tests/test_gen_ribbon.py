@@ -74,6 +74,23 @@ def placed(root, obj_id):
     raise AssertionError(f"{obj_id} not found")
 
 
+def outputs(name):
+    """The repository-relative files the generator writes for one app."""
+    app = g.APPS[name]
+    return [rel for rel in (app.office, app.suppr, app.false) if rel]
+
+
+def copy_inputs(root, name):
+    """Copy what the generator reads for one app into a scratch source tree."""
+    app = g.APPS[name]
+    for rel in [app.upstream] + [rel for rel in outputs(name) if rel != app.office]:
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(office.ROOT / rel, root / rel)
+    (root / "product/ui").mkdir(parents=True, exist_ok=True)
+    for path in office.UI_DIR.glob(app.prefix + "_*.json"):
+        shutil.copy(path, root / "product/ui" / path.name)
+
+
 def section_grid_rule(grid):
     """(grid id, broken rules) of a section grid; no broken rule means the caption sits on the
     section's bottom edge.
@@ -334,6 +351,17 @@ class GenRibbonTest(unittest.TestCase):
         self.assertIn("x.ui://GtkToolButton[@id='btnHomeBold'] button-no-label", out)
         self.assertEqual(len(out), len(set(out)))
 
+    def test_false_positive_sync_drops_gone_widgets_and_adds_nothing(self):
+        ui = generate()
+        false = "\n".join([
+            "other.ui://GtkMenuItem[@id='MenuHome-Old'] button-no-label",
+            "x.ui://GtkMenuItem[@id='MenuHome-Old'] button-no-label",
+            "x.ui://GtkLabel[@id='keepMe'] orphan-label",
+            "x.ui://GtkLabel[@id='keepMe'] orphan-label",
+        ]) + "\n"
+        self.assertEqual("other.ui://GtkMenuItem[@id='MenuHome-Old'] button-no-label\n"
+                         "x.ui://GtkLabel[@id='keepMe'] orphan-label\n", g.sync_false(false, "x.ui", ui))
+
 
 class CaptionBaselineTest(unittest.TestCase):
     """Every generated page of the office .ui puts its captions on one baseline (T8a)."""
@@ -388,23 +416,55 @@ class RegenerateAllTest(unittest.TestCase):
         self.assertIn("Home", ids)
         self.assertEqual(len(ids), len(list(office.UI_DIR.glob("calc_*.json"))) - 1)
 
-    def test_all_mode_rewrites_the_office_ui_and_the_suppressions_from_upstream(self):
+    def test_page_layouts_read_only_the_files_of_their_app(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("calc_home", "calc_tabs", "writer_home", "writer_tabs"):
+                (Path(tmp) / (name + ".json")).write_text(json.dumps({"id_prefix": name}), encoding="utf-8")
+            self.assertEqual([{"id_prefix": "calc_home"}], g.page_layouts(tmp))
+            self.assertEqual([{"id_prefix": "writer_home"}], g.page_layouts(tmp, "writer"))
+
+    def test_all_mode_rewrites_every_app_from_upstream(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for rel in ("sc/uiconfig/scalc/ui/notebookbar.ui", "solenv/sanitizers/ui/modules/scalc.suppr"):
-                (root / rel).parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(office.ROOT / rel, root / rel)
-            (root / "product/ui").mkdir(parents=True)
-            for path in office.UI_DIR.glob("calc_*.json"):
-                shutil.copy(path, root / "product/ui" / path.name)
+            for name in g.APPS:
+                copy_inputs(root, name)
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 self.assertEqual(0, g.main(["--all", "--root", str(root)]))
-            self.assertEqual(office.OFFICE.read_text(encoding="utf-8"),
-                             (root / "sc/uiconfig/scalc/ui/notebookbar_office.ui").read_text(encoding="utf-8"))
-            self.assertEqual((office.ROOT / "solenv/sanitizers/ui/modules/scalc.suppr").read_text(encoding="utf-8"),
-                             (root / "solenv/sanitizers/ui/modules/scalc.suppr").read_text(encoding="utf-8"))
-            self.assertIn("notebookbar_office.ui", out.getvalue())
+            self.assertEqual({"calc", "writer"}, set(g.APPS))
+            for name in g.APPS:
+                for rel in outputs(name):
+                    with self.subTest(rel):
+                        self.assertEqual((office.ROOT / rel).read_text(encoding="utf-8"),
+                                         (root / rel).read_text(encoding="utf-8"))
+                self.assertIn(g.APPS[name].office, out.getvalue())
+
+    def test_app_mode_rewrites_that_app_alone(self):
+        # Calc's run must give Calc's committed bytes whatever else the generator learns
+        for name in g.APPS:
+            with self.subTest(name), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                copy_inputs(root, name)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, g.main(["--app", name, "--root", str(root)]))
+                for rel in outputs(name):
+                    self.assertEqual((office.ROOT / rel).read_bytes(), (root / rel).read_bytes(), rel)
+                others = [g.APPS[other].office for other in g.APPS if other != name]
+                self.assertEqual([], [rel for rel in others if (root / rel).exists()])
+
+    def test_an_unknown_app_is_an_error(self):
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), self.assertRaises(SystemExit) as raised:
+            g.main(["--app", "impress"])
+        self.assertEqual(2, raised.exception.code)
+        self.assertIn("argument --app: invalid choice: 'impress'", err.getvalue())
+
+    def test_the_calc_names_of_the_test_tooling_are_the_calc_app(self):
+        calc = office.app("calc")
+        self.assertEqual((calc.upstream, calc.office, calc.tabs), (office.UPSTREAM, office.OFFICE, office.TABS))
+        self.assertEqual(office.ROOT / "sc/uiconfig/scalc/ui/notebookbar_office.ui", office.OFFICE)
+        self.assertIsNone(calc.false)  # scalc.false has no notebookbar line to keep in sync
+        self.assertEqual(office.expected_office_ui("calc"), office.expected_office_ui())
 
 
 class ItemUrlTest(unittest.TestCase):

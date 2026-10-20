@@ -1,25 +1,39 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Rebuild notebookbar_office.ui from upstream: tab operations, then every generated page."""
+"""Rebuild an app's notebookbar_office.ui from upstream: tab operations, then every generated page.
+
+app(name) gives the files of one app of gen_ribbon.APPS as absolute paths. UPSTREAM, OFFICE and
+TABS are Calc's, kept for the Calc test modules.
+"""
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
-UPSTREAM = ROOT / "sc/uiconfig/scalc/ui/notebookbar.ui"
-OFFICE = ROOT / "sc/uiconfig/scalc/ui/notebookbar_office.ui"
 UI_DIR = ROOT / "product/ui"
-TABS = UI_DIR / "calc_tabs.json"
 
 
-def page_layouts():
-    """Every product/ui/calc_<tab>.json page layout (calc_tabs.json is not one)."""
-    return g.page_layouts(UI_DIR)
+def app(name):
+    """One app's ribbon files: upstream, office, suppr, false (None when the app has none), tabs."""
+    spec = g.APPS[name]
+    return SimpleNamespace(name=name, upstream=ROOT / spec.upstream, office=ROOT / spec.office,
+                           suppr=ROOT / spec.suppr, false=ROOT / spec.false if spec.false else None,
+                           tabs=UI_DIR / spec.tabs)
 
 
-def expected_office_ui():
-    """What `gen_ribbon.py --all` writes: upstream + tab operations + every generated page."""
-    return g.regenerate_all(UPSTREAM.read_text(encoding="utf-8"),
-                            json.loads(TABS.read_text(encoding="utf-8")), page_layouts())
+UPSTREAM, OFFICE, TABS = app("calc").upstream, app("calc").office, app("calc").tabs
+
+
+def page_layouts(name="calc"):
+    """Every product/ui/<app>_<tab>.json page layout (the app's tabs file is not one)."""
+    return g.page_layouts(UI_DIR, name)
+
+
+def expected_office_ui(name="calc"):
+    """What `gen_ribbon.py --all` writes for an app: upstream + tab operations + every generated page."""
+    files = app(name)
+    return g.regenerate_all(files.upstream.read_text(encoding="utf-8"),
+                            json.loads(files.tabs.read_text(encoding="utf-8")), page_layouts(name))
