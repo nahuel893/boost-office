@@ -63,13 +63,30 @@ class CalcLauncherTest(unittest.TestCase):
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertIn("--ui tabbed --appearance dark --font inter --profile", out.stdout)
 
-    def test_no_font_and_system_font_change_nothing(self):
-        for mode in ("light", "dark", "tabbed"):
+    def test_no_font_in_the_boost_looks_means_inter(self):
+        for mode in ("light", "dark"):
             plain = dry_run(mode)
+            self.assertEqual(0, plain.returncode, plain.stderr)
+            self.assertEqual(dry_run(mode, "--font", "inter").stdout, plain.stdout, mode)
+            self.assertIn("--tint 255 --font inter --profile", plain.stdout, mode)
+
+    def test_no_font_in_the_stock_modes_changes_nothing(self):
+        for mode in ("tabbed", "tabbed-light", "compact"):
+            plain = dry_run(mode)
+            self.assertEqual(0, plain.returncode, plain.stderr)
+            self.assertEqual(dry_run(mode, "--font", "system").stdout, plain.stdout, mode)
+            self.assertNotIn("--font", plain.stdout, mode)
+
+    def test_system_font_means_no_font_item_in_every_mode(self):
+        for mode in ("light", "dark", "tabbed", "tabbed-light", "compact"):
             system = dry_run(mode, "--font", "system")
             self.assertEqual(0, system.returncode, system.stderr)
-            self.assertEqual(plain.stdout, system.stdout)
-            self.assertNotIn("--font", plain.stdout)
+            self.assertNotIn("--font", system.stdout, mode)
+
+    def test_explicit_font_wins_in_the_boost_looks(self):
+        out = dry_run("dark", "--font", "selawik")
+        self.assertIn("--tint 255 --font selawik --profile", out.stdout)
+        self.assertNotIn("inter", out.stdout)
 
     def test_unknown_font_is_rejected_with_usage(self):
         for args in (("--font", "comic"), ("light", "--font")):

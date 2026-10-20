@@ -1,23 +1,28 @@
 # UI font trial: Selawik and Inter
 
 The Calc user interface normally uses the desktop's font (GTK `gtk-font-name`, "Noto Sans 9" on
-the dev machine). The trial bundles two open fonts and lets each launch pick one of them instead.
+the dev machine). The trial bundled two open fonts and let each launch pick one of them instead.
+On 2026-10-20 the user picked Inter: it is now the default UI font of the Boost looks.
 
 ## Use it
 
 ```sh
-product/dev/calc.sh light --font inter --profile /path/to/scratch-profile
+product/dev/calc.sh light --profile /path/to/scratch-profile                 # Inter
+product/dev/calc.sh light --font system --profile /path/to/scratch-profile   # the desktop's font
 product/dev/calc.sh dark --font selawik --profile /path/to/scratch-profile
-SHOT_FONT=inter product/dev/shot-tab.sh light Home /tmp/home-inter.png 1920
+SHOT_FONT=system product/dev/shot-tab.sh light Home /tmp/home-system.png 1920
 ```
 
-- `--font system` (the default) keeps the desktop's font. The launcher output and the profile are
+- Without `--font`, the Boost looks (`light` and `dark`) use Inter. The stock LibreOffice modes
+  (`tabbed`, `tabbed-light`, `compact`) keep the desktop's font. `shot-tab.sh` always shoots the
+  Boost looks, so `SHOT_FONT` defaults to `inter` there.
+- `--font system` keeps the desktop's font in any mode. The launcher output and the profile are
   exactly what they were before the switch existed.
 - `--font selawik` or `--font inter` changes the whole UI: tab bar, ribbon labels, menus,
   dialogs, tooltips and status bar. The document and cell fonts do not change.
 - The font only changes the family. The size, weight and style are the desktop's at startup. While
   a font is set, a desktop font change made while Calc runs applies only after a restart.
-- `--font` works with every mode of `calc.sh` (light, dark, tabbed, ...).
+- `--font` (and `SHOT_FONT`) wins over the default; it works with every mode of `calc.sh` (light, dark, tabbed, ...).
 
 ## What it does
 
@@ -50,7 +55,7 @@ office's configuration, not in the launcher's environment:
 - LibreOffice's configuration had no UI font setting for gtk3. `UI_SANS` in VCL.xcu is only a
   glyph fallback, and the `UseSystemUIFonts` flag is only saved and restored, never acted on.
 
-With the item unset (the default), the plugin behaves exactly as before. A product can ship the
+The VCL schema default stays empty. With the item unset, the plugin behaves exactly as before. A product can ship the
 fonts in `share/fonts/truetype`, which VCL adds to fontconfig the same way as `user/fonts`, and set
 the item in its own configuration layer. Users can change it in Tools > Options > Advanced > Open
 Expert Configuration (`UIFont`). It applies after a restart.

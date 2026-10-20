@@ -6,14 +6,15 @@
 #   tabbed        LibreOffice's original Tabbed ribbon, dark, no product theme
 #   tabbed-light  LibreOffice's original Tabbed ribbon, light, no product theme
 #   compact       LibreOffice's Tabbed Compact ribbon, dark, no product theme
-#   --font        UI font: system (the desktop's, default), or bundled selawik or inter (any mode)
+#   --font        UI font: system (the desktop's), or bundled selawik or inter (any mode). Without it,
+#                 light and dark use inter; tabbed, tabbed-light and compact use system.
 # The profile (default /mnt/games/libreoffice/try-profile) is rewritten on each run;
 # missing icon zips and the color scheme extension are built and installed first.
 set -euo pipefail
 core="$(cd "$(dirname "$0")/../.." && pwd)"
 profile=/mnt/games/libreoffice/try-profile
 mode=light
-font=system
+font=
 dry=0
 
 usage() { echo "usage: calc.sh [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2; exit 2; }
@@ -38,6 +39,10 @@ tabbed)       args=(--ui tabbed --appearance dark); gtk=adw-gtk3-dark ;;
 tabbed-light) args=(--ui tabbed --appearance light); gtk=adw-gtk3 ;;
 compact)      args=(--ui compact --appearance dark); gtk=adw-gtk3-dark ;;
 esac
+# Default font: Inter in the Boost looks, the desktop's font in the stock modes. --font wins.
+if [ -z "$font" ]; then
+    case "$mode" in light|dark) font=inter ;; *) font=system ;; esac
+fi
 # The font goes to the profile: the bundled TTFs into user/fonts and VCL's UIFont/FamilyName item.
 [ "$font" = system ] || args+=(--font "$font")
 

@@ -13,13 +13,14 @@
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
 #      SHOT_AFTER="swaymsg-free shell snippet" runs after the tab click with $SWAYSOCK, $WAYLAND_DISPLAY,
 #      $SHOT_W, $SHOT_H exported (used for the Shapes dropdown capture).
-#      SHOT_FONT=system|selawik|inter picks the UI font, like calc.sh --font (default system).
+#      SHOT_FONT=system|selawik|inter picks the UI font, like calc.sh --font (default inter,
+#      because the themes are always the Boost looks). SHOT_FONT=system keeps the desktop's font.
 set -euo pipefail
 
 theme="${1:?theme light|dark}"; tab="${2:?tab}"; out="${3:?out.png}"; width="${4:-1920}"
 case "$theme" in light|dark) ;; *) echo "theme must be light or dark" >&2; exit 2 ;; esac
 case "$width" in 1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; *) echo "width: 1920|1600|1366" >&2; exit 2 ;; esac
-font="${SHOT_FONT:-system}"
+font="${SHOT_FONT:-inter}"
 case "$font" in system|selawik|inter) ;; *) echo "SHOT_FONT must be system, selawik or inter" >&2; exit 2 ;; esac
 
 if [ -z "${SHOT_INNER:-}" ]; then

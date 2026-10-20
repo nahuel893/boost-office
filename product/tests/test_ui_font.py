@@ -95,6 +95,14 @@ class ShotTabFontTest(unittest.TestCase):
         self.assertEqual(2, out.returncode, out.stderr)
         self.assertIn("SHOT_FONT", out.stderr)
 
+    def test_shot_font_defaults_to_inter_in_the_script(self):
+        # The script needs a private sway to get past its argument checks, so the default cannot be
+        # observed by running it. This pins the one line that sets it (and the usage comment).
+        text = (ROOT / "product/dev/shot-tab.sh").read_text(encoding="utf-8")
+        self.assertIn('font="${SHOT_FONT:-inter}"', text)
+        self.assertNotIn("SHOT_FONT:-system", text)
+        self.assertIn("(default inter,", text)
+
 
 if __name__ == "__main__":
     unittest.main()
