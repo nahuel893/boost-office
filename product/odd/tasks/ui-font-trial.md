@@ -47,6 +47,9 @@ between them, so the user can pick one. After the pick, the screenshots are redo
 | T1 | Fonts in `product/fonts/`, and the `--font system\|selawik\|inter` switch in calc.sh and shot-tab.sh, with launcher tests | delegated (opus): mechanism research in vcl/GTK plus 2+ non-trivial files | done |
 | T2 | Comparison screenshots for each font: every tab, light and dark, at 1920; a 1366 check of the widest tabs for `>>` overflow | delegated (sonnet): mechanical runs | done |
 | T3 | Comparison page with a Selawik/Inter toggle | inline: one page built from T2's images | done |
+| T4 | Inter becomes the default UI font of the Boost looks (`calc.sh` light/dark, `shot-tab.sh`); `--font system` keeps the desktop's font; tests and docs | delegated (sonnet): scripts, tests and docs, 4+ files | done |
+| T5 | Redo the `dev` screenshots in product/docs/screenshots with Inter, and update the screenshots README and the root README | delegated (sonnet, same worker as T4, after it): mechanical runs | done |
+| T6 | Fast-forward `feature/calc-ribbon-tabs` to this branch and push it to GitHub `dev` | inline: git state only | pending |
 
 ## Acceptance
 - With `--font selawik` or `--font inter`, the Calc UI (tab bar, ribbon labels, menus, dialogs)
@@ -68,6 +71,9 @@ between them, so the user can pick one. After the pick, the screenshots are redo
 - Strategy: ask-on-risk.
 - The branch stays local until the user picks a font. Then the pick goes to `dev` with new
   screenshots.
+- 2026-10-20: the user picked Inter ("me gustó muchísimo Inter, commit y push"). T4-T6 add about
+  60-120 authored lines plus images; `dev` gets it by fast-forward, `main` keeps the system font
+  because it does not have the font switch.
 
 ## Progress
 - 2026-10-17: feature document created. Inline check found that the font path includes
@@ -107,6 +113,22 @@ between them, so the user can pick one. After the pick, the screenshots are redo
 - 2026-10-20: the planning request of 2026-10-18 (features "in the todo file", plus ADRs) was a
   mistake by the user's account. Work returns to this feature.
 
+- 2026-10-20: T4 and T5 done.
+  - Commits: bcc52f9cf (Inter is the default of light and dark; tabbed, tabbed-light and
+    compact keep the system font; `SHOT_FONT` defaults to inter) and 3ec1f84e3 (8 dev
+    screenshots retaken with `SHOT_FONT` unset, both READMEs).
+  - Checks:
+    - unit tests 309 -> 313 OK (re-run by the controller: 313 OK);
+    - the two new tests were RED before the change;
+    - `calc.sh --font system --dry-run` output is byte-identical to the old no-font output in
+      all five modes;
+    - the controller checked the light, dark and tabbed dry-runs;
+    - `git diff --check` is clean.
+  - The controller looked at home-light.png and data-dark.png, the two the worker had not
+    opened: they show Inter and the right tab, and nothing is cut.
+  - Known gap: the `shot-tab.sh` default test is a static source check, because the script
+    cannot run past its argument checks without sway.
+  - Report: .superpowers/sdd/2026-10-17-ui-font-trial/task-T4-report.md.
+
 ## Next step
-The user picks a font. Then the pick becomes the product default, and the `dev` screenshots and
-the README are redone with it.
+T6: fast-forward `feature/calc-ribbon-tabs` and push it to GitHub `dev`.
