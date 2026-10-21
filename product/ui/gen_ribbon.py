@@ -15,6 +15,13 @@ one edge of its row, e.g. a combo box at the bottom of a section.
 A section may also have a "footer": one toolbox (same schema, but no "row")
 that spans every column on the last row above the caption. Large and medium
 toolboxes then span one row fewer, and column toolboxes must fit in the rows above it.
+
+A toolbox may set "expand": true to take the width the page leaves free, like Word's Styles
+gallery. That width is not part of the page's natural width, so the toolbox gives it back before
+any group collapses when the window narrows (PriorityMergedHBox collapses groups only once the
+page is narrower than their natural widths). VCL hands extra width only to a child that expands
+itself, so the section's optional box, both grids and the toolbox get hexpand, and the items get
+the packing expand (ToolBox::Resize shares the extra width out across them).
 """
 import argparse
 import json
@@ -136,6 +143,8 @@ def validate(layout):
                 raise LayoutError(f"{name}: the footer must be a small toolbox")
             if box.get("valign", "fill") not in ("fill", "start", "center", "end"):
                 raise LayoutError(f"{name}: unknown valign {box['valign']}")
+            if not isinstance(box.get("expand", False), bool):
+                raise LayoutError(f"{name}: expand must be true or false, not {box['expand']!r}")
             for item in box["items"]:
                 if item.get("kind", "button") not in BUTTON_CLASS:
                     raise LayoutError(f"{name}: unknown kind {item.get('kind')}")
@@ -167,7 +176,7 @@ class Writer:
         self.close("</packing>")
 
 
-def emit_item(w, layout, box_style, item):
+def emit_item(w, layout, box_style, item, expand=False):
     p, ctx = layout["id_prefix"], layout["context"]
     kind = item.get("kind", "button")
     wid = f"btn{p}{item['cmd']}"
@@ -182,7 +191,7 @@ def emit_item(w, layout, box_style, item):
         w.prop("icon_name", item["icon"])
     w.close("</object>")
     homogeneous = "False" if box_style in LARGE_LIKE or kind == "split" else "True"
-    w.packing(expand="False", homogeneous=homogeneous)
+    w.packing(expand=str(expand), homogeneous=homogeneous)
     w.close("</child>")
 
 
@@ -194,6 +203,8 @@ def emit_box(w, layout, box, col, row, large_rows, width=1):
     w.open(f'<object class="sfxlo-NotebookbarToolBox" id="bx{p}{box["id"]}">')
     w.prop("visible", "True")
     w.prop("can-focus", "True")
+    if box.get("expand"):
+        w.prop("hexpand", "True")
     if large:
         w.prop("valign", box.get("valign", "center"))
         w.prop("vexpand", "True")
@@ -203,7 +214,7 @@ def emit_box(w, layout, box, col, row, large_rows, width=1):
     w.prop("show-arrow", "False")
     w.prop("icon_size", icon_size)
     for item in box["items"]:
-        emit_item(w, layout, box["style"], item)
+        emit_item(w, layout, box["style"], item, box.get("expand", False))
     w.close("</object>")
     if large:
         w.packing(left_attach=col, top_attach=0, height=large_rows)
@@ -225,10 +236,13 @@ def emit_section(w, layout, section, position, priority):
     """
     p, ctx, name = layout["id_prefix"], layout["context"], section["name"]
     rows, ncols = section["rows"], len(section["columns"])
+    expand = any(box.get("expand") for box in boxes_of(section))
     w.open("<child>")
     w.open(f'<object class="VclOptionalBox" id="ob{p}{name}">')
     w.prop("visible", "True")
     w.prop("can-focus", "False")
+    if expand:
+        w.prop("hexpand", "True")
     w.open("<child>")
     w.line("<!-- n-columns=2 n-rows=2 -->")
     w.open(f'<object class="GtkGrid" id="gd{p}{name}">')
@@ -236,12 +250,16 @@ def emit_section(w, layout, section, position, priority):
                              ("margin-start", 6), ("margin-end", 3), ("margin-top", 6),
                              ("margin-bottom", 6), ("row-spacing", 3), ("column-spacing", 3)):
         w.prop(prop_name, value)
+    if expand:
+        w.prop("hexpand", "True")
     w.open("<child>")
     w.line(f"<!-- n-columns={ncols} n-rows={rows} -->")
     w.open(f'<object class="GtkGrid" id="gc{p}{name}">')
     for prop_name, value in (("visible", "True"), ("can-focus", "False"), ("vexpand", "True"),
                              ("row-spacing", 3), ("column-spacing", 3)):
         w.prop(prop_name, value)
+    if expand:
+        w.prop("hexpand", "True")
     for col, column in enumerate(section["columns"]):
         for row, box in zip(rows_of(column), column):
             emit_box(w, layout, box, col, row, rows - ("footer" in section))

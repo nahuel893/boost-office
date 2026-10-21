@@ -334,6 +334,39 @@ class GenRibbonTest(unittest.TestCase):
         with self.assertRaises(g.LayoutError):
             g.emit_page(bad)
 
+    def expand_layout(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][1]["columns"][0][0]["expand"] = True
+        return layout
+
+    def test_an_expanding_toolbox_gets_the_free_width_through_every_container(self):
+        # VCL does not pass hexpand up to the parents: a VclHBox only grows a child that has expand
+        # or hexpand itself, a VclGrid only grows a column with an hexpand child, and a ToolBox
+        # only grows an item window whose packing has expand (vcl/source/window/layout.cxx,
+        # vcl/source/window/toolbox.cxx ToolBox::Resize). So the section's optional box, both grids
+        # and the toolbox expand, and so do the toolbox's items.
+        root = ET.fromstring(generate(layout=self.expand_layout()))
+        expanding = {obj.get("id") for obj in root.iter("object")
+                     if [p.text for p in obj.findall("property[@name='hexpand']")] == ["True"]}
+        self.assertEqual({"obHomeFont", "gdHomeFont", "gcHomeFont", "bxHomeFormatRow"}, expanding)
+        for wid in ("btnHomeBold", "btnHomeItalic"):
+            _, packing = placed(root, wid)
+            self.assertEqual("True", packing.find("property[@name='expand']").text, wid)
+
+    def test_nothing_expands_by_default(self):
+        out = generate()
+        self.assertNotIn('name="hexpand"', out)
+        root = ET.fromstring(out)
+        items = [c.find("packing/property[@name='expand']").text for c in root.iter("child")
+                 if c.find("object").get("class") in g.BUTTON_CLASS.values()]
+        self.assertEqual(["False"] * 5, items)  # Paste, Cut, Copy, Bold, Italic
+
+    def test_rejects_expand_that_is_not_a_boolean(self):
+        bad = self.expand_layout()
+        bad["sections"][1]["columns"][0][0]["expand"] = "true"
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
+
     def test_suppr_sync(self):
         ui = generate()
         suppr = "\n".join([
