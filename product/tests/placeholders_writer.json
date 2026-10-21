@@ -1,0 +1,249 @@
+[
+ {
+  "slot": "FN_BOOST_HOME_TEXT_EFFECT",
+  "offset": 0,
+  "command": "HomeTextEffect",
+  "variants": [
+   "Effect:string=reflection",
+   "Effect:string=glow",
+   "Effect:string=numberstyles",
+   "Effect:string=ligatures",
+   "Effect:string=stylisticsets"
+  ],
+  "variant_labels": {
+   "Effect:string=reflection": "Reflection",
+   "Effect:string=glow": "Glow",
+   "Effect:string=numberstyles": "Number Styles",
+   "Effect:string=ligatures": "Ligatures",
+   "Effect:string=stylisticsets": "Stylistic Sets"
+  }
+ },
+ {
+  "slot": "FN_BOOST_HOME_SELECT_SIMILAR",
+  "offset": 1,
+  "command": "HomeSelectSimilar",
+  "label": "Select Text with Similar Formatting"
+ },
+ {
+  "slot": "FN_BOOST_INSERT_BLANK_PAGE",
+  "offset": 2,
+  "command": "InsertBlankPage",
+  "label": "Blank Page"
+ },
+ {
+  "slot": "FN_BOOST_INSERT_3D_MODELS",
+  "offset": 3,
+  "command": "Insert3DModels",
+  "label": "3D Models"
+ },
+ {
+  "slot": "FN_BOOST_INSERT_SMARTART",
+  "offset": 4,
+  "command": "InsertSmartArt",
+  "label": "SmartArt"
+ },
+ {
+  "slot": "FN_BOOST_INSERT_SCREENSHOT",
+  "offset": 5,
+  "command": "InsertScreenshot",
+  "label": "Screenshot"
+ },
+ {
+  "slot": "FN_BOOST_DESIGN_THEME_PART",
+  "offset": 6,
+  "command": "PageLayoutThemePart",
+  "variants": [
+   "Part:string=themes",
+   "Part:string=fonts",
+   "Part:string=effects"
+  ],
+  "variant_labels": {
+   "Part:string=themes": "Themes",
+   "Part:string=fonts": "Fonts",
+   "Part:string=effects": "Effects"
+  }
+ },
+ {
+  "slot": "FN_BOOST_DESIGN_STYLE_SET",
+  "offset": 7,
+  "command": "DesignStyleSet",
+  "variants": [
+   "Action:string=gallery",
+   "Action:string=spacing",
+   "Action:string=setdefault"
+  ],
+  "variant_labels": {
+   "Action:string=gallery": "Style Set",
+   "Action:string=spacing": "Paragraph Spacing",
+   "Action:string=setdefault": "Set as Default"
+  }
+ },
+ {
+  "slot": "FN_BOOST_REFERENCES_CITATION_STYLE",
+  "offset": 8,
+  "command": "ReferencesCitationStyle",
+  "label": "Style"
+ },
+ {
+  "slot": "FN_BOOST_REFERENCES_AUTHORITIES",
+  "offset": 9,
+  "command": "ReferencesAuthorities",
+  "variants": [
+   "Action:string=mark",
+   "Action:string=insert",
+   "Action:string=update"
+  ],
+  "variant_labels": {
+   "Action:string=mark": "Mark Citation",
+   "Action:string=insert": "Insert Table of Authorities",
+   "Action:string=update": "Update Table"
+  }
+ },
+ {
+  "slot": "FN_BOOST_MAILINGS_FIELD",
+  "offset": 10,
+  "command": "MailingsField",
+  "variants": [
+   "Field:string=addressblock",
+   "Field:string=greetingline",
+   "Field:string=rules",
+   "Field:string=matchfields",
+   "Field:string=updatelabels"
+  ],
+  "variant_labels": {
+   "Field:string=addressblock": "Address Block",
+   "Field:string=greetingline": "Greeting Line",
+   "Field:string=rules": "Rules",
+   "Field:string=matchfields": "Match Fields",
+   "Field:string=updatelabels": "Update Labels"
+  }
+ },
+ {
+  "slot": "FN_BOOST_MAILINGS_PREVIEW",
+  "offset": 11,
+  "command": "MailingsPreview",
+  "variants": [
+   "Action:string=toggle",
+   "Action:string=find",
+   "Action:string=check"
+  ],
+  "variant_labels": {
+   "Action:string=toggle": "Preview Results",
+   "Action:string=find": "Find Recipient",
+   "Action:string=check": "Check for Errors"
+  }
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_READ_ALOUD",
+  "offset": 12,
+  "command": "ReviewReadAloud",
+  "label": "Read Aloud"
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_TRANSLATE",
+  "offset": 13,
+  "command": "ReviewTranslate",
+  "label": "Translate"
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_GOTO_COMMENT",
+  "offset": 14,
+  "command": "ReviewGoToComment",
+  "variants": [
+   "Direction:string=previous",
+   "Direction:string=next"
+  ],
+  "variant_labels": {
+   "Direction:string=previous": "Previous",
+   "Direction:string=next": "Next"
+  }
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_MARKUP",
+  "offset": 15,
+  "command": "ReviewMarkup",
+  "variants": [
+   "Action:string=filter",
+   "Action:string=display"
+  ],
+  "variant_labels": {
+   "Action:string=filter": "Filter All Markup",
+   "Action:string=display": "Display for Review"
+  }
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_RESTRICT_EDITING",
+  "offset": 16,
+  "command": "ReviewRestrictEditing",
+  "label": "Restrict Editing"
+ },
+ {
+  "slot": "FN_BOOST_REVIEW_HIDE_INK",
+  "offset": 17,
+  "command": "ReviewHideInk",
+  "label": "Hide Ink"
+ },
+ {
+  "slot": "FN_BOOST_VIEW_MODE",
+  "offset": 18,
+  "command": "ViewMode",
+  "variants": [
+   "Mode:string=read",
+   "Mode:string=outline",
+   "Mode:string=draft",
+   "Mode:string=immersive"
+  ],
+  "variant_labels": {
+   "Mode:string=read": "Read Mode",
+   "Mode:string=outline": "Outline",
+   "Mode:string=draft": "Draft",
+   "Mode:string=immersive": "Immersive Reader"
+  }
+ },
+ {
+  "slot": "FN_BOOST_VIEW_PAGE_MOVEMENT",
+  "offset": 19,
+  "command": "ViewPageMovement",
+  "variants": [
+   "Mode:string=vertical",
+   "Mode:string=sidetoside"
+  ],
+  "variant_labels": {
+   "Mode:string=vertical": "Vertical",
+   "Mode:string=sidetoside": "Side to Side"
+  }
+ },
+ {
+  "slot": "FN_BOOST_VIEW_ARRANGE_ALL",
+  "offset": 20,
+  "command": "ViewArrangeAll",
+  "label": "Arrange All"
+ },
+ {
+  "slot": "FN_BOOST_VIEW_SPLIT",
+  "offset": 21,
+  "command": "ViewSplit",
+  "label": "Split"
+ },
+ {
+  "slot": "FN_BOOST_VIEW_SIDE_BY_SIDE",
+  "offset": 22,
+  "command": "ViewSideBySide",
+  "variants": [
+   "Action:string=toggle",
+   "Action:string=sync",
+   "Action:string=reset"
+  ],
+  "variant_labels": {
+   "Action:string=toggle": "View Side by Side",
+   "Action:string=sync": "Synchronous Scrolling",
+   "Action:string=reset": "Reset Window Position"
+  }
+ },
+ {
+  "slot": "FN_BOOST_HELP_FEEDBACK",
+  "offset": 23,
+  "command": "HelpFeedback",
+  "label": "Feedback"
+ }
+]

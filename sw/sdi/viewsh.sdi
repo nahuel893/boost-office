@@ -426,6 +426,103 @@ interface TextEditView : BaseTextEditView
         ExecMethod = ExecDraw ;
         StateMethod = GetDrawState ;
     ]
+    // Ribbon placeholders (FN_BOOST+0..+23): state only, always disabled, no Execute yet
+    FN_BOOST_HOME_TEXT_EFFECT
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_HOME_SELECT_SIMILAR
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_INSERT_BLANK_PAGE
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_INSERT_3D_MODELS
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_INSERT_SMARTART
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_INSERT_SCREENSHOT
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_DESIGN_THEME_PART
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_DESIGN_STYLE_SET
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REFERENCES_CITATION_STYLE
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REFERENCES_AUTHORITIES
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_MAILINGS_FIELD
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_MAILINGS_PREVIEW
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_READ_ALOUD
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_TRANSLATE
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_GOTO_COMMENT
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_MARKUP
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_RESTRICT_EDITING
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_REVIEW_HIDE_INK
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_VIEW_MODE
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_VIEW_PAGE_MOVEMENT
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_VIEW_ARRANGE_ALL
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_VIEW_SPLIT
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_VIEW_SIDE_BY_SIDE
+    [
+        StateMethod = GetState ;
+    ]
+    FN_BOOST_HELP_FEEDBACK
+    [
+        StateMethod = GetState ;
+    ]
 }
 
 shell SwView

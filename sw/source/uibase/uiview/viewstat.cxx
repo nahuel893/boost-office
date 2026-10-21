@@ -127,6 +127,35 @@ void SwView::GetState(SfxItemSet &rSet)
                     rSet.DisableItem(nWhich);
                 break;
 
+            // Ribbon placeholders (FN_BOOST+0..+23): the slot only exists so that the ribbon button
+            // reads as unavailable; a feature adds its Execute and real state later.
+            case FN_BOOST_HOME_TEXT_EFFECT:
+            case FN_BOOST_HOME_SELECT_SIMILAR:
+            case FN_BOOST_INSERT_BLANK_PAGE:
+            case FN_BOOST_INSERT_3D_MODELS:
+            case FN_BOOST_INSERT_SMARTART:
+            case FN_BOOST_INSERT_SCREENSHOT:
+            case FN_BOOST_DESIGN_THEME_PART:
+            case FN_BOOST_DESIGN_STYLE_SET:
+            case FN_BOOST_REFERENCES_CITATION_STYLE:
+            case FN_BOOST_REFERENCES_AUTHORITIES:
+            case FN_BOOST_MAILINGS_FIELD:
+            case FN_BOOST_MAILINGS_PREVIEW:
+            case FN_BOOST_REVIEW_READ_ALOUD:
+            case FN_BOOST_REVIEW_TRANSLATE:
+            case FN_BOOST_REVIEW_GOTO_COMMENT:
+            case FN_BOOST_REVIEW_MARKUP:
+            case FN_BOOST_REVIEW_RESTRICT_EDITING:
+            case FN_BOOST_REVIEW_HIDE_INK:
+            case FN_BOOST_VIEW_MODE:
+            case FN_BOOST_VIEW_PAGE_MOVEMENT:
+            case FN_BOOST_VIEW_ARRANGE_ALL:
+            case FN_BOOST_VIEW_SPLIT:
+            case FN_BOOST_VIEW_SIDE_BY_SIDE:
+            case FN_BOOST_HELP_FEEDBACK:
+                rSet.DisableItem(nWhich);
+                break;
+
             case SID_INSERT_GRAPHIC:
                 if( m_pWrtShell->CursorInsideInputField() )
                 {

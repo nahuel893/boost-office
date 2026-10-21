@@ -53,6 +53,36 @@ class SwUINumRuleItem;
 #define FN_SIDEBAR              (SID_SW_START + 2550)
 #define FN_HEADERFOOTER         (SID_SW_START + 2600)
 #define FN_PAGEBREAK            (SID_SW_START + 2610)
+// SID_SW_START+5900..+5999 (25900-25999) is reserved for this fork: the top of the Writer
+// range (SID_SC_START is 26000), well clear of the ids upstream hands out next.
+#define FN_BOOST                (SID_SW_START + 5900)
+// Ribbon placeholders, FN_BOOST+0..+23: always disabled until their feature gives them an
+// Execute. A family slot serves several buttons through URL variants; the registry is
+// product/tests/placeholders_writer.json.
+#define FN_BOOST_HOME_TEXT_EFFECT          (FN_BOOST + 0)
+#define FN_BOOST_HOME_SELECT_SIMILAR       (FN_BOOST + 1)
+#define FN_BOOST_INSERT_BLANK_PAGE         (FN_BOOST + 2)
+#define FN_BOOST_INSERT_3D_MODELS          (FN_BOOST + 3)
+#define FN_BOOST_INSERT_SMARTART           (FN_BOOST + 4)
+#define FN_BOOST_INSERT_SCREENSHOT         (FN_BOOST + 5)
+#define FN_BOOST_DESIGN_THEME_PART         (FN_BOOST + 6)
+#define FN_BOOST_DESIGN_STYLE_SET          (FN_BOOST + 7)
+#define FN_BOOST_REFERENCES_CITATION_STYLE (FN_BOOST + 8)
+#define FN_BOOST_REFERENCES_AUTHORITIES    (FN_BOOST + 9)
+#define FN_BOOST_MAILINGS_FIELD            (FN_BOOST + 10)
+#define FN_BOOST_MAILINGS_PREVIEW          (FN_BOOST + 11)
+#define FN_BOOST_REVIEW_READ_ALOUD         (FN_BOOST + 12)
+#define FN_BOOST_REVIEW_TRANSLATE          (FN_BOOST + 13)
+#define FN_BOOST_REVIEW_GOTO_COMMENT       (FN_BOOST + 14)
+#define FN_BOOST_REVIEW_MARKUP             (FN_BOOST + 15)
+#define FN_BOOST_REVIEW_RESTRICT_EDITING   (FN_BOOST + 16)
+#define FN_BOOST_REVIEW_HIDE_INK           (FN_BOOST + 17)
+#define FN_BOOST_VIEW_MODE                 (FN_BOOST + 18)
+#define FN_BOOST_VIEW_PAGE_MOVEMENT        (FN_BOOST + 19)
+#define FN_BOOST_VIEW_ARRANGE_ALL          (FN_BOOST + 20)
+#define FN_BOOST_VIEW_SPLIT                (FN_BOOST + 21)
+#define FN_BOOST_VIEW_SIDE_BY_SIDE         (FN_BOOST + 22)
+#define FN_BOOST_HELP_FEEDBACK             (FN_BOOST + 23)
 
  /* More accurately, this range should be from FN_EXTRA2 to FN_PARAM2-1, but
  * FN_NUMBER_NEWSTART comes from FN_FORMAT2, and FN_PARAM_LINK_DISPLAY_NAME
