@@ -1,0 +1,97 @@
+{
+  "page": "Layout Tab",
+  "id_prefix": "Layout",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu Page"],
+  "sections": [
+    {"name": "PageSetup", "caption": "Page Setup", "rows": 3, "columns": [
+      [
+        {"id": "Margins", "style": "large", "items": [
+          {"cmd": "PageMargin", "kind": "split", "office_label": "Margins"}
+        ]}
+      ],
+      [
+        {"id": "Orientation", "style": "large", "items": [
+          {"cmd": "Orientation", "kind": "split", "office_label": "Orientation"}
+        ]}
+      ],
+      [
+        {"id": "Size", "style": "large", "items": [
+          {"cmd": "AttributePageSize", "kind": "split", "office_label": "Size"}
+        ]}
+      ],
+      [
+        {"id": "Columns", "style": "large", "items": [
+          {"cmd": "PageColumnType", "kind": "split", "office_label": "Columns"}
+        ]}
+      ],
+      [
+        {"id": "Breaks", "style": "small-label", "items": [
+          {"cmd": "LayoutBreaksMenu", "kind": "split", "office_label": "Breaks"}
+        ]},
+        {"id": "LineNumbers", "style": "small-label", "items": [
+          {"cmd": "LineNumberingDialog", "office_label": "Line Numbers"}
+        ]},
+        {"id": "Hyphenation", "style": "small-label", "items": [
+          {"cmd": "Hyphenate", "office_label": "Hyphenation"}
+        ]}
+      ]
+    ]},
+    {"name": "Paragraph", "caption": "Paragraph", "rows": 3, "columns": [
+      [
+        {"id": "LeftParaMargin", "style": "small", "row": 1, "items": [
+          {"cmd": "LeftParaMargin", "office_label": "Indent Left"}
+        ]},
+        {"id": "RightParaMargin", "style": "small", "items": [
+          {"cmd": "RightParaMargin", "office_label": "Indent Right"}
+        ]}
+      ],
+      [
+        {"id": "AboveSpacing", "style": "small", "row": 1, "items": [
+          {"cmd": "AboveSpacing", "office_label": "Spacing Before"}
+        ]},
+        {"id": "BelowSpacing", "style": "small", "items": [
+          {"cmd": "BelowSpacing", "office_label": "Spacing After"}
+        ]}
+      ]
+    ]},
+    {"name": "Arrange", "caption": "Arrange", "rows": 3, "columns": [
+      [
+        {"id": "Position", "style": "large", "items": [
+          {"cmd": "AnchorMenu", "kind": "split", "office_label": "Position"}
+        ]}
+      ],
+      [
+        {"id": "WrapText", "style": "large", "items": [
+          {"cmd": "LayoutWrapTextMenu", "kind": "split", "office_label": "Wrap Text"}
+        ]}
+      ],
+      [
+        {"id": "BringForward", "style": "large", "items": [
+          {"cmd": "PageLayoutBringForwardMenu", "kind": "split", "office_label": "Bring Forward"}
+        ]}
+      ],
+      [
+        {"id": "SendBackward", "style": "large", "items": [
+          {"cmd": "PageLayoutSendBackwardMenu", "kind": "split", "office_label": "Send Backward"}
+        ]}
+      ],
+      [
+        {"id": "SelectionPane", "style": "large", "items": [
+          {"cmd": "Navigator", "office_label": "Selection Pane"}
+        ]}
+      ],
+      [
+        {"id": "Align", "style": "small-label", "items": [
+          {"cmd": "PageLayoutAlignMenu", "kind": "split", "office_label": "Align"}
+        ]},
+        {"id": "Group", "style": "small-label", "items": [
+          {"cmd": "PageLayoutGroupMenu", "kind": "split", "office_label": "Group"}
+        ]},
+        {"id": "Rotate", "style": "small-label", "items": [
+          {"cmd": "PageLayoutRotateMenu", "kind": "split", "office_label": "Rotate"}
+        ]}
+      ]
+    ]}
+  ]
+}

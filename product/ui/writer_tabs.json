@@ -2,5 +2,24 @@
   "properties": [
     {"id": "Home Tab", "name": "valign", "from": "center", "to": "fill"},
     {"id": "Layout Tab", "name": "valign", "from": "center", "to": "fill"}
+  ],
+  "positions": {
+    "Layout Tab": 4, "LayoutLabel": 4,
+    "References Tab": 5, "ReferencesLabel": 5,
+    "Review Tab": 6, "ReviewLabel": 6,
+    "View Tab": 7, "ViewLabel": 7,
+    "Table Tab": 8, "TableLabel": 8,
+    "Image Tab": 9, "ImageLabel": 9,
+    "Draw Tab": 10, "DrawLabel": 10,
+    "Object Tab": 11, "ObjectLabel": 11,
+    "Media Tab": 12, "MediaLabel": 12,
+    "Print Tab": 13, "PrintLabel": 13,
+    "Form Tab": 14, "FormLabel": 14,
+    "Extension Tab": 15, "ExtensionLabel": 15,
+    "Tools Tab": 16, "ToolsLabel": 16
+  },
+  "add_pages": [
+    {"page": "Design Tab", "prefix": "Design", "after_tab": "InsertLabel", "position": 3,
+     "tab_id": "DesignLabel", "label": "Desi~gn", "context": "TabbedWriter|DesignTabLabel"}
   ]
 }
