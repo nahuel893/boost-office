@@ -1235,6 +1235,62 @@
           <value>view_macros</value>
         </prop>
       </node>
+      <node oor:name="HomeChangeCaseMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeChangeCaseMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_changecase</value>
+        </prop>
+      </node>
+      <node oor:name="HomeTextEffectsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeTextEffectsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_texteffects</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFindMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFindMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_find</value>
+        </prop>
+      </node>
+      <node oor:name="HomeSelectMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_select</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3184,6 +3240,50 @@
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.sheet.SpreadsheetDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeChangeCaseMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeChangeCaseMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeTextEffectsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeTextEffectsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeFindMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeFindMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeSelectMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>

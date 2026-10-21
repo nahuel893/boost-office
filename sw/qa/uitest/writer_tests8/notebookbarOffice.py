@@ -6,8 +6,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+import base64
 import json
 import os
+import tempfile
 import time
 import uno
 import unohelper
@@ -21,6 +23,10 @@ from com.sun.star.beans import PropertyValue
 from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
+WRITER_MODULE = "com.sun.star.text.TextDocument"
+# a 1x1 PNG, the picture of the image context
+PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
+HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: Text Effects family, Select Similar
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
@@ -47,11 +53,12 @@ def placeholder_count(src):
     return sum(len(entry.get("variants", [None])) for entry in placeholder_entries(src))
 
 
-def placeholder_urls(src):
+def placeholder_urls(src, only=None):
     """Every command URL of the placeholders: the base command, or one per variant."""
     urls = []
     for entry in placeholder_entries(src):
-        urls += [entry["command"] + "?" + v for v in entry.get("variants", [])] or [entry["command"]]
+        if only is None or only(entry):
+            urls += [entry["command"] + "?" + v for v in entry.get("variants", [])] or [entry["command"]]
     return urls
 
 
@@ -176,5 +183,181 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual("keep", document.Text.String)
             self.assertEqual(1, document.CurrentController.PageCount)
             self.assertFalse(document.isModified())
+
+    def test_home_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "writer_home.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(7, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xWriterDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xWriterDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def visible_tabs(self, document):
+        """The names of the ribbon tabs that have a tab on screen.
+
+        The tab list holds every page; a page that the context hides has empty bounds
+        (TabControl::SetPageVisible), which the accessible page reports as a zero width.
+        """
+        xWindow = document.CurrentController.Frame.ContainerWindow
+        xAcc = xWindow.getProperty("XAccessible").getAccessibleContext()
+        while xAcc.getAccessibleParent() is not None:
+            xAcc = xAcc.getAccessibleParent().getAccessibleContext()
+        queue = [xAcc]
+        while queue:
+            xAcc = queue.pop(0)
+            role = xAcc.getAccessibleRole()
+            if role == PAGE_TAB_LIST and xAcc.getAccessibleChildCount() == len(TABS):
+                pages = [xAcc.getAccessibleChild(i).getAccessibleContext() for i in range(len(TABS))]
+                return [page.getAccessibleName() for page in pages if page.getBounds().Width > 0]
+            if role not in (DOCUMENT_TEXT, PARAGRAPH):
+                queue += [xAcc.getAccessibleChild(i).getAccessibleContext()
+                          for i in range(xAcc.getAccessibleChildCount())]
+        self.fail("no tab list with %d tabs in the accessibility tree" % len(TABS))
+
+    def check_home_tab_is_shown(self, document, contextual):
+        """Home has a tab on screen; `contextual` (a tab of the object, or None) proves the context."""
+        if contextual:
+            self.wait_for(lambda: contextual in self.visible_tabs(document), contextual + " tab is not shown", 10)
+        else:
+            self.wait_for(lambda: "Home" in self.visible_tabs(document), "Home tab is not shown", 10)
+            self.assertFalse(CONTEXTUAL & set(self.visible_tabs(document)))
+        self.assertIn("Home", self.visible_tabs(document))
+
+    def test_home_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_home_tab_is_shown(document, None)
+                # table: the cursor in a cell
+                xTable = document.createInstance("com.sun.star.text.TextTable")
+                xTable.initialize(2, 2)
+                document.Text.insertTextContent(document.Text.End, xTable, False)
+                document.CurrentController.ViewCursor.gotoRange(xTable.getCellByName("A1").Start, False)
+                self.check_home_tab_is_shown(document, "Table")
+                # image: a selected picture
+                with tempfile.TemporaryDirectory() as tmp:
+                    picture = Path(tmp) / "pixel.png"
+                    picture.write_bytes(PNG)
+                    xGraphic = document.createInstance("com.sun.star.text.TextGraphicObject")
+                    xGraphic.GraphicURL = picture.as_uri()
+                    xGraphic.AnchorType = uno.Enum("com.sun.star.text.TextContentAnchorType", "AS_CHARACTER")
+                    document.CurrentController.ViewCursor.gotoRange(document.Text.End, False)
+                    document.Text.insertTextContent(document.CurrentController.ViewCursor, xGraphic, False)
+                    document.CurrentController.select(xGraphic)
+                    self.check_home_tab_is_shown(document, "Image")
+                # print preview
+                document.CurrentController.select(document.Text.Start)
+                self.xUITest.executeCommand(".uno:PrintPreview")
+                try:
+                    self.check_home_tab_is_shown(document, "Print")
+                finally:
+                    self.xUITest.executeCommand(".uno:ClosePreview")
+                self.check_home_tab_is_shown(document, None)
+            finally:
+                self.switch_to("Default")
+
+    def test_home_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Text Effects family (5 variants in its menu) and Select Text with Similar Formatting
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in HOME_SLOTS)
+        self.assertEqual(6, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def menu_controller(self, command, resource):
+        """The menu controller of the ribbon dropdown `command` and the awt popup menu it built.
+
+        `resource` is the popup file the ResourceMenuController reads (its "Value")."""
+        xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", self.xContext)
+        xFactory = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
+        self.assertTrue(xFactory.hasController(command, WRITER_MODULE), command)
+        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": WRITER_MODULE,
+                "Value": resource}
+        xController = xFactory.createInstanceWithArgumentsAndContext(
+            command, mkPropertyValues(args), self.xContext)
+        self.assertIsNotNone(xController, command)
+        xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
+        xController.setPopupMenu(xPopup)
+        xController.updatePopupMenu()
+        return xPopup
+
+    def popup_commands(self, xPopup):
+        commands = []
+        for pos in range(xPopup.getItemCount()):
+            command = xPopup.getCommand(xPopup.getItemId(pos))
+            if command:  # separators have none
+                commands.append(command)
+        return commands
+
+    def command_label(self, url):
+        """The label the framework resolves for a command URL (what a menu item shows)."""
+        xDescriptions = self.xContext.getValueByName("/singletons/com.sun.star.frame.theUICommandDescription")
+        props = {p.Name: p.Value for p in xDescriptions.getByName(WRITER_MODULE).getByName(url)}
+        return props["Label"].replace("~", "")
+
+    def test_home_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        effect = ".uno:HomeTextEffect?Effect:string="
+        with self.ui_test.create_doc_in_start_center("writer"):
+            expected = {
+                ("HomeChangeCaseMenu", "home_changecase"): [
+                    ".uno:ChangeCaseToSentenceCase", ".uno:ChangeCaseToLower", ".uno:ChangeCaseToUpper",
+                    ".uno:ChangeCaseToTitleCase", ".uno:ChangeCaseToToggleCase"],
+                ("HomeTextEffectsMenu", "home_texteffects"): [
+                    ".uno:OutlineFont", ".uno:Shadowed"] + [effect + v for v in (
+                        "reflection", "glow", "numberstyles", "ligatures", "stylisticsets")],
+                ("HomeFindMenu", "home_find"): ["vnd.sun.star.findbar:FocusToFindbar", ".uno:SearchDialog",
+                                                ".uno:GotoPage"],
+                ("HomeSelectMenu", "home_select"): [".uno:SelectAll", ".uno:SelectObject",
+                                                    ".uno:HomeSelectSimilar", ".uno:Navigator"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_home_find_menu_starts_with_the_find_toolbar(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            xPopup = self.menu_controller(".uno:HomeFindMenu", "home_find")
+            self.assertEqual("vnd.sun.star.findbar:FocusToFindbar", xPopup.getCommand(xPopup.getItemId(0)))
+
+    def test_home_menu_placeholders_resolve_their_labels_and_are_disabled(self):
+        effect = "HomeTextEffect?Effect:string="
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for value, label in (("reflection", "Reflection"), ("glow", "Glow"), ("numberstyles", "Number Styles"),
+                                 ("ligatures", "Ligatures"), ("stylisticsets", "Stylistic Sets")):
+                self.assertEqual(label, self.command_label(".uno:" + effect + value))
+                self.assertFalse(self.dispatch_enabled(effect + value), value)
+            self.assertEqual("Select Text with Similar Formatting", self.command_label(".uno:HomeSelectSimilar"))
+            self.assertFalse(self.dispatch_enabled("HomeSelectSimilar"))
+            for command, label in (("HomeChangeCaseMenu", "Change Case"),
+                                   ("HomeTextEffectsMenu", "Text Effects and Typography"),
+                                   ("HomeFindMenu", "Find"), ("HomeSelectMenu", "Select")):
+                self.assertEqual(label, self.command_label(".uno:" + command))
+
+    def test_home_dropdown_items_that_are_real_commands_are_enabled(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "Hello world"
+            document.CurrentController.select(document.Text)
+            for name in ("ChangeCaseToLower", "ChangeCaseToUpper", "ChangeCaseToTitleCase", "OutlineFont",
+                         "Shadowed", "SearchDialog", "GotoPage", "SelectAll", "Navigator"):
+                self.assertTrue(self.dispatch_enabled(name), name)
 
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

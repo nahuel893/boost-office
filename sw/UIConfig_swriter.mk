@@ -23,6 +23,10 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/formrichtext \
 	sw/uiconfig/swriter/popupmenu/frame \
 	sw/uiconfig/swriter/popupmenu/graphic \
+	sw/uiconfig/swriter/popupmenu/home_changecase \
+	sw/uiconfig/swriter/popupmenu/home_find \
+	sw/uiconfig/swriter/popupmenu/home_select \
+	sw/uiconfig/swriter/popupmenu/home_texteffects \
 	sw/uiconfig/swriter/popupmenu/insertfield \
 	sw/uiconfig/swriter/popupmenu/media \
 	sw/uiconfig/swriter/popupmenu/notebookbar \
