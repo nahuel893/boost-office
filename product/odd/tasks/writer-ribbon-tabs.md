@@ -132,7 +132,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 |----|------|-------|--------|---------|-----|
 | W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [x] | 12d483db7 (generated), 348ecf587 (code) | high; granted, approved, acknowledged (348ecf587 only) |
 | W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [x] | 6bfb5aae4, c0a315dd2 (Calc UITest fix) | high; declined; independent verifier (FAIL -> fixed); fix: medium, under budget |
-| W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
+| W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | [ ] | | |
 | W3a / W3b | Insert | as W2 | [ ] | | |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
@@ -390,6 +390,29 @@ The controller's rulings can be overturned by the user.
   - Design note: `office.sh <app> <mode>`; the mode is one of light, dark, tabbed, tabbed-light or compact,
     not a theme.
 
+- 2026-10-21, W1 (route: delegated, opus; trigger: C++, `.sdi` and 2+ non-trivial files). Commit 2f510a14f.
+  - Evidence (report: `task-W1-report.md`):
+    - unit tests 365 -> 376, all pass. RED was observed first: the slot test had 8 of 11 failing, and the
+      UITest failed with "no dispatch";
+    - `lo-make.sh sw.build` exits 0;
+    - `test_placeholder_slots_disabled` and `test_tabbed_office_loads` pass, with no soffice left behind;
+    - Calc sha256 values unchanged.
+  - Controller spot check: unit tests OK; the tree is clean after `gen_ribbon.py --all`; no soffice is running.
+  - RDD for the slice 6bfb5aae4..2f510a14f (it includes the W0b UITest fix): medium, budget reached. The
+    user chose "Saltear esta vez". Medium tier with an opus writer: the writer's self-verification and the
+    controller spot check, with no separate verifier.
+  - Rulings:
+    - all 24 slots declare `SfxVoidItem X SLOT ()` with no argument, as Calc's 42 do, because sfx2 ignores
+      an undeclared argument. The brief's "declare the string argument" was wrong;
+    - the registry keeps labels (`label` or `variant_labels`) from design section 5, which differs from
+      Calc's T1. The tab tasks still add the WriterCommands.xcu label nodes.
+  - Notes:
+    - 10 base command names are the same as Calc's (harmless: slot pools and `*Commands.xcu` are per
+      module);
+    - "FN_BOOST+0..+23" appears in comments in four sw files and is not tested;
+    - design 3.3 is confirmed: 737 ids in 20000-25999, the highest 22610;
+    - the new case group is at `viewstat.cxx:130-157`.
+
 ## Next step
 
-W1: the 24 placeholder slots (delegated, opus). Brief: `task-W1-brief.md`.
+W2a: Home layout and behaviour (delegated, sonnet). Brief: `task-W2a-brief.md`.
