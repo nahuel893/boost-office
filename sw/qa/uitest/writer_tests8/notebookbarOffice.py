@@ -316,7 +316,7 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual("keep", document.Text.String)
             self.assertFalse(document.isModified())
 
-    def menu_controller(self, command, resource):
+    def menu_controller(self, command, resource, with_controller=False):
         """The menu controller of the ribbon dropdown `command` and the awt popup menu it built.
 
         `resource` is the popup file the ResourceMenuController reads (its "Value"); None for a menu
@@ -335,7 +335,7 @@ class NotebookbarOffice(UITestCase):
         xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
         xController.setPopupMenu(xPopup)
         xController.updatePopupMenu()
-        return xPopup
+        return (xPopup, xController) if with_controller else xPopup
 
     def popup_commands(self, xPopup):
         commands = []
@@ -539,20 +539,39 @@ class NotebookbarOffice(UITestCase):
             names = [n for n in xStyles.ElementNames if xStyles.getByName(n).IsPhysical]
             self.assertIn("Boost Insert Test", names)
             self.assertGreaterEqual(len(names), 2)
-            for command, uno_command, is_on in ((".uno:InsertHeaderMenu", ".uno:InsertPageHeader", "HeaderIsOn"),
-                                                (".uno:InsertFooterMenu", ".uno:InsertPageFooter", "FooterIsOn")):
-                # the ribbon item's toolbar node names the stock command as its popup (Controller.xcu "Value")
-                xToolbars = self.xContext.ServiceManager.createInstanceWithContext(
-                    "com.sun.star.frame.ToolbarControllerFactory", self.xContext)
-                self.assertTrue(xToolbars.hasController(command, WRITER_MODULE), command)
-                xPopup = self.menu_controller(uno_command, None)
-                commands = self.popup_commands(xPopup)
+            for command, resource, uno_command, is_on in (
+                    (".uno:InsertHeaderMenu", "insert_header", ".uno:InsertPageHeader", "HeaderIsOn"),
+                    (".uno:InsertFooterMenu", "insert_footer", ".uno:InsertPageFooter", "FooterIsOn")):
+                # a plain dropdown: the toolbar node has no "Value", so the button body opens the menu
+                xPopup, xController = self.menu_controller(command, resource, True)
+                self.assertEqual([uno_command], self.popup_commands(xPopup), command)
+                # opening the menu: the controller builds the MenuBarManager, which makes the (still empty)
+                # submenu of the item that has a menu controller of its own
+                event = uno.createUnoStruct("com.sun.star.awt.MenuEvent")
+                event.Source = xPopup
+                xController.itemActivated(event)
+                xSub = xPopup.getPopupMenu(xPopup.getItemId(0))
+                self.assertIsNotNone(xSub, command)
+                self.assertEqual([], self.popup_commands(xSub), command)
+                # activating the submenu is what makes MenuBarManager create the registered menu controller of
+                # the stock command and fill the submenu; do the same here, on that very submenu
+                xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+                    "com.sun.star.frame.Desktop", self.xContext)
+                xFactory = self.xContext.ServiceManager.createInstanceWithContext(
+                    "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
+                self.assertTrue(xFactory.hasController(uno_command, WRITER_MODULE), uno_command)
+                xSubController = xFactory.createInstanceWithArgumentsAndContext(
+                    uno_command, mkPropertyValues({"Frame": xDesktop.getCurrentFrame(), "CommandURL": uno_command,
+                                                   "ModuleIdentifier": WRITER_MODULE}), self.xContext)
+                xSubController.setPopupMenu(xSub)
+                xSubController.updatePopupMenu()
+                commands = self.popup_commands(xSub)
                 for name in names:
                     style = xStyles.getByName(name)
                     toggle = "false" if getattr(style, is_on) else "true"
                     self.assertIn("%s?PageStyle:string=%s&On:bool=%s" % (uno_command, style.DisplayName, toggle),
                                   commands, command + " " + name)
-                texts = [xPopup.getItemText(xPopup.getItemId(pos)) for pos in range(xPopup.getItemCount())]
+                texts = [xSub.getItemText(xSub.getItemId(pos)) for pos in range(xSub.getItemCount())]
                 self.assertIn("Boost Insert Test", texts, command)
 
     def test_insert_dropdown_and_placeholder_labels_resolve(self):

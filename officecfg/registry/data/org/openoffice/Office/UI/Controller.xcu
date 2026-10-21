@@ -1333,6 +1333,34 @@
           <value>insert_textbox</value>
         </prop>
       </node>
+      <node oor:name="InsertHeaderMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertHeaderMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_header</value>
+        </prop>
+      </node>
+      <node oor:name="InsertFooterMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertFooterMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_footer</value>
+        </prop>
+      </node>
       <node oor:name="InsertQuickPartsMenuPopup" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:InsertQuickPartsMenu</value>
@@ -3380,9 +3408,6 @@
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
         </prop>
-        <prop oor:name="Value">
-          <value>.uno:InsertPageHeader</value>
-        </prop>
       </node>
       <node oor:name="InsertFooterMenuControl" oor:op="replace">
         <prop oor:name="Command">
@@ -3393,9 +3418,6 @@
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
-        </prop>
-        <prop oor:name="Value">
-          <value>.uno:InsertPageFooter</value>
         </prop>
       </node>
       <node oor:name="InsertPageNumberMenuControl" oor:op="replace">

@@ -27,6 +27,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/home_find \
 	sw/uiconfig/swriter/popupmenu/home_select \
 	sw/uiconfig/swriter/popupmenu/home_texteffects \
+	sw/uiconfig/swriter/popupmenu/insert_footer \
+	sw/uiconfig/swriter/popupmenu/insert_header \
 	sw/uiconfig/swriter/popupmenu/insert_object \
 	sw/uiconfig/swriter/popupmenu/insert_pagenumber \
 	sw/uiconfig/swriter/popupmenu/insert_quickparts \

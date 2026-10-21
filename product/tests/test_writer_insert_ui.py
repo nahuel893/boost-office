@@ -78,8 +78,8 @@ MENUS = {
     "InsertShapesMenu": ("Shapes", "ResourceMenuController", "insert_shapes",
                          uno("ShapesLineMenu", "BasicShapes", "ArrowShapes", "FlowChartShapes", "StarShapes",
                              "CalloutShapes", "SymbolShapes", "ConnectorToolbox")),
-    "InsertHeaderMenu": ("Header", "HeaderMenuController", None, None),
-    "InsertFooterMenu": ("Footer", "FooterMenuController", None, None),
+    "InsertHeaderMenu": ("Header", "ResourceMenuController", "insert_header", uno("InsertPageHeader")),
+    "InsertFooterMenu": ("Footer", "ResourceMenuController", "insert_footer", uno("InsertPageFooter")),
     "InsertPageNumberMenu": ("Page Number", "ResourceMenuController", "insert_pagenumber",
                              uno("PageNumberWizard", "InsertPageNumberField", "InsertPageCountField")),
     "InsertTextBoxMenu": ("Text Box", "ResourceMenuController", "insert_textbox", uno("DrawText", "VerticalText")),
@@ -89,10 +89,8 @@ MENUS = {
                              + uno("InsertField")),
     "InsertObjectMenu": ("Object", "ResourceMenuController", "insert_object", uno("InsertObject", "InsertDoc")),
 }
-# Header and Footer: the menu controller learns the document from the status of its own command, so it
-# must be built for the stock command. The toolbar node names that command in its "Value"; a Popup node for
-# the new command would stay empty (design section 1 was wrong about "works under a new command name").
-POPUP_COMMAND = {"InsertHeaderMenu": ".uno:InsertPageHeader", "InsertFooterMenu": ".uno:InsertPageFooter"}
+# Header and Footer are plain dropdowns like the rest: the popup file holds the stock page-style command, which
+# the registered HeaderMenuController/FooterMenuController turns into a submenu of the page styles.
 LINE_MENU = uno("Line", "Freeline_Unfilled", "Freeline", "Bezier_Unfilled", "BezierFill", "Polygon_Unfilled",
                 "Polygon_Diagonal_Unfilled", "Polygon_Diagonal")
 PLACEHOLDER_LABELS = {  # URL -> label (design section 5, Insert rows)
@@ -275,14 +273,6 @@ class WriterInsertUiTest(unittest.TestCase):
             ours = [(k, v) for k, v in nodes.items() if v["Command"] == ".uno:" + cmd and v.get("Module") == TEXT_MODULE]
             kinds = {v["Controller"].rsplit(".", 1)[1]: (k, v) for k, v in ours}
             toolbar = kinds["GenericPopupToolbarController"][1]
-            if cmd in POPUP_COMMAND:
-                self.assertEqual({"GenericPopupToolbarController"}, set(kinds), cmd)
-                self.assertEqual(POPUP_COMMAND[cmd], toolbar["Value"], cmd)
-                stock = [v for v in all_controller_nodes() if v["Command"] == POPUP_COMMAND[cmd]
-                         and v["Controller"] == FRAMEWORK + popup]
-                self.assertEqual(1, len(stock), cmd)  # the menu bar's node (Module empty: every module)
-                self.assertEqual("", stock[0]["Module"])
-                continue
             self.assertEqual({popup, "GenericPopupToolbarController"}, set(kinds), cmd)
             self.assertNotIn("Value", toolbar)
             self.assertEqual(resource, kinds[popup][1]["Value"])
@@ -318,19 +308,21 @@ class WriterInsertUiTest(unittest.TestCase):
     def test_popup_files_exist_are_registered_and_list_the_design_items(self):
         mk = read("sw/UIConfig_swriter.mk")
         files = [(r, i) for _l, _c, r, i in MENUS.values() if r]
-        self.assertEqual(5, len(files))
+        self.assertEqual(7, len(files))
         for resource, items in files:
             path = POPUPMENU / (resource + ".xml")
             self.assertTrue(path.exists(), resource)
             self.assertIn("\tsw/uiconfig/swriter/popupmenu/" + resource + " \\\n", mk)
             self.assertEqual(items, self.menu_ids(ET.parse(path).getroot()), resource)
 
-    def test_header_and_footer_have_no_popup_file_their_controllers_list_the_page_styles(self):
-        mk = read("sw/UIConfig_swriter.mk")
-        for cmd in ("InsertHeaderMenu", "InsertFooterMenu"):
-            self.assertIsNone(MENUS[cmd][2])
-        self.assertNotIn("insert_header", mk)
-        self.assertNotIn("insert_footer", mk)
+    def test_header_and_footer_popups_hold_only_the_page_style_item_and_the_buttons_are_not_split(self):
+        nodes = controller_nodes(app="writer")
+        for cmd, item in (("InsertHeaderMenu", ".uno:InsertPageHeader"), ("InsertFooterMenu", ".uno:InsertPageFooter")):
+            self.assertEqual([item], MENUS[cmd][3])
+            toolbar = [v for v in nodes.values() if v["Command"] == ".uno:" + cmd
+                       and v["Controller"].endswith("GenericPopupToolbarController")]
+            self.assertEqual(1, len(toolbar), cmd)
+            self.assertNotIn("Value", toolbar[0], cmd)
 
     def test_the_shapes_line_submenu_lists_its_eight_shapes(self):
         root = ET.parse(POPUPMENU / "insert_shapes.xml").getroot()
