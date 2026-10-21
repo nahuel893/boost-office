@@ -131,7 +131,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
 | W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [x] | 12d483db7 (generated), 348ecf587 (code) | high; granted, approved, acknowledged (348ecf587 only) |
-| W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [ ] | | |
+| W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [x] | 6bfb5aae4, c0a315dd2 (Calc UITest fix) | high; declined; independent verifier (FAIL -> fixed); fix: medium, under budget |
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | [ ] | | |
 | W3a / W3b | Insert | as W2 | [ ] | | |
@@ -354,6 +354,42 @@ The controller's rulings can be overturned by the user.
       fatal. A fix would change the shared `sync_suppr`. Parked.
     - `placeholders.registry("writer")` points to a file that W1 creates.
 
+- 2026-10-20, W0b (route: delegated, opus; trigger: cui C++ and shared scripts, 2+ non-trivial files). Commit
+  6bfb5aae4.
+  - Evidence (report: `task-W0b-report.md`):
+    - unit tests 333 -> 365, all pass (RED observed first);
+    - Calc sha256 values unchanged;
+    - `lo-make.sh cui.build officecfg.build postprocess.build` exits 0;
+    - the Writer UITests `test_tabbed_office_loads` and `test_tab_order` pass, and one Calc UITest passes;
+    - Writer screenshot at 1920 px light: `/mnt/games/libreoffice/assets/previews/writer-ribbon-tabs/w0b/`.
+      Measured Writer tab-bar `x0` = 217.
+  - Controller spot check: 365 OK; the tree is clean after `gen_ribbon.py --all`; the screenshot shows the
+    Boost look on Writer, with the green (Calc) accent until W9.
+  - RDD: high, and the user chose "Saltear esta vez", so the off path applied: an independent verifier
+    (sonnet), report `task-W0b-verify-report.md`.
+    - FAIL, one BLOCKER: the Calc UITest `test_ui_picker_hides_office_variant_in_writer` still expected
+      Tabbed Office to be hidden in Writer.
+    - Controller fix in c0a315dd2: the test now expects the option in Writer; `test_writer_mode.py` covers
+      Impress and Draw. It passes in 20 s.
+    - A version that also opened an Impress document passed, but left soffice hanging on shutdown, twice
+      (stopped by PID).
+    - The verifier's other checks passed:
+      - `calc.sh` parity across 48 dry-run combinations;
+      - the Writer launcher's profile;
+      - the cui helper;
+      - the XCU node;
+      - the shell guards;
+      - the `check-ui.sh` report fix.
+    - The fix commit assessed medium, under budget: it stays pending in the slice.
+  - Parked:
+    - SUGGESTION `cui/source/dialogs/welcomedlg.cxx:139` sets `ActiveCalc` without `GetModeForApp`;
+    - `UpdateImage` tries a per-app picture for every mode;
+    - `test_tab_order` reads labels through the temporary `XAccessible` window property;
+    - the light GTK config folder is shared by Calc and Writer;
+    - clang-format 5.0.0 is missing, so the hook skipped it.
+  - Design note: `office.sh <app> <mode>`; the mode is one of light, dark, tabbed, tabbed-light or compact,
+    not a theme.
+
 ## Next step
 
-W0b: the Writer Tabbed Office mode end to end (delegated, opus). Carry the `check-ui.sh` report fix.
+W1: the 24 placeholder slots (delegated, opus). Brief: `task-W1-brief.md`.
