@@ -135,7 +135,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
-| W3a / W3b | Insert | as W2 | [ ] | | |
+| W3a / W3b | Insert | as W2 | a [x], b [ ] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix) | a: medium, budget reached; granted, approved, acknowledged |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
 | W5a / W5b | References | as W2 | [ ] | | |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
@@ -491,6 +491,43 @@ The controller's rulings can be overturned by the user.
     - the review's task-log WARNING is answered by this entry.
   - For later tabs: a gallery that should flex (for example Design > Style Set) uses `"expand": true`.
 
+- 2026-10-21, W3a (route: delegated, sonnet). Commits:
+  - 016dd7aff: `writer_insert.json` and the generated output;
+  - ff8ce7436: 7 dropdowns, labels, `test_writer_insert_ui.py` and the UITests.
+  - Evidence (report: `task-W3a-report.md`):
+    - unit tests 404 -> 429;
+    - the 9 new UITests pass;
+    - `sw.build officecfg.build postprocess.build` exit 0;
+    - `check-ui.sh` is clean;
+    - Calc is byte-identical.
+  - Design correction:
+    - `HeaderMenuController` and `FooterMenuController` stay empty under a new command name, because they
+      read their document from the status of `.uno:InsertPageHeader` and `.uno:InsertPageFooter`;
+    - W3a's workaround (a `Value` on the ToolBox node) made split buttons whose body did nothing;
+    - controller ruling, without C++: static popups `insert_header.xml` and `insert_footer.xml` hold the
+      `.uno:InsertPageHeader` / `.uno:InsertPageFooter` item, which the registered controller turns into the
+      page-style submenu, as the menu bar does (`menubar.xml:365`).
+  - Fix d677b1cc9 (W3a-fix, delegated, sonnet; report `task-W3a-fix-report.md`): 429 tests OK, the build
+    exits 0, and the Header/Footer UITest passes. That UITest uses UNO only: it builds the popup through
+    ResourceMenuController and the page-style controller.
+  - The layout kind `"split"` means the toolbox item has an arrow, in both Calc and Writer. The controller
+    decides between dropdown-only and a split body.
+  - Controller check: a live GTK click on the Insert tab through `shot-tab.sh` works. Screenshot:
+    `assets/previews/writer-ribbon-tabs/w3a-check/insert-light-1920.png`. It shows Word's groups in order,
+    with the placeholders greyed; several icons are missing until W3b.
+  - Crash, parked for W9:
+    - a UITest `executeAction("CLICK")` on the Insert tab aborted soffice on the headless (svp) backend;
+    - coredump of PID 1742359, 2026-10-21 12:35:55: `Scheduler::CallbackTaskScheduling` -> abort, an
+      exception escaping a scheduled task;
+    - not reproduced with a GTK click.
+  - Review of the slice 016dd7aff..d677b1cc9: medium; the user granted it. One lens (reliability); approved
+    and acknowledged (lineage review-b448768d9a3da881).
+  - Parked:
+    - WARNING: the tests depend on artifacts the candidate does not change (`test_writer_insert_ui.py:19`);
+    - WARNING: names and comments say "split" for Header/Footer and "not split" in a later test
+      (`:72-73`, `:318`). No functional bug;
+    - SUGGESTION: `controller_nodes()` filters Writer nodes by name suffix only (`commands.py:52-66`).
+
 ## Next step
 
-W3a: Insert layout and behaviour (delegated, sonnet). Brief: `task-W3a-brief.md`.
+W3b: Insert icons, 1920 fit, screenshots (delegated, sonnet). Brief: `task-W3b-brief.md`.
