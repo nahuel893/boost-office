@@ -100,7 +100,7 @@
           {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"}
         ]},
         {"id": "DropCap", "style": "small-label", "items": [
-          {"cmd": "FormatDropcap", "office_label": "Drop Cap"}
+          {"cmd": "FormatDropcap", "office_label": "Drop Cap", "icon": "cmd/sc_formatdropcap.png"}
         ]}
       ],
       [

@@ -4805,6 +4805,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:FormatDropcap</property>
+                                        <property name="icon_name">cmd/sc_formatdropcap.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
