@@ -150,6 +150,19 @@ class WriterHomeUiTest(unittest.TestCase):
         shapes = {s["name"]: [len(c) for c in s["columns"]] for s in self.layout["sections"]}
         self.assertEqual(SHAPES, shapes)
 
+    def test_the_styles_gallery_alone_takes_the_free_width_of_home(self):
+        # Word: the Styles gallery is the widest group on Home and the one that flexes, so it
+        # shrinks first (research-word365-ribbon.md, "1920 px fit"). Stock notebookbar.ui does the
+        # same with hexpand on gdHomeStyle and bxHomeStylesPreview and expand on the item.
+        expanding = [b["id"] for s in self.layout["sections"] for b in self.boxes(s) if b.get("expand")]
+        self.assertEqual(["StylesPreview"], expanding)
+        page = ET.fromstring(self.office).find(".//object[@id='pmhbHome']")
+        got = {obj.get("id") for obj in page.iter("object")
+               if [p.text for p in obj.findall("property[@name='hexpand']")] == ["True"]}
+        self.assertEqual({"obHomeStyles", "gdHomeStyles", "gcHomeStyles", "bxHomeStylesPreview"}, got)
+        item = next(c for c in page.iter("child") if c.find("object").get("id") == "btnHomeStylesPreview")
+        self.assertEqual("True", item.find("packing/property[@name='expand']").text)
+
     def test_the_dropdowns_and_split_buttons_are_split_the_rest_are_plain(self):
         for item in self.items():
             expected = "split" if item["cmd"] in SPLITS else "button"

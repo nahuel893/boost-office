@@ -19,6 +19,7 @@ from uitest.framework import UITestCase
 from uitest.uihelper.common import get_state_as_dict
 from libreoffice.uno.propertyvalue import mkPropertyValues
 from com.sun.star.accessibility.AccessibleRole import PAGE_TAB_LIST, DOCUMENT_TEXT, PARAGRAPH
+from com.sun.star.awt.PosSize import SIZE
 from com.sun.star.beans import PropertyValue
 from com.sun.star.frame import XStatusListener
 
@@ -351,6 +352,60 @@ class NotebookbarOffice(UITestCase):
                                    ("HomeTextEffectsMenu", "Text Effects and Typography"),
                                    ("HomeFindMenu", "Find"), ("HomeSelectMenu", "Select")):
                 self.assertEqual(label, self.command_label(".uno:" + command))
+
+    def width(self, xParent, wid):
+        return int(get_state_as_dict(xParent.getChild(wid))["Size"].split("x")[0])
+
+    def settle(self, read, timeout=5):
+        """Process events until read() gives the same value twice in a row; return that value."""
+        xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
+        deadline = time.time() + timeout
+        last = None
+        while time.time() < deadline:
+            xToolkit.processEventsToIdle()
+            value = read()
+            if value == last:
+                break
+            last = value
+            time.sleep(0.1)
+        return last
+
+    def test_home_styles_gallery_takes_the_free_width_and_shrinks_first(self):
+        # Word: the Styles gallery is the widest group on Home and the one that flexes. It gets the
+        # width Home leaves free, and gives it back first when the window narrows: every group stays.
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "writer_home.json").read_text(encoding="utf-8"))
+        sections = ["ob" + layout["id_prefix"] + s["name"] for s in layout["sections"]]
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            xWindow = document.CurrentController.Frame.ContainerWindow
+            old = xWindow.getPosSize()
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+
+                def state():
+                    """(Home page width, gallery width, the Home sections that collapsed)"""
+                    hidden = [s for s in sections
+                              if get_state_as_dict(xWriterDoc.getChild(s))["Visible"] != "true"]
+                    return (self.width(xWriterDoc, "Home Tab"), self.width(xWriterDoc, "bxHomeStylesPreview"),
+                            hidden)
+
+                # The UITest window is about 800 px wide: Home collapses four groups there, the
+                # gallery among them, so the window is set to the widths the design targets.
+                got = {}
+                for size in (1920, 1600, 1366):
+                    xWindow.setPosSize(0, 0, size, 900, SIZE)
+                    got[size] = self.settle(state)
+                for size, (page, gallery, hidden) in got.items():
+                    self.assertEqual([], hidden, "%d: Home collapses (page %d, gallery %d px)" % (size, page, gallery))
+                # at 1920 px, room for at least 5 style previews (100 px each, StylesPreviewWindow.cxx)
+                self.assertGreaterEqual(got[1920][1], 5 * 100, got)
+                # the gallery gives back every pixel the page loses, before any group collapses
+                for size in (1600, 1366):
+                    self.assertEqual(got[1920][0] - got[size][0], got[1920][1] - got[size][1], got)
+            finally:
+                xWindow.setPosSize(old.X, old.Y, old.Width, old.Height, SIZE)
+                self.switch_to("Default")
 
     def test_home_dropdown_items_that_are_real_commands_are_enabled(self):
         with self.ui_test.create_doc_in_start_center("writer") as document:

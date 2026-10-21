@@ -3576,6 +3576,7 @@
                       <object class="VclOptionalBox" id="obHomeStyles">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
                         <child>
                           <!-- n-columns=2 n-rows=2 -->
                           <object class="GtkGrid" id="gdHomeStyles">
@@ -3587,6 +3588,7 @@
                             <property name="margin-bottom">6</property>
                             <property name="row-spacing">3</property>
                             <property name="column-spacing">3</property>
+                            <property name="hexpand">True</property>
                             <child>
                               <!-- n-columns=1 n-rows=3 -->
                               <object class="GtkGrid" id="gcHomeStyles">
@@ -3595,10 +3597,12 @@
                                 <property name="vexpand">True</property>
                                 <property name="row-spacing">3</property>
                                 <property name="column-spacing">3</property>
+                                <property name="hexpand">True</property>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxHomeStylesPreview">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="hexpand">True</property>
                                     <property name="valign">center</property>
                                     <property name="vexpand">True</property>
                                     <property name="toolbar-style">both</property>
@@ -3611,7 +3615,7 @@
                                         <property name="action-name">.uno:StylesPreview</property>
                                       </object>
                                       <packing>
-                                        <property name="expand">False</property>
+                                        <property name="expand">True</property>
                                         <property name="homogeneous">False</property>
                                       </packing>
                                     </child>

@@ -79,7 +79,7 @@
     ]},
     {"name": "Styles", "caption": "Styles", "rows": 3, "columns": [
       [
-        {"id": "StylesPreview", "style": "large", "items": [
+        {"id": "StylesPreview", "style": "large", "expand": true, "items": [
           {"cmd": "StylesPreview", "office_label": "Styles"}
         ]}
       ]
