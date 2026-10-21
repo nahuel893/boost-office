@@ -136,7 +136,7 @@ translations; T10 (a pending decision).
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
-| W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [ ] | a: 2bb1f6dbf (layout + generated), 404294f79 (code) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged |
+| W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
 | W5a / W5b | References | as W2 | [ ] | | |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
 | W7a / W7b | Review | as W2 | [ ] | | |
@@ -586,7 +586,28 @@ The controller's rulings can be overturned by the user.
     - SUGGESTION: the `NEW_LABELS` comment says five label nodes, the dict holds four
       (`test_writer_layout_ui.py:97-99`); PageAreaDialog is asserted by the Design test.
 
+- 2026-10-21, W4b (route: delegated, sonnet; the fix inline). Commits:
+  - 2ef03d924: the Design and Layout icons, and the icon test extended to both tabs;
+  - ebd26872f (controller, inline): the Style Set placeholder loses `expand`. At 1920 the expanded greyed box
+    left an empty gap mid-group and pushed Colors, Fonts and Page Background to the far right. Screenshot
+    after: `assets/previews/writer-ribbon-tabs/w4b-fix/light-design-1920.png`.
+  - Evidence (report: `task-W4b-report.md`):
+    - RED: 50 missing icon members on Design and 64 on Layout; GREEN: 478 tests OK;
+    - the Style Set fix: RED on the renamed expand test, then 478 OK; `check-ui.sh` and `lo-make.sh sw.build`
+      exit 0;
+    - Calc is byte-identical; `check-ui.sh`, the build and the Layout UITest pass.
+  - Explicit icons: the six Design placeholders need an `"icon"` in the JSON, because their URLs carry a `?`
+    argument. Large controls must point at `cmd/32/...`; a `cmd/sc_` name renders 16 px in a large slot.
+  - Glyphs without a Fluent match: Hyphenation uses `text_align_justify`, Position `layout_cell_four`.
+  - Fit: both tabs fit at 1920. Design never collapses. On Layout, at 1600 and 1366, the whole Arrange group
+    moves behind `>>`: it is the rightmost group, as in Word, but LibreOffice cannot collapse inside a group.
+  - Breaks: a click on the button body opens the menu (`w4b/light-layout-1920-breaks-menu.png`).
+  - Spin fields: readable, 191 and 199 px wide, about 2.7 times Word's. Parked for W9.
+  - Controller look at light Design and Layout 1920: icons and sections are right; labels are LibreOffice's
+    ("Theme", "Page Area", "Anchor Menu", "Navigator"), which T9w fixes.
+  - RDD for 404294f79..ebd26872f: medium, under budget. It stays pending in the slice.
+
 ## Next step
 
-W4b: Design and Layout icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W4b-brief.md`.
-Then T9w (Office labels, Calc and Writer), before W5a, so later tabs start with the right labels.
+T9w: Office labels on the Calc and Writer ribbons (delegated, opus). Brief: `task-T9w-brief.md`. It goes before
+W5a, so the later tabs start with the right labels.
