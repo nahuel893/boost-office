@@ -133,7 +133,8 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [x] | 12d483db7 (generated), 348ecf587 (code) | high; granted, approved, acknowledged (348ecf587 only) |
 | W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [x] | 6bfb5aae4, c0a315dd2 (Calc UITest fix) | high; declined; independent verifier (FAIL -> fixed); fix: medium, under budget |
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
-| W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [ ] | a: 38c1b440e (layout + generated), ee9c5bafd (code) | a: medium, budget reached; declined (writer self-check + controller spot check) |
+| W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
+| W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [ ] | | |
 | W3a / W3b | Insert | as W2 | [ ] | | |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
 | W5a / W5b | References | as W2 | [ ] | | |
@@ -437,6 +438,24 @@ The controller's rulings can be overturned by the user.
       from a UITest;
     - the Styles gallery does not expand horizontally; the fit is measured in W2b.
 
+- 2026-10-21, W2b (route: delegated, sonnet). Commit 1ff462bc9: the Home icons, plus
+  `product/tests/test_writer_icons.py`.
+  - Evidence (report: `task-W2b-report.md`):
+    - RED: 1 failure, 42 missing icon members across 21 commands;
+    - GREEN: 400 tests OK;
+    - the icon build and install exit 0;
+    - `writer_home.json` is unchanged, so there is no layout commit.
+  - Fit: the tab is about 1125 px wide, so it fits at 1920, 1600 and 1366 with nothing collapsing. The
+    collapse order is never exercised.
+  - Screenshots: `/mnt/games/libreoffice/assets/previews/writer-ribbon-tabs/w2b/`, light and dark at 1920,
+    1600 and 1366.
+  - Controller check of light-1920: the groups are Undo, Clipboard, Font, Paragraph, Styles, Editing and
+    Editor, with thin Boost icons. Defect: the Styles gallery is 70 px wide and clips the names.
+  - New task W2c, ruled by the controller:
+    - the gallery's width is `width-request` 70 in `svx/uiconfig/ui/stylespreview.ui:37`;
+    - Word shows a wide gallery that shrinks first;
+    - it is fixed now, because Home is the first tab the user judges.
+
 ## Next step
 
-W2b: Home icons, 1920 fit, screenshots (delegated, sonnet). Brief: `task-W2b-brief.md`.
+W2c: the Home Styles gallery width (delegated, opus). Brief: `task-W2c-brief.md`.
