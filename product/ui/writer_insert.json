@@ -1,0 +1,129 @@
+{
+  "page": "Insert Tab",
+  "id_prefix": "Insert",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu Insert"],
+  "sections": [
+    {"name": "Pages", "caption": "Pages", "rows": 3, "columns": [
+      [
+        {"id": "CoverPage", "style": "small-label", "items": [
+          {"cmd": "TitlePageDialog", "office_label": "Cover Page"}
+        ]},
+        {"id": "BlankPage", "style": "small-label", "items": [
+          {"cmd": "InsertBlankPage", "office_label": "Blank Page"}
+        ]},
+        {"id": "PageBreak", "style": "small-label", "items": [
+          {"cmd": "InsertPagebreak", "office_label": "Page Break"}
+        ]}
+      ]
+    ]},
+    {"name": "Tables", "caption": "Tables", "rows": 3, "columns": [
+      [
+        {"id": "Table", "style": "large", "items": [
+          {"cmd": "InsertTable", "kind": "split", "office_label": "Table"}
+        ]}
+      ]
+    ]},
+    {"name": "Illustrations", "caption": "Illustrations", "rows": 3, "columns": [
+      [
+        {"id": "Pictures", "style": "large", "items": [
+          {"cmd": "InsertGraphic", "office_label": "Pictures"}
+        ]}
+      ],
+      [
+        {"id": "Shapes", "style": "small-label", "items": [
+          {"cmd": "InsertShapesMenu", "kind": "split", "office_label": "Shapes"}
+        ]},
+        {"id": "Icons", "style": "small-label", "items": [
+          {"cmd": "Gallery", "office_label": "Icons"}
+        ]},
+        {"id": "Models3D", "style": "small-label", "items": [
+          {"cmd": "Insert3DModels", "office_label": "3D Models"}
+        ]}
+      ],
+      [
+        {"id": "SmartArt", "style": "small-label", "items": [
+          {"cmd": "InsertSmartArt", "office_label": "SmartArt"}
+        ]},
+        {"id": "Chart", "style": "small-label", "items": [
+          {"cmd": "InsertObjectChart", "office_label": "Chart"}
+        ]},
+        {"id": "Screenshot", "style": "small-label", "items": [
+          {"cmd": "InsertScreenshot", "office_label": "Screenshot"}
+        ]}
+      ]
+    ]},
+    {"name": "Links", "caption": "Links", "rows": 3, "columns": [
+      [
+        {"id": "Link", "style": "small-label", "items": [
+          {"cmd": "HyperlinkDialog", "office_label": "Link"}
+        ]},
+        {"id": "Bookmark", "style": "small-label", "items": [
+          {"cmd": "InsertBookmark", "office_label": "Bookmark"}
+        ]},
+        {"id": "CrossReference", "style": "small-label", "items": [
+          {"cmd": "InsertReferenceField", "office_label": "Cross-reference"}
+        ]}
+      ]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [
+        {"id": "Comment", "style": "large", "items": [
+          {"cmd": "InsertAnnotation", "office_label": "Comment"}
+        ]}
+      ]
+    ]},
+    {"name": "HeaderFooter", "caption": "Header & Footer", "rows": 3, "columns": [
+      [
+        {"id": "Header", "style": "small-label", "items": [
+          {"cmd": "InsertHeaderMenu", "kind": "split", "office_label": "Header"}
+        ]},
+        {"id": "Footer", "style": "small-label", "items": [
+          {"cmd": "InsertFooterMenu", "kind": "split", "office_label": "Footer"}
+        ]},
+        {"id": "PageNumber", "style": "small-label", "items": [
+          {"cmd": "InsertPageNumberMenu", "kind": "split", "office_label": "Page Number"}
+        ]}
+      ]
+    ]},
+    {"name": "Text", "caption": "Text", "rows": 3, "columns": [
+      [
+        {"id": "TextBox", "style": "large", "items": [
+          {"cmd": "InsertTextBoxMenu", "kind": "split", "office_label": "Text Box"}
+        ]}
+      ],
+      [
+        {"id": "QuickParts", "style": "small-label", "items": [
+          {"cmd": "InsertQuickPartsMenu", "kind": "split", "office_label": "Quick Parts"}
+        ]},
+        {"id": "WordArt", "style": "small-label", "items": [
+          {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"}
+        ]},
+        {"id": "DropCap", "style": "small-label", "items": [
+          {"cmd": "FormatDropcap", "office_label": "Drop Cap"}
+        ]}
+      ],
+      [
+        {"id": "SignatureLine", "style": "small-label", "items": [
+          {"cmd": "InsertSignatureLine", "office_label": "Signature Line"}
+        ]},
+        {"id": "DateTime", "style": "small-label", "items": [
+          {"cmd": "InsertDateField", "office_label": "Date & Time"}
+        ]},
+        {"id": "Object", "style": "small-label", "items": [
+          {"cmd": "InsertObjectMenu", "kind": "split", "office_label": "Object"}
+        ]}
+      ]
+    ]},
+    {"name": "Symbols", "caption": "Symbols", "rows": 3, "columns": [
+      [
+        {"id": "Equation", "style": "small-label", "items": [
+          {"cmd": "InsertObjectStarMath", "office_label": "Equation"}
+        ]},
+        {"id": "Symbol", "style": "small-label", "items": [
+          {"cmd": "CharmapControl", "kind": "split", "office_label": "Symbol"}
+        ]}
+      ]
+    ]}
+  ]
+}
