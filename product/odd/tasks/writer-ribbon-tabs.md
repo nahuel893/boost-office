@@ -135,7 +135,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
-| W3a / W3b | Insert | as W2 | a [x], b [ ] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix) | a: medium, budget reached; granted, approved, acknowledged |
+| W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
 | W5a / W5b | References | as W2 | [ ] | | |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
@@ -528,6 +528,24 @@ The controller's rulings can be overturned by the user.
       (`:72-73`, `:318`). No functional bug;
     - SUGGESTION: `controller_nodes()` filters Writer nodes by name suffix only (`commands.py:52-66`).
 
+- 2026-10-21, W3b (route: delegated, sonnet). Commits:
+  - 3bffe89ad: the Insert icons, and the icon test extended through a shared mixin;
+  - 2b97b23ff: an explicit Drop Caps icon in `writer_insert.json`. The manifest entry alone showed no icon;
+    the root cause is unknown.
+  - Evidence (report: `task-W3b-report.md`):
+    - RED: 66 missing icon members across 15 commands;
+    - GREEN: 431 tests OK;
+    - the build, `check-ui.sh` and the Insert UITest pass;
+    - Calc is byte-identical.
+  - Fit: the tab is about 1228 px, so nothing collapses at 1920, 1600 or 1366.
+  - Live check: a GTK click on the Header button body opens the menu, and its submenu lists the page styles.
+    Screenshots `light-1920-header-menu.png` and `-submenu.png` in `assets/previews/writer-ribbon-tabs/w3b/`;
+    the controller looked at the submenu shot.
+  - Labels: the ribbon shows LibreOffice's labels (Title Page, Insert Fontwork, Date (fixed), Formula
+    Object), not Word's `office_label`. This is T9, a pending user decision. Blank Page is greyed because
+    it is a placeholder (design section 5).
+  - RDD for b2b3346bd..2b97b23ff: medium, under budget. It stays pending in the slice.
+
 ## Next step
 
-W3b: Insert icons, 1920 fit, screenshots (delegated, sonnet). Brief: `task-W3b-brief.md`.
+W4a: Design (new page) and Layout, layout and behaviour (delegated, sonnet). Brief: `task-W4a-brief.md`.
