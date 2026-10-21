@@ -678,6 +678,8 @@ Today `product/ui/gen_ribbon.py` is Calc-only in five places: `TABS_FILE` (`:39`
   `gb_UIConfig_add_popupmenufiles` (`sw/UIConfig_swriter.mk:17-34`).
 - **Suppressions**: `solenv/sanitizers/ui/modules/swriter.suppr` has 384 lines for the stock `notebookbar.ui` and
   none for an office file; `swriter.false` has 713 stock lines. W0a seeds copies of both with the office path.
+  Only 277 of those 713 lines name widgets that still exist in the stock `notebookbar.ui`, so `swriter.false`
+  gets 277 office lines (W0a, 2026-10-20).
   `sync_suppr` (`gen_ribbon.py:461-481`) handles only the `.suppr`; the Writer run also drops `.false` lines whose id
   is gone. `product/dev/check-ui.sh:9-10` hard-codes the Calc files and picks them by app instead.
 - **Test tooling per app**: `product/tests/office.py:10-14` keeps its Calc names as aliases (other modules import

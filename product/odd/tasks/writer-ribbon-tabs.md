@@ -130,7 +130,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
-| W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [ ] | | |
+| W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [x] | 12d483db7 (generated), 348ecf587 (code) | high; granted, approved, acknowledged (348ecf587 only) |
 | W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [ ] | | |
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | [ ] | | |
@@ -314,7 +314,46 @@ The controller's rulings can be overturned by the user.
 
 - 2026-10-20: design and plan drafted (D1) and committed by the controller with the answers. Research and code map: `research-word365-ribbon.md`, `map-M1.md` in the
   SDD workspace.
+- 2026-10-20, W0a (route: delegated, opus; trigger: shared generator and 2+ non-trivial files). Writer's first
+  commit was 51a072cd5. The controller split it into 12d483db7 and 348ecf587; the tree is unchanged.
+  - Evidence (report: `task-W0a-report.md`):
+    - unit tests 318 -> 333, all pass (RED observed first);
+    - the Calc sha256 values of `notebookbar_office.ui`, `scalc.suppr` and `scalc.false` are the same before
+      and after `gen_ribbon.py --all`;
+    - `check-ui.sh`: Writer has 0 new warnings and 0 new fatals; Calc's output is identical;
+    - `lo-make.sh sw.build` exits 0, and `git show --check` is clean.
+  - Controller spot check: after `gen_ribbon.py --all` the tracked tree is clean, and 333 tests pass.
+  - Why the split:
+    - the review of the whole commit stopped with `lens_context_budget_exceeded`, because the generated `.ui`
+      has 15261 lines;
+    - 12d483db7 holds only the generated output and its 6-line input, `writer_tabs.json`. Its bytes are
+      checked by `test_writer_tabs.py` (generator output == committed file), by `check-ui.sh` and by the
+      sw build;
+    - 348ecf587 holds the authored code, and the native review covered it (high risk, 4 lenses).
+  - The LibreOffice pre-commit hook has a bug: its `.ui` exemption never matches (`-z` input), so a commit
+    whose first added file is the 840 KB `.ui` is refused. The `writer_tabs.json` file in 12d483db7 sorts
+    first.
+  - Review (lineage review-932185ac1739a545): approved and acknowledged, with no blockers.
+  - Parked advisory findings:
+    - WARNING `check-ui.sh:16-22`: the shared temp report is not cleared between gla11y runs, so a failed run
+      reprints the previous file's report. Fix it in W0b, which touches `check-ui.sh` again.
+    - WARNING `sw/UIConfig_swriter.mk:254`: "Writer files not in the manifest". This is a false positive: they
+      are in the base commit 12d483db7.
+    - SUGGESTIONS:
+      - `gen_ribbon.py` writes each app's files one by one, not all at once (`:520-524`);
+      - an ignored return value (`:542-545`);
+      - the app record is built from positional fields (`:54-60`);
+      - `:49`;
+      - `check-ui.sh:11-15`;
+      - the alias in `commands.py:19` has no explanation;
+      - duplicated literals in `test_writer_tabs.py:21-23`.
+  - Worker concerns:
+    - `swriter.false` keeps 277 office lines, not 713: 436 stock lines name widgets that are gone. Design
+      section 3.1 is corrected.
+    - 20 office lines in `swriter.suppr` show as unused, because gla11y checks `.false` first. This is not
+      fatal. A fix would change the shared `sync_suppr`. Parked.
+    - `placeholders.registry("writer")` points to a file that W1 creates.
 
 ## Next step
 
-W0a: the generator and test tooling for two apps (delegated, opus).
+W0b: the Writer Tabbed Office mode end to end (delegated, opus). Carry the `check-ui.sh` report fix.
