@@ -239,6 +239,26 @@
     {"name": "viewsidebyside_sync", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]},
     {"name": "viewsidebyside_reset", "layers": [{"glyph": "arrow_reset"}]},
     {"name": "viewswitchwindowsmenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "tab_desktop_multiple"}]},
-    {"name": "viewmacrosmenu", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "code"}]}
+    {"name": "viewmacrosmenu", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "code"}]},
+    {"name": "leftpara", "layers": [{"glyph": "text_align_left"}]},
+    {"name": "centerpara", "layers": [{"glyph": "text_align_center"}]},
+    {"name": "rightpara", "layers": [{"glyph": "text_align_right"}]},
+    {"name": "justifypara", "layers": [{"glyph": "text_align_justify"}]},
+    {"name": "linespacing", "layers": [{"glyph": "text_line_spacing"}]},
+    {"name": "subscript", "layers": [{"glyph": "text_subscript"}]},
+    {"name": "superscript", "layers": [{"glyph": "text_superscript"}]},
+    {"name": "defaultbullet", "layers": [{"glyph": "text_bullet_list"}]},
+    {"name": "defaultnumbering", "layers": [{"glyph": "text_number_list_ltr"}]},
+    {"name": "setoutline", "layers": [{"glyph": "text_bullet_list_tree"}]},
+    {"name": "sortdialog", "layers": [{"glyph": "text_sort_ascending"}]},
+    {"name": "controlcodes", "layers": [{"glyph": "text_paragraph"}]},
+    {"name": "borderdialog", "layers": [{"glyph": "border_all"}]},
+    {"name": "homechangecasemenu", "layers": [{"glyph": "text_change_case"}]},
+    {"name": "hometexteffectsmenu", "layers": [{"glyph": "text_effects"}]},
+    {"name": "homefindmenu", "layers": [{"glyph": "search"}]},
+    {"name": "homeselectmenu", "layers": [{"glyph": "cursor"}]},
+    {"name": "charbackcolor", "fill": {"color": "fill_yellow"}, "stripe": true, "layers": [{"glyph": "highlight"}]},
+    {"name": "stylespreview", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_edit_style"}]},
+    {"name": "spellingandgrammardialog", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "text_proofing_tools"}]}
   ]
 }
