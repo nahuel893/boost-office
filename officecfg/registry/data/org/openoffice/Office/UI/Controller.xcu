@@ -1389,6 +1389,104 @@
           <value>insert_object</value>
         </prop>
       </node>
+      <node oor:name="LayoutBreaksMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:LayoutBreaksMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_breaks</value>
+        </prop>
+      </node>
+      <node oor:name="LayoutWrapTextMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:LayoutWrapTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_wraptext</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBringForwardMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBringForwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_bringforward</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSendBackwardMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSendBackwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_sendbackward</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutAlignMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutAlignMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_align</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutGroupMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutGroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_group</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutRotateMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutRotateMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>layout_rotate</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3456,6 +3554,83 @@
       <node oor:name="InsertObjectMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:InsertObjectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="LayoutBreaksMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:LayoutBreaksMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="LayoutWrapTextMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:LayoutWrapTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutBringForwardMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutBringForwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutSendBackwardMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutSendBackwardMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutAlignMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutAlignMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutGroupMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutGroupMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="PageLayoutRotateMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:PageLayoutRotateMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.text.TextDocument</value>

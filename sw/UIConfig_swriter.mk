@@ -35,6 +35,13 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/insert_shapes \
 	sw/uiconfig/swriter/popupmenu/insert_textbox \
 	sw/uiconfig/swriter/popupmenu/insertfield \
+	sw/uiconfig/swriter/popupmenu/layout_align \
+	sw/uiconfig/swriter/popupmenu/layout_breaks \
+	sw/uiconfig/swriter/popupmenu/layout_bringforward \
+	sw/uiconfig/swriter/popupmenu/layout_group \
+	sw/uiconfig/swriter/popupmenu/layout_rotate \
+	sw/uiconfig/swriter/popupmenu/layout_sendbackward \
+	sw/uiconfig/swriter/popupmenu/layout_wraptext \
 	sw/uiconfig/swriter/popupmenu/media \
 	sw/uiconfig/swriter/popupmenu/notebookbar \
 	sw/uiconfig/swriter/popupmenu/oleobject \

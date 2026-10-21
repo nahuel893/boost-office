@@ -29,12 +29,13 @@ WRITER_MODULE = "com.sun.star.text.TextDocument"
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: Text Effects family, Select Similar
 INSERT_SLOTS = (2, 3, 4, 5)  # Blank Page, 3D Models, SmartArt, Screenshot
+DESIGN_SLOTS = (6, 7)  # the Themes/Fonts/Effects family and the Style Set/Paragraph Spacing/Set as Default family
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
 # W8a reaches Word's order. Table .. Form are the contextual tabs: they only show with their object.
-TABS = [("File", "File Tab"), ("Home", "Home Tab"), ("Insert", "Insert Tab"), ("Layout", "Layout Tab"),
-        ("References", "References Tab"), ("Review", "Review Tab"), ("View", "View Tab"),
+TABS = [("File", "File Tab"), ("Home", "Home Tab"), ("Insert", "Insert Tab"), ("Design", "Design Tab"),
+        ("Layout", "Layout Tab"), ("References", "References Tab"), ("Review", "Review Tab"), ("View", "View Tab"),
         ("Table", "Table Tab"), ("Image", "Image Tab"), ("Draw", "Draw Tab"), ("Object", "Object Tab"),
         ("Media", "Media Tab"), ("Print", "Print Tab"), ("Form", "Form Tab"),
         ("Extension", "Extension Tab"), ("Tools", "Tools Tab")]
@@ -590,6 +591,204 @@ class NotebookbarOffice(UITestCase):
                          "InsertReferenceField", "InsertAnnotation", "DrawText", "VerticalText", "EditGlossary",
                          "InsertField", "InsertDateField", "InsertObject", "InsertDoc", "PageNumberWizard",
                          "InsertPageNumberField", "InsertPageCountField", "HyperlinkDialog", "InsertTable"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def check_sections_and_toolboxes(self, layout_file, section_count):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / layout_file).read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(section_count, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xWriterDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xWriterDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_design_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_design.json", 2)
+
+    def test_design_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Design")
+            finally:
+                self.switch_to("Default")
+
+    def test_design_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Themes/Fonts/Effects family and the Style Set/Paragraph Spacing/Set as Default family
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in DESIGN_SLOTS)
+        self.assertEqual(6, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_design_commands_that_are_real_are_enabled_and_the_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("ThemeDialog", "Watermark", "PageAreaDialog", "PageDialog"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+            for url, label in ((".uno:PageAreaDialog", "Page Area..."),
+                               (".uno:PageLayoutThemePart?Part:string=themes", "Themes"),
+                               (".uno:PageLayoutThemePart?Part:string=fonts", "Fonts"),
+                               (".uno:PageLayoutThemePart?Part:string=effects", "Effects"),
+                               (".uno:DesignStyleSet?Action:string=gallery", "Style Set"),
+                               (".uno:DesignStyleSet?Action:string=spacing", "Paragraph Spacing"),
+                               (".uno:DesignStyleSet?Action:string=setdefault", "Set as Default")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_layout_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_layout.json", 3)
+
+    def test_layout_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Layout")
+            finally:
+                self.switch_to("Default")
+
+    def test_layout_paragraph_spin_fields_render(self):
+        # the controllers registered in swmodule.cxx:278-281 draw the four fields (stock pattern,
+        # notebookbar.ui:5443-5447); an item that is only a button is a few dozen px wide, a spin field is wider
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            xWindow = document.CurrentController.Frame.ContainerWindow
+            old = xWindow.getPosSize()
+            try:
+                xWindow.setPosSize(0, 0, 1920, 900, SIZE)
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+
+                def spin_sizes():
+                    sizes = {}
+                    for name in ("LeftParaMargin", "RightParaMargin", "AboveSpacing", "BelowSpacing"):
+                        xBox = xWriterDoc.getChild("bxLayout" + name)
+                        items = [c for c in xBox.getChildren() if c.startswith("toolboxitem-")]
+                        self.assertEqual(1, len(items), name)
+                        state = get_state_as_dict(xBox.getChild(items[0]))
+                        sizes[name] = (int(state["Width"]), int(state["Height"]))
+                    return sizes
+
+                sizes = self.settle(spin_sizes)
+                for name, (width, height) in sizes.items():
+                    self.assertGreaterEqual(width, 60, "%s is not a spin field: %s" % (name, sizes))
+                    self.assertGreater(height, 0, name)
+            finally:
+                xWindow.setPosSize(old.X, old.Y, old.Width, old.Height, SIZE)
+                self.switch_to("Default")
+
+    def select_rectangle(self, document):
+        """A rectangle shape in the text, selected: the context of the Arrange menus."""
+        xShape = document.createInstance("com.sun.star.drawing.RectangleShape")
+        xShape.Size = uno.createUnoStruct("com.sun.star.awt.Size", 3000, 2000)
+        xShape.AnchorType = uno.Enum("com.sun.star.text.TextContentAnchorType", "AT_PARAGRAPH")
+        document.DrawPage.add(xShape)
+        document.CurrentController.select(xShape)
+        return xShape
+
+    def test_layout_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            expected = {
+                ("LayoutBreaksMenu", "layout_breaks"): [
+                    ".uno:InsertPagebreak", ".uno:InsertColumnBreak", ".uno:InsertLinebreak",
+                    ".uno:InsertBreak", ".uno:InsertSection"],
+                ("LayoutWrapTextMenu", "layout_wraptext"): [
+                    ".uno:SetAnchorToChar", ".uno:WrapOn", ".uno:WrapContour", ".uno:WrapOff",
+                    ".uno:WrapThroughTransparent", ".uno:WrapThrough", ".uno:ContourDialog", ".uno:TextWrap"],
+                ("PageLayoutBringForwardMenu", "layout_bringforward"): [
+                    ".uno:ObjectForwardOne", ".uno:BringToFront", ".uno:SetObjectToForeground"],
+                ("PageLayoutSendBackwardMenu", "layout_sendbackward"): [
+                    ".uno:ObjectBackOne", ".uno:SendToBack", ".uno:SetObjectToBackground"],
+                ("PageLayoutAlignMenu", "layout_align"): [
+                    ".uno:ObjectAlignLeft", ".uno:AlignCenter", ".uno:ObjectAlignRight", ".uno:AlignUp",
+                    ".uno:AlignMiddle", ".uno:AlignDown"],
+                ("PageLayoutGroupMenu", "layout_group"): [".uno:FormatGroup", ".uno:FormatUngroup"],
+                ("PageLayoutRotateMenu", "layout_rotate"): [
+                    ".uno:RotateRight", ".uno:RotateLeft", ".uno:FlipVertical", ".uno:FlipHorizontal",
+                    ".uno:TransformDialog"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_layout_menus_group_their_items_with_separators(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for command, resource, shape in (
+                    ("LayoutBreaksMenu", "layout_breaks", [True, True, True, False, True, True]),
+                    ("LayoutWrapTextMenu", "layout_wraptext", [True] * 6 + [False] + [True] * 2),
+                    ("PageLayoutRotateMenu", "layout_rotate", [True] * 4 + [False, True])):
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                got = [bool(xPopup.getCommand(xPopup.getItemId(pos))) for pos in range(xPopup.getItemCount())]
+                self.assertEqual(shape, got, command)
+
+    def test_layout_arrange_menus_list_their_items_with_a_shape_selected(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.select_rectangle(document)
+            for command, resource, enabled in (
+                    ("LayoutWrapTextMenu", "layout_wraptext",
+                     ["WrapOn", "WrapContour", "WrapOff", "WrapThroughTransparent", "WrapThrough", "TextWrap"]),
+                    ("PageLayoutBringForwardMenu", "layout_bringforward",
+                     ["ObjectForwardOne", "BringToFront"]),
+                    ("PageLayoutSendBackwardMenu", "layout_sendbackward",
+                     ["ObjectBackOne", "SendToBack"]),
+                    ("PageLayoutAlignMenu", "layout_align",
+                     ["ObjectAlignLeft", "AlignCenter", "ObjectAlignRight", "AlignUp", "AlignMiddle", "AlignDown"]),
+                    # Group needs two shapes and Ungroup a group: both are listed, neither is enabled for one
+                    ("PageLayoutGroupMenu", "layout_group", []),
+                    ("PageLayoutRotateMenu", "layout_rotate", ["TransformDialog"])):
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                listed = self.popup_commands(xPopup)
+                self.assertTrue(listed, command)
+                for name in enabled:
+                    self.assertIn(".uno:" + name, listed, command)
+                # the draw shell takes over the selection on idle; ask again until every item reports enabled
+                xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
+                state = {}
+                deadline = time.time() + 10
+                while time.time() < deadline:
+                    xToolkit.processEventsToIdle()
+                    state = {name: self.dispatch_enabled(name) for name in enabled}
+                    if all(state.values()):
+                        break
+                self.assertEqual({name: True for name in enabled}, state, command + " with a shape selected")
+            self.assertTrue(self.dispatch_enabled("AnchorMenu"))
+            # In Front of / Behind Text toggle the layer of the shape (drawsh.sdi:285, :292): the one it is not in
+            # is enabled
+            self.assertNotEqual(self.dispatch_enabled("SetObjectToForeground"),
+                                self.dispatch_enabled("SetObjectToBackground"))
+            # Rotate Left/Right serve images only (sw/sdi/_grfsh.sdi:75, :89)
+            self.assertFalse(self.dispatch_enabled("RotateLeft"))
+            self.assertFalse(self.dispatch_enabled("RotateRight"))
+
+    def test_layout_dropdown_and_new_label_commands_resolve_their_labels(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for command, label in (("LayoutBreaksMenu", "Breaks"), ("LayoutWrapTextMenu", "Wrap Text"),
+                                   ("PageLayoutBringForwardMenu", "Bring Forward"),
+                                   ("PageLayoutSendBackwardMenu", "Send Backward"), ("PageLayoutAlignMenu", "Align"),
+                                   ("PageLayoutGroupMenu", "Group"), ("PageLayoutRotateMenu", "Rotate"),
+                                   ("LeftParaMargin", "Before Text Indent"), ("RightParaMargin", "After Text Indent"),
+                                   ("AboveSpacing", "Above Paragraph Spacing"),
+                                   ("BelowSpacing", "Below Paragraph Spacing")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_layout_commands_that_are_real_are_enabled(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("PageMargin", "Orientation", "AttributePageSize", "PageColumnType", "InsertPagebreak",
+                         "InsertColumnBreak", "InsertLinebreak", "InsertBreak", "InsertSection",
+                         "LineNumberingDialog", "Hyphenate", "Navigator"):
                 self.assertTrue(self.dispatch_enabled(name), name)
 
 # vim: set shiftwidth=4 softtabstop=4 expandtab:
