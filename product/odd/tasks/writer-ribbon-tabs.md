@@ -133,7 +133,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W0a | Generator and test tooling for two apps; Writer office `.ui` = stock + tab operations; registration; suppressions | delegated (opus: shared code, Calc byte-identical) | [x] | 12d483db7 (generated), 348ecf587 (code) | high; granted, approved, acknowledged (348ecf587 only) |
 | W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [x] | 6bfb5aae4, c0a315dd2 (Calc UITest fix) | high; declined; independent verifier (FAIL -> fixed); fix: medium, under budget |
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
-| W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | [ ] | | |
+| W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [ ] | a: 38c1b440e (layout + generated), ee9c5bafd (code) | a: medium, budget reached; declined (writer self-check + controller spot check) |
 | W3a / W3b | Insert | as W2 | [ ] | | |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
 | W5a / W5b | References | as W2 | [ ] | | |
@@ -413,6 +413,30 @@ The controller's rulings can be overturned by the user.
     - design 3.3 is confirmed: 737 ids in 20000-25999, the highest 22610;
     - the new case group is at `viewstat.cxx:130-157`.
 
+- 2026-10-21, W2a (route: delegated, sonnet; trigger: 2+ non-trivial files). Commits:
+  - 38c1b440e: `writer_home.json` and the generated output;
+  - ee9c5bafd: the popups, the WriterCommands/Controller.xcu nodes, `test_writer_home_ui.py` and the
+    UITests.
+  - Evidence (report: `task-W2a-report.md`):
+    - unit tests 376 -> 398, all pass;
+    - the 7 new Home UITests pass, plus `test_tabbed_office_loads`, `test_tab_order` and
+      `test_placeholder_slots_disabled`;
+    - `sw.build officecfg.build postprocess.build` exit 0;
+    - `check-ui.sh` reports 0 new warnings and fatals;
+    - Calc sha256 values unchanged.
+  - Controller spot check: 398 OK; the tree is clean after `gen_ribbon.py --all`; no soffice or make left
+    running.
+  - RDD for ee9c5bafd: medium, budget reached; the user chose "Saltear esta vez".
+  - Notes:
+    - 3 of the 7 UITests were green before the work (context visibility, inert placeholders, enabled real
+      commands), so they are regression guards;
+    - the placeholder items in the Text Effects and Select menus are hidden in a real menu while disabled.
+      That is T10, pending as in Calc;
+    - only `com.sun.star.text.TextDocument` loads the office `.ui`. Writer/Web and master documents keep
+      the stock ribbon. This comes from reading the code (`SfxNotebookBar` handles neither enum value), not
+      from a UITest;
+    - the Styles gallery does not expand horizontally; the fit is measured in W2b.
+
 ## Next step
 
-W2a: Home layout and behaviour (delegated, sonnet). Brief: `task-W2a-brief.md`.
+W2b: Home icons, 1920 fit, screenshots (delegated, sonnet). Brief: `task-W2b-brief.md`.
