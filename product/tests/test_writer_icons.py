@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Icon coverage of Writer's Home tab: every command of the generated page has an icon in both
+"""Icon coverage of Writer's Home and Insert tabs: every command of the generated page has an icon in both
 themes, at the sizes the tab uses (the same contract as test_icons.py has for Calc's tabs)."""
 import tempfile
 import unittest
@@ -16,13 +16,19 @@ ROOT = Path(__file__).resolve().parents[2]
 OFFICE = ROOT / "sw/uiconfig/swriter/ui/notebookbar_office.ui"
 
 
-def home_page():
+def tab_page(tab):
     text = OFFICE.read_text(encoding="utf-8")
-    body = text.split("<!-- product:Home-begin -->")[1].split("<!-- product:Home-end -->")[0]
+    body = text.split(f"<!-- product:{tab}-begin -->")[1].split(f"<!-- product:{tab}-end -->")[0]
     return ET.fromstring("<root>" + body + "</root>")
 
 
-class WriterHomeIconsTest(unittest.TestCase):
+def home_page():
+    return tab_page("Home")
+
+
+class _WriterTabIcons:
+    TAB = "Home"
+    MIN_OBJECTS = 40
 
     @classmethod
     def setUpClass(cls):
@@ -46,7 +52,7 @@ class WriterHomeIconsTest(unittest.TestCase):
 
     def missing(self):
         missing = []
-        for box in home_page().iter("object"):
+        for box in tab_page(self.TAB).iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
             large = box.find("property[@name='icon_size']").text == "5"
@@ -64,9 +70,18 @@ class WriterHomeIconsTest(unittest.TestCase):
                     missing += [f"{theme}:{m}" for m in wanted if m not in names and links.get(m) not in names]
         return missing
 
-    def test_the_home_page_has_buttons(self):
-        self.assertGreater(len(list(home_page().iter("object"))), 40)
+    def test_the_page_has_buttons(self):
+        self.assertGreater(len(list(tab_page(self.TAB).iter("object"))), self.MIN_OBJECTS)
 
-    def test_every_writer_home_button_has_an_icon_in_both_themes(self):
+    def test_every_button_has_an_icon_in_both_themes(self):
         self.assertEqual(["boost", "boost_dark"], sorted(self.zips))
         self.assertEqual([], self.missing())
+
+
+class WriterHomeIconsTest(_WriterTabIcons, unittest.TestCase):
+    pass
+
+
+class WriterInsertIconsTest(_WriterTabIcons, unittest.TestCase):
+    TAB = "Insert"
+    MIN_OBJECTS = 20
