@@ -84,7 +84,7 @@ Home and Data are done. The other tabs (Insert, Layout, Functions, Review, View,
 | T8a | Polish across tabs. Section captions on one baseline: Review's sit about 12 px higher because it has only large buttons. Plus the parked minors (T1c sfx2 micro-optimisations, T3c `:bool=` anchoring, T4c disposed-frame catch, dark-theme dimming of disabled icon-only buttons) | delegated (opus) | [x] Captions sit on one baseline on every tab, y=159 at 1920 px; ribbon height unchanged, Name Box at y=181. sfx2 StateChanged refactor. framework `:bool=` match anchored to the type. Function menus of a closed window are disabled. 279 unit tests, 71 UITests. Review Approved. The dark-theme disabled icons need a VCL change and moved to T8b | bf8cef82a, 8eddfc3e1, 400df3dd6, 0a2fdae0c, d3158903f | high, due: user granted at the end; START refused (lens_context_budget_exceeded, whole slice 33664 lines) |
 | T8b | Disabled icons look disabled in dark themes: VCL BitmapDisabledImageFilter draws a fixed light grey (luminance/4+160) whatever the theme. Light output must stay byte-identical, and a theme switch must refresh the cache | delegated (opus) | [x] On a dark face, a disabled pixel of luminance L becomes the grey whose WCAG contrast against the face is 1 + L/255. Light faces still get luminance/4+160, pixel-identical. The cache is keyed by face colour, and a runtime switch was verified. Contrast before -> after: Calc dark 6.1 -> 1.6, Writer 6.2 -> 1.6, Impress 6.9 -> 1.7, black face 9.1 -> 1.51; light 1.55. CppUnit 7 OK. Review (opus) Needs fixes: pure black was 1.26:1 -> fix round 1 (contrast-defined band) -> re-review all addressed. Known: after a runtime theme switch the Sheet View buttons lose their icons (pre-existing) | 1be81d47a, d26c3188b, 638d5478d | high, due: user granted at the end; START refused (lens_context_budget_exceeded, whole slice 33664 lines) |
 | T10 | Show disabled items greyed in popup menus, as Office does, instead of hiding them. LibreOffice's `DontHideDisabledEntry` defaults to hiding them; changing it affects every context menu | pending user decision | [ ] | | |
-| T9 | Excel labels for existing commands (e.g. Header & Footer, WordArt, Object, Equation instead of LibreOffice's labels). Two ways: Calc-only label overrides in CalcCommands.xcu, which also rename the menus; or ribbon-only URL label variants | pending user decision | [ ] | | |
+| T9 | Excel labels for existing commands (e.g. Header & Footer, WordArt, Object, Equation instead of LibreOffice's labels). Two ways: Calc-only label overrides in CalcCommands.xcu, which also rename the menus; or ribbon-only URL label variants | answered 2026-10-21: "Los de Office", ribbon-only (menus, help and tooltips keep LibreOffice's labels). Done with Writer as task T9w in product/odd/tasks/writer-ribbon-tabs.md | [ ] | | |
 
 L1 open questions, ruled while the user is away (overturnable):
 
@@ -116,7 +116,7 @@ The slice is complete and every task is reviewed. Waiting for the user:
 1. **Visual gate** on the contact sheets in /mnt/games/libreoffice/assets/previews/calc-ribbon-tabs-light.png and calc-ribbon-tabs-dark.png.
 2. **RDD reviews:** consent was pending for every task while the user was away.
 3. **Decisions:**
-   - T9: Excel labels for existing commands.
+   - T9: answered 2026-10-21 ("Los de Office"); the work is task T9w of the Writer feature.
    - T10: show disabled menu items greyed.
    - Tab mnemonics (Hel~p vs ~Print, For~mulas vs ~Media).
    - Publishing: public GitHub fork or private repo.

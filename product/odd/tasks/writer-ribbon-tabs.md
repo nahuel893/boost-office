@@ -37,10 +37,10 @@ Writer has no Tabbed Office mode yet: the mode is Calc-only in cui (`cui/source/
 - **Every LibreOffice button the Word layout drops** is listed per tab, stays reachable in the menu bar, and a test
   asserts it (design section 2).
 - **The Boost look applies as is:** Inter UI font, Boost icons, Boost color schemes; Light is white.
-- **Accent:** Word's blue for Writer. The narrowest way needs C++ and **waits for the user's OK** (design 3.4); the
-  fallback needs none.
-- **T9 and T10 stay pending.** The layout keeps Word's labels in `office_label`, and nothing depends on T10 (design
-  decisions 29-30).
+- **Accent:** Word's blue for Writer, through the C++ route of design 3.4. The user approved it ("Uno por app"); it
+  is done in W9.
+- **T9 is answered; T10 stays pending.** The layout keeps Word's labels in `office_label`; task T9w puts them on
+  the ribbon (see "Answers and rulings", item 6). Nothing depends on T10 (design decisions 29-30).
 
 ## Scope
 
@@ -53,7 +53,7 @@ Writer has no Tabbed Office mode yet: the mode is Calc-only in cui (`cui/source/
 - Dropdowns, placeholder commands and slots, labels, icons, tests, docs.
 
 **Out of scope:** implementing placeholder features; Word's Draw tab, File backstage and contextual tabs; Impress;
-translations; T9 and T10 (pending decisions); the accent C++ until the user approves it.
+translations; T10 (a pending decision).
 
 ## Constraints
 
@@ -136,7 +136,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
-| W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
+| W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [ ] | a: 2bb1f6dbf (layout + generated), 404294f79 (code) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged |
 | W5a / W5b | References | as W2 | [ ] | | |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
 | W7a / W7b | Review | as W2 | [ ] | | |
@@ -144,7 +144,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
-| T9w | Word labels for existing commands (follows Calc's T9 answer) | pending user decision | [ ] | | |
+| T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator; Calc's output changes on purpose) | [ ] | | |
 | T10w | Greyed disabled popup entries (follows Calc's T10 answer) | pending user decision | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
@@ -310,6 +310,12 @@ The controller's rulings can be overturned by the user.
    becomes a placeholder only if a UITest shows it does not do the Word job.
 5. **Undo on Home:** controller ruling: kept on Home, for Calc parity (calc-home-redesign); it also stays in
    the quick access bar.
+6. **T9, Office labels (2026-10-21):** the user chose "Los de Office". The Tabbed Office ribbons of Calc and
+   Writer show Word's and Excel's labels (`office_label`: Cover Page, WordArt, Equation...). Menus, help and
+   tooltips keep LibreOffice's labels. So it is the ribbon-only route, not label overrides in the app's
+   `Commands.xcu`, which would also rename the menus. Task T9w does both apps in one generator change. Calc's
+   generated `.ui` changes on purpose, so for that task the byte-identity check becomes an expected-diff check:
+   only labels change. Impress follows the same rule.
 
 ## Progress / evidence
 
@@ -546,6 +552,41 @@ The controller's rulings can be overturned by the user.
     it is a placeholder (design section 5).
   - RDD for b2b3346bd..2b97b23ff: medium, under budget. It stays pending in the slice.
 
+- 2026-10-21, W4a (route: delegated, sonnet). Commits:
+  - 2bb1f6dbf: `writer_design.json`, `writer_layout.json`, `writer_tabs.json` (Design at position 3; Layout to
+    Tools shift to 4..16), the regenerated `.ui` and suppressions;
+  - 404294f79: 7 popup files, Controller.xcu (7 Popup and 7 ToolBox nodes), WriterCommands.xcu (7 menu labels,
+    6 Design placeholder variants, 5 label nodes), unit tests and UITests.
+  - Evidence (report: `task-W4a-report.md`):
+    - RED: the two new unit modules failed on the missing JSON (20 + 23 tests); 13 UITests failed before any
+      source change (`test_tab_order` '17' != '16', missing sections, spin fields and controllers);
+    - GREEN: 431 -> 474 unit tests OK; the 12 new UITests, `test_tab_order` and `test_tabbed_office_loads`
+      pass;
+    - the build, `check-ui.sh` and `git show --check` are clean; Calc is byte-identical.
+  - Controller spot check: 474 tests OK, `gen_ribbon.py --all` leaves the tree clean, no soffice left.
+  - Behaviour found by the UITests:
+    - `.uno:TextWrap` is enabled only after the draw shell takes over on idle, so the test retries;
+    - with one shape, exactly one of foreground and background is enabled;
+    - Rotate Left and Right are disabled for a shape, as the design says.
+  - Labels for the new nodes use LibreOffice wording ("Page Area...", "Before Text Indent", "After Text
+    Indent", "Above Paragraph Spacing", "Below Paragraph Spacing"); Word's label stays in `office_label` for
+    T9w.
+  - Open for W4b: icons for the six Design placeholders and the new menus; the fit at 1920; a visual check of
+    the spin-field widths (the UITest only asserts at least 60 px). The Style Set placeholder is a wide greyed
+    button, not Word's gallery.
+  - Later tabs: W6a and W8a add Mailings and Help, and must shift the positions after them again.
+  - Review of 2bb1f6dbf..404294f79: medium; the user granted it. One lens (reliability); approved and
+    acknowledged (lineage review-8d8fa0abdde8db94). W3b's commits (3bffe89ad, 2b97b23ff) lie before the generated
+    commit, so no reviewable slice holds them; they stay unreviewed (icons, a test, one JSON line).
+  - Parked for W9 (test quality):
+    - WARNING: `test_writer_design_ui.py:151` asserts exactly 6 placeholders after `drop_implemented`, so
+      implementing one breaks the test;
+    - WARNING: the UITests depend on generated files outside the reviewed commit
+      (`notebookbarOffice.py:38-39`). This is the split by design;
+    - SUGGESTION: the `NEW_LABELS` comment says five label nodes, the dict holds four
+      (`test_writer_layout_ui.py:97-99`); PageAreaDialog is asserted by the Design test.
+
 ## Next step
 
-W4a: Design (new page) and Layout, layout and behaviour (delegated, sonnet). Brief: `task-W4a-brief.md`.
+W4b: Design and Layout icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W4b-brief.md`.
+Then T9w (Office labels, Calc and Writer), before W5a, so later tabs start with the right labels.
