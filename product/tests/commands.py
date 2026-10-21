@@ -49,11 +49,19 @@ def flagged_commands(ui_dir=UI_DIR, app="calc"):
     return {name for name, value in properties("Properties", ui_dir, app).items() if int(value) & 1}
 
 
-def controller_nodes(controller_xcu=UI_DIR / "Controller.xcu"):
-    """Controller.xcu nodes that name a command: node name -> {Command, Controller, Module, Value}."""
+WRITER_SUFFIX = ("WriterPopup", "WriterControl")
+
+
+def controller_nodes(controller_xcu=UI_DIR / "Controller.xcu", app="calc"):
+    """Controller.xcu nodes that name a command: node name -> {Command, Controller, Module, Value}.
+
+    A Writer node that shares its command with Calc carries a "Writer" suffix (InsertShapesMenuWriterPopup).
+    Those nodes are left out unless app is "writer", so Calc's one-node-per-command checks keep their meaning.
+    """
     nodes = {}
     for node in ET.parse(controller_xcu).iter("node"):
         props = {p.get(OOR + "name"): p.findtext("value") for p in node.findall("prop")}
-        if "Command" in props:
-            nodes[node.get(OOR + "name")] = props
+        name = node.get(OOR + "name")
+        if "Command" in props and (app == "writer" or not name.endswith(WRITER_SUFFIX)):
+            nodes[name] = props
     return nodes

@@ -27,6 +27,11 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/home_find \
 	sw/uiconfig/swriter/popupmenu/home_select \
 	sw/uiconfig/swriter/popupmenu/home_texteffects \
+	sw/uiconfig/swriter/popupmenu/insert_object \
+	sw/uiconfig/swriter/popupmenu/insert_pagenumber \
+	sw/uiconfig/swriter/popupmenu/insert_quickparts \
+	sw/uiconfig/swriter/popupmenu/insert_shapes \
+	sw/uiconfig/swriter/popupmenu/insert_textbox \
 	sw/uiconfig/swriter/popupmenu/insertfield \
 	sw/uiconfig/swriter/popupmenu/media \
 	sw/uiconfig/swriter/popupmenu/notebookbar \

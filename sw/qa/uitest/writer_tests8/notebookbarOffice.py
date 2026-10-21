@@ -28,6 +28,7 @@ WRITER_MODULE = "com.sun.star.text.TextDocument"
 # a 1x1 PNG, the picture of the image context
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: Text Effects family, Select Similar
+INSERT_SLOTS = (2, 3, 4, 5)  # Blank Page, 3D Models, SmartArt, Screenshot
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
@@ -226,14 +227,46 @@ class NotebookbarOffice(UITestCase):
                           for i in range(xAcc.getAccessibleChildCount())]
         self.fail("no tab list with %d tabs in the accessibility tree" % len(TABS))
 
-    def check_home_tab_is_shown(self, document, contextual):
-        """Home has a tab on screen; `contextual` (a tab of the object, or None) proves the context."""
+    def check_tab_is_shown(self, document, tab, contextual):
+        """`tab` has a tab on screen; `contextual` (a tab of the object, or None) proves the context."""
         if contextual:
             self.wait_for(lambda: contextual in self.visible_tabs(document), contextual + " tab is not shown", 10)
         else:
-            self.wait_for(lambda: "Home" in self.visible_tabs(document), "Home tab is not shown", 10)
+            self.wait_for(lambda: tab in self.visible_tabs(document), tab + " tab is not shown", 10)
             self.assertFalse(CONTEXTUAL & set(self.visible_tabs(document)))
-        self.assertIn("Home", self.visible_tabs(document))
+        self.assertIn(tab, self.visible_tabs(document))
+
+    def check_home_tab_is_shown(self, document, contextual):
+        self.check_tab_is_shown(document, "Home", contextual)
+
+    def check_tab_in_every_context(self, document, tab):
+        """The tab shows in the text, table, image and print-preview contexts of a Writer document."""
+        self.check_tab_is_shown(document, tab, None)
+        # table: the cursor in a cell
+        xTable = document.createInstance("com.sun.star.text.TextTable")
+        xTable.initialize(2, 2)
+        document.Text.insertTextContent(document.Text.End, xTable, False)
+        document.CurrentController.ViewCursor.gotoRange(xTable.getCellByName("A1").Start, False)
+        self.check_tab_is_shown(document, tab, "Table")
+        # image: a selected picture
+        with tempfile.TemporaryDirectory() as tmp:
+            picture = Path(tmp) / "pixel.png"
+            picture.write_bytes(PNG)
+            xGraphic = document.createInstance("com.sun.star.text.TextGraphicObject")
+            xGraphic.GraphicURL = picture.as_uri()
+            xGraphic.AnchorType = uno.Enum("com.sun.star.text.TextContentAnchorType", "AS_CHARACTER")
+            document.CurrentController.ViewCursor.gotoRange(document.Text.End, False)
+            document.Text.insertTextContent(document.CurrentController.ViewCursor, xGraphic, False)
+            document.CurrentController.select(xGraphic)
+            self.check_tab_is_shown(document, tab, "Image")
+        # print preview
+        document.CurrentController.select(document.Text.Start)
+        self.xUITest.executeCommand(".uno:PrintPreview")
+        try:
+            self.check_tab_is_shown(document, tab, "Print")
+        finally:
+            self.xUITest.executeCommand(".uno:ClosePreview")
+        self.check_tab_is_shown(document, tab, None)
 
     def test_home_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
         with self.ui_test.create_doc_in_start_center("writer") as document:
@@ -286,14 +319,16 @@ class NotebookbarOffice(UITestCase):
     def menu_controller(self, command, resource):
         """The menu controller of the ribbon dropdown `command` and the awt popup menu it built.
 
-        `resource` is the popup file the ResourceMenuController reads (its "Value")."""
+        `resource` is the popup file the ResourceMenuController reads (its "Value"); None for a menu
+        controller of its own (Header, Footer)."""
         xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.xContext)
         xFactory = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
         self.assertTrue(xFactory.hasController(command, WRITER_MODULE), command)
-        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": WRITER_MODULE,
-                "Value": resource}
+        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": WRITER_MODULE}
+        if resource:
+            args["Value"] = resource
         xController = xFactory.createInstanceWithArgumentsAndContext(
             command, mkPropertyValues(args), self.xContext)
         self.assertIsNotNone(xController, command)
@@ -413,6 +448,129 @@ class NotebookbarOffice(UITestCase):
             document.CurrentController.select(document.Text)
             for name in ("ChangeCaseToLower", "ChangeCaseToUpper", "ChangeCaseToTitleCase", "OutlineFont",
                          "Shadowed", "SearchDialog", "GotoPage", "SelectAll", "Navigator"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_insert_sections_and_toolboxes(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        layout = json.loads((src / "product" / "ui" / "writer_insert.json").read_text(encoding="utf-8"))
+        prefix = layout["id_prefix"]
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(8, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xWriterDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xWriterDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Insert")
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_placeholders_are_disabled_and_inert(self):
+        # 4 slots: Blank Page, 3D Models, SmartArt and Screenshot
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in INSERT_SLOTS)
+        self.assertEqual(4, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertEqual(1, document.CurrentController.PageCount)
+            self.assertFalse(document.isModified())
+
+    def test_insert_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            expected = {
+                ("InsertShapesMenu", "insert_shapes"): [
+                    ".uno:ShapesLineMenu", ".uno:BasicShapes", ".uno:ArrowShapes", ".uno:FlowChartShapes",
+                    ".uno:StarShapes", ".uno:CalloutShapes", ".uno:SymbolShapes", ".uno:ConnectorToolbox"],
+                ("InsertPageNumberMenu", "insert_pagenumber"): [
+                    ".uno:PageNumberWizard", ".uno:InsertPageNumberField", ".uno:InsertPageCountField"],
+                ("InsertTextBoxMenu", "insert_textbox"): [".uno:DrawText", ".uno:VerticalText"],
+                ("InsertQuickPartsMenu", "insert_quickparts"): [
+                    ".uno:EditGlossary", ".uno:InsertTitleField", ".uno:InsertTopicField",
+                    ".uno:InsertAuthorField", ".uno:InsertField"],
+                ("InsertObjectMenu", "insert_object"): [".uno:InsertObject", ".uno:InsertDoc"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_insert_quick_parts_menu_groups_its_items_with_separators(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            xPopup = self.menu_controller(".uno:InsertQuickPartsMenu", "insert_quickparts")
+            shape = [bool(xPopup.getCommand(xPopup.getItemId(pos))) for pos in range(xPopup.getItemCount())]
+            self.assertEqual([True, False, True, True, True, False, True], shape)
+
+    def test_insert_shapes_submenus_open(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            xPopup = self.menu_controller(".uno:InsertShapesMenu", "insert_shapes")
+            line = next(xPopup.getItemId(pos) for pos in range(xPopup.getItemCount())
+                        if xPopup.getCommand(xPopup.getItemId(pos)) == ".uno:ShapesLineMenu")
+            xSub = xPopup.getPopupMenu(line)
+            self.assertIsNotNone(xSub, "Line has no submenu")
+            self.assertEqual([".uno:Line", ".uno:Freeline_Unfilled", ".uno:Freeline", ".uno:Bezier_Unfilled",
+                              ".uno:BezierFill", ".uno:Polygon_Unfilled", ".uno:Polygon_Diagonal_Unfilled",
+                              ".uno:Polygon_Diagonal"], self.popup_commands(xSub))
+            # the other seven entries are commands whose own controllers open a shape gallery
+            for url in (".uno:BasicShapes", ".uno:ArrowShapes", ".uno:FlowChartShapes", ".uno:StarShapes",
+                        ".uno:CalloutShapes", ".uno:SymbolShapes", ".uno:ConnectorToolbox"):
+                self.assertTrue(self.dispatch_enabled(url[len(".uno:"):]), url)
+
+    def test_insert_header_and_footer_dropdowns_list_the_documents_page_styles(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            xStyles = document.StyleFamilies.getByName("PageStyles")
+            extra = document.createInstance("com.sun.star.style.PageStyle")
+            xStyles.insertByName("Boost Insert Test", extra)
+            names = [n for n in xStyles.ElementNames if xStyles.getByName(n).IsPhysical]
+            self.assertIn("Boost Insert Test", names)
+            self.assertGreaterEqual(len(names), 2)
+            for command, uno_command, is_on in ((".uno:InsertHeaderMenu", ".uno:InsertPageHeader", "HeaderIsOn"),
+                                                (".uno:InsertFooterMenu", ".uno:InsertPageFooter", "FooterIsOn")):
+                # the ribbon item's toolbar node names the stock command as its popup (Controller.xcu "Value")
+                xToolbars = self.xContext.ServiceManager.createInstanceWithContext(
+                    "com.sun.star.frame.ToolbarControllerFactory", self.xContext)
+                self.assertTrue(xToolbars.hasController(command, WRITER_MODULE), command)
+                xPopup = self.menu_controller(uno_command, None)
+                commands = self.popup_commands(xPopup)
+                for name in names:
+                    style = xStyles.getByName(name)
+                    toggle = "false" if getattr(style, is_on) else "true"
+                    self.assertIn("%s?PageStyle:string=%s&On:bool=%s" % (uno_command, style.DisplayName, toggle),
+                                  commands, command + " " + name)
+                texts = [xPopup.getItemText(xPopup.getItemId(pos)) for pos in range(xPopup.getItemCount())]
+                self.assertIn("Boost Insert Test", texts, command)
+
+    def test_insert_dropdown_and_placeholder_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for command, label in (("InsertShapesMenu", "Shapes"), ("InsertHeaderMenu", "Header"),
+                                   ("InsertFooterMenu", "Footer"), ("InsertPageNumberMenu", "Page Number"),
+                                   ("InsertTextBoxMenu", "Text Box"), ("InsertQuickPartsMenu", "Quick Parts"),
+                                   ("InsertObjectMenu", "Object"), ("InsertBlankPage", "Blank Page"),
+                                   ("Insert3DModels", "3D Models"), ("InsertSmartArt", "SmartArt"),
+                                   ("InsertScreenshot", "Screenshot")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_insert_commands_that_are_real_are_enabled(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("TitlePageDialog", "InsertPagebreak", "InsertGraphic", "InsertBookmark",
+                         "InsertReferenceField", "InsertAnnotation", "DrawText", "VerticalText", "EditGlossary",
+                         "InsertField", "InsertDateField", "InsertObject", "InsertDoc", "PageNumberWizard",
+                         "InsertPageNumberField", "InsertPageCountField", "HyperlinkDialog", "InsertTable"):
                 self.assertTrue(self.dispatch_enabled(name), name)
 
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

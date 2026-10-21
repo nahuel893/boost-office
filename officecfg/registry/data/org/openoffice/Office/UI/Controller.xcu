@@ -1291,6 +1291,76 @@
           <value>home_select</value>
         </prop>
       </node>
+      <node oor:name="InsertShapesMenuWriterPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertShapesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_shapes</value>
+        </prop>
+      </node>
+      <node oor:name="InsertPageNumberMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertPageNumberMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_pagenumber</value>
+        </prop>
+      </node>
+      <node oor:name="InsertTextBoxMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertTextBoxMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_textbox</value>
+        </prop>
+      </node>
+      <node oor:name="InsertQuickPartsMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertQuickPartsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_quickparts</value>
+        </prop>
+      </node>
+      <node oor:name="InsertObjectMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertObjectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_object</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3281,6 +3351,89 @@
       <node oor:name="HomeSelectMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:HomeSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertShapesMenuWriterControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertShapesMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertHeaderMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertHeaderMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:InsertPageHeader</value>
+        </prop>
+      </node>
+      <node oor:name="InsertFooterMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertFooterMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>.uno:InsertPageFooter</value>
+        </prop>
+      </node>
+      <node oor:name="InsertPageNumberMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertPageNumberMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertTextBoxMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertTextBoxMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertQuickPartsMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertQuickPartsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertObjectMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertObjectMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.text.TextDocument</value>
