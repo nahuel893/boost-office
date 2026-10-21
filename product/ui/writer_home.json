@@ -1,0 +1,108 @@
+{
+  "page": "Home Tab",
+  "id_prefix": "Home",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu Home"],
+  "sections": [
+    {"name": "Undo", "caption": "Undo", "rows": 2, "columns": [
+      [
+        {"id": "Undo", "style": "small", "items": [
+          {"cmd": "Undo", "kind": "split", "office_label": "Undo"}
+        ]},
+        {"id": "Redo", "style": "small", "items": [
+          {"cmd": "Redo", "kind": "split", "office_label": "Redo"}
+        ]}
+      ]
+    ]},
+    {"name": "Clipboard", "caption": "Clipboard", "rows": 3, "columns": [
+      [
+        {"id": "Paste", "style": "large", "items": [
+          {"cmd": "Paste", "kind": "split", "office_label": "Paste"}
+        ]}
+      ],
+      [
+        {"id": "Cut", "style": "small", "items": [
+          {"cmd": "Cut", "office_label": "Cut"}
+        ]},
+        {"id": "Copy", "style": "small", "items": [
+          {"cmd": "Copy", "office_label": "Copy"}
+        ]},
+        {"id": "FormatPaintbrush", "style": "small", "items": [
+          {"cmd": "FormatPaintbrush", "office_label": "Format Painter"}
+        ]}
+      ]
+    ]},
+    {"name": "Font", "caption": "Font", "rows": 2, "columns": [
+      [
+        {"id": "FontRow", "style": "small", "items": [
+          {"cmd": "CharFontName", "office_label": "Font"},
+          {"cmd": "FontHeight", "office_label": "Font Size"},
+          {"cmd": "Grow", "office_label": "Increase Font Size"},
+          {"cmd": "Shrink", "office_label": "Decrease Font Size"},
+          {"cmd": "HomeChangeCaseMenu", "kind": "split", "office_label": "Change Case"},
+          {"cmd": "ResetAttributes", "office_label": "Clear All Formatting"}
+        ]},
+        {"id": "FormatRow", "style": "small", "items": [
+          {"cmd": "Bold", "office_label": "Bold"},
+          {"cmd": "Italic", "office_label": "Italic"},
+          {"cmd": "Underline", "kind": "split", "office_label": "Underline"},
+          {"cmd": "Strikeout", "office_label": "Strikethrough"},
+          {"cmd": "SubScript", "office_label": "Subscript"},
+          {"cmd": "SuperScript", "office_label": "Superscript"},
+          {"cmd": "HomeTextEffectsMenu", "kind": "split", "office_label": "Text Effects and Typography"},
+          {"cmd": "CharBackColor", "kind": "split", "office_label": "Text Highlight Color"},
+          {"cmd": "Color", "kind": "split", "office_label": "Font Color"}
+        ]}
+      ]
+    ]},
+    {"name": "Paragraph", "caption": "Paragraph", "rows": 2, "columns": [
+      [
+        {"id": "ListRow", "style": "small", "items": [
+          {"cmd": "DefaultBullet", "kind": "split", "office_label": "Bullets"},
+          {"cmd": "DefaultNumbering", "kind": "split", "office_label": "Numbering"},
+          {"cmd": "SetOutline", "kind": "split", "office_label": "Multilevel List"},
+          {"cmd": "DecrementIndent", "office_label": "Decrease Indent"},
+          {"cmd": "IncrementIndent", "office_label": "Increase Indent"},
+          {"cmd": "SortDialog", "office_label": "Sort"},
+          {"cmd": "ControlCodes", "office_label": "Show/Hide"}
+        ]},
+        {"id": "AlignRow", "style": "small", "items": [
+          {"cmd": "LeftPara", "office_label": "Align Left"},
+          {"cmd": "CenterPara", "office_label": "Center"},
+          {"cmd": "RightPara", "office_label": "Align Right"},
+          {"cmd": "JustifyPara", "office_label": "Justify"},
+          {"cmd": "LineSpacing", "kind": "split", "office_label": "Line and Paragraph Spacing"},
+          {"cmd": "BackgroundColor", "kind": "split", "office_label": "Shading"},
+          {"cmd": "BorderDialog", "office_label": "Borders"}
+        ]}
+      ]
+    ]},
+    {"name": "Styles", "caption": "Styles", "rows": 3, "columns": [
+      [
+        {"id": "StylesPreview", "style": "large", "items": [
+          {"cmd": "StylesPreview", "office_label": "Styles"}
+        ]}
+      ]
+    ]},
+    {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
+      [
+        {"id": "Find", "style": "small-label", "items": [
+          {"cmd": "HomeFindMenu", "kind": "split", "office_label": "Find"}
+        ]},
+        {"id": "Replace", "style": "small-label", "items": [
+          {"cmd": "SearchDialog", "office_label": "Replace"}
+        ]},
+        {"id": "Select", "style": "small-label", "items": [
+          {"cmd": "HomeSelectMenu", "kind": "split", "office_label": "Select"}
+        ]}
+      ]
+    ]},
+    {"name": "Editor", "caption": "Editor", "rows": 3, "columns": [
+      [
+        {"id": "SpellingAndGrammarDialog", "style": "large", "items": [
+          {"cmd": "SpellingAndGrammarDialog", "office_label": "Editor"}
+        ]}
+      ]
+    ]}
+  ]
+}
