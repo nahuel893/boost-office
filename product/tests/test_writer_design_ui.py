@@ -43,7 +43,8 @@ PLACEHOLDER_LABELS = {  # URL -> label (design section 5, Design rows)
 PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS, placeholders.registry("writer"))
 DESIGN_SLOTS = {6: "PageLayoutThemePart", 7: "DesignStyleSet"}
 # the style set gallery flexes like Word's, so it takes the width the page leaves free (W2c)
-EXPANDING = {STYLE + "gallery"}
+# the Style Set placeholder stays a plain button: an expanded greyed box left an empty gap mid-group (W4b)
+EXPANDING = set()
 # the real commands the design keeps from LibreOffice; the new label node is PageAreaDialog
 REAL = [".uno:ThemeDialog", ".uno:Watermark", ".uno:PageAreaDialog", ".uno:PageDialog"]
 
@@ -81,7 +82,7 @@ class WriterDesignUiTest(unittest.TestCase):
         shapes = {s["name"]: [len(c) for c in s["columns"]] for s in self.layout["sections"]}
         self.assertEqual(SHAPES, shapes)
 
-    def test_every_control_is_a_plain_button_and_only_the_gallery_takes_the_free_width(self):
+    def test_every_control_is_a_plain_button_and_none_takes_the_free_width(self):
         # no Design control has a dropdown: Word's menus here are galleries and cloud lists (decision 13)
         for item in self.items():
             self.assertEqual("button", item.get("kind", "button"), item["cmd"])

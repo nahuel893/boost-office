@@ -12,7 +12,7 @@
         ]}
       ],
       [
-        {"id": "StyleSet", "style": "large", "expand": true, "items": [
+        {"id": "StyleSet", "style": "large", "items": [
           {"cmd": "StyleSetGallery", "icon": "cmd/32/designstyleset_gallery.png",
            "action": ".uno:DesignStyleSet?Action:string=gallery",
            "office_label": "Style Set"}
