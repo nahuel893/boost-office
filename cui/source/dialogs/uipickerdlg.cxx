@@ -89,7 +89,7 @@ IMPL_LINK(UIPickerDialog, OnApplyClick, weld::Button&, rButton, void)
         return;
     }
 
-    // Tabbed Office exists only for Calc; other apps get plain Tabbed (GetModeForApp)
+    // An app without Tabbed Office gets plain Tabbed (UITabPage::GetModeForApp)
     //apply to all except current module
     if (&rButton == m_xResetBtn.get()) // Apply to All
     {
@@ -97,7 +97,8 @@ IMPL_LINK(UIPickerDialog, OnApplyClick, weld::Button&, rButton, void)
             comphelper::ConfigurationChanges::create());
         officecfg::Office::UI::ToolbarMode::ActiveWriter::set(
             UITabPage::GetModeForApp(sCmd, u"Writer"), aBatch);
-        officecfg::Office::UI::ToolbarMode::ActiveCalc::set(sCmd, aBatch);
+        officecfg::Office::UI::ToolbarMode::ActiveCalc::set(UITabPage::GetModeForApp(sCmd, u"Calc"),
+                                                            aBatch);
         officecfg::Office::UI::ToolbarMode::ActiveImpress::set(
             UITabPage::GetModeForApp(sCmd, u"Impress"), aBatch);
         officecfg::Office::UI::ToolbarMode::ActiveDraw::set(
@@ -114,7 +115,8 @@ IMPL_LINK(UIPickerDialog, OnApplyClick, weld::Button&, rButton, void)
                 aAppNode.setNodeValue(u"Writer/Active"_ustr,
                                          css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Writer")));
             if (sCurrentApp != "Calc")
-                aAppNode.setNodeValue(u"Calc/Active"_ustr, css::uno::Any(sCmd));
+                aAppNode.setNodeValue(u"Calc/Active"_ustr,
+                                      css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Calc")));
             if (sCurrentApp != "Impress")
                 aAppNode.setNodeValue(u"Impress/Active"_ustr,
                                          css::uno::Any(UITabPage::GetModeForApp(sCmd, u"Impress")));

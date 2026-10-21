@@ -13,6 +13,7 @@ for ui in "$@"; do
         */uiconfig/*/ui/*.ui) module="${ui#*/uiconfig/}"; module="${module%%/*}" ;;
         *) echo "check-ui.sh: $ui is not an app .ui file (<dir>/uiconfig/<module>/ui/*.ui)" >&2; exit 2 ;;
     esac
+    : >"$report"   # a run that fails before writing must not reprint the previous file's report
     python3 -I bin/gla11y -P ./ -f "solenv/sanitizers/ui/modules/$module.false" \
         -s "solenv/sanitizers/ui/modules/$module.suppr" \
         --widgets-suffixignored +ValueSet,HBox,VBox,ToolBox,Preview,PreviewWin,PreviewWindow,PrevWindow \

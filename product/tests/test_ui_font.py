@@ -104,5 +104,36 @@ class ShotTabFontTest(unittest.TestCase):
         self.assertIn("(default inter,", text)
 
 
+def shot_tab(*args, **env):
+    return subprocess.run(["bash", str(ROOT / "product/dev/shot-tab.sh"), *args], capture_output=True, text=True,
+                          env=dict(os.environ, **env), check=False, timeout=30)
+
+
+class ShotTabAppTest(unittest.TestCase):
+
+    def test_unknown_app_is_refused_before_anything_starts(self):
+        for args in (("--app", "impress", "light", "Home", "/nonexistent/x.png"), ("--app",)):
+            out = shot_tab(*args, LO_PROFILE="/nonexistent/profile")
+            self.assertEqual(2, out.returncode, out.stderr)
+            self.assertIn("calc|writer", out.stderr)
+
+    def test_the_users_own_profiles_are_refused_for_both_apps(self):
+        for app in ("calc", "writer"):
+            for own in ("/mnt/games/libreoffice/try-profile", "/mnt/games/libreoffice/try-profile-writer"):
+                out = shot_tab("--app", app, "light", "Home", "/nonexistent/x.png", LO_PROFILE=own)
+                self.assertEqual(1, out.returncode, (app, own, out.stderr))
+                self.assertIn("refusing LO_PROFILE", out.stderr, (app, own))
+
+    def test_the_tab_lists_and_tab_bar_rows_per_app(self):
+        # Running the script needs a private sway, so these lines are pinned instead: Calc's list is
+        # unchanged; Writer's is design section 3.2's, filtered at run time to the installed .ui.
+        text = (ROOT / "product/dev/shot-tab.sh").read_text(encoding="utf-8")
+        self.assertIn('calc_tabs="File,Home,Insert,Page Layout,Formulas,Data,Review,View,Extension,Tools,Help"', text)
+        self.assertIn('writer_tabs="File,Home,Insert,Design,Layout,References,Mailings,Review,View,Extension,Tools,'
+                      'Help"', text)
+        self.assertIn("modules/swriter/ui/notebookbar_office.ui", text)
+        self.assertIn('soffice" --"$app"', text)
+
+
 if __name__ == "__main__":
     unittest.main()

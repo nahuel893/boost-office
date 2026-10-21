@@ -11,12 +11,16 @@ from xml.sax.saxutils import escape, quoteattr
 DEFAULT_PROFILE = Path("/mnt/games/libreoffice/dev-profile")
 FONTS = Path(__file__).resolve().parents[1] / "fonts"
 TOOLBAR_MODE = "/org.openoffice.Office.UI.ToolbarMode"
-CALC_APP = TOOLBAR_MODE + "/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Calc']"
+APPLICATION = TOOLBAR_MODE + "/Applications/org.openoffice.Office.UI.ToolbarMode:Application['%s']"
+CALC_APP = APPLICATION % "Calc"
+WRITER_APP = APPLICATION % "Writer"
+# app choice -> its ToolbarMode application name (Applications/<name>, Active<name>).
+APPS = {"calc": "Calc", "writer": "Writer"}
 APPEARANCE = "/org.openoffice.Office.Common/Appearance"
 MISC = "/org.openoffice.Office.Common/Misc"
 
-# ui choice -> (Applications/Calc/Active, ActiveCalc). Active holds the mode's
-# CommandArg (sfx2/source/appl/appserv.cxx:1015); ActiveCalc names the .ui file.
+# ui choice -> (Applications/<app>/Active, Active<app>). Active holds the mode's
+# CommandArg (sfx2/source/appl/appserv.cxx:1015); Active<app> names the .ui file.
 UI_MODES = {
     "default": ("Default", None),
     "compact": ("notebookbar_compact.ui", "notebookbar_compact.ui"),
@@ -31,11 +35,12 @@ UI_FONT = "/org.openoffice.VCL/VCLSettings/UIFont"
 UI_FONTS = {"system": None, "selawik": "Selawik", "inter": "Inter"}
 
 
-def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system"):
+def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system", app="calc"):
     active, ui_file = UI_MODES[ui]
-    items = [(CALC_APP, "Active", active)]
+    name = APPS[app]
+    items = [(APPLICATION % name, "Active", active)]
     if ui_file:
-        items.append((TOOLBAR_MODE, "ActiveCalc", ui_file))
+        items.append((TOOLBAR_MODE, "Active" + name, ui_file))
     items.append((APPEARANCE, "ApplicationAppearance", APPEARANCES[appearance]))
     if icons:
         items.append((MISC, "SymbolStyle", icons))
@@ -84,6 +89,7 @@ def install_fonts(profile, font):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--app", choices=sorted(APPS), default="calc")
     ap.add_argument("--ui", choices=sorted(UI_MODES), required=True)
     ap.add_argument("--appearance", choices=sorted(APPEARANCES), required=True)
     ap.add_argument("--icons")
@@ -95,7 +101,7 @@ def main(argv=None):
     if UI_FONTS[args.font]:
         install_fonts(args.profile, args.font)
     print(write(args.profile, build_items(args.ui, args.appearance, args.icons, args.scheme, args.tint,
-                                          args.font)))
+                                          args.font, args.app)))
 
 
 if __name__ == "__main__":

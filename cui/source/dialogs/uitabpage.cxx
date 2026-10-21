@@ -23,6 +23,8 @@
 #include <vcl/EnumContext.hxx>
 #include <vcl/weld/Builder.hxx>
 
+#include <algorithm>
+
 std::unique_ptr<SfxTabPage> UITabPage::Create(weld::Container* pPage,
                                               weld::DialogController* pController,
                                               const SfxItemSet* rAttr)
@@ -64,8 +66,7 @@ UITabPage::UITabPage(weld::Container* pPage, weld::DialogController* pController
         }
     }
 
-    // Tabbed Office is only available in Calc
-    if (sCurrentApp != "Calc")
+    if (!HasTabbedOffice(sCurrentApp))
         m_pRadioButtons[nTabbedOffice]->set_visible(false);
 
     if (!officecfg::Office::Common::Misc::ExperimentalMode::get())
@@ -89,9 +90,14 @@ OUString UITabPage::GetCurrentMode()
     return sResult;
 }
 
+bool UITabPage::HasTabbedOffice(std::u16string_view sApp)
+{
+    return sApp == u"Calc" || sApp == u"Writer";
+}
+
 OUString UITabPage::GetModeForApp(const OUString& rMode, std::u16string_view sApp)
 {
-    if (sApp != u"Calc" && rMode == std::get<1>(UIMODES_ARRAY[nTabbedOffice]))
+    if (!HasTabbedOffice(sApp) && rMode == std::get<1>(UIMODES_ARRAY[nTabbedOffice]))
         return u"notebookbar.ui"_ustr;
     return rMode;
 }
@@ -170,11 +176,17 @@ static bool file_exists(const OUString& fileName)
 
 void UITabPage::UpdateImage(std::u16string_view sFileName)
 {
-    // load image
-    OUString aURL(u"$BRAND_BASE_DIR/$BRAND_SHARE_SUBDIR/toolbarmode/"_ustr);
-    rtl::Bootstrap::expandMacros(aURL);
-    aURL += sFileName;
-    if (sFileName.empty() || !file_exists(aURL))
+    if (sFileName.empty())
+        return;
+    // load image: the app's own picture <name>_<app>.png when it exists, else the shared <name>.png
+    OUString aDir(u"$BRAND_BASE_DIR/$BRAND_SHARE_SUBDIR/toolbarmode/"_ustr);
+    rtl::Bootstrap::expandMacros(aDir);
+    const size_t nDot = std::min(sFileName.rfind('.'), sFileName.size());
+    OUString aURL = aDir + sFileName.substr(0, nDot) + "_" + GetCurrentApp().toAsciiLowerCase()
+                    + sFileName.substr(nDot);
+    if (!file_exists(aURL))
+        aURL = aDir + sFileName;
+    if (!file_exists(aURL))
         return;
     // draw image
     Graphic aGraphic;

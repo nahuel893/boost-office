@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# Screenshot one ribbon tab of the dev build's Calc in a private headless sway.
-# Usage: shot-tab.sh THEME TAB OUT.png [WIDTH]
-#   THEME  light | dark   (same look as calc.sh: Tabbed Office, Boost icons and scheme)
+# Screenshot one ribbon tab of the dev build's Calc or Writer in a private headless sway.
+# Usage: shot-tab.sh [--app calc|writer] THEME TAB OUT.png [WIDTH]
+#   --app  calc (default) or writer
+#   THEME  light | dark   (same look as office.sh: Tabbed Office, Boost icons and scheme)
 #   TAB    tab label to click, e.g. Insert, Home, "Page Layout" (found by its ink on the tab bar, in tab order;
-#          "-" keeps the tab Calc opens with)
+#          "-" keeps the tab the app opens with). The tab order is SHOT_TABS (comma-separated), by default
+#          Excel's for Calc, and for Writer Word's (design section 3.2 of product/docs/writer-ribbon-tabs.md)
+#          without the pages the installed Writer office .ui does not have yet.
 #   OUT    PNG path (put it outside the repo)
 #   WIDTH  1920 (default), 1600 or 1366; the headless output is WIDTH x (WIDTH*9/16)
 # It never touches the user's session: its own sway (WLR_BACKENDS=headless, one output, own
 # Wayland and IPC sockets), the dev profile (LO_PROFILE, default /mnt/games/libreoffice/dev-profile)
-# and a private XDG_CONFIG_HOME. Only the PIDs it started are killed. Whole run is under
-# `timeout` (LO_SHOT_TIMEOUT, default 180 s). Needs sway, grim, jq, python3 + Pillow.
+# and a private XDG_CONFIG_HOME; it refuses the user's own profiles (office.sh's defaults
+# /mnt/games/libreoffice/try-profile and try-profile-writer). Only the PIDs it started are killed.
+# Whole run is under `timeout` (LO_SHOT_TIMEOUT, default 180 s). Needs sway, grim, jq, python3 + Pillow.
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
 #      SHOT_AFTER="swaymsg-free shell snippet" runs after the tab click with $SWAYSOCK, $WAYLAND_DISPLAY,
 #      $SHOT_W, $SHOT_H exported (used for the Shapes dropdown capture).
@@ -17,6 +21,11 @@
 #      because the themes are always the Boost looks). SHOT_FONT=system keeps the desktop's font.
 set -euo pipefail
 
+app=calc
+if [ "${1:-}" = --app ]; then
+    case "${2:-}" in calc|writer) app="$2" ;; *) echo "--app must be calc|writer" >&2; exit 2 ;; esac
+    shift 2
+fi
 theme="${1:?theme light|dark}"; tab="${2:?tab}"; out="${3:?out.png}"; width="${4:-1920}"
 case "$theme" in light|dark) ;; *) echo "theme must be light or dark" >&2; exit 2 ;; esac
 case "$width" in 1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; *) echo "width: 1920|1600|1366" >&2; exit 2 ;; esac
@@ -24,7 +33,7 @@ font="${SHOT_FONT:-inter}"
 case "$font" in system|selawik|inter) ;; *) echo "SHOT_FONT must be system, selawik or inter" >&2; exit 2 ;; esac
 
 if [ -z "${SHOT_INNER:-}" ]; then
-    exec timeout --kill-after=10 "${LO_SHOT_TIMEOUT:-180}" env SHOT_INNER=1 "$0" "$@"
+    exec timeout --kill-after=10 "${LO_SHOT_TIMEOUT:-180}" env SHOT_INNER=1 "$0" --app "$app" "$@"
 fi
 
 core="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -32,13 +41,43 @@ profile="${LO_PROFILE:-/mnt/games/libreoffice/dev-profile}"
 soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"
 # Guards first, before anything is started or any trap is installed: refusing must never touch a
-# running Calc. Never the user's own profile, never a profile that is in use.
+# running Calc or Writer. Never the user's own profiles, never a profile that is in use.
+case "$app" in calc) App=Calc ;; writer) App=Writer ;; esac
 real_profile=$(realpath -m "$profile")
-if [ "$real_profile" = /mnt/games/libreoffice/try-profile ]; then
-    echo "refusing LO_PROFILE=$profile: that is the user's own Calc profile." >&2; exit 1
-fi
+case "$real_profile" in
+/mnt/games/libreoffice/try-profile)
+    echo "refusing LO_PROFILE=$profile: that is the user's own Calc profile." >&2; exit 1 ;;
+/mnt/games/libreoffice/try-profile-writer)
+    echo "refusing LO_PROFILE=$profile: that is the user's own Writer profile." >&2; exit 1 ;;
+esac
 if pgrep -f "soffice.bin.*UserInstallation=file://$profile" >/dev/null; then
-    echo "Calc already runs with $profile: close it first." >&2; exit 1
+    echo "$App already runs with $profile: close it first." >&2; exit 1
+fi
+
+# Tab order on the bar, and the first tab-bar column after the quick access toolbar (x0, measured at
+# 1920 px light; the toolbars differ per app. Writer's toolbar ink ends at x=195 and its File label
+# starts at x=240, so x0 is the middle of that gap). Writer's list is design section 3.2's, filtered
+# to the tabs of the installed office .ui, so that each label keeps its index when later tasks add pages.
+calc_tabs="File,Home,Insert,Page Layout,Formulas,Data,Review,View,Extension,Tools,Help"
+writer_tabs="File,Home,Insert,Design,Layout,References,Mailings,Review,View,Extension,Tools,Help"
+if [ "$app" = calc ]; then
+    tabs="$calc_tabs"; bar_x0=225
+else
+    tabs="$writer_tabs"; bar_x0=217
+fi
+if [ -n "${SHOT_TABS:-}" ]; then
+    tabs="$SHOT_TABS"
+elif [ "$app" = writer ]; then
+    tabs=$(python3 -I - "$core/instdir/share/config/soffice.cfg/modules/swriter/ui/notebookbar_office.ui" "$tabs" <<'PYEOF'
+import sys
+from xml.etree import ElementTree as ET
+ui, order = sys.argv[1], sys.argv[2].split(",")
+book = ET.parse(ui).getroot().find(".//object[@id='ContextContainer']")
+labels = {tab.findtext("object/property[@name='label']").replace("~", "")
+          for tab in book.findall("child[@type='tab']")}
+print(",".join(name for name in order if name in labels))
+PYEOF
+    )
 fi
 
 mkdir -p "$(dirname "$out")"
@@ -67,11 +106,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# --- profile: same settings as calc.sh light|dark -------------------------------------------
+# --- profile: same settings as office.sh light|dark -----------------------------------------
 if [ "$theme" = light ]; then
-    args=(--ui office --appearance light --icons boost --scheme "Boost Light" --tint 255); gtk=adw-gtk3
+    args=(--app "$app" --ui office --appearance light --icons boost --scheme "Boost Light" --tint 255); gtk=adw-gtk3
 else
-    args=(--ui office --appearance dark --icons boost_dark --scheme "Boost Dark" --tint 255); gtk=adw-gtk3-dark
+    args=(--app "$app" --ui office --appearance dark --icons boost_dark --scheme "Boost Dark" --tint 255); gtk=adw-gtk3-dark
 fi
 [ "$font" = system ] || args+=(--font "$font")
 env_arg="-env:UserInstallation=file://$profile"
@@ -224,9 +263,9 @@ rg -q '^ready' "$work/ptr.log" 2>/dev/null || { echo "virtual pointer client fai
 export SHOT_PTR="$work/ptr"   # SHOT_AFTER snippets write commands here, e.g. echo "click 100 50" > "$SHOT_PTR"
 click() { echo "move $(($1 - 4)) $(($2 - 4))" >&8; echo "click $1 $2" >&8; }
 
-# --- Calc inside it ----------------------------------------------------------------------------
+# --- Calc or Writer inside it ------------------------------------------------------------------
 env -u DISPLAY XDG_CONFIG_HOME="$work/cfg" GDK_BACKEND=wayland GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 \
-    setsid "$soffice" --calc --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
+    setsid "$soffice" --"$app" --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
 lo_pid=$!
 
 id=""
@@ -236,21 +275,21 @@ for _ in $(seq 120); do
     [ -n "$id" ] && break
     sleep 0.5
 done
-[ -n "$id" ] || { echo "no Calc window after 60 s" >&2; tail -5 "$work/soffice.log" >&2; exit 1; }
+[ -n "$id" ] || { echo "no $App window after 60 s" >&2; tail -5 "$work/soffice.log" >&2; exit 1; }
 swaymsg "[con_id=$id] fullscreen enable" >/dev/null
 sleep 6   # first start: let the ribbon lay out and repaint at the output size
 
 
 if [ "$tab" != "-" ]; then
     grim "$work/bar.png"
-    pos=$(python3 -I - "$work/bar.png" "$tab" "${SHOT_TABS:-File,Home,Insert,Page Layout,Formulas,Data,Review,View,Extension,Tools,Help}" <<'PYEOF'
+    pos=$(python3 -I - "$work/bar.png" "$tab" "$tabs" "$bar_x0" <<'PYEOF'
 # No OCR (tesseract has no language data here): find the label blobs on the tab bar by their ink
 # and pick the one at the label's position in the tab order (a number picks the blob by index).
 import sys
 from PIL import Image
 img, tab, order = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 im = Image.open(img).convert("L")
-y0, y1, x0 = 14, 36, 225   # tab bar rows; skips the quick access toolbar on the left
+y0, y1, x0 = 14, 36, int(sys.argv[4])   # tab bar rows; x0 skips the quick access toolbar on the left
 cols = []
 for x in range(x0, im.width - 80):
     col = [im.getpixel((x, y)) for y in range(y0, y1)]

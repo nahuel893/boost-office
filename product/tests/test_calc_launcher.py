@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "product/dev/calc.sh"
+OFFICE = ROOT / "product/dev/office.sh"
 
 
 def dry_run(*args):
@@ -94,6 +95,57 @@ class CalcLauncherTest(unittest.TestCase):
             self.assertEqual(2, out.returncode, args)
             self.assertIn("usage", out.stderr.lower())
             self.assertIn("--font system|selawik|inter", out.stderr)
+
+    def test_usage_still_names_calc_sh(self):
+        out = dry_run("purple")
+        self.assertIn("usage: calc.sh [light|dark|tabbed|tabbed-light|compact]", out.stderr)
+
+    def test_calc_sh_is_a_wrapper_of_office_sh(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("office.sh", text)
+        self.assertNotIn("soffice", text)
+
+
+def office_dry_run(*args):
+    return subprocess.run(["bash", str(OFFICE), *args, "--dry-run"],
+                          capture_output=True, text=True, check=False)
+
+
+class OfficeLauncherTest(unittest.TestCase):
+
+    def test_writer_light_starts_writer_with_the_writer_profile(self):
+        out = office_dry_run("writer", "light")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("profile: python3 -I product/dev/profile.py --app writer --ui office --appearance light "
+                      "--icons boost --scheme Boost Light --tint 255 --font inter "
+                      "--profile /mnt/games/libreoffice/try-profile-writer\n", out.stdout)
+        self.assertIn("launch: GTK_THEME=adw-gtk3 soffice --writer "
+                      "-env:UserInstallation=file:///mnt/games/libreoffice/try-profile-writer\n", out.stdout)
+        self.assertNotIn("--calc", out.stdout)
+
+    def test_writer_never_defaults_to_the_calc_profile(self):
+        for mode in ("light", "dark", "tabbed", "tabbed-light", "compact"):
+            out = office_dry_run("writer", mode)
+            self.assertEqual(0, out.returncode, out.stderr)
+            self.assertNotRegex(out.stdout, r"try-profile(\s|$)", mode)
+            self.assertIn("UserInstallation=file:///mnt/games/libreoffice/try-profile-writer", out.stdout, mode)
+
+    def test_writer_takes_the_same_options(self):
+        out = office_dry_run("writer", "dark", "--font", "selawik", "--profile", "/tmp/w-profile")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("--scheme Boost Dark --tint 255 --font selawik --profile /tmp/w-profile", out.stdout)
+        self.assertIn("soffice --writer -env:UserInstallation=file:///tmp/w-profile", out.stdout)
+
+    def test_office_sh_calc_prints_what_calc_sh_prints(self):
+        for args in (("light",), ("dark",), ("tabbed",), ("tabbed-light",), ("compact",),
+                     ("light", "--font", "selawik"), ("dark", "--profile", "/tmp/other-profile")):
+            self.assertEqual(dry_run(*args).stdout, office_dry_run("calc", *args).stdout, args)
+
+    def test_unknown_or_missing_app_is_rejected_with_usage(self):
+        for args in (("impress", "light"), ("light",), ()):
+            out = office_dry_run(*args)
+            self.assertEqual(2, out.returncode, args)
+            self.assertIn("usage: office.sh calc|writer", out.stderr, args)
 
 
 if __name__ == "__main__":
