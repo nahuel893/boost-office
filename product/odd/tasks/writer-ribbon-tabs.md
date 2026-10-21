@@ -134,7 +134,7 @@ translations; T9 and T10 (pending decisions); the accent C++ until the user appr
 | W0b | Writer Tabbed Office mode end to end: ToolbarMode node, cui whitelist and per-app preview lookup, profile, launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [x] | 6bfb5aae4, c0a315dd2 (Calc UITest fix) | high; declined; independent verifier (FAIL -> fixed); fix: medium, under budget |
 | W1 | All 24 placeholder slots in one sw rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | 2f510a14f | slice 6bfb5aae4..2f510a14f: medium, budget reached; declined (writer self-check + controller spot check) |
 | W2a / W2b | Home: a = layout, labels, popups, placeholder labels, unit tests, UITests; b = icons, 1920 fit, screenshots | a: delegated (sonnet); b: delegated (sonnet), after the icon worker | a [x], b [x] | a: 38c1b440e (layout + generated), ee9c5bafd (code); b: 1ff462bc9 | a: medium, budget reached; declined (writer self-check + controller spot check); b: pending in slice |
-| W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [ ] | | |
+| W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
 | W3a / W3b | Insert | as W2 | [ ] | | |
 | W4a / W4b | Design (new page) and Layout | as W2 | [ ] | | |
 | W5a / W5b | References | as W2 | [ ] | | |
@@ -456,6 +456,41 @@ The controller's rulings can be overturned by the user.
     - Word shows a wide gallery that shrinks first;
     - it is fixed now, because Home is the first tab the user judges.
 
+- 2026-10-21, W2c (route: delegated, opus). Commits:
+  - 117239dbd: a generator option, `"expand": true` on a toolbox, and its tests;
+  - 786925aaf: the Home JSON, the regenerated `.ui`, `test_writer_home_ui.py` and the UITest. The generator
+    commit came first, because the JSON depends on the option (ruling: accepted).
+  - Root cause:
+    - the generator never set the gallery to expand, so the toolbox item kept the 70 px from
+      `stylespreview.ui:32,37`, set before the style list fills;
+    - VCL never passes `hexpand` up to parent containers;
+    - the stock `notebookbar.ui` sets the expand flags (`:3835`, `:3873`, `:3883`).
+  - Widths, before -> after: 1920 px 70 -> 853; 1600 px 70 -> 533; 1366 px 70 -> 299. The gallery absorbs the
+    width the window loses, and every group still shows at 1366.
+  - Evidence:
+    - unit tests 400 -> 404 (RED first);
+    - the new UITest failed first at 70 px against the required 500, then passed;
+    - `check-ui.sh` reports 0 new warnings and fatals;
+    - `sw.build` exits 0;
+    - Calc is byte-identical, and no svx file changed.
+  - Screenshots: `/mnt/games/libreoffice/assets/previews/writer-ribbon-tabs/w2c/`. Controller check of
+    light-1920: about 10 style tiles, like Word.
+  - Review for the slice 89785d255..786925aaf (W2b + W2c): high; the user granted it. Approved and
+    acknowledged, with no blockers (lineage review-1b13c416bb897d58).
+  - Parked for W9:
+    - svx draws each style preview as a fixed 100x24 image (`StylesPreviewWindow.cxx:546`), so long names
+      are clipped and Title loses the bottom of its letters (stock has the same problem);
+    - in dark mode the previews are white tiles;
+    - about 90 px of the gallery are unused at 1366;
+    - below 1366 nothing is measured;
+    - review WARNING `notebookbarOffice.py:396-405`: the fit UITest never reads back the window width;
+    - review SUGGESTIONS in `test_writer_icons.py`:
+      - the magic `icon_size` value 5 (`:52`);
+      - `test_the_home_page_has_buttons` counts all objects (`:67-68`);
+      - the theme zips are reparsed per button, and `links.txt` is split on whitespace (`:36-45`);
+    - the review's task-log WARNING is answered by this entry.
+  - For later tabs: a gallery that should flex (for example Design > Style Set) uses `"expand": true`.
+
 ## Next step
 
-W2c: the Home Styles gallery width (delegated, opus). Brief: `task-W2c-brief.md`.
+W3a: Insert layout and behaviour (delegated, sonnet). Brief: `task-W3a-brief.md`.
