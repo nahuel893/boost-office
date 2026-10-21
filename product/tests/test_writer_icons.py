@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Icon coverage of Writer's Home and Insert tabs: every command of the generated page has an icon in both
+"""Icon coverage of Writer's Home, Insert, Design and Layout tabs: every command of the generated page has an icon in both
 themes, at the sizes the tab uses (the same contract as test_icons.py has for Calc's tabs)."""
 import tempfile
 import unittest
@@ -84,4 +84,14 @@ class WriterHomeIconsTest(_WriterTabIcons, unittest.TestCase):
 
 class WriterInsertIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Insert"
+    MIN_OBJECTS = 20
+
+
+class WriterDesignIconsTest(_WriterTabIcons, unittest.TestCase):
+    TAB = "Design"
+    MIN_OBJECTS = 8
+
+
+class WriterLayoutIconsTest(_WriterTabIcons, unittest.TestCase):
+    TAB = "Layout"
     MIN_OBJECTS = 20

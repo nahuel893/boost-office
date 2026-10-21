@@ -6,13 +6,15 @@
     {"name": "DocumentFormatting", "caption": "Document Formatting", "rows": 3, "columns": [
       [
         {"id": "Themes", "style": "large", "items": [
-          {"cmd": "ThemeThemes", "action": ".uno:PageLayoutThemePart?Part:string=themes",
+          {"cmd": "ThemeThemes", "icon": "cmd/32/pagelayoutthemepart_themes.png",
+           "action": ".uno:PageLayoutThemePart?Part:string=themes",
            "office_label": "Themes"}
         ]}
       ],
       [
         {"id": "StyleSet", "style": "large", "expand": true, "items": [
-          {"cmd": "StyleSetGallery", "action": ".uno:DesignStyleSet?Action:string=gallery",
+          {"cmd": "StyleSetGallery", "icon": "cmd/32/designstyleset_gallery.png",
+           "action": ".uno:DesignStyleSet?Action:string=gallery",
            "office_label": "Style Set"}
         ]}
       ],
@@ -23,21 +25,25 @@
       ],
       [
         {"id": "Fonts", "style": "large", "items": [
-          {"cmd": "ThemeFonts", "action": ".uno:PageLayoutThemePart?Part:string=fonts",
+          {"cmd": "ThemeFonts", "icon": "cmd/32/pagelayoutthemepart_fonts.png",
+           "action": ".uno:PageLayoutThemePart?Part:string=fonts",
            "office_label": "Fonts"}
         ]}
       ],
       [
         {"id": "ParagraphSpacing", "style": "small-label", "items": [
-          {"cmd": "StyleSetSpacing", "action": ".uno:DesignStyleSet?Action:string=spacing",
+          {"cmd": "StyleSetSpacing", "icon": "cmd/sc_designstyleset_spacing.png",
+           "action": ".uno:DesignStyleSet?Action:string=spacing",
            "office_label": "Paragraph Spacing"}
         ]},
         {"id": "Effects", "style": "small-label", "items": [
-          {"cmd": "ThemeEffects", "action": ".uno:PageLayoutThemePart?Part:string=effects",
+          {"cmd": "ThemeEffects", "icon": "cmd/sc_pagelayoutthemepart_effects.png",
+           "action": ".uno:PageLayoutThemePart?Part:string=effects",
            "office_label": "Effects"}
         ]},
         {"id": "SetAsDefault", "style": "small-label", "items": [
-          {"cmd": "StyleSetDefault", "action": ".uno:DesignStyleSet?Action:string=setdefault",
+          {"cmd": "StyleSetDefault", "icon": "cmd/sc_designstyleset_setdefault.png",
+           "action": ".uno:DesignStyleSet?Action:string=setdefault",
            "office_label": "Set as Default"}
         ]}
       ]

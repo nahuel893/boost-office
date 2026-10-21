@@ -5051,6 +5051,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:PageLayoutThemePart?Part:string=themes</property>
+                                        <property name="icon_name">cmd/32/pagelayoutthemepart_themes.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -5079,6 +5080,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:DesignStyleSet?Action:string=gallery</property>
+                                        <property name="icon_name">cmd/32/designstyleset_gallery.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">True</property>
@@ -5133,6 +5135,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:PageLayoutThemePart?Part:string=fonts</property>
+                                        <property name="icon_name">cmd/32/pagelayoutthemepart_fonts.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -5158,6 +5161,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:DesignStyleSet?Action:string=spacing</property>
+                                        <property name="icon_name">cmd/sc_designstyleset_spacing.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -5182,6 +5186,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:PageLayoutThemePart?Part:string=effects</property>
+                                        <property name="icon_name">cmd/sc_pagelayoutthemepart_effects.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -5206,6 +5211,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:DesignStyleSet?Action:string=setdefault</property>
+                                        <property name="icon_name">cmd/sc_designstyleset_setdefault.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
