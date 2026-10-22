@@ -5,8 +5,8 @@
   "remove_objects": ["Menu Page"],
   "sections": [
     {"name": "Themes", "caption": "Themes", "rows": 3, "columns": [
-      [{"id": "Themes", "style": "large", "items": [{"cmd": "ChooseDesign"}]}],
-      [{"id": "Colors", "style": "small-label", "items": [{"cmd": "ThemeDialog"}]},
+      [{"id": "Themes", "style": "large", "items": [{"cmd": "ChooseDesign", "office_label": "Themes"}]}],
+      [{"id": "Colors", "style": "small-label", "items": [{"cmd": "ThemeDialog", "office_label": "Colors"}]},
        {"id": "Fonts", "style": "small-label", "items": [
           {"cmd": "ThemeFonts", "icon": "cmd/sc_pagelayoutthemepart_fonts.png",
            "action": ".uno:PageLayoutThemePart?Part:string=fonts"}]},
@@ -35,7 +35,8 @@
            "action": ".uno:PageLayoutScaleToFit?Dimension:string=scale"}]}]
     ]},
     {"name": "SheetOptions", "caption": "Sheet Options", "rows": 3, "columns": [
-      [{"id": "SheetRightToLeft", "style": "large", "items": [{"cmd": "SheetRightToLeft"}]}],
+      [{"id": "SheetRightToLeft", "style": "large", "items": [
+          {"cmd": "SheetRightToLeft", "office_label": "Sheet Right-to-Left"}]}],
       [{"id": "ViewGridLines", "style": "small-label", "items": [{"cmd": "ToggleSheetGrid"}]},
        {"id": "PrintGridlines", "style": "small-label", "items": [
           {"cmd": "PrintGridlines", "icon": "cmd/sc_pagelayoutprintoption_gridlines.png",
@@ -48,7 +49,7 @@
     {"name": "Arrange", "caption": "Arrange", "rows": 3, "columns": [
       [{"id": "BringForward", "style": "large", "items": [{"cmd": "PageLayoutBringForwardMenu", "kind": "split"}]}],
       [{"id": "SendBackward", "style": "large", "items": [{"cmd": "PageLayoutSendBackwardMenu", "kind": "split"}]}],
-      [{"id": "SelectionPane", "style": "large", "items": [{"cmd": "Navigator"}]}],
+      [{"id": "SelectionPane", "style": "large", "items": [{"cmd": "Navigator", "office_label": "Selection Pane"}]}],
       [{"id": "Align", "style": "large", "items": [{"cmd": "PageLayoutAlignMenu", "kind": "split"}]}],
       [{"id": "Group", "style": "large", "items": [{"cmd": "PageLayoutGroupMenu", "kind": "split"}]}],
       [{"id": "Rotate", "style": "large", "items": [{"cmd": "PageLayoutRotateMenu", "kind": "split"}]}]

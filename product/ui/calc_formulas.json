@@ -5,7 +5,8 @@
   "remove_objects": [],
   "sections": [
     {"name": "FunctionLibrary", "caption": "Function Library", "rows": 3, "columns": [
-      [{"id": "InsertFunction", "style": "large", "items": [{"cmd": "FunctionDialog"}]}],
+      [{"id": "InsertFunction", "style": "large", "items": [
+          {"cmd": "FunctionDialog", "office_label": "Insert Function"}]}],
       [{"id": "AutoSum", "style": "large", "items": [{"cmd": "FormulasAutoSum", "kind": "split"}]}],
       [{"id": "RecentlyUsed", "style": "large", "items": [{"cmd": "FormulasRecentlyUsedMenu", "kind": "split"}]}],
       [{"id": "Financial", "style": "large", "items": [{"cmd": "FormulasFinancialMenu", "kind": "split"}]}],
@@ -31,10 +32,11 @@
            "action": ".uno:FormulasPython?Action:string=init"}]}]
     ]},
     {"name": "DefinedNames", "caption": "Defined Names", "rows": 3, "columns": [
-      [{"id": "ManageNames", "style": "large", "items": [{"cmd": "DefineName"}]}],
+      [{"id": "ManageNames", "style": "large", "items": [{"cmd": "DefineName", "office_label": "Name Manager"}]}],
       [{"id": "DefineName", "style": "small-label", "items": [{"cmd": "AddName"}]},
        {"id": "UseInFormula", "style": "small-label", "items": [{"cmd": "FormulasUseInFormulaMenu", "kind": "split"}]},
-       {"id": "CreateNames", "style": "small-label", "items": [{"cmd": "CreateNames"}]}]
+       {"id": "CreateNames", "style": "small-label", "items": [
+           {"cmd": "CreateNames", "office_label": "Create from Selection"}]}]
     ]},
     {"name": "Auditing", "caption": "Formula Auditing", "rows": 3, "columns": [
       [{"id": "TracePrecedents", "style": "small-label", "items": [{"cmd": "ShowPrecedents"}]},

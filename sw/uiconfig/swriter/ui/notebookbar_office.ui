@@ -2718,6 +2718,7 @@
                                       <object class="GtkToolButton" id="btnHomeFormatPaintbrush">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeFormatPaintbrush">Format Painter</property>
                                         <property name="action-name">.uno:FormatPaintbrush</property>
                                       </object>
                                       <packing>
@@ -2818,6 +2819,7 @@
                                       <object class="GtkToolButton" id="btnHomeCharFontName">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeCharFontName">Font</property>
                                         <property name="action-name">.uno:CharFontName</property>
                                       </object>
                                       <packing>
@@ -2840,6 +2842,7 @@
                                       <object class="GtkToolButton" id="btnHomeGrow">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeGrow">Increase Font Size</property>
                                         <property name="action-name">.uno:Grow</property>
                                       </object>
                                       <packing>
@@ -2851,6 +2854,7 @@
                                       <object class="GtkToolButton" id="btnHomeShrink">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeShrink">Decrease Font Size</property>
                                         <property name="action-name">.uno:Shrink</property>
                                       </object>
                                       <packing>
@@ -2873,6 +2877,7 @@
                                       <object class="GtkToolButton" id="btnHomeResetAttributes">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeResetAttributes">Clear All Formatting</property>
                                         <property name="action-name">.uno:ResetAttributes</property>
                                       </object>
                                       <packing>
@@ -2974,6 +2979,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeCharBackColor">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeCharBackColor">Text Highlight Color</property>
                                         <property name="action-name">.uno:CharBackColor</property>
                                       </object>
                                       <packing>
@@ -3085,6 +3091,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeDefaultBullet">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeDefaultBullet">Bullets</property>
                                         <property name="action-name">.uno:DefaultBullet</property>
                                       </object>
                                       <packing>
@@ -3096,6 +3103,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeDefaultNumbering">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeDefaultNumbering">Numbering</property>
                                         <property name="action-name">.uno:DefaultNumbering</property>
                                       </object>
                                       <packing>
@@ -3107,6 +3115,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeSetOutline">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeSetOutline">Multilevel List</property>
                                         <property name="action-name">.uno:SetOutline</property>
                                       </object>
                                       <packing>
@@ -3118,6 +3127,7 @@
                                       <object class="GtkToolButton" id="btnHomeDecrementIndent">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeDecrementIndent">Decrease Indent</property>
                                         <property name="action-name">.uno:DecrementIndent</property>
                                       </object>
                                       <packing>
@@ -3129,6 +3139,7 @@
                                       <object class="GtkToolButton" id="btnHomeIncrementIndent">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeIncrementIndent">Increase Indent</property>
                                         <property name="action-name">.uno:IncrementIndent</property>
                                       </object>
                                       <packing>
@@ -3151,6 +3162,7 @@
                                       <object class="GtkToolButton" id="btnHomeControlCodes">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeControlCodes">Show/Hide</property>
                                         <property name="action-name">.uno:ControlCodes</property>
                                       </object>
                                       <packing>
@@ -3175,6 +3187,7 @@
                                       <object class="GtkToolButton" id="btnHomeLeftPara">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeLeftPara">Align Left</property>
                                         <property name="action-name">.uno:LeftPara</property>
                                       </object>
                                       <packing>
@@ -3197,6 +3210,7 @@
                                       <object class="GtkToolButton" id="btnHomeRightPara">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeRightPara">Align Right</property>
                                         <property name="action-name">.uno:RightPara</property>
                                       </object>
                                       <packing>
@@ -3208,6 +3222,7 @@
                                       <object class="GtkToolButton" id="btnHomeJustifyPara">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeJustifyPara">Justify</property>
                                         <property name="action-name">.uno:JustifyPara</property>
                                       </object>
                                       <packing>
@@ -3219,6 +3234,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeLineSpacing">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeLineSpacing">Line and Paragraph Spacing</property>
                                         <property name="action-name">.uno:LineSpacing</property>
                                       </object>
                                       <packing>
@@ -3230,6 +3246,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeBackgroundColor">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeBackgroundColor">Shading</property>
                                         <property name="action-name">.uno:BackgroundColor</property>
                                       </object>
                                       <packing>
@@ -3347,6 +3364,7 @@
                                       <object class="GtkToolButton" id="btnHomeStylesPreview">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeStylesPreview">Styles</property>
                                         <property name="action-name">.uno:StylesPreview</property>
                                       </object>
                                       <packing>
@@ -3472,6 +3490,7 @@
                                       <object class="GtkToolButton" id="btnHomeSearchDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeSearchDialog">Replace</property>
                                         <property name="action-name">.uno:SearchDialog</property>
                                       </object>
                                       <packing>
@@ -3598,6 +3617,7 @@
                                       <object class="GtkToolButton" id="btnHomeSpellingAndGrammarDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnHomeSpellingAndGrammarDialog">Editor</property>
                                         <property name="action-name">.uno:SpellingAndGrammarDialog</property>
                                       </object>
                                       <packing>
@@ -3740,6 +3760,7 @@
                                       <object class="GtkToolButton" id="btnInsertTitlePageDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertTitlePageDialog">Cover Page</property>
                                         <property name="action-name">.uno:TitlePageDialog</property>
                                       </object>
                                       <packing>
@@ -3993,6 +4014,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertGraphic">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertInsertGraphic">Pictures</property>
                                         <property name="action-name">.uno:InsertGraphic</property>
                                       </object>
                                       <packing>
@@ -4042,6 +4064,7 @@
                                       <object class="GtkToolButton" id="btnInsertGallery">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertGallery">Icons</property>
                                         <property name="action-name">.uno:Gallery</property>
                                       </object>
                                       <packing>
@@ -4238,6 +4261,7 @@
                                       <object class="GtkToolButton" id="btnInsertHyperlinkDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertHyperlinkDialog">Link</property>
                                         <property name="action-name">.uno:HyperlinkDialog</property>
                                       </object>
                                       <packing>
@@ -4688,6 +4712,7 @@
                                       <object class="GtkToolButton" id="btnInsertFontworkGalleryFloater">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertFontworkGalleryFloater">WordArt</property>
                                         <property name="action-name">.uno:FontworkGalleryFloater</property>
                                       </object>
                                       <packing>
@@ -4712,6 +4737,7 @@
                                       <object class="GtkToolButton" id="btnInsertFormatDropcap">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertFormatDropcap">Drop Cap</property>
                                         <property name="action-name">.uno:FormatDropcap</property>
                                         <property name="icon_name">cmd/sc_formatdropcap.png</property>
                                       </object>
@@ -4761,6 +4787,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertDateField">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertInsertDateField">Date &amp; Time</property>
                                         <property name="action-name">.uno:InsertDateField</property>
                                       </object>
                                       <packing>
@@ -4885,6 +4912,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertObjectStarMath">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnInsertInsertObjectStarMath">Equation</property>
                                         <property name="action-name">.uno:InsertObjectStarMath</property>
                                       </object>
                                       <packing>
@@ -5103,6 +5131,7 @@
                                       <object class="GtkToolButton" id="btnDesignThemeDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnDesignThemeDialog">Colors</property>
                                         <property name="action-name">.uno:ThemeDialog</property>
                                       </object>
                                       <packing>
@@ -5336,6 +5365,7 @@
                                       <object class="GtkToolButton" id="btnDesignPageAreaDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnDesignPageAreaDialog">Page Color</property>
                                         <property name="action-name">.uno:PageAreaDialog</property>
                                       </object>
                                       <packing>
@@ -5363,6 +5393,7 @@
                                       <object class="GtkToolButton" id="btnDesignPageDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnDesignPageDialog">Page Borders</property>
                                         <property name="action-name">.uno:PageDialog</property>
                                       </object>
                                       <packing>
@@ -5503,6 +5534,7 @@
                                       <object class="GtkMenuToolButton" id="btnLayoutPageMargin">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutPageMargin">Margins</property>
                                         <property name="action-name">.uno:PageMargin</property>
                                       </object>
                                       <packing>
@@ -5557,6 +5589,7 @@
                                       <object class="GtkMenuToolButton" id="btnLayoutAttributePageSize">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutAttributePageSize">Size</property>
                                         <property name="action-name">.uno:AttributePageSize</property>
                                       </object>
                                       <packing>
@@ -5584,6 +5617,7 @@
                                       <object class="GtkMenuToolButton" id="btnLayoutPageColumnType">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutPageColumnType">Columns</property>
                                         <property name="action-name">.uno:PageColumnType</property>
                                       </object>
                                       <packing>
@@ -5633,6 +5667,7 @@
                                       <object class="GtkToolButton" id="btnLayoutLineNumberingDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutLineNumberingDialog">Line Numbers</property>
                                         <property name="action-name">.uno:LineNumberingDialog</property>
                                       </object>
                                       <packing>
@@ -5757,6 +5792,7 @@
                                       <object class="GtkToolButton" id="btnLayoutLeftParaMargin">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutLeftParaMargin">Indent Left</property>
                                         <property name="action-name">.uno:LeftParaMargin</property>
                                       </object>
                                       <packing>
@@ -5781,6 +5817,7 @@
                                       <object class="GtkToolButton" id="btnLayoutRightParaMargin">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutRightParaMargin">Indent Right</property>
                                         <property name="action-name">.uno:RightParaMargin</property>
                                       </object>
                                       <packing>
@@ -5805,6 +5842,7 @@
                                       <object class="GtkToolButton" id="btnLayoutAboveSpacing">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutAboveSpacing">Spacing Before</property>
                                         <property name="action-name">.uno:AboveSpacing</property>
                                       </object>
                                       <packing>
@@ -5829,6 +5867,7 @@
                                       <object class="GtkToolButton" id="btnLayoutBelowSpacing">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutBelowSpacing">Spacing After</property>
                                         <property name="action-name">.uno:BelowSpacing</property>
                                       </object>
                                       <packing>
@@ -5931,6 +5970,7 @@
                                       <object class="GtkMenuToolButton" id="btnLayoutAnchorMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutAnchorMenu">Position</property>
                                         <property name="action-name">.uno:AnchorMenu</property>
                                       </object>
                                       <packing>
@@ -6039,6 +6079,7 @@
                                       <object class="GtkToolButton" id="btnLayoutNavigator">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnLayoutNavigator">Selection Pane</property>
                                         <property name="action-name">.uno:Navigator</property>
                                       </object>
                                       <packing>

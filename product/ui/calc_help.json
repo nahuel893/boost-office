@@ -5,14 +5,15 @@
   "remove_objects": [],
   "sections": [
     {"name": "Help", "caption": "Help", "rows": 3, "columns": [
-      [{"id": "Index", "style": "large", "items": [{"cmd": "HelpIndex"}]}],
-      [{"id": "GetHelpOnline", "style": "large", "items": [{"cmd": "QuestionAnswers"}]}],
+      [{"id": "Index", "style": "large", "items": [{"cmd": "HelpIndex", "office_label": "Help"}]}],
+      [{"id": "GetHelpOnline", "style": "large", "items": [
+          {"cmd": "QuestionAnswers", "office_label": "Contact Support"}]}],
       [{"id": "Feedback", "style": "large", "items": [{"cmd": "HelpFeedback"}]}],
-      [{"id": "UserGuides", "style": "large", "items": [{"cmd": "Documentation"}]}],
+      [{"id": "UserGuides", "style": "large", "items": [{"cmd": "Documentation", "office_label": "Show Training"}]}],
       [{"id": "WhatsNew", "style": "large", "items": [{"cmd": "WhatsNew"}]}]
     ]},
     {"name": "Community", "caption": "Community", "rows": 3, "columns": [
-      [{"id": "GetInvolved", "style": "large", "items": [{"cmd": "GetInvolved"}]}],
+      [{"id": "GetInvolved", "style": "large", "items": [{"cmd": "GetInvolved", "office_label": "Community"}]}],
       [{"id": "Blog", "style": "large", "items": [{"cmd": "HelpBlog"}]}]
     ]}
   ]

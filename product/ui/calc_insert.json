@@ -5,14 +5,14 @@
   "remove_objects": ["Menu Insert"],
   "sections": [
     {"name": "Tables", "caption": "Tables", "rows": 3, "columns": [
-      [{"id": "PivotTable", "style": "large", "items": [{"cmd": "DataDataPilotRun"}]}],
+      [{"id": "PivotTable", "style": "large", "items": [{"cmd": "DataDataPilotRun", "office_label": "PivotTable"}]}],
       [{"id": "RecommendedPivot", "style": "large", "items": [{"cmd": "InsertRecommendedPivotTables"}]}],
       [{"id": "Table", "style": "large", "items": [{"cmd": "InsertCalcTable"}]}]
     ]},
     {"name": "Illustrations", "caption": "Illustrations", "rows": 3, "columns": [
       [{"id": "Pictures", "style": "small-label", "items": [{"cmd": "InsertPicturesMenu", "kind": "split"}]},
        {"id": "Shapes", "style": "small-label", "items": [{"cmd": "InsertShapesMenu", "kind": "split"}]},
-       {"id": "Gallery", "style": "small-label", "items": [{"cmd": "Gallery"}]}],
+       {"id": "Gallery", "style": "small-label", "items": [{"cmd": "Gallery", "office_label": "Icons"}]}],
       [{"id": "Models3D", "style": "small", "items": [{"cmd": "Insert3DModels"}]},
        {"id": "SmartArt", "style": "small", "items": [{"cmd": "InsertSmartArt"}]},
        {"id": "Screenshot", "style": "small", "items": [{"cmd": "InsertScreenshot"}]}]
@@ -21,7 +21,8 @@
       [{"id": "Checkbox", "style": "large", "items": [{"cmd": "InsertCellCheckbox"}]}]
     ]},
     {"name": "Charts", "caption": "Charts", "rows": 3, "columns": [
-      [{"id": "Chart", "style": "large", "items": [{"cmd": "InsertObjectChart"}]}],
+      [{"id": "Chart", "style": "large", "items": [
+          {"cmd": "InsertObjectChart", "office_label": "Recommended Charts"}]}],
       [{"id": "ChartColumnBar", "style": "small", "items": [
           {"cmd": "ChartColumnBar", "icon": "cmd/sc_insertcharttype_columnbar.png", "action": ".uno:InsertChartType?Type:string=columnbar"}]},
        {"id": "ChartLineArea", "style": "small", "items": [
@@ -55,20 +56,21 @@
        {"id": "Timeline", "style": "small-label", "items": [{"cmd": "InsertTimeline"}]}]
     ]},
     {"name": "Links", "caption": "Links", "rows": 3, "columns": [
-      [{"id": "Hyperlink", "style": "large", "items": [{"cmd": "HyperlinkDialog"}]}]
+      [{"id": "Hyperlink", "style": "large", "items": [{"cmd": "HyperlinkDialog", "office_label": "Link"}]}]
     ]},
     {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
       [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation"}]}]
     ]},
     {"name": "Text", "caption": "Text", "rows": 3, "columns": [
       [{"id": "TextBox", "style": "large", "items": [{"cmd": "DrawText"}]}],
-      [{"id": "HeaderFooter", "style": "large", "items": [{"cmd": "EditHeaderAndFooter"}]}],
-      [{"id": "Fontwork", "style": "large", "items": [{"cmd": "FontworkGalleryFloater"}]}],
+      [{"id": "HeaderFooter", "style": "large", "items": [
+          {"cmd": "EditHeaderAndFooter", "office_label": "Header & Footer"}]}],
+      [{"id": "Fontwork", "style": "large", "items": [{"cmd": "FontworkGalleryFloater", "office_label": "WordArt"}]}],
       [{"id": "SignatureLine", "style": "large", "items": [{"cmd": "InsertSignatureLine"}]}],
-      [{"id": "OleObject", "style": "large", "items": [{"cmd": "InsertObject"}]}]
+      [{"id": "OleObject", "style": "large", "items": [{"cmd": "InsertObject", "office_label": "Object"}]}]
     ]},
     {"name": "Symbols", "caption": "Symbols", "rows": 3, "columns": [
-      [{"id": "Formula", "style": "large", "items": [{"cmd": "InsertObjectStarMath"}]}],
+      [{"id": "Formula", "style": "large", "items": [{"cmd": "InsertObjectStarMath", "office_label": "Equation"}]}],
       [{"id": "Symbol", "style": "large", "items": [{"cmd": "CharmapControl"}]}]
     ]}
   ]

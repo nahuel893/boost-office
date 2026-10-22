@@ -19,32 +19,36 @@
            "action": ".uno:ViewSheetView?Action:string=options"}]}]
     ]},
     {"name": "WorkbookViews", "caption": "Workbook Views", "rows": 3, "columns": [
-      [{"id": "Normal", "style": "large", "items": [{"cmd": "NormalViewMode"}]}],
-      [{"id": "PageBreak", "style": "large", "items": [{"cmd": "PagebreakMode"}]}],
+      [{"id": "Normal", "style": "large", "items": [{"cmd": "NormalViewMode", "office_label": "Normal"}]}],
+      [{"id": "PageBreak", "style": "large", "items": [
+          {"cmd": "PagebreakMode", "office_label": "Page Break Preview"}]}],
       [{"id": "PageLayout", "style": "large", "items": [{"cmd": "ViewPageLayout"}]}],
       [{"id": "CustomViews", "style": "large", "items": [{"cmd": "ViewCustomViews"}]}]
     ]},
     {"name": "DarkMode", "caption": "Dark Mode", "rows": 3, "columns": [
-      [{"id": "SwitchModes", "style": "large", "items": [{"cmd": "ChangeTheme"}]}]
+      [{"id": "SwitchModes", "style": "large", "items": [{"cmd": "ChangeTheme", "office_label": "Switch Modes"}]}]
     ]},
     {"name": "Show", "caption": "Show", "rows": 3, "columns": [
-      [{"id": "Navigation", "style": "large", "items": [{"cmd": "Navigator"}]}],
+      [{"id": "Navigation", "style": "large", "items": [{"cmd": "Navigator", "office_label": "Navigation"}]}],
       [{"id": "Ruler", "style": "small-label", "items": [{"cmd": "ViewRuler"}]},
-       {"id": "Gridlines", "style": "small-label", "items": [{"cmd": "ToggleSheetGrid"}]},
+       {"id": "Gridlines", "style": "small-label", "items": [{"cmd": "ToggleSheetGrid", "office_label": "Gridlines"}]},
        {"id": "FormulaBar", "style": "small-label", "items": [{"cmd": "InputLineVisible"}]}],
-      [{"id": "Headings", "style": "small-label", "items": [{"cmd": "ViewRowColumnHeaders"}]},
-       {"id": "FocusCell", "style": "small-label", "items": [{"cmd": "ViewColumnRowHighlighting"}]}]
+      [{"id": "Headings", "style": "small-label", "items": [
+          {"cmd": "ViewRowColumnHeaders", "office_label": "Headings"}]},
+       {"id": "FocusCell", "style": "small-label", "items": [
+           {"cmd": "ViewColumnRowHighlighting", "office_label": "Focus Cell"}]}]
     ]},
     {"name": "Zoom", "caption": "Zoom", "rows": 3, "columns": [
       [{"id": "Zoom", "style": "large", "items": [{"cmd": "Zoom"}]}],
       [{"id": "Zoom100", "style": "large", "items": [{"cmd": "Zoom100Percent"}]}],
-      [{"id": "ZoomToSelection", "style": "large", "items": [{"cmd": "ZoomOptimal"}]}]
+      [{"id": "ZoomToSelection", "style": "large", "items": [
+          {"cmd": "ZoomOptimal", "office_label": "Zoom to Selection"}]}]
     ]},
     {"name": "Window", "caption": "Window", "rows": 3, "columns": [
       [{"id": "NewWindow", "style": "large", "items": [{"cmd": "NewWindow"}]}],
       [{"id": "ArrangeAll", "style": "large", "items": [{"cmd": "ViewArrangeAll"}]}],
       [{"id": "FreezePanes", "style": "large", "items": [{"cmd": "ViewFreezePanesMenu", "kind": "split"}]}],
-      [{"id": "Split", "style": "small-label", "items": [{"cmd": "SplitWindow"}]},
+      [{"id": "Split", "style": "small-label", "items": [{"cmd": "SplitWindow", "office_label": "Split"}]},
        {"id": "Hide", "style": "small-label", "items": [
           {"cmd": "WindowHide", "icon": "cmd/sc_viewwindowvisibility_hide.png",
            "action": ".uno:ViewWindowVisibility?Action:string=hide"}]},

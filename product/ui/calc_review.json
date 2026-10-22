@@ -7,7 +7,8 @@
     {"name": "Proofing", "caption": "Proofing", "rows": 3, "columns": [
       [{"id": "Spelling", "style": "large", "items": [{"cmd": "SpellDialog"}]}],
       [{"id": "Thesaurus", "style": "large", "items": [{"cmd": "ThesaurusDialog"}]}],
-      [{"id": "Properties", "style": "large", "items": [{"cmd": "SetDocumentProperties"}]}]
+      [{"id": "Properties", "style": "large", "items": [
+          {"cmd": "SetDocumentProperties", "office_label": "Workbook Statistics"}]}]
     ]},
     {"name": "Accessibility", "caption": "Accessibility", "rows": 3, "columns": [
       [{"id": "CheckAccessibility", "style": "large", "items": [{"cmd": "ReviewAccessibilityMenu", "kind": "split"}]}]
@@ -16,8 +17,8 @@
       [{"id": "Translate", "style": "large", "items": [{"cmd": "ReviewTranslate"}]}]
     ]},
     {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
-      [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation"}]}],
-      [{"id": "DeleteComment", "style": "large", "items": [{"cmd": "DeleteNote"}]}],
+      [{"id": "Comment", "style": "large", "items": [{"cmd": "InsertAnnotation", "office_label": "New Comment"}]}],
+      [{"id": "DeleteComment", "style": "large", "items": [{"cmd": "DeleteNote", "office_label": "Delete"}]}],
       [{"id": "CommentPrevious", "style": "large", "items": [
           {"cmd": "CommentPrevious", "icon": "cmd/32/reviewgotocomment_previous.png",
            "action": ".uno:ReviewGoToComment?Direction:string=previous"}]}],
@@ -31,7 +32,8 @@
     ]},
     {"name": "Protect", "caption": "Protect", "rows": 3, "columns": [
       [{"id": "ProtectSheet", "style": "large", "items": [{"cmd": "Protect"}]}],
-      [{"id": "ProtectWorkbook", "style": "large", "items": [{"cmd": "ToolProtectionDocument"}]}],
+      [{"id": "ProtectWorkbook", "style": "large", "items": [
+          {"cmd": "ToolProtectionDocument", "office_label": "Protect Workbook"}]}],
       [{"id": "AllowEditRanges", "style": "large", "items": [{"cmd": "ReviewAllowEditRanges"}]}],
       [{"id": "ShareWorkbook", "style": "large", "items": [{"cmd": "ShareDocument"}]}]
     ]},

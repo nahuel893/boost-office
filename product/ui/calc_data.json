@@ -6,20 +6,24 @@
   "sections": [
     {"name": "Sources", "caption": "Get External Data", "rows": 3, "columns": [
       [{"id": "FromDatabase", "style": "small-label", "items": [{"cmd": "DataFromDatabase"}]},
-       {"id": "ExternalLinks", "style": "small-label", "items": [{"cmd": "InsertExternalDataSource"}]},
-       {"id": "SheetFromFile", "style": "small-label", "items": [{"cmd": "InsertSheetFromFile"}]}],
+       {"id": "ExternalLinks", "style": "small-label", "items": [
+           {"cmd": "InsertExternalDataSource", "office_label": "From Web"}]},
+       {"id": "SheetFromFile", "style": "small-label", "items": [
+           {"cmd": "InsertSheetFromFile", "office_label": "From Text"}]}],
       [{"id": "OtherSourcesMenu", "style": "large", "items": [
-          {"cmd": "DataOtherSourcesMenu", "kind": "split"}]}],
-      [{"id": "DataSources", "style": "large", "items": [{"cmd": "ViewDataSourceBrowser"}]}]
+          {"cmd": "DataOtherSourcesMenu", "kind": "split", "office_label": "From Other Sources"}]}],
+      [{"id": "DataSources", "style": "large", "items": [
+          {"cmd": "ViewDataSourceBrowser", "office_label": "Existing Connections"}]}]
     ]},
     {"name": "Transform", "caption": "Get & Transform", "rows": 3, "columns": [
-      [{"id": "DataProvider", "style": "large", "items": [{"cmd": "DataProvider"}]}],
-      [{"id": "SelectDB", "style": "small-label", "items": [{"cmd": "SelectDB"}]},
-       {"id": "DefineDBName", "style": "small-label", "items": [{"cmd": "DefineDBName"}]},
+      [{"id": "DataProvider", "style": "large", "items": [{"cmd": "DataProvider", "office_label": "New Query"}]}],
+      [{"id": "SelectDB", "style": "small-label", "items": [{"cmd": "SelectDB", "office_label": "Show Queries"}]},
+       {"id": "DefineDBName", "style": "small-label", "items": [{"cmd": "DefineDBName", "office_label": "From Table"}]},
        {"id": "RecentSources", "style": "small-label", "items": [{"cmd": "DataRecentSources"}]}]
     ]},
     {"name": "Connections", "caption": "Connections", "rows": 3, "columns": [
-      [{"id": "Refresh", "style": "large", "items": [{"cmd": "DataRefresh", "kind": "split"}]}],
+      [{"id": "Refresh", "style": "large", "items": [
+          {"cmd": "DataRefresh", "kind": "split", "office_label": "Refresh All"}]}],
       [{"id": "Connections", "style": "small-label", "items": [{"cmd": "DataConnections"}]},
        {"id": "ConnectionProperties", "style": "small-label", "items": [{"cmd": "DataConnectionProperties"}]},
        {"id": "EditLinks", "style": "small", "items": [{"cmd": "EditLinks"}]}]
@@ -29,16 +33,20 @@
        {"id": "SortDescending", "style": "small", "items": [{"cmd": "SortDescending"}]},
        {"id": "Shuffle", "style": "small", "items": [{"cmd": "Shuffle"}]}],
       [{"id": "Sort", "style": "large", "items": [{"cmd": "DataSort"}]}],
-      [{"id": "AutoFilter", "style": "large", "items": [{"cmd": "DataFilterAutoFilter"}]}],
-      [{"id": "ResetFilter", "style": "small-label", "items": [{"cmd": "DataFilterRemoveFilter"}]},
+      [{"id": "AutoFilter", "style": "large", "items": [{"cmd": "DataFilterAutoFilter", "office_label": "Filter"}]}],
+      [{"id": "ResetFilter", "style": "small-label", "items": [
+          {"cmd": "DataFilterRemoveFilter", "office_label": "Clear"}]},
        {"id": "ReapplyFilter", "style": "small-label", "items": [{"cmd": "DataFilterReapply"}]},
-       {"id": "AdvancedFilter", "style": "small-label", "items": [{"cmd": "DataFilterSpecialFilter"}]}]
+       {"id": "AdvancedFilter", "style": "small-label", "items": [
+           {"cmd": "DataFilterSpecialFilter", "office_label": "Advanced"}]}]
     ]},
     {"name": "Tools", "caption": "Data Tools", "rows": 3, "columns": [
       [{"id": "TextToColumns", "style": "large", "items": [{"cmd": "TextToColumns"}]}],
       [{"id": "FlashFill", "style": "small-label", "items": [{"cmd": "DataFlashFill"}]},
-       {"id": "Duplicates", "style": "small-label", "items": [{"cmd": "HandleDuplicateRecords"}]},
-       {"id": "Validation", "style": "small-label", "items": [{"cmd": "Validation"}]}],
+       {"id": "Duplicates", "style": "small-label", "items": [
+           {"cmd": "HandleDuplicateRecords", "office_label": "Remove Duplicates"}]},
+       {"id": "Validation", "style": "small-label", "items": [
+           {"cmd": "Validation", "office_label": "Data Validation"}]}],
       [{"id": "Consolidate", "style": "small-label", "items": [{"cmd": "DataConsolidate"}]},
        {"id": "Relationships", "style": "small-label", "items": [{"cmd": "DataRelationships"}]},
        {"id": "ManageModel", "style": "small-label", "items": [{"cmd": "DataManageModel"}]}]
@@ -51,13 +59,13 @@
     {"name": "Outline", "caption": "Outline", "rows": 3, "columns": [
       [{"id": "Group", "style": "small-label", "items": [{"cmd": "DataGroup", "kind": "split"}]},
        {"id": "Ungroup", "style": "small-label", "items": [{"cmd": "DataUngroup", "kind": "split"}]},
-       {"id": "Subtotals", "style": "small-label", "items": [{"cmd": "DataSubTotals"}]}],
+       {"id": "Subtotals", "style": "small-label", "items": [{"cmd": "DataSubTotals", "office_label": "Subtotal"}]}],
       [{"id": "ShowDetail", "style": "small", "items": [{"cmd": "ShowDetail"}]},
        {"id": "HideDetail", "style": "small", "items": [{"cmd": "HideDetail"}]}]
     ]},
     {"name": "Analyze", "caption": "Analyze", "rows": 3, "columns": [
       [{"id": "StatisticsMenu", "style": "large", "items": [
-          {"cmd": "DataStatisticsMenu", "kind": "split"}]}]
+          {"cmd": "DataStatisticsMenu", "kind": "split", "office_label": "Data Analysis"}]}]
     ]}
   ]
 }

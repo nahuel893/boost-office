@@ -2076,6 +2076,7 @@
                                       <object class="GtkToolButton" id="btnHomeFormatPaintbrush">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHomeFormatPaintbrush">Format Painter</property>
                                         <property name="action-name">.uno:FormatPaintbrush</property>
                                       </object>
                                       <packing>
@@ -2821,6 +2822,7 @@
                                       <object class="GtkMenuToolButton" id="btnHomeConditionalFormatMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHomeConditionalFormatMenu">Conditional Formatting</property>
                                         <property name="action-name">.uno:ConditionalFormatMenu</property>
                                       </object>
                                       <packing>
@@ -2848,6 +2850,7 @@
                                       <object class="GtkToolButton" id="btnHomeAutoFormat">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHomeAutoFormat">Format as Table</property>
                                         <property name="action-name">.uno:AutoFormat</property>
                                       </object>
                                       <packing>
@@ -3134,6 +3137,7 @@
                                       <object class="GtkToolButton" id="btnHomeAutoSum">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHomeAutoSum">AutoSum</property>
                                         <property name="action-name">.uno:AutoSum</property>
                                       </object>
                                       <packing>
@@ -3383,6 +3387,7 @@
                                       <object class="GtkToolButton" id="btnInsertDataDataPilotRun">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertDataDataPilotRun">PivotTable</property>
                                         <property name="action-name">.uno:DataDataPilotRun</property>
                                       </object>
                                       <packing>
@@ -3586,6 +3591,7 @@
                                       <object class="GtkToolButton" id="btnInsertGallery">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertGallery">Icons</property>
                                         <property name="action-name">.uno:Gallery</property>
                                       </object>
                                       <packing>
@@ -3863,6 +3869,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertObjectChart">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertInsertObjectChart">Recommended Charts</property>
                                         <property name="action-name">.uno:InsertObjectChart</property>
                                       </object>
                                       <packing>
@@ -4496,6 +4503,7 @@
                                       <object class="GtkToolButton" id="btnInsertHyperlinkDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertHyperlinkDialog">Link</property>
                                         <property name="action-name">.uno:HyperlinkDialog</property>
                                       </object>
                                       <packing>
@@ -4729,6 +4737,7 @@
                                       <object class="GtkToolButton" id="btnInsertEditHeaderAndFooter">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertEditHeaderAndFooter">Header &amp; Footer</property>
                                         <property name="action-name">.uno:EditHeaderAndFooter</property>
                                       </object>
                                       <packing>
@@ -4756,6 +4765,7 @@
                                       <object class="GtkToolButton" id="btnInsertFontworkGalleryFloater">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertFontworkGalleryFloater">WordArt</property>
                                         <property name="action-name">.uno:FontworkGalleryFloater</property>
                                       </object>
                                       <packing>
@@ -4810,6 +4820,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertObject">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertInsertObject">Object</property>
                                         <property name="action-name">.uno:InsertObject</property>
                                       </object>
                                       <packing>
@@ -4913,6 +4924,7 @@
                                       <object class="GtkToolButton" id="btnInsertInsertObjectStarMath">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnInsertInsertObjectStarMath">Equation</property>
                                         <property name="action-name">.uno:InsertObjectStarMath</property>
                                       </object>
                                       <packing>
@@ -5080,6 +5092,7 @@
                                       <object class="GtkToolButton" id="btnPageLayoutChooseDesign">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnPageLayoutChooseDesign">Themes</property>
                                         <property name="action-name">.uno:ChooseDesign</property>
                                       </object>
                                       <packing>
@@ -5105,6 +5118,7 @@
                                       <object class="GtkToolButton" id="btnPageLayoutThemeDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnPageLayoutThemeDialog">Colors</property>
                                         <property name="action-name">.uno:ThemeDialog</property>
                                       </object>
                                       <packing>
@@ -5673,6 +5687,7 @@
                                       <object class="GtkToolButton" id="btnPageLayoutSheetRightToLeft">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnPageLayoutSheetRightToLeft">Sheet Right-to-Left</property>
                                         <property name="action-name">.uno:SheetRightToLeft</property>
                                       </object>
                                       <packing>
@@ -5928,6 +5943,7 @@
                                       <object class="GtkToolButton" id="btnPageLayoutNavigator">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnPageLayoutNavigator">Selection Pane</property>
                                         <property name="action-name">.uno:Navigator</property>
                                       </object>
                                       <packing>
@@ -6147,6 +6163,7 @@
                                       <object class="GtkToolButton" id="btnFormulasFunctionDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnFormulasFunctionDialog">Insert Function</property>
                                         <property name="action-name">.uno:FunctionDialog</property>
                                       </object>
                                       <packing>
@@ -6672,6 +6689,7 @@
                                       <object class="GtkToolButton" id="btnFormulasDefineName">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnFormulasDefineName">Name Manager</property>
                                         <property name="action-name">.uno:DefineName</property>
                                       </object>
                                       <packing>
@@ -6745,6 +6763,7 @@
                                       <object class="GtkToolButton" id="btnFormulasCreateNames">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnFormulasCreateNames">Create from Selection</property>
                                         <property name="action-name">.uno:CreateNames</property>
                                       </object>
                                       <packing>
@@ -7302,6 +7321,7 @@
                                       <object class="GtkToolButton" id="btnDataInsertExternalDataSource">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataInsertExternalDataSource">From Web</property>
                                         <property name="action-name">.uno:InsertExternalDataSource</property>
                                       </object>
                                       <packing>
@@ -7326,6 +7346,7 @@
                                       <object class="GtkToolButton" id="btnDataInsertSheetFromFile">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataInsertSheetFromFile">From Text</property>
                                         <property name="action-name">.uno:InsertSheetFromFile</property>
                                       </object>
                                       <packing>
@@ -7352,6 +7373,7 @@
                                       <object class="GtkMenuToolButton" id="btnDataDataOtherSourcesMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataOtherSourcesMenu">From Other Sources</property>
                                         <property name="action-name">.uno:DataOtherSourcesMenu</property>
                                       </object>
                                       <packing>
@@ -7379,6 +7401,7 @@
                                       <object class="GtkToolButton" id="btnDataViewDataSourceBrowser">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataViewDataSourceBrowser">Existing Connections</property>
                                         <property name="action-name">.uno:ViewDataSourceBrowser</property>
                                       </object>
                                       <packing>
@@ -7482,6 +7505,7 @@
                                       <object class="GtkToolButton" id="btnDataDataProvider">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataProvider">New Query</property>
                                         <property name="action-name">.uno:DataProvider</property>
                                       </object>
                                       <packing>
@@ -7507,6 +7531,7 @@
                                       <object class="GtkToolButton" id="btnDataSelectDB">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataSelectDB">Show Queries</property>
                                         <property name="action-name">.uno:SelectDB</property>
                                       </object>
                                       <packing>
@@ -7531,6 +7556,7 @@
                                       <object class="GtkToolButton" id="btnDataDefineDBName">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDefineDBName">From Table</property>
                                         <property name="action-name">.uno:DefineDBName</property>
                                       </object>
                                       <packing>
@@ -7657,6 +7683,7 @@
                                       <object class="GtkMenuToolButton" id="btnDataDataRefresh">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataRefresh">Refresh All</property>
                                         <property name="action-name">.uno:DataRefresh</property>
                                       </object>
                                       <packing>
@@ -7931,6 +7958,7 @@
                                       <object class="GtkToolButton" id="btnDataDataFilterAutoFilter">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataFilterAutoFilter">Filter</property>
                                         <property name="action-name">.uno:DataFilterAutoFilter</property>
                                       </object>
                                       <packing>
@@ -7956,6 +7984,7 @@
                                       <object class="GtkToolButton" id="btnDataDataFilterRemoveFilter">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataFilterRemoveFilter">Clear</property>
                                         <property name="action-name">.uno:DataFilterRemoveFilter</property>
                                       </object>
                                       <packing>
@@ -8004,6 +8033,7 @@
                                       <object class="GtkToolButton" id="btnDataDataFilterSpecialFilter">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataFilterSpecialFilter">Advanced</property>
                                         <property name="action-name">.uno:DataFilterSpecialFilter</property>
                                       </object>
                                       <packing>
@@ -8155,6 +8185,7 @@
                                       <object class="GtkToolButton" id="btnDataHandleDuplicateRecords">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataHandleDuplicateRecords">Remove Duplicates</property>
                                         <property name="action-name">.uno:HandleDuplicateRecords</property>
                                       </object>
                                       <packing>
@@ -8179,6 +8210,7 @@
                                       <object class="GtkToolButton" id="btnDataValidation">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataValidation">Data Validation</property>
                                         <property name="action-name">.uno:Validation</property>
                                       </object>
                                       <packing>
@@ -8529,6 +8561,7 @@
                                       <object class="GtkToolButton" id="btnDataDataSubTotals">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataSubTotals">Subtotal</property>
                                         <property name="action-name">.uno:DataSubTotals</property>
                                       </object>
                                       <packing>
@@ -8679,6 +8712,7 @@
                                       <object class="GtkMenuToolButton" id="btnDataDataStatisticsMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnDataDataStatisticsMenu">Data Analysis</property>
                                         <property name="action-name">.uno:DataStatisticsMenu</property>
                                       </object>
                                       <packing>
@@ -8871,6 +8905,7 @@
                                       <object class="GtkToolButton" id="btnReviewSetDocumentProperties">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnReviewSetDocumentProperties">Workbook Statistics</property>
                                         <property name="action-name">.uno:SetDocumentProperties</property>
                                       </object>
                                       <packing>
@@ -9180,6 +9215,7 @@
                                       <object class="GtkToolButton" id="btnReviewInsertAnnotation">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnReviewInsertAnnotation">New Comment</property>
                                         <property name="action-name">.uno:InsertAnnotation</property>
                                       </object>
                                       <packing>
@@ -9207,6 +9243,7 @@
                                       <object class="GtkToolButton" id="btnReviewDeleteNote">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnReviewDeleteNote">Delete</property>
                                         <property name="action-name">.uno:DeleteNote</property>
                                       </object>
                                       <packing>
@@ -9523,6 +9560,7 @@
                                       <object class="GtkToolButton" id="btnReviewToolProtectionDocument">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnReviewToolProtectionDocument">Protect Workbook</property>
                                         <property name="action-name">.uno:ToolProtectionDocument</property>
                                       </object>
                                       <packing>
@@ -9980,6 +10018,7 @@
                                       <object class="GtkToolButton" id="btnViewNormalViewMode">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewNormalViewMode">Normal</property>
                                         <property name="action-name">.uno:NormalViewMode</property>
                                       </object>
                                       <packing>
@@ -10007,6 +10046,7 @@
                                       <object class="GtkToolButton" id="btnViewPagebreakMode">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewPagebreakMode">Page Break Preview</property>
                                         <property name="action-name">.uno:PagebreakMode</property>
                                       </object>
                                       <packing>
@@ -10164,6 +10204,7 @@
                                       <object class="GtkToolButton" id="btnViewChangeTheme">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewChangeTheme">Switch Modes</property>
                                         <property name="action-name">.uno:ChangeTheme</property>
                                       </object>
                                       <packing>
@@ -10267,6 +10308,7 @@
                                       <object class="GtkToolButton" id="btnViewNavigator">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewNavigator">Navigation</property>
                                         <property name="action-name">.uno:Navigator</property>
                                       </object>
                                       <packing>
@@ -10316,6 +10358,7 @@
                                       <object class="GtkToolButton" id="btnViewToggleSheetGrid">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewToggleSheetGrid">Gridlines</property>
                                         <property name="action-name">.uno:ToggleSheetGrid</property>
                                       </object>
                                       <packing>
@@ -10364,6 +10407,7 @@
                                       <object class="GtkToolButton" id="btnViewViewRowColumnHeaders">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewViewRowColumnHeaders">Headings</property>
                                         <property name="action-name">.uno:ViewRowColumnHeaders</property>
                                       </object>
                                       <packing>
@@ -10388,6 +10432,7 @@
                                       <object class="GtkToolButton" id="btnViewViewColumnRowHighlighting">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewViewColumnRowHighlighting">Focus Cell</property>
                                         <property name="action-name">.uno:ViewColumnRowHighlighting</property>
                                       </object>
                                       <packing>
@@ -10544,6 +10589,7 @@
                                       <object class="GtkToolButton" id="btnViewZoomOptimal">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewZoomOptimal">Zoom to Selection</property>
                                         <property name="action-name">.uno:ZoomOptimal</property>
                                       </object>
                                       <packing>
@@ -10726,6 +10772,7 @@
                                       <object class="GtkToolButton" id="btnViewSplitWindow">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnViewSplitWindow">Split</property>
                                         <property name="action-name">.uno:SplitWindow</property>
                                       </object>
                                       <packing>
@@ -16269,6 +16316,7 @@
                                       <object class="GtkToolButton" id="btnHelpHelpIndex">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHelpHelpIndex">Help</property>
                                         <property name="action-name">.uno:HelpIndex</property>
                                       </object>
                                       <packing>
@@ -16296,6 +16344,7 @@
                                       <object class="GtkToolButton" id="btnHelpQuestionAnswers">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHelpQuestionAnswers">Contact Support</property>
                                         <property name="action-name">.uno:QuestionAnswers</property>
                                       </object>
                                       <packing>
@@ -16350,6 +16399,7 @@
                                       <object class="GtkToolButton" id="btnHelpDocumentation">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHelpDocumentation">Show Training</property>
                                         <property name="action-name">.uno:Documentation</property>
                                       </object>
                                       <packing>
@@ -16480,6 +16530,7 @@
                                       <object class="GtkToolButton" id="btnHelpGetInvolved">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedCalc|btnHelpGetInvolved">Community</property>
                                         <property name="action-name">.uno:GetInvolved</property>
                                       </object>
                                       <packing>

@@ -12,7 +12,8 @@
       [{"id": "Paste", "style": "large", "items": [{"cmd": "Paste", "kind": "split"}]}],
       [{"id": "Cut", "style": "small-label", "items": [{"cmd": "Cut"}]},
        {"id": "Copy", "style": "small-label", "items": [{"cmd": "Copy"}]},
-       {"id": "FormatPaintbrush", "style": "small-label", "items": [{"cmd": "FormatPaintbrush"}]}]
+       {"id": "FormatPaintbrush", "style": "small-label", "items": [
+           {"cmd": "FormatPaintbrush", "office_label": "Format Painter"}]}]
     ]},
     {"name": "Font", "caption": "Font", "rows": 2, "columns": [
       [{"id": "FontRow", "style": "small", "items": [
@@ -43,8 +44,8 @@
     ]},
     {"name": "Styles", "caption": "Styles", "rows": 2, "columns": [
       [{"id": "ConditionalFormatMenu", "style": "medium", "items": [
-          {"cmd": "ConditionalFormatMenu", "kind": "split"}]}],
-      [{"id": "AutoFormat", "style": "medium", "items": [{"cmd": "AutoFormat"}]}]
+          {"cmd": "ConditionalFormatMenu", "kind": "split", "office_label": "Conditional Formatting"}]}],
+      [{"id": "AutoFormat", "style": "medium", "items": [{"cmd": "AutoFormat", "office_label": "Format as Table"}]}]
     ], "footer": {"id": "StyleApply", "style": "small", "items": [{"cmd": "StyleApply"}]}},
     {"name": "Cells", "caption": "Cells", "rows": 2, "columns": [
       [{"id": "InsertMenu", "style": "large", "items": [{"cmd": "HomeInsertMenu", "kind": "split", "icon": "cmd/32/insertcellsright.png"}]}],
@@ -52,7 +53,7 @@
       [{"id": "FormatMenu", "style": "large", "items": [{"cmd": "HomeFormatMenu", "kind": "split", "icon": "cmd/32/formatcelldialog.png"}]}]
     ]},
     {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
-      [{"id": "AutoSum", "style": "small-label", "items": [{"cmd": "AutoSum"}]},
+      [{"id": "AutoSum", "style": "small-label", "items": [{"cmd": "AutoSum", "office_label": "AutoSum"}]},
        {"id": "FillMenu", "style": "small-label", "items": [{"cmd": "HomeFillMenu", "kind": "split", "icon": "cmd/sc_filldown.png"}]},
        {"id": "ClearMenu", "style": "small-label", "items": [{"cmd": "HomeClearMenu", "kind": "split", "icon": "cmd/sc_delete.png"}]}],
       [{"id": "SortFilterMenu", "style": "large", "items": [{"cmd": "HomeSortFilterMenu", "kind": "split", "icon": "cmd/32/sortfiltermenu.png"}]}],
