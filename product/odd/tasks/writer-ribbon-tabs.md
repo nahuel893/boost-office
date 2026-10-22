@@ -145,7 +145,7 @@ translations; T10 (a pending decision).
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
-| T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [ ] | | |
+| T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
 | T10w | Greyed disabled popup entries (follows Calc's T10 answer) | pending user decision | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
@@ -669,7 +669,22 @@ The controller's rulings can be overturned by the user.
       across apps;
     - SUGGESTION: `CppunitTest_vcl_builder` loads a Writer document, so the vcl test depends on sw.
 
+- 2026-10-22, T9w-fit (route: delegated, sonnet). Commit a0c9e3c2d:
+  - Formulas: Financial, Logical and Text became one column of small buttons with labels. This is Excel's
+    narrow-window look; Excel at 1920 shows them large.
+  - Data: From Other Sources and Existing Connections became one column of small buttons with labels.
+  - No label, group or control changed; `test_calc_formulas_ui.py` was updated for the new sizes.
+  - Evidence (report: `task-T9w-fit-report.md`): 495 tests OK; `check-ui.sh` and `lo-make.sh sc.build` are
+    clean; the Formulas and Data UITests pass; Writer's generated files are unchanged.
+  - Fit at 1920: Formulas ends at x=1754 and still fits at 1840 px wide. Data ends at x=1791; it fits at
+    1880 px and folds Analyze at 1840 px.
+  - Collapse: Data matches the design at 1600 and 1366, and Formulas at 1600. At 1366, Formulas keeps Defined
+    Names visible, which the design does not list. The design row is out of date (W10).
+  - The other Calc tabs show no fold and no clipped label at 1920. View is the tightest, ending at x=1806.
+  - Controller check: 495 OK, the tree is clean after `gen_ribbon.py --all`, no process left. Looked at the light
+    1920 shots of Formulas and Data: every group shows, and the captions sit on one line.
+  - RDD for c293641c5..a0c9e3c2d: medium, under budget. It stays pending in the slice.
+
 ## Next step
 
-T9w-fit: Calc Formulas and Data fit at 1920 (delegated, sonnet). Brief: `task-T9w-fit-brief.md`. Then W5a,
-References.
+W5a: References, layout and behaviour (delegated, sonnet). Brief: `task-W5a-brief.md`.
