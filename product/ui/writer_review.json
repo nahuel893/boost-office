@@ -7,10 +7,12 @@
     {"name": "Proofing", "caption": "Proofing", "rows": 3, "columns": [
       [{"id": "Spelling", "style": "large", "items": [
         {"cmd": "SpellingAndGrammarDialog", "office_label": "Spelling and Grammar"}]}],
-      [{"id": "Thesaurus", "style": "large", "items": [
-        {"cmd": "ThesaurusDialog", "office_label": "Thesaurus"}]}],
-      [{"id": "WordCount", "style": "large", "items": [
-        {"cmd": "WordCountDialog", "office_label": "Word Count"}]}]
+      [
+        {"id": "Thesaurus", "style": "small-label", "items": [
+          {"cmd": "ThesaurusDialog", "office_label": "Thesaurus"}]},
+        {"id": "WordCount", "style": "small-label", "items": [
+          {"cmd": "WordCountDialog", "office_label": "Word Count"}]}
+      ]
     ]},
     {"name": "Speech", "caption": "Speech", "rows": 3, "columns": [
       [{"id": "ReadAloud", "style": "large", "items": [
@@ -31,14 +33,16 @@
         {"cmd": "InsertAnnotation", "office_label": "New Comment"}]}],
       [{"id": "DeleteComment", "style": "large", "items": [
         {"cmd": "ReviewDeleteCommentMenu", "kind": "split", "office_label": "Delete"}]}],
-      [{"id": "CommentPrevious", "style": "large", "items": [
-        {"cmd": "ReviewCommentPrevious", "icon": "cmd/32/reviewcommentprevious.png", "action": ".uno:ReviewGoToComment?Direction:string=previous",
-         "office_label": "Previous"}]}],
-      [{"id": "CommentNext", "style": "large", "items": [
-        {"cmd": "ReviewCommentNext", "icon": "cmd/32/reviewcommentnext.png", "action": ".uno:ReviewGoToComment?Direction:string=next",
-         "office_label": "Next"}]}],
-      [{"id": "ShowComments", "style": "large", "items": [
-        {"cmd": "ShowAnnotations", "office_label": "Show Comments"}]}]
+      [
+        {"id": "CommentPrevious", "style": "small-label", "items": [
+          {"cmd": "ReviewCommentPrevious", "icon": "cmd/sc_reviewcommentprevious.png",
+           "action": ".uno:ReviewGoToComment?Direction:string=previous", "office_label": "Previous"}]},
+        {"id": "CommentNext", "style": "small-label", "items": [
+          {"cmd": "ReviewCommentNext", "icon": "cmd/sc_reviewcommentnext.png",
+           "action": ".uno:ReviewGoToComment?Direction:string=next", "office_label": "Next"}]},
+        {"id": "ShowComments", "style": "small-label", "items": [
+          {"cmd": "ShowAnnotations", "office_label": "Show Comments"}]}
+      ]
     ]},
     {"name": "Markup", "caption": "Markup", "rows": 3, "columns": [
       [{"id": "FilterAllMarkup", "style": "large", "items": [

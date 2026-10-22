@@ -7832,7 +7832,7 @@
                             <property name="row-spacing">3</property>
                             <property name="column-spacing">3</property>
                             <child>
-                              <!-- n-columns=3 n-rows=3 -->
+                              <!-- n-columns=2 n-rows=3 -->
                               <object class="GtkGrid" id="gcReviewProofing">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -7871,11 +7871,9 @@
                                   <object class="sfxlo-NotebookbarToolBox" id="bxReviewThesaurus">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnReviewThesaurusDialog">
                                         <property name="visible">True</property>
@@ -7884,25 +7882,22 @@
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxReviewWordCount">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnReviewWordCountDialog">
                                         <property name="visible">True</property>
@@ -7911,14 +7906,13 @@
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">2</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -8327,7 +8321,7 @@
                             <property name="row-spacing">3</property>
                             <property name="column-spacing">3</property>
                             <child>
-                              <!-- n-columns=5 n-rows=3 -->
+                              <!-- n-columns=3 n-rows=3 -->
                               <object class="GtkGrid" id="gcReviewComments">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -8394,69 +8388,61 @@
                                   <object class="sfxlo-NotebookbarToolBox" id="bxReviewCommentPrevious">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnReviewReviewCommentPrevious">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewCommentPrevious">Previous</property>
                                         <property name="action-name">.uno:ReviewGoToComment?Direction:string=previous</property>
-                                        <property name="icon_name">cmd/32/reviewcommentprevious.png</property>
+                                        <property name="icon_name">cmd/sc_reviewcommentprevious.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">2</property>
                                     <property name="top-attach">0</property>
-                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxReviewCommentNext">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnReviewReviewCommentNext">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewCommentNext">Next</property>
                                         <property name="action-name">.uno:ReviewGoToComment?Direction:string=next</property>
-                                        <property name="icon_name">cmd/32/reviewcommentnext.png</property>
+                                        <property name="icon_name">cmd/sc_reviewcommentnext.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">3</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxReviewShowComments">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnReviewShowAnnotations">
                                         <property name="visible">True</property>
@@ -8465,14 +8451,13 @@
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">4</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                               </object>
