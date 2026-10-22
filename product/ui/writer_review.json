@@ -1,0 +1,84 @@
+{
+  "page": "Review Tab",
+  "id_prefix": "Review",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu Review"],
+  "sections": [
+    {"name": "Proofing", "caption": "Proofing", "rows": 3, "columns": [
+      [{"id": "Spelling", "style": "large", "items": [
+        {"cmd": "SpellingAndGrammarDialog", "office_label": "Spelling and Grammar"}]}],
+      [{"id": "Thesaurus", "style": "large", "items": [
+        {"cmd": "ThesaurusDialog", "office_label": "Thesaurus"}]}],
+      [{"id": "WordCount", "style": "large", "items": [
+        {"cmd": "WordCountDialog", "office_label": "Word Count"}]}]
+    ]},
+    {"name": "Speech", "caption": "Speech", "rows": 3, "columns": [
+      [{"id": "ReadAloud", "style": "large", "items": [
+        {"cmd": "ReviewReadAloud", "office_label": "Read Aloud"}]}]
+    ]},
+    {"name": "Accessibility", "caption": "Accessibility", "rows": 3, "columns": [
+      [{"id": "CheckAccessibility", "style": "large", "items": [
+        {"cmd": "AccessibilityCheck", "office_label": "Check Accessibility"}]}]
+    ]},
+    {"name": "Language", "caption": "Language", "rows": 3, "columns": [
+      [{"id": "Translate", "style": "large", "items": [
+        {"cmd": "ReviewTranslate", "office_label": "Translate"}]}],
+      [{"id": "Language", "style": "large", "items": [
+        {"cmd": "ReviewLanguageMenu", "kind": "split", "office_label": "Language"}]}]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [{"id": "NewComment", "style": "large", "items": [
+        {"cmd": "InsertAnnotation", "office_label": "New Comment"}]}],
+      [{"id": "DeleteComment", "style": "large", "items": [
+        {"cmd": "ReviewDeleteCommentMenu", "kind": "split", "office_label": "Delete"}]}],
+      [{"id": "CommentPrevious", "style": "large", "items": [
+        {"cmd": "ReviewCommentPrevious", "action": ".uno:ReviewGoToComment?Direction:string=previous",
+         "office_label": "Previous"}]}],
+      [{"id": "CommentNext", "style": "large", "items": [
+        {"cmd": "ReviewCommentNext", "action": ".uno:ReviewGoToComment?Direction:string=next",
+         "office_label": "Next"}]}],
+      [{"id": "ShowComments", "style": "large", "items": [
+        {"cmd": "ShowAnnotations", "office_label": "Show Comments"}]}]
+    ]},
+    {"name": "Markup", "caption": "Markup", "rows": 3, "columns": [
+      [{"id": "FilterAllMarkup", "style": "large", "items": [
+        {"cmd": "ReviewFilterAllMarkup", "action": ".uno:ReviewMarkup?Action:string=filter",
+         "office_label": "Filter All Markup"}]}],
+      [
+        {"id": "DisplayForReview", "style": "small-label", "items": [
+          {"cmd": "ReviewDisplayForReview", "action": ".uno:ReviewMarkup?Action:string=display",
+           "office_label": "Display for Review"}]},
+        {"id": "ShowMarkup", "style": "small-label", "items": [
+          {"cmd": "ShowTrackedChanges", "kind": "split", "office_label": "Show Markup"}]},
+        {"id": "ReviewingPane", "style": "small-label", "items": [
+          {"cmd": "AcceptTrackedChanges", "office_label": "Reviewing Pane"}]}
+      ]
+    ]},
+    {"name": "Tracking", "caption": "Tracking", "rows": 3, "columns": [
+      [{"id": "TrackChanges", "style": "large", "items": [
+        {"cmd": "TrackChanges", "kind": "split", "office_label": "Track Changes"}]}],
+      [{"id": "Accept", "style": "large", "items": [
+        {"cmd": "ReviewAcceptMenu", "kind": "split", "office_label": "Accept"}]}],
+      [{"id": "Reject", "style": "large", "items": [
+        {"cmd": "ReviewRejectMenu", "kind": "split", "office_label": "Reject"}]}],
+      [
+        {"id": "PreviousChange", "style": "small-label", "items": [
+          {"cmd": "PreviousTrackedChange", "office_label": "Previous"}]},
+        {"id": "NextChange", "style": "small-label", "items": [
+          {"cmd": "NextTrackedChange", "office_label": "Next"}]}
+      ]
+    ]},
+    {"name": "Compare", "caption": "Compare", "rows": 3, "columns": [
+      [{"id": "Compare", "style": "large", "items": [
+        {"cmd": "ReviewCompareMenu", "kind": "split", "office_label": "Compare"}]}]
+    ]},
+    {"name": "Protect", "caption": "Protect", "rows": 3, "columns": [
+      [{"id": "RestrictEditing", "style": "large", "items": [
+        {"cmd": "ReviewRestrictEditing", "office_label": "Restrict Editing"}]}]
+    ]},
+    {"name": "Ink", "caption": "Ink", "rows": 3, "columns": [
+      [{"id": "HideInk", "style": "large", "items": [
+        {"cmd": "ReviewHideInk", "office_label": "Hide Ink"}]}]
+    ]}
+  ]
+}
