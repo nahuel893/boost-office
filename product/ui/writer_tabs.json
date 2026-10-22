@@ -6,20 +6,22 @@
   "positions": {
     "Layout Tab": 4, "LayoutLabel": 4,
     "References Tab": 5, "ReferencesLabel": 5,
-    "Review Tab": 6, "ReviewLabel": 6,
-    "View Tab": 7, "ViewLabel": 7,
-    "Table Tab": 8, "TableLabel": 8,
-    "Image Tab": 9, "ImageLabel": 9,
-    "Draw Tab": 10, "DrawLabel": 10,
-    "Object Tab": 11, "ObjectLabel": 11,
-    "Media Tab": 12, "MediaLabel": 12,
-    "Print Tab": 13, "PrintLabel": 13,
-    "Form Tab": 14, "FormLabel": 14,
-    "Extension Tab": 15, "ExtensionLabel": 15,
-    "Tools Tab": 16, "ToolsLabel": 16
+    "Review Tab": 7, "ReviewLabel": 7,
+    "View Tab": 8, "ViewLabel": 8,
+    "Table Tab": 9, "TableLabel": 9,
+    "Image Tab": 10, "ImageLabel": 10,
+    "Draw Tab": 11, "DrawLabel": 11,
+    "Object Tab": 12, "ObjectLabel": 12,
+    "Media Tab": 13, "MediaLabel": 13,
+    "Print Tab": 14, "PrintLabel": 14,
+    "Form Tab": 15, "FormLabel": 15,
+    "Extension Tab": 16, "ExtensionLabel": 16,
+    "Tools Tab": 17, "ToolsLabel": 17
   },
   "add_pages": [
     {"page": "Design Tab", "prefix": "Design", "after_tab": "InsertLabel", "position": 3,
-     "tab_id": "DesignLabel", "label": "Desi~gn", "context": "TabbedWriter|DesignTabLabel"}
+     "tab_id": "DesignLabel", "label": "Desi~gn", "context": "TabbedWriter|DesignTabLabel"},
+    {"page": "Mailings Tab", "prefix": "Mailings", "after_tab": "ReferencesLabel", "position": 6,
+     "tab_id": "MailingsLabel", "label": "M~ailings", "context": "TabbedWriter|MailingsTabLabel"}
   ]
 }

@@ -113,8 +113,10 @@ class WriterDesignUiTest(unittest.TestCase):
 
     def test_the_tabs_after_design_are_shifted_by_one_position(self):
         positions = self.tabs["positions"]
-        for number, name in enumerate(("Layout", "References", "Review", "View", "Table", "Image", "Draw",
+        for number, name in enumerate(("Layout", "References", "Mailings", "Review", "View", "Table", "Image", "Draw",
                                        "Object", "Media", "Print", "Form", "Extension", "Tools"), start=4):
+            if name == "Mailings":
+                continue  # a new page like Design: add_pages places it (test_writer_mailings_ui)
             self.assertEqual(number, positions[name + " Tab"], name)
             self.assertEqual(number, positions[name + "Label"], name)
 

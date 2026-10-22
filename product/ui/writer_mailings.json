@@ -1,0 +1,98 @@
+{
+  "page": "Mailings Tab",
+  "id_prefix": "Mailings",
+  "context": "TabbedWriter",
+  "sections": [
+    {"name": "Create", "caption": "Create", "rows": 3, "columns": [
+      [
+        {"id": "Envelopes", "style": "large", "items": [
+          {"cmd": "InsertEnvelope", "office_label": "Envelopes"}
+        ]}
+      ],
+      [
+        {"id": "Labels", "style": "large", "items": [
+          {"cmd": "InsertLabels", "office_label": "Labels"}
+        ]}
+      ]
+    ]},
+    {"name": "StartMailMerge", "caption": "Start Mail Merge", "rows": 3, "columns": [
+      [
+        {"id": "StartMailMerge", "style": "large", "items": [
+          {"cmd": "MailMergeWizard", "office_label": "Start Mail Merge"}
+        ]}
+      ],
+      [
+        {"id": "SelectRecipients", "style": "large", "items": [
+          {"cmd": "MailingsSelectRecipientsMenu", "kind": "split", "office_label": "Select Recipients"}
+        ]}
+      ],
+      [
+        {"id": "EditRecipientList", "style": "large", "items": [
+          {"cmd": "ViewDataSourceBrowser", "office_label": "Edit Recipient List"}
+        ]}
+      ]
+    ]},
+    {"name": "WriteInsertFields", "caption": "Write & Insert Fields", "rows": 3, "columns": [
+      [
+        {"id": "HighlightMergeFields", "style": "large", "items": [
+          {"cmd": "Marks", "office_label": "Highlight Merge Fields"}
+        ]}
+      ],
+      [
+        {"id": "AddressBlock", "style": "large", "items": [
+          {"cmd": "MailingsAddressBlock", "action": ".uno:MailingsField?Field:string=addressblock", "office_label": "Address Block"}
+        ]}
+      ],
+      [
+        {"id": "GreetingLine", "style": "large", "items": [
+          {"cmd": "MailingsGreetingLine", "action": ".uno:MailingsField?Field:string=greetingline", "office_label": "Greeting Line"}
+        ]}
+      ],
+      [
+        {"id": "InsertMergeField", "style": "large", "items": [
+          {"cmd": "InsertField", "office_label": "Insert Merge Field"}
+        ]}
+      ],
+      [
+        {"id": "Rules", "style": "small-label", "items": [
+          {"cmd": "MailingsRules", "action": ".uno:MailingsField?Field:string=rules", "office_label": "Rules"}
+        ]},
+        {"id": "MatchFields", "style": "small-label", "items": [
+          {"cmd": "MailingsMatchFields", "action": ".uno:MailingsField?Field:string=matchfields", "office_label": "Match Fields"}
+        ]},
+        {"id": "UpdateLabels", "style": "small-label", "items": [
+          {"cmd": "MailingsUpdateLabels", "action": ".uno:MailingsField?Field:string=updatelabels", "office_label": "Update Labels"}
+        ]}
+      ]
+    ]},
+    {"name": "PreviewResults", "caption": "Preview Results", "rows": 3, "columns": [
+      [
+        {"id": "PreviewResults", "style": "large", "items": [
+          {"cmd": "MailingsPreviewResults", "action": ".uno:MailingsPreview?Action:string=toggle", "office_label": "Preview Results"}
+        ]}
+      ],
+      [
+        {"id": "RecordNavigation", "style": "small", "items": [
+          {"cmd": "MailMergeFirstEntry", "office_label": "First Record"},
+          {"cmd": "MailMergePrevEntry", "office_label": "Previous Record"},
+          {"cmd": "MailMergeCurrentEntry", "office_label": "Record box"},
+          {"cmd": "MailMergeNextEntry", "office_label": "Next Record"},
+          {"cmd": "MailMergeLastEntry", "office_label": "Last Record"}
+        ]},
+        {"id": "FindRecipient", "style": "small-label", "items": [
+          {"cmd": "MailingsFindRecipient", "action": ".uno:MailingsPreview?Action:string=find", "office_label": "Find Recipient"}
+        ]},
+        {"id": "CheckForErrors", "style": "small-label", "items": [
+          {"cmd": "MailingsCheckForErrors", "action": ".uno:MailingsPreview?Action:string=check", "office_label": "Check for Errors"}
+        ]}
+      ]
+    ]},
+    {"name": "Finish", "caption": "Finish", "rows": 3, "columns": [
+      [
+        {"id": "FinishAndMerge", "style": "large", "items": [
+          {"cmd": "MailingsFinishMenu", "kind": "split", "office_label": "Finish & Merge"}
+        ]}
+      ]
+    ]}
+  ]
+}
