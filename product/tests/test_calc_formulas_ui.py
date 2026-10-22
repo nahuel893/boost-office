@@ -62,11 +62,15 @@ def run_single_bool_argument(urls):
 CATEGORY_MENUS = ["FormulasRecentlyUsedMenu", "FormulasFinancialMenu", "FormulasLogicalMenu",
                   "FormulasTextMenu", "FormulasDateTimeMenu", "FormulasLookupMenu",
                   "FormulasMathMenu", "FormulasMoreFunctionsMenu"]
+# Financial, Logical and Text stack as one column of small buttons with labels, as Excel does on a
+# narrower window; with the Office labels the full-size row no longer fits at 1920 px.
+STACKED_MENUS = CATEGORY_MENUS[1:4]
 # section -> (caption, [(style, [url, ...]) per toolbox in document order])
 DESIGN = {
     "FunctionLibrary": ("Function Library",
                         [("large", [".uno:FunctionDialog"]), ("large", [".uno:FormulasAutoSum"])]
-                        + [("large", [".uno:" + m]) for m in CATEGORY_MENUS]),
+                        + [("large" if m not in STACKED_MENUS else "small-label", [".uno:" + m])
+                           for m in CATEGORY_MENUS]),
     "Python": ("Python", [("large", [PYTHON + "insert"]), ("small-label", [PYTHON + "reset"]),
                           ("small-label", [PYTHON + "editor"]), ("small-label", [PYTHON + "init"])]),
     "DefinedNames": ("Defined Names", [
@@ -81,7 +85,7 @@ DESIGN = {
         ("large", [".uno:FormulasCalcOptionsMenu"]), ("small", [".uno:Calculate"]),
         ("small", [".uno:FormulasCalculateSheet"])]),
 }
-SHAPES = {"FunctionLibrary": [1] * 10, "Python": [1, 3], "DefinedNames": [1, 3],
+SHAPES = {"FunctionLibrary": [1, 1, 1, 3, 1, 1, 1, 1], "Python": [1, 3], "DefinedNames": [1, 3],
           "Auditing": [3, 3, 1], "Calculation": [1, 2]}
 MENUS = {  # popup command: (label, popup resource, popup items in order); None: built by C++
     "FormulasAutoSumMenu": ("AutoSum", "formulas_autosum",

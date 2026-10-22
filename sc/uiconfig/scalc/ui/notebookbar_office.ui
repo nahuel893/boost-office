@@ -6143,7 +6143,7 @@
                             <property name="row-spacing">3</property>
                             <property name="column-spacing">3</property>
                             <child>
-                              <!-- n-columns=10 n-rows=3 -->
+                              <!-- n-columns=8 n-rows=3 -->
                               <object class="GtkGrid" id="gcFormulasFunctionLibrary">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -6236,11 +6236,9 @@
                                   <object class="sfxlo-NotebookbarToolBox" id="bxFormulasFinancial">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkMenuToolButton" id="btnFormulasFormulasFinancialMenu">
                                         <property name="visible">True</property>
@@ -6256,18 +6254,15 @@
                                   <packing>
                                     <property name="left-attach">3</property>
                                     <property name="top-attach">0</property>
-                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxFormulasLogical">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkMenuToolButton" id="btnFormulasFormulasLogicalMenu">
                                         <property name="visible">True</property>
@@ -6281,20 +6276,17 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">4</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxFormulasText">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkMenuToolButton" id="btnFormulasFormulasTextMenu">
                                         <property name="visible">True</property>
@@ -6308,9 +6300,8 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">5</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -6335,7 +6326,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">6</property>
+                                    <property name="left-attach">4</property>
                                     <property name="top-attach">0</property>
                                     <property name="height">3</property>
                                   </packing>
@@ -6362,7 +6353,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">7</property>
+                                    <property name="left-attach">5</property>
                                     <property name="top-attach">0</property>
                                     <property name="height">3</property>
                                   </packing>
@@ -6389,7 +6380,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">8</property>
+                                    <property name="left-attach">6</property>
                                     <property name="top-attach">0</property>
                                     <property name="height">3</property>
                                   </packing>
@@ -6416,7 +6407,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">9</property>
+                                    <property name="left-attach">7</property>
                                     <property name="top-attach">0</property>
                                     <property name="height">3</property>
                                   </packing>
@@ -7279,7 +7270,7 @@
                             <property name="row-spacing">3</property>
                             <property name="column-spacing">3</property>
                             <child>
-                              <!-- n-columns=3 n-rows=3 -->
+                              <!-- n-columns=2 n-rows=3 -->
                               <object class="GtkGrid" id="gcDataSources">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -7364,11 +7355,9 @@
                                   <object class="sfxlo-NotebookbarToolBox" id="bxDataOtherSourcesMenu">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkMenuToolButton" id="btnDataDataOtherSourcesMenu">
                                         <property name="visible">True</property>
@@ -7385,18 +7374,15 @@
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="sfxlo-NotebookbarToolBox" id="bxDataDataSources">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="toolbar-style">both</property>
+                                    <property name="toolbar-style">both-horiz</property>
                                     <property name="show-arrow">False</property>
-                                    <property name="icon_size">5</property>
+                                    <property name="icon_size">1</property>
                                     <child>
                                       <object class="GtkToolButton" id="btnDataViewDataSourceBrowser">
                                         <property name="visible">True</property>
@@ -7406,14 +7392,13 @@
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">2</property>
-                                    <property name="top-attach">0</property>
-                                    <property name="height">3</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                               </object>

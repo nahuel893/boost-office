@@ -10,9 +10,9 @@
            {"cmd": "InsertExternalDataSource", "office_label": "From Web"}]},
        {"id": "SheetFromFile", "style": "small-label", "items": [
            {"cmd": "InsertSheetFromFile", "office_label": "From Text"}]}],
-      [{"id": "OtherSourcesMenu", "style": "large", "items": [
-          {"cmd": "DataOtherSourcesMenu", "kind": "split", "office_label": "From Other Sources"}]}],
-      [{"id": "DataSources", "style": "large", "items": [
+      [{"id": "OtherSourcesMenu", "style": "small-label", "items": [
+          {"cmd": "DataOtherSourcesMenu", "kind": "split", "office_label": "From Other Sources"}]},
+       {"id": "DataSources", "style": "small-label", "items": [
           {"cmd": "ViewDataSourceBrowser", "office_label": "Existing Connections"}]}]
     ]},
     {"name": "Transform", "caption": "Get & Transform", "rows": 3, "columns": [
