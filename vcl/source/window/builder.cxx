@@ -1656,6 +1656,11 @@ VclPtr<vcl::Window> VclBuilder::makeObject(vcl::Window *pParent, const OUString 
             {
                 pToolBox->InsertItem(aCommand, m_xFrame, nBits, extractSizeRequest(rMap));
                 nItemId = pToolBox->GetItemId(aCommand);
+                // The item got the command's label; a label of the .ui file wins. The tooltip
+                // keeps coming from the command.
+                OUString sLabel(BuilderUtils::convertMnemonicMarkup(extractLabel(rMap)));
+                if (!sLabel.isEmpty())
+                    pToolBox->SetItemText(nItemId, sLabel);
             }
             else
             {

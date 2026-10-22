@@ -296,6 +296,11 @@ $(eval $(call gb_Module_add_screenshot_targets,vcl,\
     CppunitTest_vcl_dialogs_test \
 ))
 
+# loads a Writer document for its frame
+$(eval $(call gb_Module_add_slowcheck_targets,vcl,\
+    CppunitTest_vcl_builder \
+))
+
 ifneq ($(DISPLAY),)
 $(eval $(call gb_Module_add_slowcheck_targets,vcl,\
     CppunitTest_vcl_gen \
