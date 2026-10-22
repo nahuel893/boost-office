@@ -138,7 +138,7 @@ translations; T10 (a pending decision).
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
-| W6a / W6b | Mailings (new page) | as W2 | a [x], b [ ] | a: 7e4cf361b (layout + generated), 604c02701 (code) | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
+| W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
 | W7a / W7b | Review | as W2 | [ ] | | |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
@@ -757,6 +757,24 @@ The controller's rulings can be overturned by the user.
     - SUGGESTION: no runtime test drives the ribbon dropdown arrows through GenericPopupToolbarController. W6b's
       click covers it visually.
 
+- 2026-10-22, W6b (route: delegated, sonnet). Commit 2e760bcaf: the Mailings icons, the icon test extended, and
+  explicit icons in `writer_mailings.json` with the regenerated `.ui`.
+  - Evidence (report: `task-W6b-report.md`): RED, the Mailings icon test failed on `cmd/sc_insertenvelope.png`;
+    GREEN, 548 tests OK; build, install, `check-ui.sh`, `sw.build` and one Mailings UITest pass; Calc unchanged.
+  - Labels (`InsertLabels`) rendered blank until it got an explicit `"icon"`. That is the third plain command,
+    after Drop Caps and Show Notes; the root cause is open for W9.
+  - Check for Errors: the red fill hid the "!" when greyed, so its manifest entry is line-only.
+  - Fit: the tab ends at x=1443, a margin of 477 px. Nothing collapses at 1600. At 1366, Finish and then Preview
+    Results go behind `>>`, right to left, as the design says.
+  - A click on the Finish & Merge button body opens its menu (`w6b/light-mailings-1920-finish-menu.png`).
+  - Controller look at `w6b/light-mailings-1920.png`: Word's groups and labels. Defect found, for W9: the
+    Mailings ribbon is about 9 px taller than the other tabs. The ruler is at y=190, not 181, and the captions at
+    y=156, not 147, so the document jumps when the tab changes. The record box (an entry field) is the likely
+    cause.
+  - The record box showed "-1" after the Finish menu click (W9).
+  - Controller check: 548 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - RDD for 604c02701..2e760bcaf: medium, under budget. It stays pending in the slice.
+
 ## Next step
 
-W6b: Mailings icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W6b-brief.md`.
+W7a: Review, layout and behaviour (delegated, sonnet). Brief: `task-W7a-brief.md`.
