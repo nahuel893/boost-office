@@ -294,6 +294,22 @@
     {"name": "abovespacing", "layers": [{"glyph": "text_add_space_before"}]},
     {"name": "belowspacing", "layers": [{"glyph": "text_add_space_after"}]},
     {"name": "anchormenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "layout_cell_four"}]},
-    {"name": "layoutwraptextmenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_wrap"}]}
+    {"name": "layoutwraptextmenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_wrap"}]},
+    {"name": "referencestocmenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "list_bar"}]},
+    {"name": "referencesaddtextmenu", "fill": {"color": "fill_blue"}, "layers": [{"glyph": "text_add_t"}]},
+    {"name": "updatecurindex", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]},
+    {"name": "insertfootnote", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_footnote"}]},
+    {"name": "insertendnote", "fill": {"color": "fill_blue"}, "layers": [{"glyph": "note"}]},
+    {"name": "referencesnextfootnotemenu", "fill": {"color": "fill_blue"}, "layers": [{"glyph": "arrow_circle_down_right"}]},
+    {"name": "jumptofootnoteoranchor", "fill": {"color": "fill_yellow"}, "layers": [{"glyph": "comment_note"}]},
+    {"name": "insertauthoritiesentry", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_quote"}]},
+    {"name": "bibliographycomponent", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "book_database"}]},
+    {"name": "referencescitationstyle", "fill": {"color": "fill_blue"}, "layers": [{"glyph": "text_edit_style"}]},
+    {"name": "insertmultiindex", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "text_bullet_list_tree"}]},
+    {"name": "insertcaptiondialog", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "text_description"}]},
+    {"name": "insertindexesentry", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "tag_add"}]},
+    {"name": "referencesmarkcitation", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "bookmark_add"}]},
+    {"name": "referencesinsertauthorities", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "text_bullet_list_square"}]},
+    {"name": "referencesupdateauthorities", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]}
   ]
 }

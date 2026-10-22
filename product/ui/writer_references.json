@@ -33,7 +33,7 @@
           {"cmd": "ReferencesNextFootnoteMenu", "kind": "split", "office_label": "Next Footnote"}
         ]},
         {"id": "ShowNotes", "style": "small-label", "items": [
-          {"cmd": "JumpToFootnoteOrAnchor", "office_label": "Show Notes"}
+          {"cmd": "JumpToFootnoteOrAnchor", "icon": "cmd/sc_jumptofootnoteoranchor.png", "office_label": "Show Notes"}
         ]}
       ]
     ]},
@@ -91,15 +91,15 @@
     {"name": "Authorities", "caption": "Table of Authorities", "rows": 3, "columns": [
       [
         {"id": "MarkCitation", "style": "large", "items": [
-          {"cmd": "ReferencesMarkCitation", "action": ".uno:ReferencesAuthorities?Action:string=mark", "office_label": "Mark Citation"}
+          {"cmd": "ReferencesMarkCitation", "icon": "cmd/32/referencesmarkcitation.png", "action": ".uno:ReferencesAuthorities?Action:string=mark", "office_label": "Mark Citation"}
         ]}
       ],
       [
         {"id": "InsertAuthorities", "style": "small-label", "items": [
-          {"cmd": "ReferencesInsertAuthorities", "action": ".uno:ReferencesAuthorities?Action:string=insert", "office_label": "Insert Table of Authorities"}
+          {"cmd": "ReferencesInsertAuthorities", "icon": "cmd/sc_referencesinsertauthorities.png", "action": ".uno:ReferencesAuthorities?Action:string=insert", "office_label": "Insert Table of Authorities"}
         ]},
         {"id": "UpdateAuthorities", "style": "small-label", "items": [
-          {"cmd": "ReferencesUpdateAuthorities", "action": ".uno:ReferencesAuthorities?Action:string=update", "office_label": "Update Table"}
+          {"cmd": "ReferencesUpdateAuthorities", "icon": "cmd/sc_referencesupdateauthorities.png", "action": ".uno:ReferencesAuthorities?Action:string=update", "office_label": "Update Table"}
         ]}
       ]
     ]}

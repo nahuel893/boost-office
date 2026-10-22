@@ -6395,6 +6395,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnReferencesJumpToFootnoteOrAnchor">Show Notes</property>
                                         <property name="action-name">.uno:JumpToFootnoteOrAnchor</property>
+                                        <property name="icon_name">cmd/sc_jumptofootnoteoranchor.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7006,6 +7007,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=mark</property>
+                                        <property name="icon_name">cmd/32/referencesmarkcitation.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7031,6 +7033,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=insert</property>
+                                        <property name="icon_name">cmd/sc_referencesinsertauthorities.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7055,6 +7058,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=update</property>
+                                        <property name="icon_name">cmd/sc_referencesupdateauthorities.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
