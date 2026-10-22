@@ -310,6 +310,26 @@
     {"name": "insertindexesentry", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "tag_add"}]},
     {"name": "referencesmarkcitation", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "bookmark_add"}]},
     {"name": "referencesinsertauthorities", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "text_bullet_list_square"}]},
-    {"name": "referencesupdateauthorities", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]}
+    {"name": "referencesupdateauthorities", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]},
+    {"name": "insertenvelope", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "mail"}]},
+    {"name": "insertlabels", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "tag"}]},
+    {"name": "mailmergewizard", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "mail_multiple"}]},
+    {"name": "mailingsselectrecipientsmenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "people_list"}]},
+    {"name": "marks", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "highlight"}]},
+    {"name": "mailingsaddressblock", "fill": {"color": "fill_cells"}, "large": true, "layers": [{"glyph": "contact_card"}]},
+    {"name": "mailingsgreetingline", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "hand_wave"}]},
+    {"name": "insertfield", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "database_link"}]},
+    {"name": "mailingsrules", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "branch_fork"}]},
+    {"name": "mailingsmatchfields", "fill": {"color": "fill_cells"}, "layers": [{"glyph": "table_link"}]},
+    {"name": "mailingsupdatelabels", "fill": {"color": "fill_green"}, "layers": [{"glyph": "arrow_sync"}]},
+    {"name": "mailingspreviewresults", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "eye"}]},
+    {"name": "mailmergefirstentry", "layers": [{"glyph": "previous"}]},
+    {"name": "mailmergepreventry", "layers": [{"glyph": "chevron_left"}]},
+    {"name": "mailmergecurrententry", "layers": [{"glyph": "text_field"}]},
+    {"name": "mailmergenextentry", "layers": [{"glyph": "chevron_right"}]},
+    {"name": "mailmergelastentry", "layers": [{"glyph": "next"}]},
+    {"name": "mailingsfindrecipient", "layers": [{"glyph": "person_search"}]},
+    {"name": "mailingscheckforerrors", "layers": [{"glyph": "error_circle"}]},
+    {"name": "mailingsfinishmenu", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "mail_arrow_double_back"}]}
   ]
 }

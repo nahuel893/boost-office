@@ -11,7 +11,7 @@
       ],
       [
         {"id": "Labels", "style": "large", "items": [
-          {"cmd": "InsertLabels", "office_label": "Labels"}
+          {"cmd": "InsertLabels", "icon": "cmd/32/insertlabels.png", "office_label": "Labels"}
         ]}
       ]
     ]},
@@ -40,12 +40,12 @@
       ],
       [
         {"id": "AddressBlock", "style": "large", "items": [
-          {"cmd": "MailingsAddressBlock", "action": ".uno:MailingsField?Field:string=addressblock", "office_label": "Address Block"}
+          {"cmd": "MailingsAddressBlock", "icon": "cmd/32/mailingsaddressblock.png", "action": ".uno:MailingsField?Field:string=addressblock", "office_label": "Address Block"}
         ]}
       ],
       [
         {"id": "GreetingLine", "style": "large", "items": [
-          {"cmd": "MailingsGreetingLine", "action": ".uno:MailingsField?Field:string=greetingline", "office_label": "Greeting Line"}
+          {"cmd": "MailingsGreetingLine", "icon": "cmd/32/mailingsgreetingline.png", "action": ".uno:MailingsField?Field:string=greetingline", "office_label": "Greeting Line"}
         ]}
       ],
       [
@@ -55,20 +55,20 @@
       ],
       [
         {"id": "Rules", "style": "small-label", "items": [
-          {"cmd": "MailingsRules", "action": ".uno:MailingsField?Field:string=rules", "office_label": "Rules"}
+          {"cmd": "MailingsRules", "icon": "cmd/sc_mailingsrules.png", "action": ".uno:MailingsField?Field:string=rules", "office_label": "Rules"}
         ]},
         {"id": "MatchFields", "style": "small-label", "items": [
-          {"cmd": "MailingsMatchFields", "action": ".uno:MailingsField?Field:string=matchfields", "office_label": "Match Fields"}
+          {"cmd": "MailingsMatchFields", "icon": "cmd/sc_mailingsmatchfields.png", "action": ".uno:MailingsField?Field:string=matchfields", "office_label": "Match Fields"}
         ]},
         {"id": "UpdateLabels", "style": "small-label", "items": [
-          {"cmd": "MailingsUpdateLabels", "action": ".uno:MailingsField?Field:string=updatelabels", "office_label": "Update Labels"}
+          {"cmd": "MailingsUpdateLabels", "icon": "cmd/sc_mailingsupdatelabels.png", "action": ".uno:MailingsField?Field:string=updatelabels", "office_label": "Update Labels"}
         ]}
       ]
     ]},
     {"name": "PreviewResults", "caption": "Preview Results", "rows": 3, "columns": [
       [
         {"id": "PreviewResults", "style": "large", "items": [
-          {"cmd": "MailingsPreviewResults", "action": ".uno:MailingsPreview?Action:string=toggle", "office_label": "Preview Results"}
+          {"cmd": "MailingsPreviewResults", "icon": "cmd/32/mailingspreviewresults.png", "action": ".uno:MailingsPreview?Action:string=toggle", "office_label": "Preview Results"}
         ]}
       ],
       [
@@ -80,10 +80,10 @@
           {"cmd": "MailMergeLastEntry", "office_label": "Last Record"}
         ]},
         {"id": "FindRecipient", "style": "small-label", "items": [
-          {"cmd": "MailingsFindRecipient", "action": ".uno:MailingsPreview?Action:string=find", "office_label": "Find Recipient"}
+          {"cmd": "MailingsFindRecipient", "icon": "cmd/sc_mailingsfindrecipient.png", "action": ".uno:MailingsPreview?Action:string=find", "office_label": "Find Recipient"}
         ]},
         {"id": "CheckForErrors", "style": "small-label", "items": [
-          {"cmd": "MailingsCheckForErrors", "action": ".uno:MailingsPreview?Action:string=check", "office_label": "Check for Errors"}
+          {"cmd": "MailingsCheckForErrors", "icon": "cmd/sc_mailingscheckforerrors.png", "action": ".uno:MailingsPreview?Action:string=check", "office_label": "Check for Errors"}
         ]}
       ]
     ]},

@@ -7226,6 +7226,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnMailingsInsertLabels">Labels</property>
                                         <property name="action-name">.uno:InsertLabels</property>
+                                        <property name="icon_name">cmd/32/insertlabels.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7516,6 +7517,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=addressblock</property>
+                                        <property name="icon_name">cmd/32/mailingsaddressblock.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7543,6 +7545,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=greetingline</property>
+                                        <property name="icon_name">cmd/32/mailingsgreetingline.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7596,6 +7599,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=rules</property>
+                                        <property name="icon_name">cmd/sc_mailingsrules.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7620,6 +7624,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=matchfields</property>
+                                        <property name="icon_name">cmd/sc_mailingsmatchfields.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7644,6 +7649,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=updatelabels</property>
+                                        <property name="icon_name">cmd/sc_mailingsupdatelabels.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7746,6 +7752,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=toggle</property>
+                                        <property name="icon_name">cmd/32/mailingspreviewresults.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7844,6 +7851,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=find</property>
+                                        <property name="icon_name">cmd/sc_mailingsfindrecipient.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7868,6 +7876,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=check</property>
+                                        <property name="icon_name">cmd/sc_mailingscheckforerrors.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
