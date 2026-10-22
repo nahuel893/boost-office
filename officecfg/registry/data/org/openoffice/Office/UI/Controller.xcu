@@ -1557,6 +1557,76 @@
           <value>mailings_finish</value>
         </prop>
       </node>
+      <node oor:name="ReviewLanguageMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewLanguageMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_language</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewDeleteCommentMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewDeleteCommentMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_deletecomment</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewAcceptMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewAcceptMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_accept</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewRejectMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewRejectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_reject</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewCompareMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewCompareMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_compare</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3756,6 +3826,61 @@
       <node oor:name="MailingsFinishMenuControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:MailingsFinishMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewLanguageMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewLanguageMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewDeleteCommentMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewDeleteCommentMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewAcceptMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewAcceptMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewRejectMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewRejectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewCompareMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewCompareMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.text.TextDocument</value>

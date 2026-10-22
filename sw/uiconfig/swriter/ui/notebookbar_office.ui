@@ -8010,7 +8010,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewReadAloud">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewReadAloud">Read Aloud</property>
                                         <property name="action-name">.uno:ReviewReadAloud</property>
                                       </object>
                                       <packing>
@@ -8218,7 +8217,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewTranslate">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewTranslate">Translate</property>
                                         <property name="action-name">.uno:ReviewTranslate</property>
                                       </object>
                                       <packing>
@@ -8246,7 +8244,6 @@
                                       <object class="GtkMenuToolButton" id="btnReviewReviewLanguageMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewLanguageMenu">Language</property>
                                         <property name="action-name">.uno:ReviewLanguageMenu</property>
                                       </object>
                                       <packing>
@@ -8565,7 +8562,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewFilterAllMarkup">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewFilterAllMarkup">Filter All Markup</property>
                                         <property name="action-name">.uno:ReviewMarkup?Action:string=filter</property>
                                       </object>
                                       <packing>
@@ -8591,7 +8587,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewDisplayForReview">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewDisplayForReview">Display for Review</property>
                                         <property name="action-name">.uno:ReviewMarkup?Action:string=display</property>
                                       </object>
                                       <packing>
@@ -9056,7 +9051,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewRestrictEditing">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewRestrictEditing">Restrict Editing</property>
                                         <property name="action-name">.uno:ReviewRestrictEditing</property>
                                       </object>
                                       <packing>
@@ -9160,7 +9154,6 @@
                                       <object class="GtkToolButton" id="btnReviewReviewHideInk">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewHideInk">Hide Ink</property>
                                         <property name="action-name">.uno:ReviewHideInk</property>
                                       </object>
                                       <packing>

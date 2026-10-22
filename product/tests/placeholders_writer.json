@@ -154,8 +154,8 @@
    "Direction:string=next"
   ],
   "variant_labels": {
-   "Direction:string=previous": "Previous",
-   "Direction:string=next": "Next"
+   "Direction:string=previous": "Previous Comment",
+   "Direction:string=next": "Next Comment"
   }
  },
  {

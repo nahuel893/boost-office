@@ -32,6 +32,8 @@ INSERT_SLOTS = (2, 3, 4, 5)  # Blank Page, 3D Models, SmartArt, Screenshot
 DESIGN_SLOTS = (6, 7)  # the Themes/Fonts/Effects family and the Style Set/Paragraph Spacing/Set as Default family
 REFERENCES_SLOTS = (8, 9)  # the Citations Style placeholder and the Table of Authorities family
 MAILINGS_SLOTS = (10, 11)  # the Write & Insert Fields family and the Preview Results family
+REVIEW_SLOTS = (12, 13, 14, 15, 16, 17)  # Read Aloud, Translate, the Comments Previous/Next family, the Markup
+# family, Restrict Editing, Hide Ink
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
@@ -973,6 +975,151 @@ class NotebookbarOffice(UITestCase):
                           "bxMailingsHighlightMergeFields": "Highlight Merge Fields",
                           "bxMailingsInsertMergeField": "Insert Merge Field", "bxMailingsRules": "Rules",
                           "bxMailingsFindRecipient": "Find Recipient", "bxMailingsFinishAndMerge": "Finish & Merge"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_review_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_review.json", 10)
+
+    def test_review_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Review")
+            finally:
+                self.switch_to("Default")
+
+    def test_review_placeholders_are_disabled_and_inert(self):
+        # 6 slots: Read Aloud, Translate, the Comments family (2 variants), the Markup family (2), Restrict Editing,
+        # Hide Ink
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in REVIEW_SLOTS)
+        self.assertEqual(8, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_review_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            expected = {
+                ("ReviewLanguageMenu", "review_language"): [
+                    ".uno:SetLanguageSelectionMenu", ".uno:SetLanguageParagraphMenu",
+                    ".uno:SetLanguageAllTextMenu", ".uno:HangulHanjaConversion", ".uno:ChineseConversion",
+                    ".uno:MoreDictionaries"],
+                ("ReviewDeleteCommentMenu", "review_deletecomment"): [
+                    ".uno:DeleteComment", ".uno:DeleteAuthor", ".uno:DeleteAllNotes"],
+                ("ReviewAcceptMenu", "review_accept"): [
+                    ".uno:AcceptTrackedChangeToNext", ".uno:AcceptTrackedChange", ".uno:AcceptAllTrackedChanges"],
+                ("ReviewRejectMenu", "review_reject"): [
+                    ".uno:RejectTrackedChangeToNext", ".uno:RejectTrackedChange", ".uno:RejectAllTrackedChanges"],
+                ("ReviewCompareMenu", "review_compare"): [".uno:CompareDocuments", ".uno:MergeDocuments"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_review_language_submenus_are_filled_by_their_controllers(self):
+        # the popup file lists only the three submenu commands. The submenus are not in the file: when the menu
+        # opens, MenuBarManager hands each item to the popup menu controller of its command (Controller.xcu
+        # c13-c15, LanguageSelectionMenuController), which fills it with the languages. UITests cannot open the
+        # menu, so this builds each controller the same way and reads what it fills.
+        with self.ui_test.create_doc_in_start_center("writer"):
+            xPopup = self.menu_controller(".uno:ReviewLanguageMenu", "review_language")
+            self.assertEqual(3, len([c for c in self.popup_commands(xPopup) if c.startswith(".uno:SetLanguage")]))
+            for url in (".uno:SetLanguageSelectionMenu", ".uno:SetLanguageParagraphMenu",
+                        ".uno:SetLanguageAllTextMenu"):
+                xSub = self.menu_controller(url, None)
+                commands = self.popup_commands(xSub)
+                self.assertGreater(len(commands), 3, url)
+                # always there: a language per entry, "None", "Reset to Default Language" and "More..."
+                self.assertTrue(any(c.startswith(".uno:LanguageStatus") for c in commands), url)
+
+    def record_a_change(self, document):
+        """Record one insertion as a tracked change and wait until the document holds it."""
+        document.Text.String = "keep"
+        document.RecordChanges = True
+        document.CurrentController.ViewCursor.gotoRange(document.Text.End, False)
+        document.Text.insertString(document.Text.End, " added", False)
+        document.RecordChanges = False
+        self.wait_for(lambda: document.Redlines.hasElements(), "the change was not recorded")
+
+    def test_review_accept_and_reject_act_on_a_tracked_change(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            every = ("AcceptAllTrackedChanges", "RejectAllTrackedChanges", "AcceptTrackedChangeToNext",
+                     "RejectTrackedChangeToNext", "AcceptTrackedChange", "RejectTrackedChange")
+            for name in every:
+                self.assertFalse(self.dispatch_enabled(name), name + " without a change")
+            self.record_a_change(document)
+            # Accept All and Reject All are enabled once the document has a change; the other four need the
+            # cursor inside it (viewstat.cxx, FN_REDLINE_ACCEPT_DIRECT .. REJECT_TONEXT)
+            for name in ("AcceptAllTrackedChanges", "RejectAllTrackedChanges"):
+                self.wait_for(lambda: self.dispatch_enabled(name), name + " is disabled with a change")
+            document.CurrentController.ViewCursor.gotoRange(document.Text.End, False)
+            document.CurrentController.ViewCursor.goLeft(2, False)  # inside the inserted text
+            for name in every:
+                self.wait_for(lambda: self.dispatch_enabled(name), name + " is disabled inside the change")
+            # Accept All keeps the text and clears the change
+            self.xUITest.executeCommand(".uno:AcceptAllTrackedChanges")
+            self.wait_for(lambda: not document.Redlines.hasElements(), "Accept All left the change")
+            self.assertEqual("keep added", document.Text.String)
+            # Reject All takes the next recorded change out again
+            self.record_a_change(document)
+            self.assertEqual("keep added", document.Text.String)
+            self.xUITest.executeCommand(".uno:RejectAllTrackedChanges")
+            self.wait_for(lambda: not document.Redlines.hasElements(), "Reject All left the change")
+            self.assertEqual("keep", document.Text.String)
+
+    def test_review_dropdown_and_placeholder_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for url, label in ((".uno:ReviewLanguageMenu", "Language"),
+                               (".uno:ReviewDeleteCommentMenu", "Delete Comments"),
+                               (".uno:ReviewAcceptMenu", "Accept Changes"),
+                               (".uno:ReviewRejectMenu", "Reject Changes"),
+                               (".uno:ReviewCompareMenu", "Compare Documents"),
+                               (".uno:ReviewReadAloud", "Read Aloud"),
+                               (".uno:ReviewTranslate", "Translate"),
+                               (".uno:ReviewGoToComment?Direction:string=previous", "Previous Comment"),
+                               (".uno:ReviewGoToComment?Direction:string=next", "Next Comment"),
+                               (".uno:ReviewMarkup?Action:string=filter", "Filter All Markup"),
+                               (".uno:ReviewMarkup?Action:string=display", "Display for Review"),
+                               (".uno:ReviewRestrictEditing", "Restrict Editing"),
+                               (".uno:ReviewHideInk", "Hide Ink")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_review_commands_that_are_real_are_enabled(self):
+        # the dialogs, the comment, the tracking switches and the compare commands work in any text document.
+        # Left out on purpose: ThesaurusDialog (disabled when no thesaurus exists for the language), the two
+        # Asian conversions (disabled unless Asian language support is on), and the Accept/Reject commands, which
+        # depend on a tracked change (test_review_accept_and_reject_act_on_a_tracked_change).
+        # Show Comments is disabled while the document has no comment.
+        # Check Accessibility is an alias with no dispatch of its own: its TargetURL, the check deck, carries the state.
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("SpellingAndGrammarDialog", "WordCountDialog", "SidebarDeck.A11yCheckDeck", "InsertAnnotation",
+                         "TrackChanges", "ShowTrackedChanges", "AcceptTrackedChanges",
+                         "CompareDocuments", "MergeDocuments", "MoreDictionaries"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_review_ribbon_shows_words_labels(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxReviewSpelling": "Spelling and Grammar", "bxReviewCheckAccessibility": "Check Accessibility",
+                          "bxReviewNewComment": "New Comment", "bxReviewDeleteComment": "Delete",
+                          "bxReviewShowComments": "Show Comments", "bxReviewFilterAllMarkup": "Filter All Markup",
+                          "bxReviewDisplayForReview": "Display for Review", "bxReviewShowMarkup": "Show Markup",
+                          "bxReviewReviewingPane": "Reviewing Pane", "bxReviewAccept": "Accept",
+                          "bxReviewReject": "Reject", "bxReviewPreviousChange": "Previous",
+                          "bxReviewCompare": "Compare", "bxReviewRestrictEditing": "Restrict Editing"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)

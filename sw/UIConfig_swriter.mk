@@ -51,6 +51,11 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/references_addtext \
 	sw/uiconfig/swriter/popupmenu/references_nextfootnote \
 	sw/uiconfig/swriter/popupmenu/references_toc \
+	sw/uiconfig/swriter/popupmenu/review_accept \
+	sw/uiconfig/swriter/popupmenu/review_compare \
+	sw/uiconfig/swriter/popupmenu/review_deletecomment \
+	sw/uiconfig/swriter/popupmenu/review_language \
+	sw/uiconfig/swriter/popupmenu/review_reject \
 	sw/uiconfig/swriter/popupmenu/table \
 	sw/uiconfig/swriter/popupmenu/text \
 	sw/uiconfig/swriter/popupmenu/showtrackedchanges \
