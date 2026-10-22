@@ -31,13 +31,14 @@ HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: Text Effects family
 INSERT_SLOTS = (2, 3, 4, 5)  # Blank Page, 3D Models, SmartArt, Screenshot
 DESIGN_SLOTS = (6, 7)  # the Themes/Fonts/Effects family and the Style Set/Paragraph Spacing/Set as Default family
 REFERENCES_SLOTS = (8, 9)  # the Citations Style placeholder and the Table of Authorities family
+MAILINGS_SLOTS = (10, 11)  # the Write & Insert Fields family and the Preview Results family
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
 # W8a reaches Word's order. Table .. Form are the contextual tabs: they only show with their object.
 TABS = [("File", "File Tab"), ("Home", "Home Tab"), ("Insert", "Insert Tab"), ("Design", "Design Tab"),
-        ("Layout", "Layout Tab"), ("References", "References Tab"), ("Review", "Review Tab"), ("View", "View Tab"),
-        ("Table", "Table Tab"), ("Image", "Image Tab"), ("Draw", "Draw Tab"), ("Object", "Object Tab"),
+        ("Layout", "Layout Tab"), ("References", "References Tab"), ("Mailings", "Mailings Tab"), ("Review", "Review Tab"),
+        ("View", "View Tab"), ("Table", "Table Tab"), ("Image", "Image Tab"), ("Draw", "Draw Tab"), ("Object", "Object Tab"),
         ("Media", "Media Tab"), ("Print", "Print Tab"), ("Form", "Form Tab"),
         ("Extension", "Extension Tab"), ("Tools", "Tools Tab")]
 CONTEXTUAL = {"Table", "Image", "Draw", "Object", "Media", "Print", "Form"}
@@ -878,6 +879,100 @@ class NotebookbarOffice(UITestCase):
                           "bxReferencesUpdateCaptionTable": "Update Table",
                           "bxReferencesInsertIndex": "Insert Index", "bxReferencesUpdateIndex": "Update Index",
                           "bxReferencesMarkCitation": "Mark Citation"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_mailings_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_mailings.json", 5)
+
+    def test_mailings_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Mailings")
+            finally:
+                self.switch_to("Default")
+
+    def test_mailings_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Write & Insert Fields family (5 variants) and the Preview Results family (3 variants)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in MAILINGS_SLOTS)
+        self.assertEqual(8, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_mailings_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            expected = {
+                ("MailingsSelectRecipientsMenu", "mailings_selectrecipients"): [
+                    ".uno:AddressBookSource", ".uno:ChangeDatabaseField"],
+                ("MailingsFinishMenu", "mailings_finish"): [
+                    ".uno:MailMergeCreateDocuments", ".uno:MailMergePrintDocuments",
+                    ".uno:MailMergeEmailDocuments", ".uno:MailMergeSaveDocuments"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_mailings_record_buttons_are_disabled_outside_a_mail_merge(self):
+        # the four record commands serve a mail merge in progress only (sw/sdi/wrtapp.sdi:66-119): their state
+        # is disabled, on the ribbon too. The record box has no state of its own (apphdl.cxx only invalidates it);
+        # its controller greys the entry field without a mail merge (mailmergetoolbarcontrols.cxx), not the item.
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("MailMergeFirstEntry", "MailMergePrevEntry", "MailMergeNextEntry", "MailMergeLastEntry"):
+                self.assertFalse(self.dispatch_enabled(name), name)
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                xBox = xWriterDoc.getChild("bxMailingsRecordNavigation")
+                self.assertEqual("5", get_state_as_dict(xBox)["ItemCount"])
+                for pos in (1, 2, 4, 5):
+                    self.assertEqual("false", get_state_as_dict(xBox.getChild("toolboxitem-%d" % pos))["Enabled"], pos)
+                # the box item itself stays enabled: its entry field is the greyed part
+                self.assertEqual("Record box", get_state_as_dict(xBox.getChild("toolboxitem-3"))["Text"])
+            finally:
+                self.switch_to("Default")
+
+    def test_mailings_dropdown_and_placeholder_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for url, label in ((".uno:MailingsSelectRecipientsMenu", "Select Recipients"),
+                               (".uno:MailingsFinishMenu", "Finish Mail Merge"),
+                               (".uno:MailingsField?Field:string=addressblock", "Address Block"),
+                               (".uno:MailingsField?Field:string=greetingline", "Greeting Line"),
+                               (".uno:MailingsField?Field:string=rules", "Rules"),
+                               (".uno:MailingsField?Field:string=matchfields", "Match Fields"),
+                               (".uno:MailingsField?Field:string=updatelabels", "Update Labels"),
+                               (".uno:MailingsPreview?Action:string=toggle", "Preview Results"),
+                               (".uno:MailingsPreview?Action:string=find", "Find Recipient"),
+                               (".uno:MailingsPreview?Action:string=check", "Check for Errors")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_mailings_commands_that_are_real_are_enabled(self):
+        # the mail merge wizard, the data source and the Fields dialog work in any text document
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("InsertEnvelope", "InsertLabels", "MailMergeWizard", "ViewDataSourceBrowser", "Marks",
+                         "InsertField", "AddressBookSource"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_mailings_ribbon_shows_words_labels(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxMailingsEnvelopes": "Envelopes", "bxMailingsSelectRecipients": "Select Recipients",
+                          "bxMailingsEditRecipientList": "Edit Recipient List",
+                          "bxMailingsHighlightMergeFields": "Highlight Merge Fields",
+                          "bxMailingsInsertMergeField": "Insert Merge Field", "bxMailingsRules": "Rules",
+                          "bxMailingsFindRecipient": "Find Recipient", "bxMailingsFinishAndMerge": "Finish & Merge"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)

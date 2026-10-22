@@ -42,6 +42,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/layout_rotate \
 	sw/uiconfig/swriter/popupmenu/layout_sendbackward \
 	sw/uiconfig/swriter/popupmenu/layout_wraptext \
+	sw/uiconfig/swriter/popupmenu/mailings_finish \
+	sw/uiconfig/swriter/popupmenu/mailings_selectrecipients \
 	sw/uiconfig/swriter/popupmenu/media \
 	sw/uiconfig/swriter/popupmenu/notebookbar \
 	sw/uiconfig/swriter/popupmenu/oleobject \

@@ -7356,7 +7356,6 @@
                                       <object class="GtkMenuToolButton" id="btnMailingsMailingsSelectRecipientsMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsSelectRecipientsMenu">Select Recipients</property>
                                         <property name="action-name">.uno:MailingsSelectRecipientsMenu</property>
                                       </object>
                                       <packing>
@@ -7516,7 +7515,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsAddressBlock">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsAddressBlock">Address Block</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=addressblock</property>
                                       </object>
                                       <packing>
@@ -7544,7 +7542,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsGreetingLine">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsGreetingLine">Greeting Line</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=greetingline</property>
                                       </object>
                                       <packing>
@@ -7598,7 +7595,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsRules">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsRules">Rules</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=rules</property>
                                       </object>
                                       <packing>
@@ -7623,7 +7619,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsMatchFields">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsMatchFields">Match Fields</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=matchfields</property>
                                       </object>
                                       <packing>
@@ -7648,7 +7643,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsUpdateLabels">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsUpdateLabels">Update Labels</property>
                                         <property name="action-name">.uno:MailingsField?Field:string=updatelabels</property>
                                       </object>
                                       <packing>
@@ -7751,7 +7745,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsPreviewResults">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsPreviewResults">Preview Results</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=toggle</property>
                                       </object>
                                       <packing>
@@ -7850,7 +7843,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsFindRecipient">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsFindRecipient">Find Recipient</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=find</property>
                                       </object>
                                       <packing>
@@ -7875,7 +7867,6 @@
                                       <object class="GtkToolButton" id="btnMailingsMailingsCheckForErrors">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnMailingsMailingsCheckForErrors">Check for Errors</property>
                                         <property name="action-name">.uno:MailingsPreview?Action:string=check</property>
                                       </object>
                                       <packing>
