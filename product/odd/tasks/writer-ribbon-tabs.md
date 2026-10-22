@@ -137,7 +137,7 @@ translations; T10 (a pending decision).
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
-| W5a / W5b | References | as W2 | [ ] | | |
+| W5a / W5b | References | as W2 | a [x], b [ ] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code) | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
 | W7a / W7b | Review | as W2 | [ ] | | |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
@@ -685,6 +685,33 @@ The controller's rulings can be overturned by the user.
     1920 shots of Formulas and Data: every group shows, and the captions sit on one line.
   - RDD for c293641c5..a0c9e3c2d: medium, under budget. It stays pending in the slice.
 
+- 2026-10-22, W5a (route: delegated, sonnet). Commits:
+  - b4c7dbfe7: `writer_references.json` and the regenerated `.ui` and suppressions (+974/-518);
+  - 26fa4a6d0: 3 popup files, Controller.xcu and WriterCommands.xcu nodes (3 menus, 4 placeholder variants),
+    `test_writer_references_ui.py`, and 7 UITests. The `.ui` also loses 5 labels: once the new label nodes exist,
+    Word's label equals LibreOffice's and the generator drops it.
+  - Evidence (report: `task-W5a-report.md`):
+    - RED: the unit tests errored before the layout file existed. The tab-visible and placeholders-inert UITests
+      already passed, because References is a stock page;
+    - GREEN: 495 -> 519 unit tests OK; the 7 new UITests, `test_tabbed_office_loads`, `test_tab_order` and the
+      T9w labels UITest pass;
+    - the build and `check-ui.sh` are clean; Calc is unchanged.
+  - Controller spot check: 519 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - Menu labels are the worker's wording: "Table of Contents", "Add Text to Contents", "Go to Footnote". The
+    ribbon shows Word's text.
+  - Behaviour: Edit and Remove Table of Contents are listed but disabled outside an index. Insert Caption is
+    disabled in plain text, as LibreOffice does.
+  - Review:
+    - the whole slice from c293641c5 (T9w-fit and W5a, 2279 lines) hit `lens_context_budget_exceeded` at START
+      after the user granted it. No authority was created;
+    - the authored commit 26fa4a6d0 alone (633 lines): the user granted it. One lens (reliability); approved and
+      acknowledged (lineage review-9d02af84e02caa1b). T9w-fit stays unreviewed.
+  - Parked for W9 (test quality):
+    - WARNING: the dropdown UITests build the popup through the controller directly. No test drives the ribbon
+      button, and the three dropdown commands have no slot. W5b's click on the Table of Contents button covers
+      it visually;
+    - SUGGESTION: the Add Text UITest sets "Heading" but never applies an entry or checks the outline level.
+
 ## Next step
 
-W5a: References, layout and behaviour (delegated, sonnet). Brief: `task-W5a-brief.md`.
+W5b: References icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W5b-brief.md`.
