@@ -34,15 +34,17 @@ REFERENCES_SLOTS = (8, 9)  # the Citations Style placeholder and the Table of Au
 MAILINGS_SLOTS = (10, 11)  # the Write & Insert Fields family and the Preview Results family
 REVIEW_SLOTS = (12, 13, 14, 15, 16, 17)  # Read Aloud, Translate, the Comments Previous/Next family, the Markup
 # family, Restrict Editing, Hide Ink
+VIEW_SLOTS = (18, 19, 20, 21, 22)  # the View mode family, the Page Movement family, Arrange All, Split, Side by Side family
+HELP_SLOTS = (23,)  # Feedback
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
-# in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
-# W8a reaches Word's order. Table .. Form are the contextual tabs: they only show with their object.
+# in tab order: (tab label without its mnemonic, page id). Table .. Form are the contextual tabs: they only
+# show with their object. Help is last, after Tools.
 TABS = [("File", "File Tab"), ("Home", "Home Tab"), ("Insert", "Insert Tab"), ("Design", "Design Tab"),
         ("Layout", "Layout Tab"), ("References", "References Tab"), ("Mailings", "Mailings Tab"), ("Review", "Review Tab"),
         ("View", "View Tab"), ("Table", "Table Tab"), ("Image", "Image Tab"), ("Draw", "Draw Tab"), ("Object", "Object Tab"),
         ("Media", "Media Tab"), ("Print", "Print Tab"), ("Form", "Form Tab"),
-        ("Extension", "Extension Tab"), ("Tools", "Tools Tab")]
+        ("Extension", "Extension Tab"), ("Tools", "Tools Tab"), ("Help", "Help Tab")]
 CONTEXTUAL = {"Table", "Image", "Draw", "Object", "Media", "Print", "Form"}
 
 
@@ -1120,6 +1122,172 @@ class NotebookbarOffice(UITestCase):
                           "bxReviewReviewingPane": "Reviewing Pane", "bxReviewAccept": "Accept",
                           "bxReviewReject": "Reject", "bxReviewPreviousChange": "Previous",
                           "bxReviewCompare": "Compare", "bxReviewRestrictEditing": "Restrict Editing"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_view_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_view.json", 8)
+
+    def test_view_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "View")
+            finally:
+                self.switch_to("Default")
+
+    def test_view_placeholders_are_disabled_and_inert(self):
+        # 5 slots: the View mode family (4 variants), the Page Movement family (2), Arrange All, Split and the
+        # Side by Side family (3)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in VIEW_SLOTS)
+        self.assertEqual(11, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_view_switch_windows_lists_the_two_open_windows(self):
+        # the framework's window list, registered under the new command and without a popup file, lists the open
+        # windows when the dropdown opens (Calc's T6b check, with two Writer documents)
+        with self.ui_test.create_doc_in_start_center("writer"):
+            with self.ui_test.load_empty_file("writer"):
+                xPopup, xController = self.menu_controller(".uno:ViewSwitchWindowsMenu", None, with_controller=True)
+                event = uno.createUnoStruct("com.sun.star.awt.MenuEvent")
+                event.Source = xPopup
+                xController.itemActivated(event)
+                windows = [xPopup.getItemId(pos) for pos in range(xPopup.getItemCount())
+                           if 4600 <= xPopup.getItemId(pos) <= 4699]
+                texts = sorted(xPopup.getItemText(nId) for nId in windows)
+                self.assertEqual(2, len(windows), texts)
+                self.assertEqual(2, sum(1 for text in texts if "Untitled" in text), texts)
+                self.assertEqual(1, sum(1 for nId in windows if xPopup.isItemChecked(nId)), "the active window")
+
+    def experimental_mode(self):
+        provider = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.configuration.ConfigurationProvider", self.xContext)
+        access = provider.createInstanceWithArguments(
+            "com.sun.star.configuration.ConfigurationAccess",
+            (PropertyValue(Name="nodepath", Value="/org.openoffice.Office.Common/Misc"),))
+        return bool(access.getByName("ExperimentalMode"))
+
+    def test_view_macros_popup_lists_its_items_through_the_real_controller(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            xPopup = self.menu_controller(".uno:ViewMacrosMenu", "view_macros")
+            commands = self.popup_commands(xPopup)
+            # Macro Manager is flagged experimental (GenericCommands.xcu): the framework drops it from the menu
+            # unless experimental mode is on, as it does in Calc and in the Tools > Macros menu
+            expected = [".uno:RunMacro", ".uno:MacroRecorder", ".uno:BasicIDEAppear"]
+            if self.experimental_mode():
+                expected.insert(2, ".uno:MacroManager")
+            self.assertEqual(expected, commands)
+
+    def test_view_dropdown_and_placeholder_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for url, label in ((".uno:ViewSwitchWindowsMenu", "Switch Windows"),
+                               (".uno:ViewMacrosMenu", "Macros"),
+                               (".uno:ViewMode?Mode:string=read", "Read Mode"),
+                               (".uno:ViewMode?Mode:string=outline", "Outline"),
+                               (".uno:ViewMode?Mode:string=draft", "Draft"),
+                               (".uno:ViewMode?Mode:string=immersive", "Immersive Reader"),
+                               (".uno:ViewPageMovement?Mode:string=vertical", "Vertical"),
+                               (".uno:ViewPageMovement?Mode:string=sidetoside", "Side to Side"),
+                               (".uno:ViewArrangeAll", "Arrange All"),
+                               (".uno:ViewSplit", "Split"),
+                               (".uno:ViewSideBySide?Action:string=toggle", "View Side by Side"),
+                               (".uno:ViewSideBySide?Action:string=sync", "Synchronous Scrolling"),
+                               (".uno:ViewSideBySide?Action:string=reset", "Reset Window Position")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_view_commands_that_are_real_are_enabled(self):
+        # Left out on purpose: MacroManager (hidden unless experimental mode is on) and ShowMultiplePages (a print
+        # preview command: the text view does not handle it, sw/source/uibase/uiview/pview.cxx)
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("PrintLayout", "BrowseView", "FullScreen", "ChangeTheme", "Ruler", "GridVisible", "Navigator",
+                         "Zoom", "Zoom100Percent", "ZoomPage", "ZoomPageWidth", "NewWindow", "RunMacro",
+                         "MacroRecorder", "BasicIDEAppear"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_view_ribbon_shows_words_labels(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxViewReadMode": "Read Mode", "bxViewWebLayout": "Web Layout", "bxViewFocus": "Focus",
+                          "bxViewDarkMode": "Dark Mode", "bxViewNavigationPane": "Navigation Pane",
+                          "bxViewOnePage": "One Page", "bxViewMultiplePages": "Multiple Pages",
+                          "bxViewPageWidth": "Page Width", "bxViewSwitchWindows": "Switch Windows",
+                          "bxViewMacros": "Macros"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_help_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_help.json", 1)
+
+    def test_help_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Help")
+            finally:
+                self.switch_to("Default")
+
+    def test_help_placeholders_are_disabled_and_inert(self):
+        # 1 slot, no variants: Feedback
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in HELP_SLOTS)
+        self.assertEqual(["HelpFeedback"], names and [n.removeprefix(".uno:") for n in names])
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_help_buttons_are_drawn_disabled_only_for_the_placeholder(self):
+        # what the ribbon draws: toolboxitem `Enabled`
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                boxes = {"bxHelpHelp": True, "bxHelpContactSupport": True, "bxHelpFeedback": False,
+                         "bxHelpShowTraining": True, "bxHelpWhatsNew": True}
+                self.wait_for(lambda: all((get_state_as_dict(xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Enabled"]
+                                           == "true") == enabled for box, enabled in boxes.items()),
+                              "Help buttons not drawn as designed")
+            finally:
+                self.switch_to("Default")
+
+    def test_help_commands_that_are_real_are_enabled_and_the_labels_resolve(self):
+        # Help (HelpIndex) needs the help system, and the other three open a web page: all four are enabled in
+        # this build; an installation without help content could disable HelpIndex
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("HelpIndex", "QuestionAnswers", "Documentation", "WhatsNew"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+            self.assertEqual("Feedback", self.command_label(".uno:HelpFeedback"))
+
+    def test_help_ribbon_shows_words_labels(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxHelpHelp": "Help", "bxHelpContactSupport": "Contact Support",
+                          "bxHelpFeedback": "Feedback", "bxHelpShowTraining": "Show Training",
+                          "bxHelpWhatsNew": "What's New"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
