@@ -34,17 +34,19 @@ def uno(*names):
 GOTO = ".uno:ReviewGoToComment?Direction:string="
 MARKUP = ".uno:ReviewMarkup?Action:string="
 # section -> (caption, rows, [(style, [url, ...]) per toolbox in document order]); design section 1 "Review".
-# Size: L = large, S = small-label. Editor (cloud) and Block Authors (co-authoring) are omitted.
+# Size: L = large, S = small-label. Editor (cloud) and Block Authors (co-authoring) are omitted. W7b stacks
+# Thesaurus with Word Count, and Previous, Next and Show Comments, as small-label buttons to fit 1920 px.
 DESIGN = {
     "Proofing": ("Proofing", 3, [
-        ("large", uno("SpellingAndGrammarDialog")), ("large", uno("ThesaurusDialog")),
-        ("large", uno("WordCountDialog"))]),
+        ("large", uno("SpellingAndGrammarDialog")), ("small-label", uno("ThesaurusDialog")),
+        ("small-label", uno("WordCountDialog"))]),
     "Speech": ("Speech", 3, [("large", uno("ReviewReadAloud"))]),
     "Accessibility": ("Accessibility", 3, [("large", uno("AccessibilityCheck"))]),
     "Language": ("Language", 3, [("large", uno("ReviewTranslate")), ("large", uno("ReviewLanguageMenu"))]),
     "Comments": ("Comments", 3, [
         ("large", uno("InsertAnnotation")), ("large", uno("ReviewDeleteCommentMenu")),
-        ("large", [GOTO + "previous"]), ("large", [GOTO + "next"]), ("large", uno("ShowAnnotations"))]),
+        ("small-label", [GOTO + "previous"]), ("small-label", [GOTO + "next"]),
+        ("small-label", uno("ShowAnnotations"))]),
     "Markup": ("Markup", 3, [
         ("large", [MARKUP + "filter"]),
         ("small-label", [MARKUP + "display"]), ("small-label", uno("ShowTrackedChanges")),
@@ -56,8 +58,8 @@ DESIGN = {
     "Protect": ("Protect", 3, [("large", uno("ReviewRestrictEditing"))]),
     "Ink": ("Ink", 3, [("large", uno("ReviewHideInk"))]),
 }
-SHAPES = {"Proofing": [1, 1, 1], "Speech": [1], "Accessibility": [1], "Language": [1, 1],
-          "Comments": [1, 1, 1, 1, 1], "Markup": [1, 3], "Tracking": [1, 1, 1, 2], "Compare": [1],
+SHAPES = {"Proofing": [1, 2], "Speech": [1], "Accessibility": [1], "Language": [1, 1],
+          "Comments": [1, 1, 3], "Markup": [1, 3], "Tracking": [1, 1, 1, 2], "Compare": [1],
           "Protect": [1], "Ink": [1]}
 # Word's label per widget command (T9w: the ribbon shows it, unless it equals LibreOffice's label)
 WORD_LABELS = {
