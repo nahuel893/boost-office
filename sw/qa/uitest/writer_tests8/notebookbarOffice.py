@@ -30,6 +30,7 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4
 HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: Text Effects family, Select Similar
 INSERT_SLOTS = (2, 3, 4, 5)  # Blank Page, 3D Models, SmartArt, Screenshot
 DESIGN_SLOTS = (6, 7)  # the Themes/Fonts/Effects family and the Style Set/Paragraph Spacing/Set as Default family
+REFERENCES_SLOTS = (8, 9)  # the Citations Style placeholder and the Table of Authorities family
 
 # The pages of today's generated Writer office .ui (sw/uiconfig/swriter/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that add pages update this list;
@@ -790,6 +791,98 @@ class NotebookbarOffice(UITestCase):
                          "InsertColumnBreak", "InsertLinebreak", "InsertBreak", "InsertSection",
                          "LineNumberingDialog", "Hyphenate", "Navigator"):
                 self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_references_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes("writer_references.json", 6)
+
+    def test_references_tab_is_visible_in_the_text_table_image_and_print_preview_contexts(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "References")
+            finally:
+                self.switch_to("Default")
+
+    def test_references_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Citations Style button and the Table of Authorities family (3 variants)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in REFERENCES_SLOTS)
+        self.assertEqual(4, len(names))
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.dispatch_enabled("InsertPagebreak"))  # control: a real, enabled slot
+            for name in names:
+                self.assertFalse(self.dispatch_enabled(name), name)
+                self.xUITest.executeCommand(".uno:" + name)  # must do nothing, not even a dialog
+            self.assertEqual("keep", document.Text.String)
+            self.assertFalse(document.isModified())
+
+    def test_references_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            document.Text.String = "Heading"
+            expected = {
+                ("ReferencesAddTextMenu", "references_addtext"): [
+                    ".uno:TextBodyParaStyle", ".uno:Heading1ParaStyle", ".uno:Heading2ParaStyle",
+                    ".uno:Heading3ParaStyle"],
+                ("ReferencesNextFootnoteMenu", "references_nextfootnote"): [
+                    ".uno:JumpToNextFootnote", ".uno:JumpToPrevFootnote"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+            # the popup always lists all three; Edit and Remove Table of Contents are enabled inside an index
+            # only (viewstat.cxx, textidx.cxx), Insert always
+            xPopup = self.menu_controller(".uno:ReferencesTocMenu", "references_toc")
+            self.assertEqual([".uno:InsertMultiIndex", ".uno:EditCurIndex", ".uno:RemoveTableOf"],
+                             self.popup_commands(xPopup))
+            self.assertTrue(self.dispatch_enabled("InsertMultiIndex"))
+            self.assertFalse(self.dispatch_enabled("EditCurIndex"))
+            self.assertFalse(self.dispatch_enabled("RemoveTableOf"))
+            xIndex = document.createInstance("com.sun.star.text.ContentIndex")
+            document.Text.insertTextContent(document.Text.End, xIndex, False)
+            xIndex.update()
+            document.CurrentController.ViewCursor.gotoRange(xIndex.Anchor.Start, False)
+            self.wait_for(lambda: self.dispatch_enabled("EditCurIndex"), "the cursor is not in the index")
+            self.assertTrue(self.dispatch_enabled("RemoveTableOf"))
+
+    def test_references_dropdown_and_placeholder_labels_resolve(self):
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for url, label in ((".uno:ReferencesTocMenu", "Table of Contents"),
+                               (".uno:ReferencesAddTextMenu", "Add Text to Contents"),
+                               (".uno:ReferencesNextFootnoteMenu", "Go to Footnote"),
+                               (".uno:ReferencesCitationStyle", "Style"),
+                               (".uno:ReferencesAuthorities?Action:string=mark", "Mark Citation"),
+                               (".uno:ReferencesAuthorities?Action:string=insert", "Insert Table of Authorities"),
+                               (".uno:ReferencesAuthorities?Action:string=update", "Update Table")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_references_commands_that_are_real_are_enabled(self):
+        # InsertCaptionDialog is left out: Writer greys it with the cursor in plain text, no object selected.
+        # The four paragraph-style aliases of Add Text have no dispatch of their own (they apply StyleApply).
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in ("InsertFootnote", "InsertEndnote", "JumpToNextFootnote", "JumpToPrevFootnote",
+                         "InsertAuthoritiesEntry", "BibliographyComponent", "InsertMultiIndex",
+                         "InsertReferenceField", "InsertIndexesEntry"):
+                self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_references_ribbon_shows_words_labels_on_the_buttons_that_share_a_command(self):
+        # the three InsertMultiIndex and three UpdateCurIndex buttons (design decision 11) each read Word's label
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.switch_to(OFFICE_UI)
+            try:
+                xWriterDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxReferencesTableOfContents": "Table of Contents", "bxReferencesAddText": "Add Text",
+                          "bxReferencesUpdateTable": "Update Table", "bxReferencesNextFootnote": "Next Footnote",
+                          "bxReferencesBibliography": "Bibliography",
+                          "bxReferencesTableOfFigures": "Insert Table of Figures",
+                          "bxReferencesUpdateCaptionTable": "Update Table",
+                          "bxReferencesInsertIndex": "Insert Index", "bxReferencesUpdateIndex": "Update Index",
+                          "bxReferencesMarkCitation": "Mark Citation"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xWriterDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
 
     def menu_item_names(self, document, menu):
         """The item names of the menu-bar menu `menu` (Format, say), read from the accessibility tree.

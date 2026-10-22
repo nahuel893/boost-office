@@ -46,6 +46,9 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/swriter,\
 	sw/uiconfig/swriter/popupmenu/notebookbar \
 	sw/uiconfig/swriter/popupmenu/oleobject \
 	sw/uiconfig/swriter/popupmenu/preview \
+	sw/uiconfig/swriter/popupmenu/references_addtext \
+	sw/uiconfig/swriter/popupmenu/references_nextfootnote \
+	sw/uiconfig/swriter/popupmenu/references_toc \
 	sw/uiconfig/swriter/popupmenu/table \
 	sw/uiconfig/swriter/popupmenu/text \
 	sw/uiconfig/swriter/popupmenu/showtrackedchanges \

@@ -6164,7 +6164,6 @@
                                       <object class="GtkMenuToolButton" id="btnReferencesReferencesTocMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesTocMenu">Table of Contents</property>
                                         <property name="action-name">.uno:ReferencesTocMenu</property>
                                       </object>
                                       <packing>
@@ -6548,7 +6547,6 @@
                                       <object class="GtkToolButton" id="btnReferencesReferencesCitationStyle">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesCitationStyle">Style</property>
                                         <property name="action-name">.uno:ReferencesCitationStyle</property>
                                       </object>
                                       <packing>
@@ -7007,7 +7005,6 @@
                                       <object class="GtkToolButton" id="btnReferencesReferencesMarkCitation">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesMarkCitation">Mark Citation</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=mark</property>
                                       </object>
                                       <packing>
@@ -7033,7 +7030,6 @@
                                       <object class="GtkToolButton" id="btnReferencesReferencesInsertAuthorities">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesInsertAuthorities">Insert Table of Authorities</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=insert</property>
                                       </object>
                                       <packing>
@@ -7058,7 +7054,6 @@
                                       <object class="GtkToolButton" id="btnReferencesReferencesUpdateAuthorities">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesUpdateAuthorities">Update Table</property>
                                         <property name="action-name">.uno:ReferencesAuthorities?Action:string=update</property>
                                       </object>
                                       <packing>

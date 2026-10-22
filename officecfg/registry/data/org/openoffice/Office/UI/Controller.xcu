@@ -1487,6 +1487,48 @@
           <value>layout_rotate</value>
         </prop>
       </node>
+      <node oor:name="ReferencesTocMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesTocMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>references_toc</value>
+        </prop>
+      </node>
+      <node oor:name="ReferencesAddTextMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesAddTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>references_addtext</value>
+        </prop>
+      </node>
+      <node oor:name="ReferencesNextFootnoteMenuPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesNextFootnoteMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>references_nextfootnote</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3631,6 +3673,39 @@
       <node oor:name="PageLayoutRotateMenuWriterControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:PageLayoutRotateMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReferencesTocMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesTocMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReferencesAddTextMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesAddTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReferencesNextFootnoteMenuControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReferencesNextFootnoteMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.text.TextDocument</value>
