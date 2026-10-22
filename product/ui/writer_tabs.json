@@ -22,6 +22,8 @@
     {"page": "Design Tab", "prefix": "Design", "after_tab": "InsertLabel", "position": 3,
      "tab_id": "DesignLabel", "label": "Desi~gn", "context": "TabbedWriter|DesignTabLabel"},
     {"page": "Mailings Tab", "prefix": "Mailings", "after_tab": "ReferencesLabel", "position": 6,
-     "tab_id": "MailingsLabel", "label": "M~ailings", "context": "TabbedWriter|MailingsTabLabel"}
+     "tab_id": "MailingsLabel", "label": "M~ailings", "context": "TabbedWriter|MailingsTabLabel"},
+    {"page": "Help Tab", "prefix": "Help", "after_tab": "ToolsLabel", "position": 18,
+     "tab_id": "HelpLabel", "label": "H~elp", "context": "TabbedWriter|HelpTabLabel"}
   ]
 }

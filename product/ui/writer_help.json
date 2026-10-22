@@ -1,0 +1,14 @@
+{
+  "page": "Help Tab",
+  "id_prefix": "Help",
+  "context": "TabbedWriter",
+  "sections": [
+    {"name": "Help", "caption": "Help", "rows": 3, "columns": [
+      [{"id": "Help", "style": "large", "items": [{"cmd": "HelpIndex", "office_label": "Help"}]}],
+      [{"id": "ContactSupport", "style": "large", "items": [{"cmd": "QuestionAnswers", "office_label": "Contact Support"}]}],
+      [{"id": "Feedback", "style": "large", "items": [{"cmd": "HelpFeedback", "office_label": "Feedback"}]}],
+      [{"id": "ShowTraining", "style": "large", "items": [{"cmd": "Documentation", "office_label": "Show Training"}]}],
+      [{"id": "WhatsNew", "style": "large", "items": [{"cmd": "WhatsNew", "office_label": "What's New"}]}]
+    ]}
+  ]
+}

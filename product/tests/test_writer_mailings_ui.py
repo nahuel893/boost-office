@@ -213,7 +213,7 @@ class WriterMailingsUiTest(unittest.TestCase):
     def test_the_tabs_are_in_words_order(self):
         order = re.findall(r'context="TabbedWriter\|(\w+)TabLabel"', self.office)
         self.assertEqual(["File", "Home", "Insert", "Design", "Layout", "References", "Mailings", "Review", "View",
-                          "Table", "Image", "Draw", "Object", "Media", "Print", "Form", "Tools"],
+                          "Table", "Image", "Draw", "Object", "Media", "Print", "Form", "Tools", "Help"],
                          [t for t in order if t != "Extension"])
 
     def test_every_command_in_the_layout_has_a_label(self):

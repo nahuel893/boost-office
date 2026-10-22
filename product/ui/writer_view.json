@@ -1,0 +1,70 @@
+{
+  "page": "View Tab",
+  "id_prefix": "View",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu View"],
+  "sections": [
+    {"name": "Views", "caption": "Views", "rows": 3, "columns": [
+      [{"id": "ReadMode", "style": "large", "items": [
+        {"cmd": "ReadMode", "action": ".uno:ViewMode?Mode:string=read", "office_label": "Read Mode"}]}],
+      [{"id": "PrintLayout", "style": "large", "items": [{"cmd": "PrintLayout", "office_label": "Print Layout"}]}],
+      [{"id": "WebLayout", "style": "large", "items": [{"cmd": "BrowseView", "office_label": "Web Layout"}]}],
+      [
+        {"id": "Outline", "style": "small-label", "items": [
+          {"cmd": "Outline", "action": ".uno:ViewMode?Mode:string=outline", "office_label": "Outline"}]},
+        {"id": "Draft", "style": "small-label", "items": [
+          {"cmd": "Draft", "action": ".uno:ViewMode?Mode:string=draft", "office_label": "Draft"}]}
+      ]
+    ]},
+    {"name": "Immersive", "caption": "Immersive", "rows": 3, "columns": [
+      [{"id": "Focus", "style": "large", "items": [{"cmd": "FullScreen", "office_label": "Focus"}]}],
+      [{"id": "ImmersiveReader", "style": "large", "items": [
+        {"cmd": "ImmersiveReader", "action": ".uno:ViewMode?Mode:string=immersive", "office_label": "Immersive Reader"}]}]
+    ]},
+    {"name": "DarkMode", "caption": "Dark Mode", "rows": 3, "columns": [
+      [{"id": "DarkMode", "style": "large", "items": [{"cmd": "ChangeTheme", "office_label": "Dark Mode"}]}]
+    ]},
+    {"name": "PageMovement", "caption": "Page Movement", "rows": 3, "columns": [
+      [{"id": "Vertical", "style": "large", "items": [
+        {"cmd": "PageMovementVertical", "action": ".uno:ViewPageMovement?Mode:string=vertical", "office_label": "Vertical"}]}],
+      [{"id": "SideToSide", "style": "large", "items": [
+        {"cmd": "PageMovementSideToSide", "action": ".uno:ViewPageMovement?Mode:string=sidetoside", "office_label": "Side to Side"}]}]
+    ]},
+    {"name": "Show", "caption": "Show", "rows": 3, "columns": [
+      [
+        {"id": "Ruler", "style": "small-label", "items": [{"cmd": "Ruler", "office_label": "Ruler"}]},
+        {"id": "Gridlines", "style": "small-label", "items": [{"cmd": "GridVisible", "office_label": "Gridlines"}]},
+        {"id": "NavigationPane", "style": "small-label", "items": [
+          {"cmd": "Navigator", "office_label": "Navigation Pane"}]}
+      ]
+    ]},
+    {"name": "Zoom", "caption": "Zoom", "rows": 3, "columns": [
+      [{"id": "Zoom", "style": "large", "items": [{"cmd": "Zoom", "office_label": "Zoom"}]}],
+      [{"id": "Zoom100", "style": "large", "items": [{"cmd": "Zoom100Percent", "office_label": "100%"}]}],
+      [
+        {"id": "OnePage", "style": "small-label", "items": [{"cmd": "ZoomPage", "office_label": "One Page"}]},
+        {"id": "MultiplePages", "style": "small-label", "items": [
+          {"cmd": "ShowMultiplePages", "kind": "split", "office_label": "Multiple Pages"}]},
+        {"id": "PageWidth", "style": "small-label", "items": [{"cmd": "ZoomPageWidth", "office_label": "Page Width"}]}
+      ]
+    ]},
+    {"name": "Window", "caption": "Window", "rows": 3, "columns": [
+      [{"id": "NewWindow", "style": "large", "items": [{"cmd": "NewWindow", "office_label": "New Window"}]}],
+      [{"id": "ArrangeAll", "style": "large", "items": [{"cmd": "ViewArrangeAll", "office_label": "Arrange All"}]}],
+      [{"id": "Split", "style": "large", "items": [{"cmd": "ViewSplit", "office_label": "Split"}]}],
+      [
+        {"id": "ViewSideBySide", "style": "small-label", "items": [
+          {"cmd": "SideBySide", "action": ".uno:ViewSideBySide?Action:string=toggle", "office_label": "View Side by Side"}]},
+        {"id": "SynchronousScrolling", "style": "small-label", "items": [
+          {"cmd": "SyncScrolling", "action": ".uno:ViewSideBySide?Action:string=sync", "office_label": "Synchronous Scrolling"}]},
+        {"id": "ResetWindowPosition", "style": "small-label", "items": [
+          {"cmd": "ResetWindowPosition", "action": ".uno:ViewSideBySide?Action:string=reset", "office_label": "Reset Window Position"}]}
+      ],
+      [{"id": "SwitchWindows", "style": "large", "items": [
+        {"cmd": "ViewSwitchWindowsMenu", "kind": "split", "office_label": "Switch Windows"}]}]
+    ]},
+    {"name": "Macros", "caption": "Macros", "rows": 3, "columns": [
+      [{"id": "Macros", "style": "large", "items": [{"cmd": "ViewMacrosMenu", "kind": "split", "office_label": "Macros"}]}]
+    ]}
+  ]
+}
