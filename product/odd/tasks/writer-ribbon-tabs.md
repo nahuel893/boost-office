@@ -139,7 +139,7 @@ translations; T10 (a pending decision).
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
-| W7a / W7b | Review | as W2 | a [x], b [ ] | a: 820baee29 (layout + generated), 6f24be2b0 (code) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged |
+| W7a / W7b | Review | as W2 | a [x], b [x] | a: 820baee29 (layout + generated), 6f24be2b0 (code); b: a22437b09, e0108c293 (fit), 3942ac2b9 (test fix, controller) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged; b: medium, under budget (pending in slice from 6f24be2b0) |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
@@ -809,7 +809,32 @@ The controller's rulings can be overturned by the user.
     (`notebookbarOffice.py:1011-1027`), with no text attached; parked for W9. W6b (2e760bcaf), the docs commits and
     820baee29 stay unreviewed.
 
+- 2026-10-22, W7b (route: delegated, sonnet; the test fix inline, controller). Commits:
+  - a22437b09: the Review icons (20 new Fluent entries, none custom; Spelling, Thesaurus, New Comment and Show
+    Comments reused), the icon test extended, and explicit icons for the 4 placeholder controls;
+  - e0108c293: the 1920 px fit. Protect and Ink were behind `>>`. Thesaurus with Word Count, and Previous, Next and
+    Show Comments, are now stacked small-label buttons, as Word narrows those groups;
+  - 3942ac2b9: `test_writer_review_ui.py` pins the fitted sizes. The worker's fit commit left 2 tests red, because
+    that file was outside its surface; it stopped with NEEDS_CONTEXT, and the controller fixed the test inline.
+    e0108c293 alone fails those 2 tests.
+  - Evidence (report: `task-W7b-report.md`): RED, 98 missing icon members; GREEN, 579 unit tests OK after
+    3942ac2b9; build, install, `check-ui.sh`, `sw.build` and one Review UITest pass; Calc unchanged.
+  - No plain command rendered blank on Review; the Drop Caps, Show Notes and Labels root cause is still open (W9).
+  - Fit: the tab ends at x=1788, a margin of 132 px. At 1600, Ink, Protect and Compare go behind `>>`; at 1366,
+    Tracking too. Whole groups, right to left, as the design says.
+  - Ribbon height matches Home: captions at y=157, ruler at y=191.
+  - Language: a click on the button body opens its menu, and moving across "Language for Selection" opens the
+    submenu with the document languages (`w7b/light-review-1920-language-submenu.png`). This is the real-click
+    evidence W7a could not get from a UITest.
+  - Controller check: 579 OK, the tree is clean after `gen_ribbon.py --all`, no process left. Looked at
+    `w7b/light-review-1920.png` and the submenu shot: Word's groups and labels, the placeholders greyed.
+  - For W9: a two-button small-label column (Proofing, and Tracking's Previous/Next) spreads its buttons to the
+    top and lower rows (y=62 and y=111), while a three-button column uses all three rows. Compare with Word's
+    alignment of two small buttons.
+  - For W10: design section 1 lists Thesaurus, Word Count, Previous, Next and Show Comments as L; after the fit
+    they are S.
+  - RDD for 6f24be2b0..3942ac2b9: medium, under budget (236 lines). It stays pending in the slice.
+
 ## Next step
 
-W7b: Review, icons, 1920 fit and screenshots, with a real click on the Language dropdown (delegated, sonnet).
-Brief: `task-W7b-brief.md`.
+W8a: View and Help (new page), layout and behaviour (delegated, sonnet). Brief: `task-W8a-brief.md`.
