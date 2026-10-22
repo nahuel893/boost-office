@@ -137,7 +137,7 @@ translations; T10 (a pending decision).
 | W2c | Home Styles gallery as wide as Word's (it is 70 px and clips the style names) | delegated (opus: svx sizing, shared control) | [x] | 117239dbd (generator `expand`), 786925aaf (Home JSON + `.ui` + tests) | slice 89785d255..786925aaf (W2b + W2c): high; granted, approved, acknowledged |
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
-| W5a / W5b | References | as W2 | a [x], b [ ] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code) | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
+| W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
 | W7a / W7b | Review | as W2 | [ ] | | |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
@@ -712,6 +712,23 @@ The controller's rulings can be overturned by the user.
       it visually;
     - SUGGESTION: the Add Text UITest sets "Heading" but never applies an entry or checks the outline level.
 
+- 2026-10-22, W5b (route: delegated, sonnet). Commit 6bed2991d: the References icons, the icon test extended, and
+  explicit icons in `writer_references.json` with the regenerated `.ui`.
+  - Evidence (report: `task-W5b-report.md`): RED, 92 missing icon members; GREEN, 521 tests OK; build, install,
+    `check-ui.sh`, `sw.build` and one References UITest pass; Calc unchanged.
+  - Explicit icons: the three placeholders (URL arguments), and Show Notes (`JumpToFootnoteOrAnchor`). Its PNG is in
+    the installed zip, yet the icon rendered blank without an explicit `"icon"`. That is the second plain command
+    after Drop Caps (W3b); the root cause is open for W9.
+  - Bibliography, Insert Table of Figures and Insert Index share one icon, because all three are
+    `.uno:InsertMultiIndex`.
+  - Fit: the tab ends at x=1444, a margin of 476 px. Nothing collapses at 1600. At 1366, Table of Authorities
+    goes behind `>>`, as the design says.
+  - A click on the Table of Contents button body opens its menu (`w5b/light-references-1920-toc-menu.png`). This
+    covers the W5a review warning visually.
+  - Controller check: 521 OK, the tree is clean after `gen_ribbon.py --all`, no process left. Looked at
+    `w5b/light-references-1920.png`: Word's groups and labels, with the placeholders greyed.
+  - RDD for 26fa4a6d0..6bed2991d: medium, under budget. It stays pending in the slice.
+
 ## Next step
 
-W5b: References icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W5b-brief.md`.
+W6a: Mailings (new page), layout and behaviour (delegated, sonnet). Brief: `task-W6a-brief.md`.
