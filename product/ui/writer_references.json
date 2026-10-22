@@ -1,0 +1,107 @@
+{
+  "page": "References Tab",
+  "id_prefix": "References",
+  "context": "TabbedWriter",
+  "remove_objects": ["Menu References"],
+  "sections": [
+    {"name": "TableOfContents", "caption": "Table of Contents", "rows": 3, "columns": [
+      [
+        {"id": "TableOfContents", "style": "large", "items": [
+          {"cmd": "ReferencesTocMenu", "kind": "split", "office_label": "Table of Contents"}
+        ]}
+      ],
+      [
+        {"id": "AddText", "style": "small-label", "items": [
+          {"cmd": "ReferencesAddTextMenu", "kind": "split", "office_label": "Add Text"}
+        ]},
+        {"id": "UpdateTable", "style": "small-label", "items": [
+          {"cmd": "UpdateCurIndex", "office_label": "Update Table"}
+        ]}
+      ]
+    ]},
+    {"name": "Footnotes", "caption": "Footnotes", "rows": 3, "columns": [
+      [
+        {"id": "InsertFootnote", "style": "large", "items": [
+          {"cmd": "InsertFootnote", "office_label": "Insert Footnote"}
+        ]}
+      ],
+      [
+        {"id": "InsertEndnote", "style": "small-label", "items": [
+          {"cmd": "InsertEndnote", "office_label": "Insert Endnote"}
+        ]},
+        {"id": "NextFootnote", "style": "small-label", "items": [
+          {"cmd": "ReferencesNextFootnoteMenu", "kind": "split", "office_label": "Next Footnote"}
+        ]},
+        {"id": "ShowNotes", "style": "small-label", "items": [
+          {"cmd": "JumpToFootnoteOrAnchor", "office_label": "Show Notes"}
+        ]}
+      ]
+    ]},
+    {"name": "Citations", "caption": "Citations & Bibliography", "rows": 3, "columns": [
+      [
+        {"id": "InsertCitation", "style": "large", "items": [
+          {"cmd": "InsertAuthoritiesEntry", "office_label": "Insert Citation"}
+        ]}
+      ],
+      [
+        {"id": "ManageSources", "style": "small-label", "items": [
+          {"cmd": "BibliographyComponent", "office_label": "Manage Sources"}
+        ]},
+        {"id": "Style", "style": "small-label", "items": [
+          {"cmd": "ReferencesCitationStyle", "office_label": "Style"}
+        ]},
+        {"id": "Bibliography", "style": "small-label", "items": [
+          {"cmd": "ReferencesBibliography", "action": ".uno:InsertMultiIndex", "office_label": "Bibliography"}
+        ]}
+      ]
+    ]},
+    {"name": "Captions", "caption": "Captions", "rows": 3, "columns": [
+      [
+        {"id": "InsertCaption", "style": "large", "items": [
+          {"cmd": "InsertCaptionDialog", "office_label": "Insert Caption"}
+        ]}
+      ],
+      [
+        {"id": "TableOfFigures", "style": "small-label", "items": [
+          {"cmd": "ReferencesTableOfFigures", "action": ".uno:InsertMultiIndex", "office_label": "Insert Table of Figures"}
+        ]},
+        {"id": "UpdateCaptionTable", "style": "small-label", "items": [
+          {"cmd": "ReferencesUpdateCaptionTable", "action": ".uno:UpdateCurIndex", "office_label": "Update Table"}
+        ]},
+        {"id": "CrossReference", "style": "small-label", "items": [
+          {"cmd": "InsertReferenceField", "office_label": "Cross-reference"}
+        ]}
+      ]
+    ]},
+    {"name": "Index", "caption": "Index", "rows": 3, "columns": [
+      [
+        {"id": "MarkEntry", "style": "large", "items": [
+          {"cmd": "InsertIndexesEntry", "office_label": "Mark Entry"}
+        ]}
+      ],
+      [
+        {"id": "InsertIndex", "style": "small-label", "items": [
+          {"cmd": "ReferencesInsertIndex", "action": ".uno:InsertMultiIndex", "office_label": "Insert Index"}
+        ]},
+        {"id": "UpdateIndex", "style": "small-label", "items": [
+          {"cmd": "ReferencesUpdateIndex", "action": ".uno:UpdateCurIndex", "office_label": "Update Index"}
+        ]}
+      ]
+    ]},
+    {"name": "Authorities", "caption": "Table of Authorities", "rows": 3, "columns": [
+      [
+        {"id": "MarkCitation", "style": "large", "items": [
+          {"cmd": "ReferencesMarkCitation", "action": ".uno:ReferencesAuthorities?Action:string=mark", "office_label": "Mark Citation"}
+        ]}
+      ],
+      [
+        {"id": "InsertAuthorities", "style": "small-label", "items": [
+          {"cmd": "ReferencesInsertAuthorities", "action": ".uno:ReferencesAuthorities?Action:string=insert", "office_label": "Insert Table of Authorities"}
+        ]},
+        {"id": "UpdateAuthorities", "style": "small-label", "items": [
+          {"cmd": "ReferencesUpdateAuthorities", "action": ".uno:ReferencesAuthorities?Action:string=update", "office_label": "Update Table"}
+        ]}
+      ]
+    ]}
+  ]
+}
