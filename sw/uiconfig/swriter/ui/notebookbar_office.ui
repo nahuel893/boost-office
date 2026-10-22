@@ -8405,6 +8405,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewCommentPrevious">Previous</property>
                                         <property name="action-name">.uno:ReviewGoToComment?Direction:string=previous</property>
+                                        <property name="icon_name">cmd/32/reviewcommentprevious.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -8433,6 +8434,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedWriter|btnReviewReviewCommentNext">Next</property>
                                         <property name="action-name">.uno:ReviewGoToComment?Direction:string=next</property>
+                                        <property name="icon_name">cmd/32/reviewcommentnext.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -8563,6 +8565,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ReviewMarkup?Action:string=filter</property>
+                                        <property name="icon_name">cmd/32/reviewfilterallmarkup.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -8588,6 +8591,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ReviewMarkup?Action:string=display</property>
+                                        <property name="icon_name">cmd/sc_reviewdisplayforreview.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>

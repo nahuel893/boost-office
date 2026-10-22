@@ -330,6 +330,26 @@
     {"name": "mailmergelastentry", "layers": [{"glyph": "next"}]},
     {"name": "mailingsfindrecipient", "layers": [{"glyph": "person_search"}]},
     {"name": "mailingscheckforerrors", "layers": [{"glyph": "error_circle"}]},
-    {"name": "mailingsfinishmenu", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "mail_arrow_double_back"}]}
+    {"name": "mailingsfinishmenu", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "mail_arrow_double_back"}]},
+    {"name": "wordcountdialog", "large": true, "layers": [{"glyph": "text_word_count"}]},
+    {"name": "reviewreadaloud", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "speaker_2"}]},
+    {"name": "accessibilitycheck", "fill": {"color": "fill_green"}, "large": true, "layers": [{"glyph": "accessibility_checkmark"}]},
+    {"name": "reviewtranslate", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "translate"}]},
+    {"name": "reviewlanguagemenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "local_language"}]},
+    {"name": "reviewdeletecommentmenu", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_dismiss"}]},
+    {"name": "reviewcommentprevious", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_arrow_left"}]},
+    {"name": "reviewcommentnext", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "comment_arrow_right"}]},
+    {"name": "reviewfilterallmarkup", "large": true, "layers": [{"glyph": "filter"}]},
+    {"name": "reviewdisplayforreview", "layers": [{"glyph": "eye"}]},
+    {"name": "showtrackedchanges", "layers": [{"glyph": "eye_lines"}]},
+    {"name": "accepttrackedchanges", "layers": [{"glyph": "panel_left_text"}]},
+    {"name": "trackchanges", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "document_edit"}]},
+    {"name": "reviewacceptmenu", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "document_edit"}, {"glyph": "checkmark_circle", "style": "filled", "color": "green", "scale": 0.5, "dx": 0.5, "dy": 0.5, "knockout": true}]},
+    {"name": "reviewrejectmenu", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "document_edit"}, {"glyph": "dismiss_circle", "style": "filled", "color": "red", "scale": 0.5, "dx": 0.5, "dy": 0.5, "knockout": true}]},
+    {"name": "previoustrackedchange", "layers": [{"glyph": "arrow_left"}]},
+    {"name": "nexttrackedchange", "layers": [{"glyph": "arrow_right"}]},
+    {"name": "reviewcomparemenu", "fill": {"color": "fill_blue"}, "large": true, "layers": [{"glyph": "document_multiple"}]},
+    {"name": "reviewrestrictediting", "fill": {"color": "fill_yellow"}, "large": true, "layers": [{"glyph": "lock_closed"}]},
+    {"name": "reviewhideink", "large": true, "layers": [{"glyph": "pen_off"}]}
   ]
 }

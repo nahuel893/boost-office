@@ -32,21 +32,21 @@
       [{"id": "DeleteComment", "style": "large", "items": [
         {"cmd": "ReviewDeleteCommentMenu", "kind": "split", "office_label": "Delete"}]}],
       [{"id": "CommentPrevious", "style": "large", "items": [
-        {"cmd": "ReviewCommentPrevious", "action": ".uno:ReviewGoToComment?Direction:string=previous",
+        {"cmd": "ReviewCommentPrevious", "icon": "cmd/32/reviewcommentprevious.png", "action": ".uno:ReviewGoToComment?Direction:string=previous",
          "office_label": "Previous"}]}],
       [{"id": "CommentNext", "style": "large", "items": [
-        {"cmd": "ReviewCommentNext", "action": ".uno:ReviewGoToComment?Direction:string=next",
+        {"cmd": "ReviewCommentNext", "icon": "cmd/32/reviewcommentnext.png", "action": ".uno:ReviewGoToComment?Direction:string=next",
          "office_label": "Next"}]}],
       [{"id": "ShowComments", "style": "large", "items": [
         {"cmd": "ShowAnnotations", "office_label": "Show Comments"}]}]
     ]},
     {"name": "Markup", "caption": "Markup", "rows": 3, "columns": [
       [{"id": "FilterAllMarkup", "style": "large", "items": [
-        {"cmd": "ReviewFilterAllMarkup", "action": ".uno:ReviewMarkup?Action:string=filter",
+        {"cmd": "ReviewFilterAllMarkup", "icon": "cmd/32/reviewfilterallmarkup.png", "action": ".uno:ReviewMarkup?Action:string=filter",
          "office_label": "Filter All Markup"}]}],
       [
         {"id": "DisplayForReview", "style": "small-label", "items": [
-          {"cmd": "ReviewDisplayForReview", "action": ".uno:ReviewMarkup?Action:string=display",
+          {"cmd": "ReviewDisplayForReview", "icon": "cmd/sc_reviewdisplayforreview.png", "action": ".uno:ReviewMarkup?Action:string=display",
            "office_label": "Display for Review"}]},
         {"id": "ShowMarkup", "style": "small-label", "items": [
           {"cmd": "ShowTrackedChanges", "kind": "split", "office_label": "Show Markup"}]},
