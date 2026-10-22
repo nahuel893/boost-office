@@ -139,7 +139,7 @@ translations; T10 (a pending decision).
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
-| W7a / W7b | Review | as W2 | [ ] | | |
+| W7a / W7b | Review | as W2 | a [x], b [ ] | a: 820baee29 (layout + generated), 6f24be2b0 (code) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
@@ -775,6 +775,41 @@ The controller's rulings can be overturned by the user.
   - Controller check: 548 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
   - RDD for 604c02701..2e760bcaf: medium, under budget. It stays pending in the slice.
 
+- 2026-10-22, W7a (route: delegated, sonnet). Commits:
+  - 820baee29: `writer_review.json` (10 sections, 24 controls) and the regenerated `.ui` (1940 lines),
+    `swriter.suppr` and `swriter.false`;
+  - 6f24be2b0: 5 popup files, Controller.xcu nodes (5 Popup and 5 ToolBox; Calc owns none of the names, so no
+    `Writer` suffix), WriterCommands.xcu labels (5 menus, 8 placeholder variants), `test_writer_review_ui.py`
+    (29 tests), and 9 UITests. The new label nodes trim 7 lines of the `.ui`.
+  - Evidence (report: `task-W7a-report.md`):
+    - RED: 11 unit tests failed and 2 errored with only the JSON in place; the UITests failed on the missing
+      sections and controllers;
+    - GREEN: 548 -> 577 unit tests OK (commit 1 alone: 548 OK); 9 new UITests, `test_tabbed_office_loads`,
+      `test_tab_order` and the T9w labels UITest pass, one at a time;
+    - the build and `check-ui.sh` are clean; Calc is unchanged.
+  - Controller spot check: 577 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - `placeholders_writer.json`: the Comments placeholder labels are now "Previous Comment" and "Next Comment"
+    (Calc's wording), so the menu and tooltip text is unambiguous. The ribbon still shows "Previous" and "Next"
+    through `office_label`.
+  - Design notes for W10:
+    - section 1 calls the Accept/Reject/Previous/Next group "Tracking"; Word 365 calls it "Changes". The worker
+      followed section 1;
+    - section 1 lists Check Accessibility as `.uno:AccessibilityCheck`, an alias with no dispatch of its own; its
+      state comes from `SidebarDeck.A11yCheckDeck`.
+  - Concerns:
+    - the Language submenus are filled by MenuBarManager only when the menu opens. The UITest builds each
+      `SetLanguage*Menu` controller directly; the real click is W7b's screenshot;
+    - Thesaurus, Hangul/Chinese conversion and Show Comments are not asserted enabled, because they depend on the
+      environment (a thesaurus, Asian support, a comment);
+    - `controller_nodes()` in `commands.py` keys by node name, so the stock `cNN` language nodes collide; the new
+      test reads them by command (W9);
+    - widget ids repeat the prefix for the new commands (`btnReviewReviewAcceptMenu`), as on Mailings.
+  - Review of 6f24be2b0 (880 lines): medium; the user granted it. One lens (reliability); approved and
+    acknowledged (lineage review-76fe1839059d2644). One SUGGESTION, R3-001, on the dropdown popup UITest
+    (`notebookbarOffice.py:1011-1027`), with no text attached; parked for W9. W6b (2e760bcaf), the docs commits and
+    820baee29 stay unreviewed.
+
 ## Next step
 
-W7a: Review, layout and behaviour (delegated, sonnet). Brief: `task-W7a-brief.md`.
+W7b: Review, icons, 1920 fit and screenshots, with a real click on the Language dropdown (delegated, sonnet).
+Brief: `task-W7b-brief.md`.
