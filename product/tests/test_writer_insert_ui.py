@@ -58,7 +58,7 @@ DESIGN = {
 }
 SHAPES = {"Pages": [3], "Tables": [1], "Illustrations": [1, 3, 3], "Links": [3], "Comments": [1],
           "HeaderFooter": [3], "Text": [1, 3, 3], "Symbols": [2]}
-# Word's label per item (design decision 29: it stays in "office_label" until T9 is decided)
+# Word's label per item (T9w: the ribbon shows it, unless it equals LibreOffice's label; menus keep LibreOffice's)
 WORD_LABELS = {
     "TitlePageDialog": "Cover Page", "InsertBlankPage": "Blank Page", "InsertPagebreak": "Page Break",
     "InsertTable": "Table", "InsertGraphic": "Pictures", "InsertShapesMenu": "Shapes", "Gallery": "Icons",
@@ -170,7 +170,7 @@ class WriterInsertUiTest(unittest.TestCase):
             self.assertEqual(expected, item.get("kind", "button"), item["cmd"])
 
     def test_every_item_keeps_words_label_in_office_label(self):
-        # design decision 29: nothing is renamed now; either T9 option can be applied later
+        # T9w: gen_ribbon turns office_label into the button's label; menus, help and tooltips keep LibreOffice's
         self.assertEqual(WORD_LABELS, {i["cmd"]: i.get("office_label") for i in self.items()})
 
     def test_the_omitted_media_group_and_cloud_controls_are_absent(self):

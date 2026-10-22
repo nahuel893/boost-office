@@ -18,6 +18,7 @@ from uitest.framework import UITestCase
 from uitest.uihelper.calc import enter_text_to_cell
 from uitest.uihelper.common import get_state_as_dict
 from libreoffice.uno.propertyvalue import mkPropertyValues
+from com.sun.star.accessibility.AccessibleRole import DOCUMENT_SPREADSHEET, MENU_BAR, PARAGRAPH, TABLE
 from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
@@ -1409,5 +1410,94 @@ class NotebookbarOffice(UITestCase):
                 # the regular Tabbed button stays available
                 xTabbed = xDialog.getChild("rbButton2")
                 self.assertEqual("true", get_state_as_dict(xTabbed)["Visible"])
+
+    def settle(self, read, timeout=5):
+        """Process events until read() gives the same value twice in a row; return that value."""
+        xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
+        deadline = time.time() + timeout
+        last = None
+        while time.time() < deadline:
+            xToolkit.processEventsToIdle()
+            value = read()
+            if value == last:
+                break
+            last = value
+            time.sleep(0.1)
+        return last
+
+    def menu_item_names(self, document, menu):
+        """The item names of the menu-bar menu `menu` (Insert, say), read from the accessibility tree.
+
+        The menu bar has no UITest object; its accessible lists each menu and that menu's items, with
+        the labels the menu bar manager gave them. The sheet's cells are skipped.
+        """
+        xWindow = document.CurrentController.Frame.ContainerWindow
+        xAcc = xWindow.getProperty("XAccessible").getAccessibleContext()
+        while xAcc.getAccessibleParent() is not None:
+            xAcc = xAcc.getAccessibleParent().getAccessibleContext()
+        queue = [xAcc]
+        while queue:
+            xAcc = queue.pop(0)
+            role = xAcc.getAccessibleRole()
+            if role == MENU_BAR:
+                for i in range(xAcc.getAccessibleChildCount()):
+                    xMenu = xAcc.getAccessibleChild(i).getAccessibleContext()
+                    if xMenu.getAccessibleName() == menu:
+                        # the menu bar manager sets the items' labels when their menu opens
+                        # (framework/source/uielement/menubarmanager.cxx, Activate): open it, read, close it
+                        xMenu.doAccessibleAction(0)
+                        try:
+                            return self.settle(lambda: [
+                                xMenu.getAccessibleChild(j).getAccessibleContext().getAccessibleName()
+                                for j in range(xMenu.getAccessibleChildCount())])
+                        finally:
+                            xFloat = self.xUITest.getFloatWindow()
+                            if xFloat is not None:
+                                xFloat.executeAction("TYPE", mkPropertyValues({"KEYCODE": "ESC"}))
+                self.fail("no %s menu in the menu bar" % menu)
+            if role not in (DOCUMENT_SPREADSHEET, TABLE, PARAGRAPH):
+                queue += [xAcc.getAccessibleChild(i).getAccessibleContext()
+                          for i in range(xAcc.getAccessibleChildCount())]
+        self.fail("no menu bar in the accessibility tree")
+
+    def office_label_texts(self, src):
+        """{(toolbox, item id): (Excel's label, the text the item shows)} for every ribbon item that has
+        an "office_label", once the controllers have had their first status (a string state would
+        replace the text: framework/source/uielement/generictoolbarcontroller.cxx)."""
+        xCalcDoc = self.xUITest.getTopFocusWindow()
+        items = {}
+        for path in sorted((src / "product" / "ui").glob("calc_*.json")):
+            layout = json.loads(path.read_text(encoding="utf-8"))
+            for section in layout.get("sections", []):
+                for box in [b for column in section["columns"] for b in column] + (
+                        [section["footer"]] if "footer" in section else []):
+                    for pos, item in enumerate(box["items"]):
+                        if "office_label" in item:
+                            # a box's items are inserted in order, item ids count from 1
+                            items[("bx" + layout["id_prefix"] + box["id"], pos + 1)] = item["office_label"]
+        return self.settle(lambda: {key: (label, get_state_as_dict(
+            xCalcDoc.getChild(key[0]).getChild("toolboxitem-%d" % key[1]))["Text"])
+            for key, label in items.items()})
+
+    def test_the_ribbon_shows_excels_labels_and_the_menus_keep_libreoffices(self):
+        # T9w: gen_ribbon writes an item's "office_label" as its .ui label and VclBuilder shows it on the
+        # button (vcl/source/window/builder.cxx); menus, help and tooltips keep the command's label
+        src = Path(os.environ["TDOC"]).parents[3]
+        with self.ui_test.create_doc_in_start_center("calc") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                xCalcDoc = self.xUITest.getTopFocusWindow()
+                xWordArt = xCalcDoc.getChild("bxInsertFontwork").getChild("toolboxitem-1")
+                self.assertEqual("WordArt", get_state_as_dict(xWordArt)["Text"])
+                texts = self.office_label_texts(src)
+                self.assertGreater(len(texts), 50)
+                self.assertEqual({key: label for key, (label, _) in texts.items()},
+                                 {key: text for key, (_, text) in texts.items()})
+            finally:
+                self.switch_to("Default")
+            # the menu bar of the default mode: Insert > Fontwork keeps LibreOffice's label
+            names = self.menu_item_names(document, "Insert")
+            self.assertIn("Fontwork...", names)
+            self.assertNotIn("WordArt", names)
 
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

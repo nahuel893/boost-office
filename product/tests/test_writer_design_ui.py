@@ -31,7 +31,7 @@ DESIGN = {
         ("large", [".uno:Watermark"]), ("large", [".uno:PageAreaDialog"]), ("large", [".uno:PageDialog"])]),
 }
 SHAPES = {"DocumentFormatting": [1, 1, 1, 1, 3], "PageBackground": [1, 1, 1]}
-# Word's label per item (design decision 29: it stays in "office_label" until T9 is decided)
+# Word's label per item (T9w: the ribbon shows it, unless it equals LibreOffice's label; menus keep LibreOffice's)
 WORD_LABELS = {
     PART + "themes": "Themes", STYLE + "gallery": "Style Set", ".uno:ThemeDialog": "Colors",
     PART + "fonts": "Fonts", STYLE + "spacing": "Paragraph Spacing", PART + "effects": "Effects",

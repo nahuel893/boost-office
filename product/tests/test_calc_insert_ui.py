@@ -64,6 +64,14 @@ INSERT_PLACEHOLDERS = {url: label for url, label in placeholders.labels_by_url()
                        if url.startswith(".uno:Insert")}
 
 
+# Excel's label per item where it differs from LibreOffice's (T9w: the ribbon shows it). Source: the Excel
+# control of each row in product/docs/design/calc-insert-tab-layout.txt
+EXCEL_LABELS = {".uno:DataDataPilotRun": "PivotTable", ".uno:Gallery": "Icons",
+    ".uno:InsertObjectChart": "Recommended Charts", ".uno:HyperlinkDialog": "Link",
+    ".uno:EditHeaderAndFooter": "Header & Footer", ".uno:FontworkGalleryFloater": "WordArt",
+    ".uno:InsertObject": "Object", ".uno:InsertObjectStarMath": "Equation"}
+
+
 class CalcInsertUiTest(unittest.TestCase):
 
     def setUp(self):
@@ -75,6 +83,13 @@ class CalcInsertUiTest(unittest.TestCase):
 
     def items(self):
         return [i for s in self.layout["sections"] for b in self.boxes(s) for i in b["items"]]
+
+    def test_excels_label_is_in_office_label_where_it_differs_from_libreoffices(self):
+        # T9w: the ribbon shows Excel's label (gen_ribbon turns office_label into the button's label);
+        # menus, help and tooltips keep LibreOffice's. Icon-only buttons and placeholders have none.
+        got = {g.item_url(i): i["office_label"] for s in self.layout["sections"] for b in g.boxes_of(s)
+               for i in b["items"] if "office_label" in i}
+        self.assertEqual(EXCEL_LABELS, got)
 
     def test_page_and_sections_follow_the_design(self):
         self.assertEqual("phbInsert", self.layout["page"])

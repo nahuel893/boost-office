@@ -54,7 +54,7 @@ DESIGN = {
 }
 SHAPES = {"Undo": [2], "Clipboard": [1, 3], "Font": [2], "Paragraph": [2], "Styles": [1], "Editing": [3],
           "Editor": [1]}
-# Word's label per item (design decision 29: it stays in "office_label" until T9 is decided)
+# Word's label per item (T9w: the ribbon shows it, unless it equals LibreOffice's label; menus keep LibreOffice's)
 WORD_LABELS = {
     "Undo": "Undo", "Redo": "Redo", "Paste": "Paste", "Cut": "Cut", "Copy": "Copy",
     "FormatPaintbrush": "Format Painter", "CharFontName": "Font", "FontHeight": "Font Size",
@@ -169,7 +169,7 @@ class WriterHomeUiTest(unittest.TestCase):
             self.assertEqual(expected, item.get("kind", "button"), item["cmd"])
 
     def test_every_item_keeps_words_label_in_office_label(self):
-        # design decision 29: nothing is renamed now; either T9 option can be applied later
+        # T9w: gen_ribbon turns office_label into the button's label; menus, help and tooltips keep LibreOffice's
         self.assertEqual(WORD_LABELS, {i["cmd"]: i.get("office_label") for i in self.items()})
 
     def test_the_old_home_page_and_its_overflow_menu_are_gone(self):

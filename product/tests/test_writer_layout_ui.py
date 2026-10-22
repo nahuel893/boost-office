@@ -53,7 +53,7 @@ DESIGN = {
 SHAPES = {"PageSetup": [1, 1, 1, 1, 3], "Paragraph": [2, 2], "Arrange": [1, 1, 1, 1, 1, 3]}
 # Word: a caption row (Indent, Spacing) then two spin rows, so the spins start on the second row
 SPIN_ROWS = {"LeftParaMargin": 1, "AboveSpacing": 1}
-# Word's label per item (design decision 29: it stays in "office_label" until T9 is decided)
+# Word's label per item (T9w: the ribbon shows it, unless it equals LibreOffice's label; menus keep LibreOffice's)
 WORD_LABELS = {
     "PageMargin": "Margins", "Orientation": "Orientation", "AttributePageSize": "Size",
     "PageColumnType": "Columns", "LayoutBreaksMenu": "Breaks", "LineNumberingDialog": "Line Numbers",
@@ -167,7 +167,7 @@ class WriterLayoutUiTest(unittest.TestCase):
             self.assertEqual(expected, item.get("kind", "button"), item["cmd"])
 
     def test_every_item_keeps_words_label_in_office_label(self):
-        # design decision 29: nothing is renamed now; either T9 option can be applied later
+        # T9w: gen_ribbon turns office_label into the button's label; menus, help and tooltips keep LibreOffice's
         self.assertEqual(WORD_LABELS, {i["cmd"]: i.get("office_label") for i in self.items()})
 
     def test_text_direction_is_omitted_and_the_old_layout_page_and_its_overflow_menu_are_gone(self):

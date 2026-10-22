@@ -45,6 +45,17 @@ MENUS = {
 }
 
 
+# Excel's label per item where it differs from LibreOffice's (T9w: the ribbon shows it). Source: the Excel
+# label of each control in product/docs/design/calc-data-tab-layout.txt (the Excel 2016 Data tab)
+EXCEL_LABELS = {".uno:InsertExternalDataSource": "From Web", ".uno:InsertSheetFromFile": "From Text",
+    ".uno:DataOtherSourcesMenu": "From Other Sources", ".uno:ViewDataSourceBrowser": "Existing Connections",
+    ".uno:DataProvider": "New Query", ".uno:SelectDB": "Show Queries", ".uno:DefineDBName": "From Table",
+    ".uno:DataRefresh": "Refresh All", ".uno:DataFilterAutoFilter": "Filter",
+    ".uno:DataFilterRemoveFilter": "Clear", ".uno:DataFilterSpecialFilter": "Advanced",
+    ".uno:HandleDuplicateRecords": "Remove Duplicates", ".uno:Validation": "Data Validation",
+    ".uno:DataSubTotals": "Subtotal", ".uno:DataStatisticsMenu": "Data Analysis"}
+
+
 class CalcDataUiTest(unittest.TestCase):
 
     def setUp(self):
@@ -53,6 +64,13 @@ class CalcDataUiTest(unittest.TestCase):
 
     def items(self):
         return [i for s in self.layout["sections"] for b in g.boxes_of(s) for i in b["items"]]
+
+    def test_excels_label_is_in_office_label_where_it_differs_from_libreoffices(self):
+        # T9w: the ribbon shows Excel's label (gen_ribbon turns office_label into the button's label);
+        # menus, help and tooltips keep LibreOffice's. Icon-only buttons and placeholders have none.
+        got = {g.item_url(i): i["office_label"] for s in self.layout["sections"] for b in g.boxes_of(s)
+               for i in b["items"] if "office_label" in i}
+        self.assertEqual(EXCEL_LABELS, got)
 
     def test_page_and_sections_follow_the_design(self):
         self.assertEqual("phbData", self.layout["page"])

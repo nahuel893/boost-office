@@ -139,6 +139,12 @@ def sdi_row(path, slot):
     return match.group(1).strip() if match else None
 
 
+# Excel's label per item where it differs from LibreOffice's (T9w: the ribbon shows it). Source: the Excel
+# control of each row in product/docs/design/calc-formulas-tab-layout.txt
+EXCEL_LABELS = {".uno:FunctionDialog": "Insert Function", ".uno:DefineName": "Name Manager",
+    ".uno:CreateNames": "Create from Selection"}
+
+
 class CalcFormulasUiTest(unittest.TestCase):
 
     def setUp(self):
@@ -150,6 +156,13 @@ class CalcFormulasUiTest(unittest.TestCase):
 
     def items(self):
         return [i for s in self.layout["sections"] for b in self.boxes(s) for i in b["items"]]
+
+    def test_excels_label_is_in_office_label_where_it_differs_from_libreoffices(self):
+        # T9w: the ribbon shows Excel's label (gen_ribbon turns office_label into the button's label);
+        # menus, help and tooltips keep LibreOffice's. Icon-only buttons and placeholders have none.
+        got = {g.item_url(i): i["office_label"] for s in self.layout["sections"] for b in g.boxes_of(s)
+               for i in b["items"] if "office_label" in i}
+        self.assertEqual(EXCEL_LABELS, got)
 
     def test_page_and_sections_follow_the_design(self):
         self.assertEqual("phbFunctions", self.layout["page"])

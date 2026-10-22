@@ -22,11 +22,17 @@ any group collapses when the window narrows (PriorityMergedHBox collapses groups
 page is narrower than their natural widths). VCL hands extra width only to a child that expands
 itself, so the section's optional box, both grids and the toolbox get hexpand, and the items get
 the packing expand (ToolBox::Resize shares the extra width out across them).
+
+An item's "office_label" (Word's or Excel's label) becomes its button's label, unless LibreOffice
+already shows that text for the command; an explicit "label" wins. Only the ribbon changes: menus,
+help and tooltips keep reading the command's own label from <App>Commands.xcu.
 """
 import argparse
+import functools
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import NamedTuple
 from xml.sax.saxutils import escape
@@ -46,6 +52,9 @@ LARGE_LIKE = ("large", "medium")
 INDENT = "  "
 ROOT = Path(__file__).resolve().parents[2]
 OBJECT_OPEN = re.compile(r"<object\b")
+COMMANDS_DIR = "officecfg/registry/data/org/openoffice/Office/UI"
+GENERIC_COMMANDS = "GenericCommands.xcu"
+OOR = "{http://openoffice.org/2001/registry}"
 
 
 class App(NamedTuple):
@@ -56,14 +65,17 @@ class App(NamedTuple):
     false: str | None  # gla11y false positives, kept in sync too; None: no line for the office .ui
     prefix: str  # the page layouts are product/ui/<prefix>_<tab>.json
     tabs: str  # the tab operations
+    context: str  # the translation context of the app's page layouts
+    commands: str  # the app's own command labels in COMMANDS_DIR, read before GENERIC_COMMANDS
 
 
 APPS = {
     "calc": App("sc/uiconfig/scalc/ui/notebookbar.ui", "sc/uiconfig/scalc/ui/notebookbar_office.ui",
-                "solenv/sanitizers/ui/modules/scalc.suppr", None, "calc", "calc_tabs.json"),
+                "solenv/sanitizers/ui/modules/scalc.suppr", None, "calc", "calc_tabs.json",
+                "TabbedCalc", "CalcCommands.xcu"),
     "writer": App("sw/uiconfig/swriter/ui/notebookbar.ui", "sw/uiconfig/swriter/ui/notebookbar_office.ui",
                   "solenv/sanitizers/ui/modules/swriter.suppr", "solenv/sanitizers/ui/modules/swriter.false",
-                  "writer", "writer_tabs.json"),
+                  "writer", "writer_tabs.json", "TabbedWriter", "WriterCommands.xcu"),
 }
 
 
@@ -79,6 +91,50 @@ def item_url(item):
 def item_command(item):
     """The base command of a layout item: its URL without the "?Arg:type=value" part."""
     return item_url(item).split("?", 1)[0]
+
+
+@functools.cache
+def shown_labels(root, app):
+    """Command URL -> the text a ribbon button of the app shows for it when the .ui sets no label.
+
+    That is the command's "Name": its Label without trailing dots and "~" (framework's
+    uicommanddescription.cxx). The app's own file wins over the generic one, node by node, and a URL
+    with arguments is a node of its own (vcl's CommandInfoProvider has no fallback to the base command).
+    """
+    found = {}
+    for file in (APPS[app].commands, GENERIC_COMMANDS):
+        here = {}
+        for node in ET.parse(Path(root) / COMMANDS_DIR / file).iter("node"):
+            name = node.get(OOR + "name")
+            if name and name.startswith(".uno:") and name not in here:
+                label = next((p.findtext("value") or "" for p in node.findall("prop")
+                              if p.get(OOR + "name") == "Label"), "")
+                here[name] = label.rstrip(".").replace("~", "")
+        for name, label in here.items():
+            found.setdefault(name, label)
+    return found
+
+
+def app_of(layout):
+    """The app a page layout belongs to, by its translation context."""
+    for name, spec in APPS.items():
+        if spec.context == layout.get("context"):
+            return name
+    raise LayoutError(f"no app has the context {layout.get('context')!r}")
+
+
+def item_label(layout, item, root=ROOT):
+    """The label property of an item's button, or None to keep the command's own label.
+
+    An explicit "label" wins. Otherwise the "office_label", unless LibreOffice already shows that
+    text for the command (a placeholder's command label is already its Office label).
+    """
+    if "label" in item:
+        return item["label"]
+    office = item.get("office_label")
+    if office is None or office == shown_labels(str(root), app_of(layout)).get(item_url(item)):
+        return None
+    return office
 
 
 def boxes_of(section):
@@ -176,7 +232,7 @@ class Writer:
         self.close("</packing>")
 
 
-def emit_item(w, layout, box_style, item, expand=False):
+def emit_item(w, layout, box_style, item, expand=False, root=ROOT):
     p, ctx = layout["id_prefix"], layout["context"]
     kind = item.get("kind", "button")
     wid = f"btn{p}{item['cmd']}"
@@ -184,8 +240,9 @@ def emit_item(w, layout, box_style, item, expand=False):
     w.open(f'<object class="{BUTTON_CLASS[kind]}" id="{wid}">')
     w.prop("visible", "True")
     w.prop("can-focus", "False")
-    if "label" in item:
-        w.prop("label", item["label"], f' translatable="yes" context="{ctx}|{wid}"')
+    label = item_label(layout, item, root)
+    if label is not None:
+        w.prop("label", label, f' translatable="yes" context="{ctx}|{wid}"')
     w.prop("action-name", item_url(item))
     if "icon" in item:
         w.prop("icon_name", item["icon"])
@@ -195,7 +252,7 @@ def emit_item(w, layout, box_style, item, expand=False):
     w.close("</child>")
 
 
-def emit_box(w, layout, box, col, row, large_rows, width=1):
+def emit_box(w, layout, box, col, row, large_rows, width=1, root=ROOT):
     p = layout["id_prefix"]
     toolbar_style, icon_size = STYLES[box["style"]]
     large = box["style"] in LARGE_LIKE
@@ -214,7 +271,7 @@ def emit_box(w, layout, box, col, row, large_rows, width=1):
     w.prop("show-arrow", "False")
     w.prop("icon_size", icon_size)
     for item in box["items"]:
-        emit_item(w, layout, box["style"], item, box.get("expand", False))
+        emit_item(w, layout, box["style"], item, box.get("expand", False), root)
     w.close("</object>")
     if large:
         w.packing(left_attach=col, top_attach=0, height=large_rows)
@@ -225,7 +282,7 @@ def emit_box(w, layout, box, col, row, large_rows, width=1):
     w.close("</child>")
 
 
-def emit_section(w, layout, section, position, priority):
+def emit_section(w, layout, section, position, priority, root=ROOT):
     """A section: its grid holds the toolboxes' grid, the caption under it and the separator.
 
     The page box fills the page, so every section is as tall as the tallest page. The toolboxes'
@@ -262,9 +319,9 @@ def emit_section(w, layout, section, position, priority):
         w.prop("hexpand", "True")
     for col, column in enumerate(section["columns"]):
         for row, box in zip(rows_of(column), column):
-            emit_box(w, layout, box, col, row, rows - ("footer" in section))
+            emit_box(w, layout, box, col, row, rows - ("footer" in section), root=root)
     if "footer" in section:
-        emit_box(w, layout, section["footer"], 0, rows - 1, rows - 1, ncols)
+        emit_box(w, layout, section["footer"], 0, rows - 1, rows - 1, ncols, root)
     w.close("</object>")
     w.packing(left_attach=0, top_attach=0)
     w.close("</child>")
@@ -302,7 +359,7 @@ def emit_section(w, layout, section, position, priority):
     w.close("</child>")
 
 
-def emit_page(layout):
+def emit_page(layout, root=ROOT):
     validate(layout)
     p = layout["id_prefix"]
     sections = layout["sections"]
@@ -314,7 +371,7 @@ def emit_page(layout):
     w.prop("valign", "fill")  # the tab page is as tall as the tallest page: so is every section
     for position, section in enumerate(sections):
         # The leftmost section has the highest priority, so it collapses last.
-        emit_section(w, layout, section, position, len(sections) - position)
+        emit_section(w, layout, section, position, len(sections) - position, root)
     w.close("</object>")
     w.packing(expand="True", fill="True", position=0)
     w.close("</child>")
@@ -484,11 +541,12 @@ def page_layouts(ui_dir, app="calc"):
             for path in sorted(Path(ui_dir).glob(spec.prefix + "_*.json")) if path.name != spec.tabs]
 
 
-def regenerate_all(upstream_text, tabs, layouts):
-    """The office .ui: the upstream one, the tab operations, then every generated page spliced in."""
+def regenerate_all(upstream_text, tabs, layouts, root=ROOT):
+    """The office .ui: the upstream one, the tab operations, then every generated page spliced in.
+    The command labels come from the source tree at root."""
     text = apply_tabs(upstream_text, tabs)
     for layout in layouts:
-        text = splice(text, layout, emit_page(layout))
+        text = splice(text, layout, emit_page(layout, root))
     return text
 
 
@@ -535,7 +593,7 @@ def regenerate_app(root, name):
     ui_dir = root / "product/ui"
     layouts = page_layouts(ui_dir, name)
     text = regenerate_all((root / spec.upstream).read_text(encoding="utf-8"),
-                          json.loads((ui_dir / spec.tabs).read_text(encoding="utf-8")), layouts)
+                          json.loads((ui_dir / spec.tabs).read_text(encoding="utf-8")), layouts, root)
     (root / spec.office).write_text(text, encoding="utf-8")
     for rel, sync in ((spec.suppr, sync_suppr), (spec.false, sync_false)):
         if rel:

@@ -5,6 +5,7 @@ import contextlib
 import copy
 import io
 import json
+import re
 import shutil
 import tempfile
 import unittest
@@ -12,6 +13,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 from product.tests import office
+from product.tests.commands import commands_xcu
 from product.ui import gen_ribbon as g
 
 FIXTURE = """<?xml version="1.0" encoding="UTF-8"?>
@@ -83,7 +85,8 @@ def outputs(name):
 def copy_inputs(root, name):
     """Copy what the generator reads for one app into a scratch source tree."""
     app = g.APPS[name]
-    for rel in [app.upstream] + [rel for rel in outputs(name) if rel != app.office]:
+    commands = [f"{g.COMMANDS_DIR}/{file}" for file in (app.commands, g.GENERIC_COMMANDS)]
+    for rel in [app.upstream] + [rel for rel in outputs(name) if rel != app.office] + commands:
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(office.ROOT / rel, root / rel)
     (root / "product/ui").mkdir(parents=True, exist_ok=True)
@@ -517,6 +520,102 @@ class ItemUrlTest(unittest.TestCase):
         layout["sections"][0]["columns"][0][0]["items"][0]["action"] = ".uno:Paste?Mode:string=x"
         text = "\n".join(g.emit_page(layout))
         self.assertIn('<property name="action-name">.uno:Paste?Mode:string=x</property>', text)
+
+
+def one_item_page(app, item):
+    """A page of one app holding one button; its context picks the app's command labels."""
+    layout = copy.deepcopy(LAYOUT)
+    layout["context"] = g.APPS[app].context
+    layout["sections"] = [{"name": "S", "caption": "S", "rows": 1,
+                           "columns": [[{"id": "B", "style": "large", "items": [item]}]]}]
+    return layout
+
+
+def label_property(app, item):
+    """The label property of the item's generated button, or None."""
+    page = ET.fromstring("<page>" + "\n".join(g.emit_page(one_item_page(app, item))) + "</page>")
+    return page.find(f".//object[@id='btnHome{item['cmd']}']/property[@name='label']")
+
+
+def ribbon_text(label):
+    """What a ribbon button shows for a .ui label: VCL turns "_" into "~" and the toolbox drops "~"."""
+    return re.sub(r"_(.)", r"\1", label).replace("~", "")
+
+
+class OfficeLabelTest(unittest.TestCase):
+    """T9w: the ribbon shows Word's and Excel's labels; menus, help and tooltips keep LibreOffice's."""
+
+    def test_an_item_with_an_office_label_gets_it_as_its_label(self):
+        for app in g.APPS:
+            with self.subTest(app):
+                prop = label_property(app, {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"})
+                self.assertEqual("WordArt", prop.text)
+                self.assertEqual("yes", prop.get("translatable"))
+                self.assertEqual(f"{g.APPS[app].context}|btnHomeFontworkGalleryFloater", prop.get("context"))
+
+    def test_an_item_without_an_office_label_keeps_libreoffices_label(self):
+        for app in g.APPS:
+            with self.subTest(app):
+                self.assertIsNone(label_property(app, {"cmd": "FontworkGalleryFloater"}))
+
+    def test_an_explicit_label_wins(self):
+        for app in g.APPS:
+            with self.subTest(app):
+                item = {"cmd": "FontworkGalleryFloater", "office_label": "WordArt", "label": "Fontwork"}
+                self.assertEqual("Fontwork", label_property(app, item).text)
+
+    def test_an_office_label_that_libreoffice_already_shows_gets_no_label(self):
+        # the comparison drops "~" and the trailing dots, as the toolbox does ("~Comment", "Title Page...")
+        for app, cmd, label in (("calc", "InsertAnnotation", "Comment"), ("writer", "InsertAnnotation", "Comment"),
+                                ("calc", "DataDataPilotRun", "Pivot Table"),
+                                ("writer", "TitlePageDialog", "Title Page")):
+            with self.subTest(app=app, cmd=cmd):
+                self.assertIsNone(label_property(app, {"cmd": cmd, "office_label": label}))
+
+    def test_a_placeholder_gets_a_label_only_when_it_differs_from_its_own(self):
+        # a placeholder's command label in <App>Commands.xcu is already its Office label
+        for app, cmd, label in (("calc", "InsertSmartArt", "SmartArt"), ("writer", "InsertBlankPage", "Blank Page")):
+            with self.subTest(app=app, cmd=cmd):
+                self.assertIsNone(label_property(app, {"cmd": cmd, "office_label": label}))
+                self.assertEqual(label + "s", label_property(app, {"cmd": cmd, "office_label": label + "s"}).text)
+
+    def test_a_url_variant_is_compared_with_its_own_label(self):
+        item = {"cmd": "ChartMap", "action": ".uno:InsertChartType?Type:string=map", "office_label": "Maps"}
+        self.assertIsNone(label_property("calc", item))
+        self.assertEqual("Map Charts", label_property("calc", {**item, "office_label": "Map Charts"}).text)
+
+    def test_the_shown_label_is_the_command_label_without_mnemonic_and_dots(self):
+        shown = g.shown_labels(str(office.ROOT), "writer")
+        self.assertEqual("Title Page", shown[".uno:TitlePageDialog"])  # WriterCommands.xcu: "Title Page..."
+        self.assertEqual("Insert Fontwork", shown[".uno:FontworkGalleryFloater"])  # GenericCommands.xcu
+
+    def test_an_office_label_needs_a_known_app(self):
+        layout = one_item_page("calc", {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"})
+        layout["context"] = "TabbedImpress"
+        with self.assertRaisesRegex(g.LayoutError, "TabbedImpress"):
+            g.emit_page(layout)
+
+
+class OfficeLabelsOnTheRibbonTest(unittest.TestCase):
+    """Every generated office .ui shows each item's Office label, and sets no other item label."""
+
+    def test_every_item_with_an_office_label_shows_it(self):
+        for app in g.APPS:
+            names = {url: (label or "").rstrip(".").replace("~", "")
+                     for url, label in commands_xcu(app=app).items()}
+            ui = ET.parse(office.app(app).office).getroot()
+            for layout in office.page_layouts(app):
+                for item in (i for s in layout["sections"] for b in g.boxes_of(s) for i in b["items"]):
+                    if "label" in item:
+                        continue  # an explicit label is not an Office label
+                    button = ui.find(f".//object[@id='btn{layout['id_prefix']}{item['cmd']}']")
+                    prop = button.find("property[@name='label']")
+                    with self.subTest(app=app, item=g.item_url(item)):
+                        if "office_label" in item:
+                            shown = ribbon_text(prop.text) if prop is not None else names.get(g.item_url(item))
+                            self.assertEqual(item["office_label"], shown)
+                        else:
+                            self.assertIsNone(prop)
 
 
 if __name__ == "__main__":
