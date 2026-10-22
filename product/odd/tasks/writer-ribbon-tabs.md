@@ -144,7 +144,8 @@ translations; T10 (a pending decision).
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
-| T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator; Calc's output changes on purpose) | [ ] | | |
+| T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
+| T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [ ] | | |
 | T10w | Greyed disabled popup entries (follows Calc's T10 answer) | pending user decision | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
@@ -316,6 +317,12 @@ The controller's rulings can be overturned by the user.
    `Commands.xcu`, which would also rename the menus. Task T9w does both apps in one generator change. Calc's
    generated `.ui` changes on purpose, so for that task the byte-identity check becomes an expected-diff check:
    only labels change. Impress follows the same rule.
+7. **T9w route (2026-10-21):** the spike showed that the VCL builder ignores a `.ui` label on a tool button that
+   has a command (`vcl/source/window/builder.cxx:1655-1658`). The user chose "Arreglo chico en C++": the builder
+   uses the `.ui` label as the item text, and the tooltip stays the command's. The other route would have been a
+   URL variant per command, with its own `Commands.xcu` node and icon. Side effect: 8 existing buttons that
+   already set a label in their `.ui` now show it (five in the bibliography toolbar, and "Shapes" in the three
+   `notebookbar_groups.ui`).
 
 ## Progress / evidence
 
@@ -607,7 +614,62 @@ The controller's rulings can be overturned by the user.
     ("Theme", "Page Area", "Anchor Menu", "Navigator"), which T9w fixes.
   - RDD for 404294f79..ebd26872f: medium, under budget. It stays pending in the slice.
 
+- 2026-10-21/22, T9w (route: delegated, opus). Commits:
+  - 9871de25c: `office_label` for 51 Calc items, plus the regenerated Calc and Writer `.ui` and suppressions;
+  - 22e203a66: `vcl/source/window/builder.cxx`. In the frame branch, a `.ui` label becomes the item text after
+    `InsertItem(command, frame)`; the tooltip stays the command's. New `CppunitTest_vcl_builder`;
+  - c293641c5: the generator puts `office_label` on the ribbon, unless it equals LibreOffice's label. Plus the
+    unit tests, the Calc label pins and one UITest per app.
+  - Spike first: a `.ui` label on a commanded tool button never showed. This is ruling 7; the user chose the
+    vcl fix.
+  - Evidence (report: `task-T9w-report.md`):
+    - RED first for the CppUnit test, the generator tests, the Calc pins and both UITests;
+    - GREEN: 478 -> 495 unit tests OK; `CppunitTest_vcl_builder`, both new UITests and one existing UITest per
+      app pass;
+    - `check-ui.sh` and `lo-make.sh sc.build sw.build` exit 0;
+    - the Calc expected-diff check finds only 51 added item labels;
+    - `gen_ribbon.py --all` leaves the tree clean.
+  - Controller spot check: 495 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - Controller look at `t9w/writer-insert-light-1920.png`: the buttons read Cover Page, WordArt, Drop Cap,
+    Equation and Date & Time.
+  - Menus keep LibreOffice's labels: Format > Title Page..., Insert > Fontwork.... Tooltips stay LibreOffice's.
+  - Side effect: Shapes in the Groups notebookbars of Calc, Impress and Writer now reads "Shapes" (its `.ui`
+    label) instead of "Basic Shapes". The bibliography toolbar is built without a frame and does not change.
+  - Fit regression: at 1920, Calc Formulas hides Calculation and Calc Data hides Analyze behind `>>`. The base
+    screenshots show both groups. Follow-up task T9w-fit.
+  - Parked:
+    - 96 suppressions are now unused (51 Calc, 45 Writer). The product tests still require a `button-no-label`
+      suppression per ribbon button, so they stay;
+    - commit 9871de25c alone is not reproducible by its own generator. This follows from the generated-first
+      commit order;
+    - some Excel labels sit on approximate Calc commands (Show Training, Contact Support, Show Queries, From
+      Table, Workbook Statistics), from the design rows;
+    - withheld labels: ShareDocument, and Gridlines and Headings on Page Layout;
+    - clang-format 5.0.0 is not installed, so the new C++ test was not format-checked.
+  - First review, of 9871de25c..c293641c5 (only the authored commits): the user granted it, and four lenses ran.
+    - Reliability raised a deterministic BLOCKER: "the generated `.ui` were not regenerated". It was false. The
+      base tree, 9871de25c, already holds the labels (`Cover Page` at line 3763 of the Writer `.ui`), and 495
+      tests pass at HEAD. The split commit hid the generated files from the reviewer.
+    - A deterministic finding gets no refuter, so the user authorized `gentle-ai review abandon` (lineage
+      review-09327ba64d72dc2f, reason `operator_disposition`).
+    - Lesson: split generated output only when it is too large for the lens budget. This generated diff was 164
+      lines.
+  - Second review, of a91cd6f15..c293641c5 (all three commits; W4b's commits fall before it and stay
+    unreviewed): the user granted it. Four lenses ran; approved and acknowledged (lineage
+    review-13157995130e1de7).
+  - Parked review advisories (W9, test quality):
+    - WARNING: the builder now honours a `.ui` label on any frame-built tool button, not only on the ribbon.
+      Known scope: 8 buttons (ruling 7);
+    - WARNING: the UITest thresholds (`> 50` in Calc, `> 40` in Writer) are unexplained;
+    - WARNING: Writer's UITest `settle` was flagged as missing. It is false: it is defined at
+      `notebookbarOffice.py:395`;
+    - SUGGESTION: `settle` returns an unsettled value on timeout, silently;
+    - SUGGESTION: a menu opened through accessibility may stay open if its popup is late;
+    - SUGGESTION: the office-label test is copied into eight Calc modules, and the UITest helpers are duplicated
+      across apps;
+    - SUGGESTION: `CppunitTest_vcl_builder` loads a Writer document, so the vcl test depends on sw.
+
 ## Next step
 
-T9w: Office labels on the Calc and Writer ribbons (delegated, opus). Brief: `task-T9w-brief.md`. It goes before
-W5a, so the later tabs start with the right labels.
+T9w-fit: Calc Formulas and Data fit at 1920 (delegated, sonnet). Brief: `task-T9w-fit-brief.md`. Then W5a,
+References.
