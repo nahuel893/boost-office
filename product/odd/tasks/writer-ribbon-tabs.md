@@ -138,7 +138,7 @@ translations; T10 (a pending decision).
 | W3a / W3b | Insert | as W2 | a [x], b [x] | a: 016dd7aff (layout + generated), ff8ce7436 (code), d677b1cc9 (Header/Footer fix); b: 3bffe89ad, 2b97b23ff | a: medium, budget reached; granted, approved, acknowledged; b: medium, under budget (pending in slice from b2b3346bd) |
 | W4a / W4b | Design (new page) and Layout | as W2 | a [x], b [x] | a: 2bb1f6dbf (layout + generated), 404294f79 (code); b: 2ef03d924, ebd26872f (Style Set fix, controller) | a: medium, budget reached; reviewed from 2bb1f6dbf (W3b's two small commits fall before the generated commit and stay unreviewed); granted, approved, acknowledged; b: medium, under budget (pending in slice from 404294f79) |
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
-| W6a / W6b | Mailings (new page) | as W2 | [ ] | | |
+| W6a / W6b | Mailings (new page) | as W2 | a [x], b [ ] | a: 7e4cf361b (layout + generated), 604c02701 (code) | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
 | W7a / W7b | Review | as W2 | [ ] | | |
 | W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
@@ -729,6 +729,34 @@ The controller's rulings can be overturned by the user.
     `w5b/light-references-1920.png`: Word's groups and labels, with the placeholders greyed.
   - RDD for 26fa4a6d0..6bed2991d: medium, under budget. It stays pending in the slice.
 
+- 2026-10-22, W6a (route: delegated, sonnet). Commits:
+  - 7e4cf361b: `writer_mailings.json`, `writer_tabs.json` (Mailings at position 6; Review to Tools shift to
+    7..17), the regenerated `.ui` (966 lines) and `swriter.suppr`. It also holds the one-line fix to
+    `test_writer_design_ui.py`, which pins the tab positions. The controller added that file to the surface
+    after the worker stopped with NEEDS_CONTEXT;
+  - 604c02701: 2 popup files, Controller.xcu and WriterCommands.xcu nodes (2 menus, 8 placeholder variants),
+    `test_writer_mailings_ui.py`, and 8 UITests.
+  - Tab label `M~ailings` (access key A): `~M` would clash with the contextual Media tab. This was the worker's
+    choice, accepted by the controller, and it differs from the design's `~Mailings`.
+  - Evidence (report: `task-W6a-report.md`):
+    - RED: 13 of 25 new unit tests failed; `test_tab_order` failed with '18' != '17'; the dropdown test failed on
+      the missing controller;
+    - GREEN: 521 -> 546 unit tests OK; 12 UITests pass, one at a time;
+    - the build and `check-ui.sh` are clean; Calc is unchanged.
+  - Controller spot check: 546 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - Record box: outside a mail merge, First, Previous, Next and Last are disabled. The record box item stays
+    enabled, and its controller greys only the entry field. Design section 1 calls it greyed, which is true of the
+    field only (W10).
+  - Review of 604c02701 (623 lines): medium; the user granted it. One lens (reliability); approved and
+    acknowledged (lineage review-da58bf2532a0970e). W5b (6bed2991d) and 7e4cf361b stay unreviewed.
+  - Parked for W9 (test quality):
+    - WARNING: the record-button UITest reads Enabled right after switching to the office UI, without `settle`.
+      It can be flaky;
+    - SUGGESTION: `test_writer_mailings_ui.py:88` filters placeholders with `drop_implemented`, then asserts
+      exactly 8 (the same pattern as Design);
+    - SUGGESTION: no runtime test drives the ribbon dropdown arrows through GenericPopupToolbarController. W6b's
+      click covers it visually.
+
 ## Next step
 
-W6a: Mailings (new page), layout and behaviour (delegated, sonnet). Brief: `task-W6a-brief.md`.
+W6b: Mailings icons, the 1920 fit, screenshots (delegated, sonnet). Brief: `task-W6b-brief.md`.
