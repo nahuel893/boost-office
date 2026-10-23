@@ -54,6 +54,15 @@ class WriterOfficeUiTest(unittest.TestCase):
         makefile = (office.ROOT / "sw/UIConfig_swriter.mk").read_text(encoding="utf-8")
         self.assertIn("\tsw/uiconfig/swriter/ui/notebookbar_office \\\n", makefile)
 
+    def test_every_ui_the_makefile_installs_has_a_file(self):
+        # A .ui listed in gb_UIConfig_add_uifiles without its file breaks the build, and one that is
+        # dropped must leave the list too.
+        makefile = (office.ROOT / "sw/UIConfig_swriter.mk").read_text(encoding="utf-8")
+        registered = re.findall(r"^\t(sw/uiconfig/swriter/ui/[\w-]+) \\$", makefile, re.MULTILINE)
+        self.assertGreater(len(registered), 100)
+        missing = [ui for ui in registered if not (office.ROOT / (ui + ".ui")).is_file()]
+        self.assertEqual([], missing)
+
 
 class WriterSuppressionsTest(unittest.TestCase):
     """swriter.suppr and swriter.false hold an office copy of every stock notebookbar.ui line."""
