@@ -51,7 +51,7 @@ DESIGN = {
         ("small-label", uno("Ruler")), ("small-label", uno("GridVisible")), ("small-label", uno("Navigator"))]),
     "Zoom": ("Zoom", 3, [
         ("large", uno("Zoom")), ("large", uno("Zoom100Percent")), ("small-label", uno("ZoomPage")),
-        ("small-label", uno("ShowMultiplePages")), ("small-label", uno("ZoomPageWidth"))]),
+        ("small-label", uno("MultiplePagesPerRow")), ("small-label", uno("ZoomPageWidth"))]),
     "Window": ("Window", 3, [
         ("large", uno("NewWindow")), ("large", uno("ViewArrangeAll")), ("large", uno("ViewSplit")),
         ("small-label", [SIDE_BY_SIDE + "toggle"]), ("small-label", [SIDE_BY_SIDE + "sync"]),
@@ -66,14 +66,15 @@ WORD_LABELS = {
     "Draft": "Draft", "FullScreen": "Focus", "ImmersiveReader": "Immersive Reader", "ChangeTheme": "Dark Mode",
     "PageMovementVertical": "Vertical", "PageMovementSideToSide": "Side to Side", "Ruler": "Ruler",
     "GridVisible": "Gridlines", "Navigator": "Navigation Pane", "Zoom": "Zoom", "Zoom100Percent": "100%",
-    "ZoomPage": "One Page", "ShowMultiplePages": "Multiple Pages", "ZoomPageWidth": "Page Width",
+    "ZoomPage": "One Page", "MultiplePagesPerRow": "Multiple Pages", "ZoomPageWidth": "Page Width",
     "NewWindow": "New Window", "ViewArrangeAll": "Arrange All", "ViewSplit": "Split",
     "SideBySide": "View Side by Side", "SyncScrolling": "Synchronous Scrolling",
     "ResetWindowPosition": "Reset Window Position", "ViewSwitchWindowsMenu": "Switch Windows",
     "ViewMacrosMenu": "Macros"}
-# the dropdowns: two new commands; Multiple Pages is LibreOffice's grid popup, on its existing controller
+# the dropdowns: two new commands. Multiple Pages is a plain button, as in Word: the editing view's multi-page
+# layout (.uno:MultiplePagesPerRow, the status bar's), not print preview's .uno:ShowMultiplePages grid (W9b)
 NEW_MENUS = {"ViewSwitchWindowsMenu", "ViewMacrosMenu"}
-SPLITS = NEW_MENUS | {"ShowMultiplePages"}
+SPLITS = NEW_MENUS
 
 # command -> (label, popup resource or None for the framework window list, popup items in order); design section 1.
 # The label is also the menu's, so it is LibreOffice-style; Word's is office_label. Macro Manager is flagged
@@ -198,7 +199,8 @@ class WriterViewUiTest(unittest.TestCase):
         self.assertEqual(".uno:FullScreen", urls["FullScreen"])
         self.assertEqual(".uno:ChangeTheme", urls["ChangeTheme"])
         self.assertEqual(".uno:Navigator", urls["Navigator"])
-        self.assertEqual(".uno:ShowMultiplePages", urls["ShowMultiplePages"])
+        self.assertEqual(".uno:MultiplePagesPerRow", urls["MultiplePagesPerRow"])
+        self.assertNotIn(".uno:ShowMultiplePages", urls.values())
 
     def test_nothing_cloud_is_on_the_page(self):
         # omitted: SharePoint > Properties

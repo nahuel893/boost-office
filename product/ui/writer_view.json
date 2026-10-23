@@ -44,7 +44,7 @@
       [
         {"id": "OnePage", "style": "small-label", "items": [{"cmd": "ZoomPage", "office_label": "One Page"}]},
         {"id": "MultiplePages", "style": "small-label", "items": [
-          {"cmd": "ShowMultiplePages", "kind": "split", "office_label": "Multiple Pages"}]},
+          {"cmd": "MultiplePagesPerRow", "office_label": "Multiple Pages"}]},
         {"id": "PageWidth", "style": "small-label", "items": [{"cmd": "ZoomPageWidth", "office_label": "Page Width"}]}
       ]
     ]},

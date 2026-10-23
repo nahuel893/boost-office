@@ -268,7 +268,7 @@
     {"name": "viewsplit", "large": true, "layers": [{"glyph": "split_horizontal"}]},
     {"name": "zoompage", "layers": [{"glyph": "page_fit"}]},
     {"name": "zoompagewidth", "layers": [{"glyph": "document_width"}]},
-    {"name": "showmultiplepages", "layers": [{"glyph": "document_one_page_multiple"}]},
+    {"name": "showmultiplepages", "aliases": ["multiplepagesperrow"], "layers": [{"glyph": "document_one_page_multiple"}]},
     {"name": "viewmacrosmenu", "large": true, "layers": [{"glyph": "code"}]},
     {"name": "leftpara", "layers": [{"glyph": "text_align_left"}]},
     {"name": "centerpara", "layers": [{"glyph": "text_align_center"}]},

@@ -74,9 +74,11 @@ def placeholder_urls(src, only=None):
 class StateListener(unohelper.Base, XStatusListener):
     def __init__(self):
         self.enabled = None
+        self.state = None
 
     def statusChanged(self, aEvent):
         self.enabled = aEvent.IsEnabled
+        self.state = aEvent.State
 
     def disposing(self, aEvent):
         pass
@@ -159,6 +161,10 @@ class NotebookbarOffice(UITestCase):
 
     def dispatch_enabled(self, name, timeout=5):
         """IsEnabled of .uno:<name> as the frame reports it to a status listener."""
+        return self.dispatch_status(name, timeout).enabled
+
+    def dispatch_status(self, name, timeout=5):
+        """The StateListener of .uno:<name> after the frame reported its status (IsEnabled and State)."""
         xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.xContext)
         xTransformer = self.xContext.ServiceManager.createInstanceWithContext(
@@ -174,7 +180,7 @@ class NotebookbarOffice(UITestCase):
             self.wait_for(lambda: listener.enabled is not None, "no state reported for " + name, timeout)
         finally:
             xDispatch.removeStatusListener(listener, aURL)
-        return listener.enabled
+        return listener
 
     def test_placeholder_slots_disabled(self):
         # every URL of product/tests/placeholders_writer.json (W1: 48 on 24 slots) is a known
@@ -1208,13 +1214,29 @@ class NotebookbarOffice(UITestCase):
                 self.assertEqual(label, self.command_label(url), url)
 
     def test_view_commands_that_are_real_are_enabled(self):
-        # Left out on purpose: MacroManager (hidden unless experimental mode is on) and ShowMultiplePages (a print
-        # preview command: the text view does not handle it, sw/source/uibase/uiview/pview.cxx)
+        # Left out on purpose: MacroManager (hidden unless experimental mode is on)
         with self.ui_test.create_doc_in_start_center("writer"):
             for name in ("PrintLayout", "BrowseView", "FullScreen", "ChangeTheme", "Ruler", "GridVisible", "Navigator",
-                         "Zoom", "Zoom100Percent", "ZoomPage", "ZoomPageWidth", "NewWindow", "RunMacro",
-                         "MacroRecorder", "BasicIDEAppear"):
+                         "Zoom", "Zoom100Percent", "ZoomPage", "MultiplePagesPerRow", "ZoomPageWidth", "NewWindow",
+                         "RunMacro", "MacroRecorder", "BasicIDEAppear"):
                 self.assertTrue(self.dispatch_enabled(name), name)
+
+    def test_view_multiple_pages_shows_several_pages_per_row_in_the_editing_view(self):
+        # Word's Multiple Pages works while editing: the button runs the editing view's multi-page layout (the
+        # status bar's), not print preview's .uno:ShowMultiplePages
+        with self.ui_test.create_doc_in_start_center("writer"):
+            self.assertFalse(self.dispatch_status("MultiplePagesPerRow").state)
+            self.switch_to(OFFICE_UI)
+            try:
+                xBox = self.xUITest.getTopFocusWindow().getChild("bxViewMultiplePages")
+                self.wait_for(lambda: get_state_as_dict(xBox.getChild("toolboxitem-1"))["Enabled"] == "true",
+                              "Multiple Pages is drawn disabled in the editing view")
+                xBox.executeAction("CLICK", mkPropertyValues({"POS": "0"}))
+                self.wait_for(lambda: self.dispatch_status("MultiplePagesPerRow").state,
+                              "the editing view still shows one page per row")
+            finally:
+                self.xUITest.executeCommand(".uno:SinglePagePerRow")  # the layout is a user setting
+                self.switch_to("Default")
 
     def test_view_ribbon_shows_words_labels(self):
         with self.ui_test.create_doc_in_start_center("writer"):

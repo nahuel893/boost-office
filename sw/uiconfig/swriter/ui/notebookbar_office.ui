@@ -10016,15 +10016,15 @@
                                     <property name="show-arrow">False</property>
                                     <property name="icon_size">1</property>
                                     <child>
-                                      <object class="GtkMenuToolButton" id="btnViewShowMultiplePages">
+                                      <object class="GtkToolButton" id="btnViewMultiplePagesPerRow">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnViewShowMultiplePages">Multiple Pages</property>
-                                        <property name="action-name">.uno:ShowMultiplePages</property>
+                                        <property name="label" translatable="yes" context="TabbedWriter|btnViewMultiplePagesPerRow">Multiple Pages</property>
+                                        <property name="action-name">.uno:MultiplePagesPerRow</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="homogeneous">True</property>
                                       </packing>
                                     </child>
                                   </object>
