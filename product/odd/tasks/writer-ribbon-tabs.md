@@ -1,6 +1,7 @@
 # Feature: Writer ribbon tabs like Word (Tabbed Office)
 
-- **Status:** planned 2026-10-20. Open questions answered (see "Answers and rulings").
+- **Status:** done 2026-10-23 (W0a-W12). Planned 2026-10-20; rulings in "Answers and rulings". Not pushed: `dev`
+  and `main` wait for the user.
 - **Locator:** `product/odd/tasks/writer-ribbon-tabs.md`
 - **Engram mirror:** `odd/writer-ribbon-tabs/tasks`
 - **Repo / branch:** `/mnt/games/libreoffice/core`, `feature/writer-ribbon-tabs`, from the product tip the controller
@@ -147,7 +148,7 @@ translations; T10 (a pending decision).
 | W9d | What W9b and W9c could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch, and T10 (`toolkit/source/awt/vclxmenu.cxx`) | delegated (opus: svx, sw and toolkit C++) | [x] (spin width partly, editbox.ui kept: rulings 11-12) | 2cfcb0b68, 6573da3bb, 9d91ce3f0, 3e2ac5e38, a78d8b075 | off (ruling 10): controller spot check |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet), with W11 | [x] | ec97f251d | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet), with W10 | [x] (user gate: shown, not blocking, ruling 9) | 1c8970116, 65ad73100 | off (ruling 10): controller spot check |
-| W12 | Stock pages (Tools, Extension, contextual) get the generated pages' plain captions and alignment; preview pictures framed from the left edge | delegated (sonnet; generator, both apps) | [ ] | | |
+| W12 | Stock pages (Tools, Extension, contextual) get the generated pages' plain captions and alignment; preview pictures framed from the left edge | delegated (sonnet; generator, both apps) | [x] | f499066d5, ebd5d31ee | off (ruling 10): controller spot check |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
 | IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [x] | 2a3cb6e54 | slice ff29c3f19..1607832ca (IC1 + W8b, 599 lines): medium, budget reached; consent relayed |
@@ -1035,9 +1036,27 @@ The controller's rulings can be overturned by the user.
     captions stand out. The two preview pictures start at x=96 and cut the quick access bar: W12 reframes them.
   - Ruling 14 follows from this: W12.
 
+- 2026-10-23, W12 (route: delegated, sonnet). Commits:
+  - f499066d5: `apply_tabs` drops the italic style from every stock caption by default, for every app (Impress
+    included, with no change); 66 lines removed (38 Writer, 28 Calc), the 0.9 scale kept. Calc's six stock
+    contextual boxes (`pmhbFile`, `pmhbDraw`, `pmhbObject`, `pmhbMedia`, `pmhbPrint`, `pmhbForm`) go from
+    `valign` center to fill through `calc_tabs.json`; Writer's stock boxes already fill. The diff filter shows only
+    those two kinds of change.
+  - ebd5d31ee: both preview pictures are a 440x171 crop at 0,0 of a light 1920 px Home window, downscaled to
+    321x125 (a 321 px crop cannot reach the Home tab label at x~330): quick access bar, File, Home and the whole
+    Clipboard section.
+  - Evidence (report: `task-W12-report.md`): 4 new tests RED, then 662 -> 666 OK after both commits;
+    `sw.build sc.build vcl.build` and `check-ui.sh` (0 new fatals) pass; the listed Writer and Calc UITests pass;
+    screenshots in `w12/`.
+  - Left: Writer Tools keeps its content centred in each section (the caption baseline matches Home); the Table tab
+    could not be shot (the harness cannot select a table).
+  - Controller check: 666 unit tests OK; the tree clean after `gen_ribbon.py --all`; no
+    `.superpowers` file tracked; the Writer preview picture looked at.
+
+Writer is done: every task from W0a to W12 is checked off.
+
 ## Next step
 
-W12: stock pages' captions and alignment, and the preview pictures' framing (delegated, sonnet;
-`task-W12-brief.md`). Then Impress (`product/odd/tasks/impress-ribbon-tabs.md`, branch
-`feature/impress-ribbon-tabs`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
+Impress: `product/odd/tasks/impress-ribbon-tabs.md` on branch `feature/impress-ribbon-tabs` (from this branch's
+tip), starting with I0a. After Impress, GitHub prep and the install script. After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
 the install script (map: `task-GH1-report.md`).
