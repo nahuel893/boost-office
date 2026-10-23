@@ -155,7 +155,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [x] | 108404dd7 | 779 unit tests OK; fits at 1920 |
 | I4a | Design (moved before Transitions), layout and behaviour | delegated (sonnet) | [x] | 8a94a9d48, 1d6710d99 | 806 unit tests OK; UITests pass |
 | I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [x] | d76206f30, 374cf2422, 584d6a44a | 812 unit tests OK; fits at every width |
-| I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [ ] | | |
+| I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [x] | b4d6c4849 | 813 unit tests OK; gtk3 screenshots |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
@@ -565,7 +565,23 @@ Controller rulings (2026-10-23):
   - Controller check: 812 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked; the Variants menu screenshot looked at.
 
+- 2026-10-23, I4c (route: delegated, opus). Commit b4d6c4849 (2 files, +30/-2): `VCLXMenu::execute` adds
+  `MenuFlags::AlwaysShowDisabledEntries` when `DontHideDisabledEntry` is true and the controller did not ask to
+  hide disabled entries; a source test in `MenuDefaultsTest` pins it (RED first).
+  - Evidence (report: `task-I4c-report.md`): 812 -> 813 OK; `toolkit.build` exit 0; Writer
+    `test_ribbon_popups_show_disabled_entries_greyed` and Impress `test_tabbed_office_loads` pass; gtk3 screenshots
+    in `assets/previews/impress-ribbon-tabs/i4c/`: before, the Variants menu shows only Theme...; after, Fonts,
+    Effects and Background Styles show greyed; Impress Arrange shows its 15 disabled entries greyed; Writer's Text
+    Effects menu shows its five placeholders greyed; Calc Review's Notes menu shows its disabled entries greyed.
+  - For I9 (follow-ups, accepted as known): gtk3 submenus still hide disabled entries (gtk3 reads each submenu's
+    own flags, `gtksalmenu.cxx:397`; the fix belongs in `framework/source/uielement/menubarmanager.cxx:612-617` and
+    the popup controllers); greyed entries show a faint rounded outline from the upstream rule `menu
+    menuitem:disabled` (`vcl/unx/gtk3/custom-theme.cxx:216-221`, left and right borders); a popup reused after the
+    setting changes at runtime keeps its flags until it is recreated.
+  - Controller check: 813 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the after Variants screenshot looked at.
+
 ## Next step
 
-I4c (delegated, opus; brief `task-I4c-brief.md`): greyed popup entries on gtk3. Then I5a, I5b, ... I8b; the a briefs
-bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
+I5a (delegated, sonnet; brief `task-I5a-brief.md`): the Transitions and Animations tabs. Then I5b, I6a, ... I8b; the a
+briefs bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
