@@ -140,7 +140,7 @@ translations; T10 (a pending decision).
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
 | W7a / W7b | Review | as W2 | a [x], b [x] | a: 820baee29 (layout + generated), 6f24be2b0 (code); b: a22437b09, e0108c293 (fit), 3942ac2b9 (test fix, controller) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged; b: medium, under budget (pending in slice from 6f24be2b0) |
-| W8a / W8b | View and Help (new page) | as W2 | [ ] | | |
+| W8a / W8b | View and Help (new page) | as W2 | a [x], b [ ] | a: 027e8f459 (layout + generated), ff29c3f19 (code) | a: ff29c3f19 alone (992 lines): medium; declined by the user (writer self-check + controller spot check) |
 | W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
@@ -835,6 +835,34 @@ The controller's rulings can be overturned by the user.
     they are S.
   - RDD for 6f24be2b0..3942ac2b9: medium, under budget (236 lines). It stays pending in the slice.
 
+- 2026-10-22, W8a (route: delegated, sonnet). Commits:
+  - 027e8f459: `writer_view.json`, `writer_help.json`, `writer_tabs.json` (the Help page through `add_pages`, last,
+    at position 18), the regenerated `.ui` (2207 lines), `swriter.suppr` and `swriter.false`, and the one-line
+    `test_writer_mailings_ui.py` edit (Help joins the tab order);
+  - ff29c3f19: `view_macros.xml`, Controller.xcu nodes (`ViewSwitchWindowsMenuWriter` on WindowListMenuController
+    with no popup file, as Calc; `ViewMacrosMenuWriter` on ResourceMenuController), WriterCommands.xcu (2 menus,
+    12 placeholder variants, the Help tab label), `test_writer_view_ui.py` (28 tests), `test_writer_help_ui.py`
+    (19 tests), and 15 UITests. The label nodes trim 14 lines of the `.ui`.
+  - The worker first stopped with NEEDS_CONTEXT and no commits: the Mailings tab-order test was outside its
+    surface. The controller added that file for the one-line edit (Amendment 1), and the worker made both commits.
+  - Help tab label `H~elp` (access key E): the design's `Hel~p` clashes with the contextual Print tab, L with
+    Layout and H with Home. A unit test checks that E is unique. The worker's choice, accepted by the controller.
+  - Evidence (report: `task-W8a-report.md`):
+    - RED: the Switch Windows and Macros controllers were missing, and the section tests failed on the missing
+      JSON;
+    - GREEN: 579 OK at commit 1 (new test files aside), 626 OK at commit 2; 17 UITests pass one at a time,
+      including Switch Windows with two Writer documents, `test_tab_order` with Help last, and the T9w labels test;
+    - the build and `check-ui.sh` are clean (unused suppressions 653 -> 663, the known class); Calc is unchanged.
+  - Controller spot check: 626 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - Macro Manager: hidden in the Macros popup unless experimental mode is on, as in Calc (`IsExperimental` in
+    GenericCommands.xcu).
+  - For W9/W10: Multiple Pages (`.uno:ShowMultiplePages`) is greyed while editing, because only the print-preview
+    shell handles it. The design keeps it on View > Zoom; Word's Multiple Pages works in the editing view.
+  - RDD for ff29c3f19 (992 lines): medium, budget reached. The user declined it (candidate-scoped); medium tier
+    off-path: the writer's self-verification and the controller spot check. A machine restart cleared the
+    scratchpad before the answer was applied, so the controller took a fresh consent envelope for the same
+    target and ran its decline invocation.
+
 ## Next step
 
-W8a: View and Help (new page), layout and behaviour (delegated, sonnet). Brief: `task-W8a-brief.md`.
+W8b: View and Help, icons, 1920 fit and screenshots (delegated, sonnet). Brief: `task-W8b-brief.md`.
