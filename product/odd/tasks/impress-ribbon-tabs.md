@@ -150,7 +150,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | f7c63b9f6 | off (ruling 12): controller spot check |
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [x] (Columns: fallback, ruling 19) | e7d5a89ce (layout + generated), 64b7a1062 (code) | off (ruling 12): controller spot check |
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [x] | 70dbfd32e, 057581424 | 741 unit tests OK; UITests pass |
-| I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [ ] | | |
+| I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [x] | d04c730e5 | 745 unit tests OK; fits at 1920 |
 | I3a / I3b | Insert | as I2a / I2b | [ ] | | |
 | I4a / I4b | Design (moved before Transitions) | as I2a / I2b | [ ] | | |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
@@ -476,6 +476,25 @@ Controller rulings (2026-10-23):
   - Controller check: 741 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked.
 
+- 2026-10-23, I2b (route: delegated, sonnet). Commit d04c730e5 (102 files, mostly vendored Fluent SVGs; +259/-5):
+  Boost icons for every Home command in both themes, `product/tests/test_impress_icons.py` (4 tests; coverage and
+  the button count from the layout JSON). No fit commit: Home fits at 1920 unchanged.
+  - Fit: at 1920 the last separator is at x=1767 (153 px margin, still fits at about 1880); at 1600 and 1366 Editing
+    collapses first, then Drawing, behind `>>`. The ribbon height equals the stock tabs'.
+  - Icon notes: Reset has its own icon; Convert to SmartArt shares `insertsmartart` through the manifest `aliases`
+    key; Quick Styles has an explicit icon (no `DrawImpressCommands.xcu` change). New entries `cube`, `line`, `text`,
+    `connector` and the popup sub-command names (`linearrowend`, `freeline_unfilled`, ...) also theme the stock
+    drawing toolbars of every app; no existing zip member changed (sha1 of all 871 members per theme compared).
+  - Evidence (report: `task-I2b-report.md`): 741 -> 745 OK; `build_theme.py build`/`install` exit 0; `sd.build`
+    exit 0; `test_tabbed_office_loads` passes; `check-ui.sh` 0 new fatals; screenshots light and dark at 1920, 1600
+    and 1366 plus the open Arrange menu in `assets/previews/impress-ribbon-tabs/i2b/`.
+  - For I9: the default shape cells (diamond, smiley, block arrow, flowchart, callout, star) still draw Colibre's
+    icons (about 6 manifest entries); the stock Drawing toolbar shows under the ribbon in Tabbed Office, which
+    PowerPoint does not have; the tab underline is still green (the accent is I9's).
+  - Controller check: 745 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the 1920 light screenshot looked at.
+
 ## Next step
 
-I2b (delegated, sonnet; brief `task-I2b-brief.md`): Home icons, the 1920 px fit, screenshots. Then I3a (Insert).
+I3a (delegated, sonnet; brief `task-I3a-brief.md`): the Insert tab. Then I3b, I4a, I4b, ... I8b; the a briefs bind
+`task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
