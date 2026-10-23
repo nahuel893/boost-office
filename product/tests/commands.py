@@ -3,8 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Command labels, tooltips and image flags as LibreOffice resolves them for one app (Calc by default).
 
-A command is looked up in the app's file first (CalcCommands.xcu, WriterCommands.xcu), then in
-GenericCommands.xcu; the other modules' files never apply. Every test reads commands through here.
+A command is looked up in the app's file first (CalcCommands.xcu, WriterCommands.xcu,
+DrawImpressCommands.xcu), then in GenericCommands.xcu; the other modules' files never apply. Every
+test reads commands through here.
 """
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -15,6 +16,7 @@ OOR = "{http://openoffice.org/2001/registry}"
 LOOKUP_ORDERS = {  # most specific first
     "calc": ("CalcCommands.xcu", "GenericCommands.xcu"),
     "writer": ("WriterCommands.xcu", "GenericCommands.xcu"),
+    "impress": ("DrawImpressCommands.xcu", "GenericCommands.xcu"),
 }
 LOOKUP_ORDER = LOOKUP_ORDERS["calc"]
 
@@ -49,22 +51,25 @@ def flagged_commands(ui_dir=UI_DIR, app="calc"):
     return {name for name, value in properties("Properties", ui_dir, app).items() if int(value) & 1}
 
 
-WRITER_SUFFIX = ("WriterPopup", "WriterControl")
+APP_SUFFIXES = {"writer": ("WriterPopup", "WriterControl"), "impress": ("ImpressPopup", "ImpressControl")}
+WRITER_SUFFIX = APP_SUFFIXES["writer"]
 
 
 def controller_nodes(controller_xcu=UI_DIR / "Controller.xcu", app="calc"):
     """Controller.xcu nodes that name a command: node name -> {Command, Controller, Module, Value}.
 
-    A Writer node that shares its command with Calc carries a "Writer" suffix (InsertShapesMenuWriterPopup).
-    Those nodes are left out unless app is "writer", so Calc's one-node-per-command checks keep their meaning.
+    A Writer or Impress node that shares its command with another app's carries its app's suffix
+    (InsertShapesMenuWriterPopup, ...ImpressPopup). Those nodes are left out unless app is theirs, so each
+    app's one-node-per-command checks keep their meaning; Calc's nodes have no suffix.
     Several modules can hold a node of one name (the stock "c1", "c5" language nodes, DistributeControl): the
     first keeps the plain name, later ones get "#2", "#3", ... so no node is lost.
     """
+    others = tuple(suffix for owner, suffixes in APP_SUFFIXES.items() if owner != app for suffix in suffixes)
     nodes = {}
     for node in ET.parse(controller_xcu).iter("node"):
         props = {p.get(OOR + "name"): p.findtext("value") for p in node.findall("prop")}
         name = node.get(OOR + "name")
-        if "Command" in props and (app == "writer" or not name.endswith(WRITER_SUFFIX)):
+        if "Command" in props and not name.endswith(others):
             key, count = name, 1
             while key in nodes:
                 count += 1

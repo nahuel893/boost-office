@@ -30,9 +30,9 @@ page is narrower than their natural widths). VCL hands extra width only to a chi
 itself, so the section's optional box, both grids and the toolbox get hexpand, and the items get
 the packing expand (ToolBox::Resize shares the extra width out across them).
 
-An item's "office_label" (Word's or Excel's label) becomes its button's label, unless LibreOffice
-already shows that text for the command; an explicit "label" wins. Only the ribbon changes: menus,
-help and tooltips keep reading the command's own label from <App>Commands.xcu.
+An item's "office_label" (Word's, Excel's or PowerPoint's label) becomes its button's label, unless
+LibreOffice already shows that text for the command; an explicit "label" wins. Only the ribbon
+changes: menus, help and tooltips keep reading the command's own label from the app's Commands.xcu.
 """
 import argparse
 import functools
@@ -83,6 +83,9 @@ APPS = {
     "writer": App("sw/uiconfig/swriter/ui/notebookbar.ui", "sw/uiconfig/swriter/ui/notebookbar_office.ui",
                   "solenv/sanitizers/ui/modules/swriter.suppr", "solenv/sanitizers/ui/modules/swriter.false",
                   "writer", "writer_tabs.json", "TabbedWriter", "WriterCommands.xcu"),
+    "impress": App("sd/uiconfig/simpress/ui/notebookbar.ui", "sd/uiconfig/simpress/ui/notebookbar_office.ui",
+                   "solenv/sanitizers/ui/modules/simpress.suppr", None, "impress", "impress_tabs.json",
+                   "TabbedImpress", "DrawImpressCommands.xcu"),
 }
 
 

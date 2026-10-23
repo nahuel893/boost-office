@@ -565,12 +565,14 @@ class RegenerateAllTest(unittest.TestCase):
 
     def test_page_layouts_read_only_the_files_of_their_app(self):
         with tempfile.TemporaryDirectory() as tmp:
-            for name in ("calc_home", "calc_tabs", "writer_home", "writer_tabs"):
+            for name in ("calc_home", "calc_tabs", "writer_home", "writer_tabs", "impress_home", "impress_tabs"):
                 (Path(tmp) / (name + ".json")).write_text(json.dumps({"id_prefix": name}), encoding="utf-8")
             self.assertEqual([{"id_prefix": "calc_home"}], g.page_layouts(tmp))
             self.assertEqual([{"id_prefix": "writer_home"}], g.page_layouts(tmp, "writer"))
+            self.assertEqual([{"id_prefix": "impress_home"}], g.page_layouts(tmp, "impress"))
 
     def test_all_mode_rewrites_every_app_from_upstream(self):
+        # three apps; Calc's and Writer's files come out as the committed bytes, whatever Impress adds
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in g.APPS:
@@ -578,12 +580,11 @@ class RegenerateAllTest(unittest.TestCase):
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 self.assertEqual(0, g.main(["--all", "--root", str(root)]))
-            self.assertEqual({"calc", "writer"}, set(g.APPS))
+            self.assertEqual({"calc", "writer", "impress"}, set(g.APPS))
             for name in g.APPS:
                 for rel in outputs(name):
                     with self.subTest(rel):
-                        self.assertEqual((office.ROOT / rel).read_text(encoding="utf-8"),
-                                         (root / rel).read_text(encoding="utf-8"))
+                        self.assertEqual((office.ROOT / rel).read_bytes(), (root / rel).read_bytes())
                 self.assertIn(g.APPS[name].office, out.getvalue())
 
     def test_app_mode_rewrites_that_app_alone(self):
@@ -602,9 +603,9 @@ class RegenerateAllTest(unittest.TestCase):
     def test_an_unknown_app_is_an_error(self):
         err = io.StringIO()
         with contextlib.redirect_stderr(err), self.assertRaises(SystemExit) as raised:
-            g.main(["--app", "impress"])
+            g.main(["--app", "draw"])
         self.assertEqual(2, raised.exception.code)
-        self.assertIn("argument --app: invalid choice: 'impress'", err.getvalue())
+        self.assertIn("argument --app: invalid choice: 'draw'", err.getvalue())
 
     def test_the_calc_names_of_the_test_tooling_are_the_calc_app(self):
         calc = office.app("calc")
@@ -702,8 +703,8 @@ class OfficeLabelTest(unittest.TestCase):
 
     def test_an_office_label_needs_a_known_app(self):
         layout = one_item_page("calc", {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"})
-        layout["context"] = "TabbedImpress"
-        with self.assertRaisesRegex(g.LayoutError, "TabbedImpress"):
+        layout["context"] = "TabbedDraw"
+        with self.assertRaisesRegex(g.LayoutError, "TabbedDraw"):
             g.emit_page(layout)
 
 

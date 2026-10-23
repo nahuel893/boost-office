@@ -19,7 +19,8 @@ import json
 from pathlib import Path
 
 REGISTRY = Path(__file__).with_name("placeholders.json")
-REGISTRIES = {"calc": REGISTRY, "writer": REGISTRY.with_name("placeholders_writer.json")}
+REGISTRIES = {"calc": REGISTRY, "writer": REGISTRY.with_name("placeholders_writer.json"),
+              "impress": REGISTRY.with_name("placeholders_impress.json")}
 
 
 def registry(app):
