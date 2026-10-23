@@ -99,5 +99,19 @@ class WriterProfileTest(unittest.TestCase):
             profile.main(["--app", "impress", "--ui", "office", "--appearance", "light", "--profile", "/nonexistent"])
 
 
+class MenuDefaultsTest(unittest.TestCase):
+
+    def test_the_schema_shows_disabled_menu_entries_by_default(self):
+        # T10: Office shows disabled entries greyed. The schema default already says so
+        # (View/Menu/DontHideDisabledEntry), so a profile needs no override. What hides entries in the
+        # ribbon popups is toolkit/source/awt/vclxmenu.cxx, which sets HideDisabledEntries on every awt
+        # PopupMenu::execute whatever this setting says.
+        schema = ET.parse(Path(__file__).resolve().parents[2]
+                          / "officecfg/registry/schema/org/openoffice/Office/Common.xcs")
+        props = [p for p in schema.iter("prop") if p.get(OOR + "name") == "DontHideDisabledEntry"]
+        self.assertEqual(1, len(props))
+        self.assertEqual("true", props[0].findtext("value"))
+
+
 if __name__ == "__main__":
     unittest.main()
