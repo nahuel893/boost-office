@@ -141,8 +141,9 @@ translations; T10 (a pending decision).
 | W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
 | W7a / W7b | Review | as W2 | a [x], b [x] | a: 820baee29 (layout + generated), 6f24be2b0 (code); b: a22437b09, e0108c293 (fit), 3942ac2b9 (test fix, controller) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged; b: medium, under budget (pending in slice from 6f24be2b0) |
 | W8a / W8b | View and Help (new page) | as W2 | a [x], b [x] | a: 027e8f459 (layout + generated), ff29c3f19 (code); b: 1607832ca | a: ff29c3f19 alone (992 lines): medium; declined by the user (writer self-check + controller spot check); b: with IC1, see IC1 |
-| W9a | The per-app tab accent (design 3.4): Writer Word blue, Calc green | delegated (opus: C++ in vcl and sfx2) | [ ] | | |
-| W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [ ] | | |
+| W9a | The per-app tab accent (design 3.4): Writer Word blue, Calc green | delegated (opus: C++ in vcl and sfx2) | [x] | d8c601d40 | off (ruling 10): controller spot check |
+| W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [x] (spin-field width moved to W9d) | afaaee16f, 0ef912ddf, 4b384a058, 559b013a0, 0322fbed1, 1e97d761f | off (ruling 10): controller spot check |
+| W9d | What W9b could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch | delegated (opus: svx and sw C++) | [ ] | | |
 | W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
@@ -333,8 +334,12 @@ The controller's rulings can be overturned by the user.
    (`assets/previews/icon-minimal/before-after.png`: 24 icons, before and after) and the user approved it. 246 of
    the 356 manifest entries lose their `fill`. The renderer keeps its fill support, unused.
 9. **Working mode (2026-10-23):** the user asked to finish the whole request without stopping to ask. The
-   controller rules on open decisions itself and records them here; review consent is still relayed, but work
-   continues while it waits.
+   controller rules on open decisions itself and records them here, and work never waits on a question.
+10. **Reviews off (2026-10-23):** the user: "basta ya de pedir revisiones quiero la suite andando" and "hace días
+   estás laburando y se traba el flujo por preguntas". Receipt-driven review is off for this clone
+   (`gentle-ai review mode disable --scope clone`); no review starts and no consent is relayed. The gate per task is
+   the writer's own verification plus the controller's spot check (the unit suite, `gen_ribbon.py --all` leaving the
+   tree clean, no soffice left, a look at the screenshots).
 
 ## Progress / evidence
 
@@ -894,9 +899,62 @@ The controller's rulings can be overturned by the user.
   - Concerns: `shot-tab.sh` finds 10 of 11 tab labels at 1366 once Help exists (the worker clicked through
     `SHOT_AFTER`); a `SHOT_AFTER` click needs a `move` first. Both are dev tooling, for W11.
   - Controller check: 629 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
-  - RDD for ff29c3f19..1607832ca (599 lines): medium, budget reached; consent relayed while W9a runs.
+  - RDD for ff29c3f19..1607832ca (599 lines): medium, budget reached; consent relayed. The START went stale when
+    W9a committed; the user then turned reviews off (ruling 10), so no review ran.
+
+- 2026-10-23, W9a (route: delegated, opus: C++ in vcl and sfx2). Commit d8c601d40 (7 files: `tabctrl.hxx`,
+  `tabctrl.cxx`, `NotebookbarTabControl.cxx`, `ToolbarMode.xcs`, `palette.json`, `build_schemes.py`,
+  `test_schemes.py`).
+  - The selected tab's underline follows the app: Writer Word blue `#185ABD` (dark `#83A6DB`, 5.69:1 on
+    `#2B2B2B`), Calc green unchanged. Two optional ToolbarMode properties per app (`AccentColor`,
+    `AccentColorDark`, no default, so stock LibreOffice draws as before); the scheme extension writes them from
+    `palette.json` `tab_accents`; `lcl_getTabAccentColor` already maps Impress and Draw, so Impress's orange is
+    data only.
+  - Deviation from design 3.4: under adw-gtk3 the band is a rounded 294 px crescent (radius 9 px, margin 1 px), not
+    a 3 px rectangle, so vcl repaints exactly the native band's pixels (the theme's active color) after the native
+    draw. Same shape for any theme; W10 updates design 3.4.
+  - Evidence (report: `task-W9a-report.md`): RED 3 scheme tests (2 errors, 1 failure), GREEN; 629 -> 632 unit tests
+    OK; `vcl.build sfx2.build officecfg.build postprocess.build` exit 0. Pixel check, before and after, light and
+    dark: Writer's band 294 px, now exactly `#185ABD` / `#83A6DB`; Calc 0 px changed (`w9a/band-sheet.png`).
+  - No C++ unit test: the headless backend draws no native tab items, so the path never runs there.
+  - Concerns, for W10: a light/dark switch at runtime keeps the old band color until the notebookbar reloads; HiDPI
+    and RTL are untested; a theme that antialiases the band would keep its blended edge pixels green.
+  - RDD: none (ruling 10). Controller check: 632 OK, the screenshots.
+
+- 2026-10-23, W9b (route: delegated, opus: sw/svx C++ and the shared generator). Commits:
+  - afaaee16f: the mail-merge record box made every tab 9 px taller, not only Mailings (W6b measured it on
+    Mailings); the ruler now sits at y=175 on every tab (was 184).
+  - 0ef912ddf: the record box stays empty and disabled outside a mail merge (it showed "-1").
+  - 4b384a058: two small-label buttons in a column now use the top two rows, as Office does (VclGrid drops rows in
+    which no child starts, so a two-row column beside a large toolbox spread over the whole height). Fixed in
+    `gen_ribbon.py` for both apps; Calc changed on purpose in three columns (Formulas > Calculation, and the two
+    columns of Page Layout > Sheet Options), each second button moving up one row.
+  - 559b013a0: the blank plain-command icons had one root cause: a toolbox button gets its command image only when
+    the command's `Properties` in the app's or the generic `Commands.xcu` has bit 1 set. `WriterCommands.xcu` sets it
+    for Drop Caps, Show Notes and Labels (a module node replaces the generic one as a whole, so it repeats the
+    label); the three explicit icons are gone; a new test checks every Writer ribbon button without an explicit icon
+    has the flag. Side effect: those commands (and To Footnote Anchor) also show their icons in menus and toolbars.
+  - 0322fbed1: Multiple Pages now runs `.uno:MultiplePagesPerRow` (the status bar's multi-page layout) as a plain
+    button and works while editing; it keeps the zoom and shows a checked state while on (Word's does not).
+  - 1e97d761f: the style previews draw on the list's own colors, so dark mode has dark tiles; light-mode preview
+    text uses the theme's text color instead of pure black.
+  - Not fixed: the Layout spin fields stay about 195 px wide (their width is set in svx's spacing windows, outside
+    the surface): moved to W9d with the other concerns (record navigation enabled after the Finish & Merge menu,
+    `apphdl.cxx:175-197`; the unused `sw/uiconfig/swriter/ui/editbox.ui`; the style preview cache keyed by name only).
+  - Evidence (report: `task-W9b-report.md`): 632 -> 646 unit tests OK after every commit; 19 Writer and 3 Calc
+    UITests passed one at a time; builds, `check-ui.sh` and `git show --check` clean. RED observed for the unit
+    tests; the new Multiple Pages UITest was not run against the old build. Screenshots in `w9b/`.
+  - Design corrections, for W10: Multiple Pages is `.uno:MultiplePagesPerRow`, a plain button; the Mailings height
+    note applied to the whole ribbon; the JSON's `"row": 1` on Layout > Paragraph's Spacing Before has no effect (no
+    large toolbox in that section, so VclGrid drops row 0); two- and three-button small-label columns both start at
+    the top row.
+  - Controller check: 646 unit tests OK, the tree clean after `gen_ribbon.py --all`, no
+    soffice left; screenshots looked at: Review's Proofing and Tracking pairs sit in the top two rows; dark Home's
+    style tiles are dark.
 
 ## Next step
 
-W9a: the per-app tab accent (delegated, opus). Brief: `task-W9a-brief.md`. Then W9b and W9c (briefs written).
-In parallel, read-only: ID1, the Impress design and plan drafts (`task-ID1-brief.md`).
+W9c: greyed disabled menu entries (T10w) and the parked test-quality items (delegated, sonnet; brief
+`task-W9c-brief.md`). Then W9d (opus; `task-W9d-brief.md`), then W10 + W11 together (sonnet;
+`task-W10-W11-brief.md`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
+the install script (map: `task-GH1-report.md`).
