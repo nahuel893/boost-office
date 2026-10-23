@@ -76,7 +76,7 @@ if [ "$dry" = 1 ]; then
     exit 0
 fi
 
-if pgrep -f "soffice.bin.*UserInstallation=file://$profile" >/dev/null; then
+if pgrep -f "soffice\.bin.*UserInstallation=file://$profile( |$)" >/dev/null; then
     echo "$App is already running with $profile: close it first." >&2
     exit 1
 fi
