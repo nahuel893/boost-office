@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
-# Screenshot one ribbon tab of the dev build's Calc or Writer in a private headless sway.
-# Usage: shot-tab.sh [--app calc|writer] THEME TAB OUT.png [WIDTH]
-#   --app  calc (default) or writer
+# Screenshot one ribbon tab of the dev build's Calc, Writer or Impress in a private headless sway.
+# Usage: shot-tab.sh [--app calc|writer|impress] THEME TAB OUT.png [WIDTH]
+#   --app  calc (default), writer or impress
 #   THEME  light | dark   (same look as office.sh: Tabbed Office, Boost icons and scheme)
 #   TAB    tab label to click, e.g. Insert, Home, "Page Layout" (found by its ink on the tab bar, in tab order;
 #          "-" keeps the tab the app opens with). The tab order is SHOT_TABS (comma-separated), by default
 #          Excel's for Calc, and for Writer Word's (design section 3.2 of product/docs/writer-ribbon-tabs.md)
-#          without the pages the installed Writer office .ui does not have yet.
+#          without the pages the installed Writer office .ui does not have yet. Impress's is the order of the
+#          installed Impress office .ui, without its contextual tabs.
 #   OUT    PNG path (put it outside the repo)
 #   WIDTH  1920 (default), 1600 or 1366; the headless output is WIDTH x (WIDTH*9/16)
 # It never touches the user's session: its own sway (WLR_BACKENDS=headless, one output, own
 # Wayland and IPC sockets), the dev profile (LO_PROFILE, default /mnt/games/libreoffice/dev-profile)
 # and a private XDG_CONFIG_HOME; it refuses the user's own profiles (office.sh's defaults
-# /mnt/games/libreoffice/try-profile and try-profile-writer). Only the PIDs it started are killed.
+# /mnt/games/libreoffice/try-profile, try-profile-writer and try-profile-impress). Only the PIDs it
+# started are killed.
 # Whole run is under `timeout` (LO_SHOT_TIMEOUT, default 180 s). Needs sway, grim, jq, python3 + Pillow.
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
 #      SHOT_AFTER="swaymsg-free shell snippet" runs after the tab click with $SWAYSOCK, $WAYLAND_DISPLAY,
@@ -24,7 +26,7 @@ set -euo pipefail
 
 app=calc
 if [ "${1:-}" = --app ]; then
-    case "${2:-}" in calc|writer) app="$2" ;; *) echo "--app must be calc|writer" >&2; exit 2 ;; esac
+    case "${2:-}" in calc|writer|impress) app="$2" ;; *) echo "--app must be calc|writer|impress" >&2; exit 2 ;; esac
     shift 2
 fi
 theme="${1:?theme light|dark}"; tab="${2:?tab}"; out="${3:?out.png}"; width="${4:-1920}"
@@ -42,29 +44,36 @@ profile="${LO_PROFILE:-/mnt/games/libreoffice/dev-profile}"
 soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"
 # Guards first, before anything is started or any trap is installed: refusing must never touch a
-# running Calc or Writer. Never the user's own profiles, never a profile that is in use.
-case "$app" in calc) App=Calc ;; writer) App=Writer ;; esac
+# running Calc, Writer or Impress. Never the user's own profiles, never a profile that is in use.
+case "$app" in calc) App=Calc ;; writer) App=Writer ;; impress) App=Impress ;; esac
 real_profile=$(realpath -m "$profile")
 case "$real_profile" in
 /mnt/games/libreoffice/try-profile)
     echo "refusing LO_PROFILE=$profile: that is the user's own Calc profile." >&2; exit 1 ;;
 /mnt/games/libreoffice/try-profile-writer)
     echo "refusing LO_PROFILE=$profile: that is the user's own Writer profile." >&2; exit 1 ;;
+/mnt/games/libreoffice/try-profile-impress)
+    echo "refusing LO_PROFILE=$profile: that is the user's own Impress profile." >&2; exit 1 ;;
 esac
 if pgrep -f "soffice.bin.*UserInstallation=file://$profile" >/dev/null; then
     echo "$App already runs with $profile: close it first." >&2; exit 1
 fi
 
 # Tab order on the bar, and the first tab-bar column after the quick access toolbar (x0, measured at
-# 1920 px light; the toolbars differ per app. Writer's toolbar ink ends at x=195 and its File label
-# starts at x=240, so x0 is the middle of that gap). Writer's list is design section 3.2's, filtered
-# to the tabs of the installed office .ui, so that each label keeps its index when later tasks add pages.
+# 1920 px light; the toolbars differ per app. Writer's and Impress's toolbar ink ends at x=195 and their
+# File label starts at x=240, so x0 is the middle of that gap). Writer's list is design section 3.2's,
+# filtered to the tabs of the installed office .ui, so that each label keeps its index when later tasks
+# add pages. Impress's is read from its installed office .ui alone: its stock Layout tab sits before
+# Design until the tasks that move Design and relabel Layout as Transitions land, so PowerPoint's order
+# (design section 3.2 of product/docs/impress-ribbon-tabs.md) would put the labels at the wrong index.
 calc_tabs="File,Home,Insert,Page Layout,Formulas,Data,Review,View,Extension,Tools,Help"
 writer_tabs="File,Home,Insert,Design,Layout,References,Mailings,Review,View,Extension,Tools,Help"
 if [ "$app" = calc ]; then
     tabs="$calc_tabs"; bar_x0=225
-else
+elif [ "$app" = writer ]; then
     tabs="$writer_tabs"; bar_x0=217
+else
+    tabs=""; bar_x0=217
 fi
 if [ -n "${SHOT_TABS:-}" ]; then
     tabs="$SHOT_TABS"
@@ -77,6 +86,22 @@ book = ET.parse(ui).getroot().find(".//object[@id='ContextContainer']")
 labels = {tab.findtext("object/property[@name='label']").replace("~", "")
           for tab in book.findall("child[@type='tab']")}
 print(",".join(name for name in order if name in labels))
+PYEOF
+    )
+elif [ "$app" = impress ]; then
+    tabs=$(python3 -I - "$core/instdir/share/config/soffice.cfg/modules/simpress/ui/notebookbar_office.ui" <<'PYEOF'
+import sys
+from xml.etree import ElementTree as ET
+book = ET.parse(sys.argv[1]).getroot().find(".//object[@id='ContextContainer']")
+names = []
+for tab in book.findall("child[@type='tab']"):
+    label = tab.find("object")
+    contexts = {c.get("name") for c in label.findall("style/class") if c.get("name").startswith("context-")}
+    # a contextual tab (Table, Draw, Master, ...) shows only with its object or view: it has context
+    # classes and no context-any
+    if not contexts or "context-any" in contexts:
+        names.append(label.findtext("property[@name='label']").replace("~", ""))
+print(",".join(names))
 PYEOF
     )
 fi
@@ -266,7 +291,7 @@ rg -q '^ready' "$work/ptr.log" 2>/dev/null || { echo "virtual pointer client fai
 export SHOT_PTR="$work/ptr"   # SHOT_AFTER snippets write commands here, e.g. echo "click 100 50" > "$SHOT_PTR"
 click() { echo "move $(($1 - 4)) $(($2 - 4))" >&8; echo "click $1 $2" >&8; }
 
-# --- Calc or Writer inside it ------------------------------------------------------------------
+# --- Calc, Writer or Impress inside it --------------------------------------------------------
 env -u DISPLAY XDG_CONFIG_HOME="$work/cfg" GDK_BACKEND=wayland GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 \
     setsid "$soffice" --"$app" --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
 lo_pid=$!

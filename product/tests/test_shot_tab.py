@@ -57,9 +57,18 @@ class ShotTabArguments(unittest.TestCase):
         return subprocess.run(["bash", str(SCRIPT), *args], capture_output=True, text=True, timeout=30)
 
     def test_rejects_unknown_app(self):
-        r = self.run_script("--app", "impress", "light", "Home", "/dev/null")
+        r = self.run_script("--app", "draw", "light", "Home", "/dev/null")
         self.assertEqual(2, r.returncode)
-        self.assertIn("--app must be calc|writer", r.stderr)
+        self.assertIn("--app must be calc|writer|impress", r.stderr)
+
+    def test_refuses_the_impress_launcher_profile_for_every_app(self):
+        for app in ("calc", "writer", "impress"):
+            r = subprocess.run(["bash", str(SCRIPT), "--app", app, "light", "Home", "/nonexistent/x.png"],
+                               capture_output=True, text=True, timeout=30,
+                               env={"PATH": "/usr/bin:/bin", "LO_PROFILE": "/mnt/games/libreoffice/try-profile-impress"})
+            self.assertEqual(1, r.returncode, (app, r.stderr))
+            self.assertIn("refusing LO_PROFILE", r.stderr, app)
+            self.assertIn("Impress profile", r.stderr, app)
 
     def test_rejects_unknown_theme(self):
         r = self.run_script("sepia", "Home", "/dev/null")
@@ -96,6 +105,28 @@ class ShotTabTabList(unittest.TestCase):
             r = run_python(body, str(ui), order)
         self.assertEqual(0, r.returncode, r.stderr)
         self.assertEqual(order, r.stdout.strip())
+
+    def test_impress_list_is_the_installed_ui_order_without_the_contextual_tabs(self):
+        # Impress's bar order changes while the tasks move Design and relabel Layout, so its list is
+        # the installed office .ui's own order; a contextual tab (context classes, no context-any) is
+        # left out because it only shows with its object.
+        self.assertTrue("modules/simpress/ui/notebookbar_office.ui" in TEXT, "no Impress office .ui in the script")
+        body = heredoc('tabs=$(python3 -I - "$core/instdir/share/config/soffice.cfg/modules/simpress')
+        tabs = [("~File", ()), ("~Home", ("context-default", "context-any", "context-Text")), ("~Insert", ()),
+                ("~Layout", ()), ("~Design", ()), ("~Slide Show", ()), ("~Table", ("context-Table",)),
+                ("~Draw", ("context-Draw", "context-3DObject")), ("~Master", ("context-MasterPage",)),
+                ("E~xtension", ()), ("~Tools", ()), ("Hel~p", ())]
+        xml = "".join(
+            "<child type='tab'><object class='GtkLabel'><property name='label'>%s</property>%s</object></child>"
+            % (label, "<style>%s</style>" % "".join("<class name='%s'/>" % c for c in classes) if classes else "")
+            for label, classes in tabs)
+        with tempfile.TemporaryDirectory() as tmp:
+            ui = Path(tmp) / "n.ui"
+            ui.write_text("<interface><object id='ContextContainer'>%s</object></interface>" % xml,
+                          encoding="utf-8")
+            r = run_python(body, str(ui))
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertEqual("File,Home,Insert,Layout,Design,Slide Show,Extension,Tools,Help", r.stdout.strip())
 
 
 class ShotTabFinder(unittest.TestCase):

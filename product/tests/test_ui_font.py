@@ -112,7 +112,7 @@ def shot_tab(*args, **env):
 class ShotTabAppTest(unittest.TestCase):
 
     def test_unknown_app_is_refused_before_anything_starts(self):
-        for args in (("--app", "impress", "light", "Home", "/nonexistent/x.png"), ("--app",)):
+        for args in (("--app", "draw", "light", "Home", "/nonexistent/x.png"), ("--app",)):
             out = shot_tab(*args, LO_PROFILE="/nonexistent/profile")
             self.assertEqual(2, out.returncode, out.stderr)
             self.assertIn("calc|writer", out.stderr)
