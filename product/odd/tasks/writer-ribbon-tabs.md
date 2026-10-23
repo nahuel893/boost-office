@@ -146,7 +146,8 @@ translations; T10 (a pending decision).
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
-| T10w | Greyed disabled popup entries (follows Calc's T10 answer) | pending user decision | [ ] | | |
+| IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [ ] | | |
+| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu; built in W9 | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
 Why this shape: the brief's shape, with W0 split in two (about 730 lines in one task would mix the shared
@@ -323,6 +324,15 @@ The controller's rulings can be overturned by the user.
    URL variant per command, with its own `Commands.xcu` node and icon. Side effect: 8 existing buttons that
    already set a label in their `.ui` now show it (five in the bibliography toolbar, and "Shapes" in the three
    `notebookbar_groups.ui`).
+8. **Icon style (2026-10-22):** the user rejected the icon look ("tienen que ser otros más sencillos y
+   minimalistas. No pegan con el tema de iconos de calc") and chose "Línea gris, acento mínimo": every Boost icon,
+   in Writer and Calc, is a grey line icon with no pastel fill. Color stays only as a small badge that means
+   something (green plus or check, red cross, the conditional-format bars). The controller showed a spike
+   (`assets/previews/icon-minimal/before-after.png`: 24 icons, before and after) and the user approved it. 246 of
+   the 356 manifest entries lose their `fill`. The renderer keeps its fill support, unused.
+9. **Working mode (2026-10-23):** the user asked to finish the whole request without stopping to ask. The
+   controller rules on open decisions itself and records them here; review consent is still relayed, but work
+   continues while it waits.
 
 ## Progress / evidence
 
