@@ -63,9 +63,8 @@ fi
 # 1920 px light; the toolbars differ per app. Writer's and Impress's toolbar ink ends at x=195 and their
 # File label starts at x=240, so x0 is the middle of that gap). Writer's list is design section 3.2's,
 # filtered to the tabs of the installed office .ui, so that each label keeps its index when later tasks
-# add pages. Impress's is read from its installed office .ui alone: its stock Layout tab sits before
-# Design until the tasks that move Design and relabel Layout as Transitions land, so PowerPoint's order
-# (design section 3.2 of product/docs/impress-ribbon-tabs.md) would put the labels at the wrong index.
+# add pages. Impress's is read from its installed office .ui alone, so it follows each task that moves or
+# adds a tab (Design moved before Transitions in I4a; Transitions, Animations and Help come with I5a and I8a).
 calc_tabs="File,Home,Insert,Page Layout,Formulas,Data,Review,View,Extension,Tools,Help"
 writer_tabs="File,Home,Insert,Design,Layout,References,Mailings,Review,View,Extension,Tools,Help"
 if [ "$app" = calc ]; then

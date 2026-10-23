@@ -92,7 +92,12 @@
    "Part:string=fonts",
    "Part:string=effects",
    "Part:string=backgroundstyles"
-  ]
+  ],
+  "variant_labels": {
+   "Part:string=fonts": "Fonts",
+   "Part:string=effects": "Effects",
+   "Part:string=backgroundstyles": "Background Styles"
+  }
  },
  {
   "slot": "SID_BOOST_PREVIEW_EFFECTS",

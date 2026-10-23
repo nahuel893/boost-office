@@ -107,13 +107,13 @@ class ShotTabTabList(unittest.TestCase):
         self.assertEqual(order, r.stdout.strip())
 
     def test_impress_list_is_the_installed_ui_order_without_the_contextual_tabs(self):
-        # Impress's bar order changes while the tasks move Design and relabel Layout, so its list is
+        # Impress's bar order changes as the tasks move Design (I4a) and relabel Layout, so its list is
         # the installed office .ui's own order; a contextual tab (context classes, no context-any) is
         # left out because it only shows with its object.
         self.assertTrue("modules/simpress/ui/notebookbar_office.ui" in TEXT, "no Impress office .ui in the script")
         body = heredoc('tabs=$(python3 -I - "$core/instdir/share/config/soffice.cfg/modules/simpress')
         tabs = [("~File", ()), ("~Home", ("context-default", "context-any", "context-Text")), ("~Insert", ()),
-                ("~Layout", ()), ("~Design", ()), ("~Slide Show", ()), ("~Table", ("context-Table",)),
+                ("~Design", ()), ("~Layout", ()), ("~Slide Show", ()), ("~Table", ("context-Table",)),
                 ("~Draw", ("context-Draw", "context-3DObject")), ("~Master", ("context-MasterPage",)),
                 ("E~xtension", ()), ("~Tools", ()), ("Hel~p", ())]
         xml = "".join(
@@ -126,7 +126,7 @@ class ShotTabTabList(unittest.TestCase):
                           encoding="utf-8")
             r = run_python(body, str(ui))
         self.assertEqual(0, r.returncode, r.stderr)
-        self.assertEqual("File,Home,Insert,Layout,Design,Slide Show,Extension,Tools,Help", r.stdout.strip())
+        self.assertEqual("File,Home,Insert,Design,Layout,Slide Show,Extension,Tools,Help", r.stdout.strip())
 
 
 class ShotTabFinder(unittest.TestCase):

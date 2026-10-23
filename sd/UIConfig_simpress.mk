@@ -21,6 +21,7 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/simpress,\
 	sd/uiconfig/simpress/popupmenu/bezier \
 	sd/uiconfig/simpress/popupmenu/connector \
 	sd/uiconfig/simpress/popupmenu/curve \
+	sd/uiconfig/simpress/popupmenu/design_variants \
 	sd/uiconfig/simpress/popupmenu/drawtext \
 	sd/uiconfig/simpress/popupmenu/draw \
 	sd/uiconfig/simpress/popupmenu/form \

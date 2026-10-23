@@ -31,6 +31,8 @@ HOME_SLOTS = (0, 1, 2, 3, 4)  # SID offsets of the Home placeholders: Section fa
 INSERT_SLOTS = (5, 6, 7, 8, 9)  # the Screenshot, 3D Models, SmartArt, Zoom (2 variants) and Screen Recording slots
 RESET_LAYOUT = ".uno:AssignLayout?Reset:bool=true"
 INSERT_ZOOM = ".uno:InsertZoom?Type:string="
+DESIGN_SLOTS = (10,)  # SID offset of the Design placeholders: the PageLayoutThemePart family (3 variants)
+THEME_PART = ".uno:PageLayoutThemePart?Part:string="
 # a 1x1 PNG, the picture of the image context
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 
@@ -38,7 +40,7 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4
 # in tab order: (tab label without its mnemonic, page id). Tasks that change the tabs update this list;
 # I8a reaches PowerPoint's order. Table .. 3D are the contextual tabs: they only show with their object
 # or view.
-TABS = [("File", "File"), ("Home", "Home Tab"), ("Insert", "Insert"), ("Layout", "Layout"), ("Design", "Design"),
+TABS = [("File", "File"), ("Home", "Home Tab"), ("Insert", "Insert"), ("Design", "Design"), ("Layout", "Layout"),
         ("Slide Show", "SlideShow"), ("Review", "Review"), ("View", "View"),
         ("Table", "Table"), ("Image", "Image"), ("Draw", "Draw"), ("Object", "Object"), ("Media", "Media"),
         ("Form", "Form"), ("Master", "Master"), ("Outline", "Outline"), ("3D", "3D"),
@@ -730,6 +732,130 @@ class NotebookbarOffice(UITestCase):
                           "bxInsertEquation": "Equation", "bxInsertSymbol": "Symbol",
                           "bxInsertVideo": "Video", "bxInsertAudio": "Audio",
                           "bxInsertScreenRecording": "Screen Recording"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def design_layout(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        return json.loads((src / "product" / "ui" / "impress_design.json").read_text(encoding="utf-8"))
+
+    def test_design_sections_and_toolboxes(self):
+        layout = self.design_layout()
+        prefix = layout["id_prefix"]
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(3, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xImpressDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xImpressDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_design_shows_before_the_layout_tab_which_becomes_transitions(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                labels = self.tab_labels(document, len(TABS))
+                self.assertEqual(["Insert", "Design", "Layout", "Slide Show"], labels[2:6])
+                self.check_tab_is_shown(document, "Design", None)
+                shown = self.visible_tabs(document)
+                self.assertLess(shown.index("Insert"), shown.index("Design"))
+                self.assertLess(shown.index("Design"), shown.index("Layout"))
+            finally:
+                self.switch_to("Default")
+
+    def test_design_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Design")
+            finally:
+                self.switch_to("Default")
+
+    def test_design_theme_colors_box_is_present(self):
+        # the stock theme colors control (.uno:ThemeSelectorPanel) is the Variants box of the new page
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                xBox = xImpressDoc.getChild("bxDesignThemeColors")
+                self.assertEqual("1", self.settle(lambda: get_state_as_dict(xBox)["ItemCount"]))
+                self.assertEqual("true", get_state_as_dict(xBox)["Visible"])
+                self.assertIsNotNone(xBox.getChild("toolboxitem-1"))
+                self.assertEqual("Variants", self.settle(lambda: get_state_as_dict(
+                    xImpressDoc.getChild("lbDesignVariants"))["Text"]))
+            finally:
+                self.switch_to("Default")
+
+    def test_design_dropdown_popup_lists_its_items_through_the_real_controller(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            xPopup = self.menu_controller(".uno:DesignVariantsMenu", "design_variants")
+            self.assertEqual([".uno:ThemeDialog", THEME_PART + "fonts", THEME_PART + "effects",
+                              THEME_PART + "backgroundstyles"], self.popup_commands(xPopup))
+            # Colors (the theme dialog) is real; the three theme parts are placeholders. The popup keeps
+            # disabled items, so the enabled state comes from the dispatch status.
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("ThemeDialog")))
+            for part in ("fonts", "effects", "backgroundstyles"):
+                self.assertFalse(self.dispatch_enabled("PageLayoutThemePart?Part:string=" + part), part)
+
+    def test_design_placeholders_are_disabled_and_inert(self):
+        # 1 slot: the PageLayoutThemePart family (Fonts, Effects, Background Styles)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in DESIGN_SLOTS)
+        self.assertEqual(3, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_design_slide_size_opens_the_slide_properties_dialog(self):
+        # .uno:SlideSetup targets .uno:PageSetup and has no dispatch of its own: the ribbon button runs
+        # the real command, so the state and the dialog are the Slide Properties ones
+        with self.impress_doc():
+            props = {p.Name: p.Value for p in self.xContext.getValueByName(
+                "/singletons/com.sun.star.frame.theUICommandDescription").getByName(IMPRESS_MODULE)
+                .getByName(".uno:SlideSetup")}
+            self.assertEqual(".uno:PageSetup", props["TargetURL"])
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("PageSetup")))
+            with self.ui_test.execute_dialog_through_command(".uno:PageSetup", close_button="cancel") as xDialog:
+                self.assertIsNotNone(xDialog.getChild("tabcontrol"))
+
+    def test_design_dropdown_and_placeholder_labels_resolve(self):
+        with self.impress_doc():
+            for command, label in (("DesignVariantsMenu", "Variants"),
+                                   ("PageLayoutThemePart?Part:string=fonts", "Fonts"),
+                                   ("PageLayoutThemePart?Part:string=effects", "Effects"),
+                                   ("PageLayoutThemePart?Part:string=backgroundstyles", "Background Styles")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_design_commands_that_are_real_are_enabled(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for name in ("SidebarDeck.SdMasterPagesDeck", "SidebarDeck.PropertyDeck", "ThemeDialog", "PageSetup"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_design_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxDesignThemes": "Themes", "bxDesignSlideSize": "Slide Size",
+                          "bxDesignFormatBackground": "Format Background"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
