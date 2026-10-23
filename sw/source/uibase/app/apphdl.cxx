@@ -181,10 +181,12 @@ void SwModule::StateOther(SfxItemSet &rSet)
                 std::shared_ptr<SwMailMergeConfigItem> xConfigItem;
                 if (SwView* pView = GetActiveView())
                     xConfigItem = pView->GetMailMergeConfigItem();
-                if (!xConfigItem)
+                // A mail merge is in progress once its config item is connected to the data source:
+                // the state of the Finish entries makes one that is not (EnsureMailMergeConfigItem).
+                if (!xConfigItem || !xConfigItem->GetConnection().is()
+                    || xConfigItem->GetConnection()->isClosed())
                     rSet.DisableItem(nWhich);
-                else if (xConfigItem->GetConnection().is()
-                         && !xConfigItem->GetConnection()->isClosed())
+                else
                 {
                     bool bFirst, bLast;
                     bool bValid = xConfigItem->IsResultSetFirstLast(bFirst, bLast);

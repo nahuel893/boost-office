@@ -956,6 +956,28 @@ class NotebookbarOffice(UITestCase):
             finally:
                 self.switch_to("Default")
 
+    def test_mailings_record_buttons_stay_disabled_after_the_finish_menu_opens(self):
+        # Opening Finish & Merge asks for the state of its four entries, and that creates a mail merge config
+        # item that is not connected (apphdl.cxx, EnsureMailMergeConfigItem; its data source is the wizard's
+        # last one, the Bibliography in a new profile). That is no mail merge in progress yet: one is only once
+        # the config item is connected to its data source, so the record commands stay disabled.
+        finish = ("MailMergeCreateDocuments", "MailMergePrintDocuments", "MailMergeEmailDocuments",
+                  "MailMergeSaveDocuments")
+        records = ("MailMergeFirstEntry", "MailMergePrevEntry", "MailMergeNextEntry", "MailMergeLastEntry")
+        with self.ui_test.create_doc_in_start_center("writer"):
+            for name in finish:
+                self.dispatch_status(name)  # what the open menu asks
+            for name in records:
+                self.assertFalse(self.dispatch_enabled(name), name)
+            self.switch_to(OFFICE_UI)
+            try:
+                xBox = self.xUITest.getTopFocusWindow().getChild("bxMailingsRecordNavigation")
+                enabled = self.settle(lambda: {pos: get_state_as_dict(xBox.getChild("toolboxitem-%d" % pos))["Enabled"]
+                                               for pos in (1, 2, 4, 5)})
+                self.assertEqual({pos: "false" for pos in (1, 2, 4, 5)}, enabled)
+            finally:
+                self.switch_to("Default")
+
     def test_mailings_dropdown_and_placeholder_labels_resolve(self):
         with self.ui_test.create_doc_in_start_center("writer"):
             for url, label in ((".uno:MailingsSelectRecipientsMenu", "Select Recipients"),
