@@ -164,16 +164,67 @@ class GenRibbonTest(unittest.TestCase):
         self.assertEqual(".uno:Paste", button.find("property[@name='action-name']").text)
 
     def test_small_toolboxes_stack_in_rows_at_16px(self):
-        root = ET.fromstring(generate())
+        # a column that uses every row of its section stays in the content grid, one toolbox a row
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][0]["columns"][1].append(
+            {"id": "Brush", "style": "small-label", "items": [{"cmd": "FormatPaintbrush"}]})
+        root = ET.fromstring(generate(layout=layout))
         got = {}
-        for box_id in ("bxHomeCut", "bxHomeCopy"):
+        for box_id in ("bxHomeCut", "bxHomeCopy", "bxHomeBrush"):
             obj, packing = placed(root, box_id)
             got[box_id] = (packing.find("property[@name='left-attach']").text,
                            packing.find("property[@name='top-attach']").text,
                            obj.find("property[@name='icon_size']").text,
                            obj.find("property[@name='toolbar-style']").text)
         self.assertEqual({"bxHomeCut": ("1", "0", "1", "both-horiz"),
-                          "bxHomeCopy": ("1", "1", "1", "both-horiz")}, got)
+                          "bxHomeCopy": ("1", "1", "1", "both-horiz"),
+                          "bxHomeBrush": ("1", "2", "1", "both-horiz")}, got)
+        self.assertIsNone(root.find(".//object[@id='colHomeClipboard1']"))
+
+    def test_a_short_column_beside_a_large_toolbox_sits_in_the_top_rows(self):
+        # VclGrid drops a row in which no toolbox starts, and the large toolbox expands the rows it
+        # spans: Cut and Copy on rows 0 and 1 of a 3-row section spread over its whole height (W7b:
+        # y=62 and y=111). Word keeps two small buttons in the top two rows, so the column becomes
+        # one vertical box at the top of the section, its toolboxes as far apart as the grid's rows.
+        root = ET.fromstring(generate())
+        stack, packing = placed(root, "colHomeClipboard1")
+        self.assertEqual("GtkBox", stack.get("class"))
+        self.assertEqual(("vertical", "start", "3", "False"),
+                         tuple(stack.findtext(f"property[@name='{n}']")
+                               for n in ("orientation", "valign", "spacing", "can-focus")))
+        self.assertEqual(("1", "0", "3"), tuple(packing.findtext(f"property[@name='{n}']")
+                                                for n in ("left-attach", "top-attach", "height")))
+        children = stack.findall("child")
+        self.assertEqual(["bxHomeCut", "bxHomeCopy"], [c.find("object").get("id") for c in children])
+        self.assertEqual([("False", "True", "0"), ("False", "True", "1")],
+                         [tuple(c.findtext(f"packing/property[@name='{n}']") for n in ("expand", "fill", "position"))
+                          for c in children])
+        cut = children[0].find("object")
+        self.assertEqual(("1", "both-horiz"), (cut.findtext("property[@name='icon_size']"),
+                                               cut.findtext("property[@name='toolbar-style']")))
+        self.assertIn("colHomeClipboard1", list(g.ids_of(LAYOUT)))
+
+    def test_a_short_column_without_a_large_toolbox_stays_in_the_grid(self):
+        # no row expands there, so its toolboxes already sit in the top rows
+        root = ET.fromstring(generate())
+        _, packing = placed(root, "bxHomeFormatRow")
+        self.assertEqual(("0", "0"), tuple(packing.findtext(f"property[@name='{n}']")
+                                           for n in ("left-attach", "top-attach")))
+        self.assertIsNone(root.find(".//object[@id='colHomeFont0']"))
+
+    def test_a_section_of_large_toolboxes_only_is_unchanged(self):
+        layout = copy.deepcopy(LAYOUT)
+        layout["sections"][0]["columns"].pop()
+        root = ET.fromstring(generate(layout=layout))
+        self.assertEqual([], [o.get("id") for o in root.iter("object") if o.get("class") == "GtkBox"
+                              and (o.get("id") or "").startswith("col")])
+
+    def test_rejects_a_stacked_column_that_skips_a_row(self):
+        # a stacked column starts on the top row and leaves no row empty: there is no row to skip
+        bad = copy.deepcopy(LAYOUT)
+        bad["sections"][0]["columns"][1][1]["row"] = 2
+        with self.assertRaises(g.LayoutError):
+            g.emit_page(bad)
 
     def test_caption_and_separator_positions(self):
         # the section grid: the toolboxes' grid on row 0, the caption under it, the separator on
@@ -192,6 +243,9 @@ class GenRibbonTest(unittest.TestCase):
         root = ET.fromstring(generate())
         content = root.find(".//object[@id='gcHomeClipboard']")
         self.assertEqual({"bxHomePaste", "bxHomeCut", "bxHomeCopy"},
+                         {o.get("id") for o in content.iter("object")
+                          if o.get("class") == "sfxlo-NotebookbarToolBox"})
+        self.assertEqual({"bxHomePaste", "colHomeClipboard1"},
                          {c.find("object").get("id") for c in content.findall("child")})
         self.assertIn("gcHomeClipboard", list(g.ids_of(LAYOUT)))
 
@@ -434,6 +488,24 @@ class CaptionBaselineTest(unittest.TestCase):
                 if rules:
                     broken.append((wid, rules))
         self.assertEqual([], broken)
+
+
+class StackedColumnsTest(unittest.TestCase):
+    """The committed office .ui files stack exactly the short columns that sit beside a large toolbox
+    in a section with a row no toolbox starts in (W9b): Calc's .ui changes on purpose for this."""
+
+    EXPECTED = {
+        "calc": {"colFormulasCalculation1", "colPageLayoutSheetOptions1", "colPageLayoutSheetOptions2"},
+        "writer": {"colReferencesTableOfContents1", "colReferencesIndex1", "colReferencesAuthorities1",
+                   "colReviewProofing1", "colReviewTracking3", "colViewViews3"},
+    }
+
+    def test_each_app_stacks_its_short_columns(self):
+        for name, expected in self.EXPECTED.items():
+            root = ET.parse(office.app(name).office).getroot()
+            got = {o.get("id") for o in root.iter("object")
+                   if o.get("class") == "GtkBox" and (o.get("id") or "").startswith("col")}
+            self.assertEqual(expected, got, name)
 
 
 class RegenerateAllTest(unittest.TestCase):

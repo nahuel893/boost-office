@@ -5703,101 +5703,133 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutViewGridLines">
+                                  <object class="GtkBox" id="colPageLayoutSheetOptions1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnPageLayoutToggleSheetGrid">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutViewGridLines">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ToggleSheetGrid</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnPageLayoutToggleSheetGrid">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ToggleSheetGrid</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutPrintGridlines">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnPageLayoutPrintGridlines">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:PageLayoutPrintOption?Option:string=gridlines</property>
+                                            <property name="icon_name">cmd/sc_pagelayoutprintoption_gridlines.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutPrintGridlines">
+                                  <object class="GtkBox" id="colPageLayoutSheetOptions2">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnPageLayoutPrintGridlines">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutViewHeaders">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:PageLayoutPrintOption?Option:string=gridlines</property>
-                                        <property name="icon_name">cmd/sc_pagelayoutprintoption_gridlines.png</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnPageLayoutViewRowColumnHeaders">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ViewRowColumnHeaders</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
                                       </packing>
                                     </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutViewHeaders">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnPageLayoutViewRowColumnHeaders">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutPrintHeadings">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ViewRowColumnHeaders</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnPageLayoutPrintHeadings">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:PageLayoutPrintOption?Option:string=headings</property>
+                                            <property name="icon_name">cmd/sc_pagelayoutprintoption_headings.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">2</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxPageLayoutPrintHeadings">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnPageLayoutPrintHeadings">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:PageLayoutPrintOption?Option:string=headings</property>
-                                        <property name="icon_name">cmd/sc_pagelayoutprintoption_headings.png</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">2</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -7119,51 +7151,67 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxFormulasCalcNow">
+                                  <object class="GtkBox" id="colFormulasCalculation1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">icons</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnFormulasCalculate">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxFormulasCalcNow">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:Calculate</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">icons</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnFormulasCalculate">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:Calculate</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxFormulasCalcSheet">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">icons</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnFormulasFormulasCalculateSheet">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:FormulasCalculateSheet</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxFormulasCalcSheet">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">icons</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnFormulasFormulasCalculateSheet">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:FormulasCalculateSheet</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>

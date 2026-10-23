@@ -5754,53 +5754,69 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesAddText">
+                                  <object class="GtkBox" id="colReferencesTableOfContents1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkMenuToolButton" id="btnReferencesReferencesAddTextMenu">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesAddText">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesAddTextMenu">Add Text</property>
-                                        <property name="action-name">.uno:ReferencesAddTextMenu</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkMenuToolButton" id="btnReferencesReferencesAddTextMenu">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesAddTextMenu">Add Text</property>
+                                            <property name="action-name">.uno:ReferencesAddTextMenu</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">False</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateTable">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReferencesUpdateCurIndex">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes" context="TabbedWriter|btnReferencesUpdateCurIndex">Update Table</property>
+                                            <property name="action-name">.uno:UpdateCurIndex</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateTable">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnReferencesUpdateCurIndex">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesUpdateCurIndex">Update Table</property>
-                                        <property name="action-name">.uno:UpdateCurIndex</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -6444,52 +6460,68 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesInsertIndex">
+                                  <object class="GtkBox" id="colReferencesIndex1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnReferencesReferencesInsertIndex">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesInsertIndex">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesInsertIndex">Insert Index</property>
-                                        <property name="action-name">.uno:InsertMultiIndex</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReferencesReferencesInsertIndex">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes" context="TabbedWriter|btnReferencesReferencesInsertIndex">Insert Index</property>
+                                            <property name="action-name">.uno:InsertMultiIndex</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateIndex">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReferencesReferencesUpdateIndex">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:UpdateCurIndex</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateIndex">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnReferencesReferencesUpdateIndex">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:UpdateCurIndex</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -6597,53 +6629,69 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesInsertAuthorities">
+                                  <object class="GtkBox" id="colReferencesAuthorities1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnReferencesReferencesInsertAuthorities">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesInsertAuthorities">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ReferencesAuthorities?Action:string=insert</property>
-                                        <property name="icon_name">cmd/sc_referencesinsertauthorities.png</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReferencesReferencesInsertAuthorities">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ReferencesAuthorities?Action:string=insert</property>
+                                            <property name="icon_name">cmd/sc_referencesinsertauthorities.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateAuthorities">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReferencesReferencesUpdateAuthorities">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ReferencesAuthorities?Action:string=update</property>
+                                            <property name="icon_name">cmd/sc_referencesupdateauthorities.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReferencesUpdateAuthorities">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnReferencesReferencesUpdateAuthorities">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ReferencesAuthorities?Action:string=update</property>
-                                        <property name="icon_name">cmd/sc_referencesupdateauthorities.png</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -7708,51 +7756,67 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewThesaurus">
+                                  <object class="GtkBox" id="colReviewProofing1">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnReviewThesaurusDialog">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReviewThesaurus">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ThesaurusDialog</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReviewThesaurusDialog">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ThesaurusDialog</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReviewWordCount">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReviewWordCountDialog">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:WordCountDialog</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewWordCount">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnReviewWordCountDialog">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:WordCountDialog</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -8640,51 +8704,67 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewPreviousChange">
+                                  <object class="GtkBox" id="colReviewTracking3">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnReviewPreviousTrackedChange">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReviewPreviousChange">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:PreviousTrackedChange</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReviewPreviousTrackedChange">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:PreviousTrackedChange</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxReviewNextChange">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnReviewNextTrackedChange">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:NextTrackedChange</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">3</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewNextChange">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnReviewNextTrackedChange">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:NextTrackedChange</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">3</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -9193,53 +9273,69 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxViewOutline">
+                                  <object class="GtkBox" id="colViewViews3">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToolButton" id="btnViewOutline">
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxViewOutline">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ViewMode?Mode:string=outline</property>
-                                        <property name="icon_name">cmd/sc_viewmode_outline.png</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnViewOutline">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ViewMode?Mode:string=outline</property>
+                                            <property name="icon_name">cmd/sc_viewmode_outline.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxViewDraft">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnViewDraft">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:ViewMode?Mode:string=draft</property>
+                                            <property name="icon_name">cmd/sc_viewmode_draft.png</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="left-attach">3</property>
                                     <property name="top-attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="sfxlo-NotebookbarToolBox" id="bxViewDraft">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="toolbar-style">both-horiz</property>
-                                    <property name="show-arrow">False</property>
-                                    <property name="icon_size">1</property>
-                                    <child>
-                                      <object class="GtkToolButton" id="btnViewDraft">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="action-name">.uno:ViewMode?Mode:string=draft</property>
-                                        <property name="icon_name">cmd/sc_viewmode_draft.png</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">3</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="height">3</property>
                                   </packing>
                                 </child>
                               </object>

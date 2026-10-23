@@ -12,6 +12,13 @@ Toolboxes in a column fill rows from the top. A toolbox may set "row" to start
 lower (the next ones follow it) and "valign" (fill/start/center/end) to sit at
 one edge of its row, e.g. a combo box at the bottom of a section.
 
+VclGrid drops a row in which no toolbox starts, and a large toolbox expands the
+rows it spans. So in a section with a large toolbox and a row no toolbox starts
+in, a column of two small toolboxes would spread over the whole height. There
+each column of small toolboxes becomes one vertical box at the top of the
+section ("col" + prefix + section + column index), its toolboxes as far apart
+as the grid's rows: Word keeps two small buttons in the top two rows.
+
 A section may also have a "footer": one toolbox (same schema, but no "row")
 that spans every column on the last row above the caption. Large and medium
 toolboxes then span one row fewer, and column toolboxes must fit in the rows above it.
@@ -152,6 +159,8 @@ def ids_of(layout):
     for section in layout["sections"]:
         name = section["name"]
         yield from ("ob" + p + name, "gd" + p + name, "gc" + p + name, "lb" + p + name)
+        for col in stacked_columns(section):
+            yield f"col{p}{name}{col}"
         for box in boxes_of(section):
             yield "bx" + p + box["id"]
             for item in box["items"]:
@@ -165,6 +174,27 @@ def rows_of(column):
         row = box.get("row", row + 1)
         rows.append(row)
     return rows
+
+
+def is_large_column(column):
+    return any(box["style"] in LARGE_LIKE for box in column)
+
+
+def stacked_columns(section):
+    """Indexes of the columns of small toolboxes that become one vertical box at the section's top.
+
+    Only in a section with a large toolbox, which expands the rows it spans, and a row in which no
+    toolbox starts, which VclGrid drops: the rows left then share the whole height, and a column of
+    two small toolboxes would spread over it (W7b). Elsewhere every column stays in the grid.
+    """
+    rows = section["rows"] - ("footer" in section)
+    starts = set()
+    for column in section["columns"]:
+        starts.update([0] if is_large_column(column) else rows_of(column))
+    columns = section["columns"]
+    if not any(is_large_column(c) for c in columns) or starts >= set(range(rows)):
+        return []
+    return [col for col, column in enumerate(columns) if not is_large_column(column)]
 
 
 def validate(layout):
@@ -194,6 +224,11 @@ def validate(layout):
             placed = rows_of(column)
             if placed != sorted(set(placed)) or any(not 0 <= r < rows for r in placed):
                 raise LayoutError(f"{name}: toolbox rows {placed} do not fit {rows} rows in order")
+        for col in stacked_columns(section):
+            placed = rows_of(section["columns"][col])
+            if placed != list(range(len(placed))):
+                raise LayoutError(f"{name}: column {col} is stacked at the top, so its rows "
+                                  f"{placed} must be {list(range(len(placed)))}")
         for box in boxes_of(section):
             if box is footer and box["style"] not in set(STYLES) - set(LARGE_LIKE):
                 raise LayoutError(f"{name}: the footer must be a small toolbox")
@@ -252,7 +287,8 @@ def emit_item(w, layout, box_style, item, expand=False, root=ROOT):
     w.close("</child>")
 
 
-def emit_box(w, layout, box, col, row, large_rows, width=1, root=ROOT):
+def emit_box(w, layout, box, col, row, large_rows, width=1, root=ROOT, packing=None):
+    """A toolbox in the section's content grid, or with packing (a dict) in another container."""
     p = layout["id_prefix"]
     toolbar_style, icon_size = STYLES[box["style"]]
     large = box["style"] in LARGE_LIKE
@@ -273,12 +309,37 @@ def emit_box(w, layout, box, col, row, large_rows, width=1, root=ROOT):
     for item in box["items"]:
         emit_item(w, layout, box["style"], item, box.get("expand", False), root)
     w.close("</object>")
-    if large:
+    if packing is not None:
+        w.packing(**packing)
+    elif large:
         w.packing(left_attach=col, top_attach=0, height=large_rows)
     elif width > 1:
         w.packing(left_attach=col, top_attach=row, width=width)
     else:
         w.packing(left_attach=col, top_attach=row)
+    w.close("</child>")
+
+
+def emit_stack(w, layout, section, col, large_rows, root=ROOT):
+    """A column of small toolboxes as one vertical box at the top of the section (stacked_columns).
+
+    Its spacing is the content grid's row spacing, so its toolboxes sit where the grid's rows put
+    the toolboxes of a column that uses every row."""
+    p, column = layout["id_prefix"], section["columns"][col]
+    w.open("<child>")
+    w.open(f'<object class="GtkBox" id="col{p}{section["name"]}{col}">')
+    w.prop("visible", "True")
+    w.prop("can-focus", "False")
+    if any(box.get("expand") for box in column):
+        w.prop("hexpand", "True")
+    w.prop("valign", "start")
+    w.prop("orientation", "vertical")
+    w.prop("spacing", 3)
+    for position, box in enumerate(column):
+        emit_box(w, layout, box, col, position, large_rows, root=root,
+                 packing={"expand": "False", "fill": "True", "position": position})
+    w.close("</object>")
+    w.packing(left_attach=col, top_attach=0, height=large_rows)
     w.close("</child>")
 
 
@@ -317,7 +378,11 @@ def emit_section(w, layout, section, position, priority, root=ROOT):
         w.prop(prop_name, value)
     if expand:
         w.prop("hexpand", "True")
+    stacked = stacked_columns(section)
     for col, column in enumerate(section["columns"]):
+        if col in stacked:
+            emit_stack(w, layout, section, col, rows - ("footer" in section), root)
+            continue
         for row, box in zip(rows_of(column), column):
             emit_box(w, layout, box, col, row, rows - ("footer" in section), root=root)
     if "footer" in section:
