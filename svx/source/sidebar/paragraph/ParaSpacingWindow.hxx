@@ -86,6 +86,9 @@ protected:
     vcl::EnumContext m_aContext;
 
     DECL_LINK(ModifySpacingHdl, weld::MetricSpinButton&, void);
+
+private:
+    void SetCompactWidths();
 };
 
 class ParaLeftSpacingWindow : public ParaLRSpacingWindow

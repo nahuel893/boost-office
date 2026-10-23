@@ -26,7 +26,12 @@
 #include <svl/itempool.hxx>
 #include <svl/itemset.hxx>
 #include <tools/mapunit.hxx>
+#include <unotools/localedatawrapper.hxx>
+#include <vcl/settings.hxx>
+#include <vcl/svapp.hxx>
 #include <vcl/weld/Builder.hxx>
+
+#include <cmath>
 
 using namespace svx;
 
@@ -35,6 +40,28 @@ using namespace svx;
 #define MAX_SW                  1709400
 #define MAX_SC_SD               116220200
 #define NEGA_MAXVALUE          -10000000
+
+namespace
+{
+// Word's indent and spacing fields are narrow. A metric field takes the width of the longest value
+// of its range, and every unit or range change sets it again (weld::MetricSpinButton::
+// update_width_chars). These windows only live on toolboxes (the notebookbars; the sidebar's
+// Paragraph panel has fields of its own), which keep the size a window had when it was made, so the
+// fields get one width instead: that of a paragraph's values, "-9,99 cm" to "99,99 cm", in which
+// "0,00 cm" shows in full.
+void SetCompactWidth(SvxRelativeField& rField)
+{
+    weld::SpinButton& rSpin = rField.get_widget();
+    const unsigned int nDigits = rSpin.get_digits();
+    const sal_Int64 nNines = 10 * weld::SpinButton::Power10(nDigits) - 1; // 9,99
+    const OUString aUnit = " " + weld::MetricSpinButton::MetricToString(FieldUnit::CM);
+    const LocaleDataWrapper& rLocaleData = Application::GetSettings().GetLocaleDataWrapper();
+    const tools::Long nWidth = std::max(
+        rSpin.get_pixel_size(rLocaleData.getNum(-nNines, nDigits, true, true) + aUnit).Width(),
+        rSpin.get_pixel_size(rLocaleData.getNum(10 * nNines + 9, nDigits, true, true) + aUnit).Width());
+    rSpin.set_width_chars(static_cast<int>(std::ceil(nWidth / rSpin.get_approximate_digit_width())));
+}
+}
 
 // ParaULSpacingWindow
 
@@ -54,6 +81,8 @@ ParaULSpacingWindow::ParaULSpacingWindow(vcl::Window* pParent)
     /// set the initial values of max width
     m_xAboveSpacing->set_max(m_xAboveSpacing->normalize(MAX_DURCH), FieldUnit::CM);
     m_xBelowSpacing->set_max(m_xBelowSpacing->normalize(MAX_DURCH), FieldUnit::CM);
+    SetCompactWidth(*m_xAboveSpacing);
+    SetCompactWidth(*m_xBelowSpacing);
 }
 
 ParaULSpacingWindow::~ParaULSpacingWindow()
@@ -81,6 +110,8 @@ void ParaULSpacingWindow::SetUnit(FieldUnit eUnit)
 
     m_xAboveSpacing->set_max(m_xAboveSpacing->normalize(MAX_DURCH), MapToFieldUnit(m_eUnit));
     m_xBelowSpacing->set_max(m_xBelowSpacing->normalize(MAX_DURCH), MapToFieldUnit(m_eUnit));
+    SetCompactWidth(*m_xAboveSpacing);
+    SetCompactWidth(*m_xBelowSpacing);
 }
 
 void ParaULSpacingWindow::SetValue(const SvxULSpaceItem* pItem)
@@ -154,6 +185,7 @@ ParaLRSpacingWindow::ParaLRSpacingWindow(vcl::Window* pParent)
     m_xBeforeSpacing->set_min(NEGA_MAXVALUE, FieldUnit::MM_100TH);
     m_xAfterSpacing->set_min(NEGA_MAXVALUE, FieldUnit::MM_100TH);
     m_xFLSpacing->set_min(NEGA_MAXVALUE, FieldUnit::MM_100TH);
+    SetCompactWidths();
 }
 
 ParaLRSpacingWindow::~ParaLRSpacingWindow()
@@ -274,6 +306,7 @@ void ParaLRSpacingWindow::SetValue(SfxItemState eState, const SfxPoolItem* pStat
         m_xAfterSpacing->set_text(u""_ustr);
         m_xFLSpacing->set_text(u""_ustr);
     }
+    SetCompactWidths();
 }
 
 void ParaLRSpacingWindow::SetUnit(FieldUnit eUnit)
@@ -284,6 +317,14 @@ void ParaLRSpacingWindow::SetUnit(FieldUnit eUnit)
 
     SfxItemPool &rPool = SfxGetpApp()->GetPool();
     m_eUnit = rPool.GetMetric(SID_ATTR_PARA_LRSPACE);
+    SetCompactWidths();
+}
+
+void ParaLRSpacingWindow::SetCompactWidths()
+{
+    SetCompactWidth(*m_xBeforeSpacing);
+    SetCompactWidth(*m_xAfterSpacing);
+    SetCompactWidth(*m_xFLSpacing);
 }
 
 IMPL_LINK_NOARG(ParaLRSpacingWindow, ModifySpacingHdl, weld::MetricSpinButton&, void)
