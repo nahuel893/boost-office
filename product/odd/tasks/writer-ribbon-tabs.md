@@ -145,8 +145,9 @@ translations; T10 (a pending decision).
 | W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [x] (spin-field width moved to W9d) | afaaee16f, 0ef912ddf, 4b384a058, 559b013a0, 0322fbed1, 1e97d761f | off (ruling 10): controller spot check |
 | W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [x] (T10 moved to W9d) | 30ebef3a3, a2a701896, e33cf1b7e, 434a76e28 | off (ruling 10): controller spot check |
 | W9d | What W9b and W9c could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch, and T10 (`toolkit/source/awt/vclxmenu.cxx`) | delegated (opus: svx, sw and toolkit C++) | [x] (spin width partly, editbox.ui kept: rulings 11-12) | 2cfcb0b68, 6573da3bb, 9d91ce3f0, 3e2ac5e38, a78d8b075 | off (ruling 10): controller spot check |
-| W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
-| W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
+| W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet), with W11 | [x] | ec97f251d | passive (docs) |
+| W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet), with W10 | [x] (user gate: shown, not blocking, ruling 9) | 1c8970116, 65ad73100 | off (ruling 10): controller spot check |
+| W12 | Stock pages (Tools, Extension, contextual) get the generated pages' plain captions and alignment; preview pictures framed from the left edge | delegated (sonnet; generator, both apps) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
 | IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [x] | 2a3cb6e54 | slice ff29c3f19..1607832ca (IC1 + W8b, 599 lines): medium, budget reached; consent relayed |
@@ -349,6 +350,9 @@ The controller's rulings can be overturned by the user.
 13. **Greyed entries in context menus too (2026-10-23):** W9d's T10 fix makes every awt popup, document context
    menus included, show disabled entries greyed under Boost's default, as Office does; `DontHideDisabledEntry` =
    false restores LibreOffice's behaviour. Upstream UITests that walk context menus by position were not run.
+14. **Stock pages read as one design (2026-10-23):** the stock pages the ribbon keeps (Tools, Extension, the
+   contextual tabs, File) get the generated pages' plain captions and alignment through the generator (W12), so the
+   whole ribbon reads as one design, as in Office, and Impress inherits it.
 
 ## Progress / evidence
 
@@ -1008,9 +1012,32 @@ The controller's rulings can be overturned by the user.
   - Controller check: 650 unit tests OK; the tree clean after `gen_ribbon.py --all`; the
     Layout screenshot looked at: four fields, each showing "0,00 cm" in full.
 
+- 2026-10-23, W10 + W11 (route: delegated, sonnet, one writer for both). Commits:
+  - 1c8970116: `shot-tab.sh` read rows that included the selected tab's pill, which merged File and Home at 1366 px;
+    it reads only the label rows (y 14-31) now. The pointer click moves onto the target before pressing.
+    `product/tests/test_shot_tab.py` covers both.
+  - 65ad73100: `extras/source/toolbarmode/notebookbar_office_writer.png` (new, 321x125) and a retaken
+    `notebookbar_office.png` (Calc, plain line icons), `vcl/Package_toolbarmode.mk`, and
+    `product/tests/test_toolbarmode_pictures.py`. View > User Interface in Writer shows the Writer picture.
+  - ec97f251d: the design describes the ribbon as built, with the known differences of rulings 11-13; the drifted
+    `W:n` and `Controller.xcu:n` references were refreshed by node name.
+  - Contact sheets (outside the repository): `assets/previews/writer-ribbon-tabs-light.png`, `-dark.png`,
+    `calc-ribbon-tabs-light.png`, `-dark.png`; one strip per tab, Extension and Tools included.
+  - Visual findings: Home's style gallery clips long names (svx fixed-size previews, known); the stock Extension
+    and Tools pages (both apps) have a taller, mostly empty band and italic captions; Design's Style Set is a greyed
+    button, not a gallery (placeholder); in dark mode toggled-on buttons look pressed (expected). No clipped labels,
+    blank icons or misaligned rows elsewhere.
+  - Evidence (report: `task-W10-W11-report.md`): 650 -> 659 -> 662 unit tests OK; `vcl.build` exit 0; the tree
+    clean after `gen_ribbon.py --all`; `git show --check` clean. The 74 Writer and 72 Calc ribbon UITests were
+    counted, not re-run (no source they read changed).
+  - Controller check: 662 unit tests OK; the Writer light sheet looked at: eleven tabs,
+    one ribbon height on the built pages, plain grey line icons, Word's labels; the stock Tools page's italic
+    captions stand out. The two preview pictures start at x=96 and cut the quick access bar: W12 reframes them.
+  - Ruling 14 follows from this: W12.
+
 ## Next step
 
-W10 + W11 together (delegated, sonnet; `task-W10-W11-brief.md`): screenshot tooling, the Writer preview picture and
-a refreshed Calc one, contact sheets, and the design doc as built. Then Impress
-(`product/odd/tasks/impress-ribbon-tabs.md`, branch `feature/impress-ribbon-tabs`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
+W12: stock pages' captions and alignment, and the preview pictures' framing (delegated, sonnet;
+`task-W12-brief.md`). Then Impress (`product/odd/tasks/impress-ribbon-tabs.md`, branch
+`feature/impress-ribbon-tabs`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
 the install script (map: `task-GH1-report.md`).
