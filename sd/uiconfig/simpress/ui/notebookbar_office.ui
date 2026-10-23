@@ -4605,7 +4605,6 @@
                                           <object class="GtkToolButton" id="btnInsertInsertScreenshot">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
-                                            <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertScreenshot">Screenshot</property>
                                             <property name="action-name">.uno:InsertScreenshot</property>
                                           </object>
                                           <packing>
@@ -4794,7 +4793,6 @@
                                       <object class="GtkToolButton" id="btnInsertInsert3DModels">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsert3DModels">3D Models</property>
                                         <property name="action-name">.uno:Insert3DModels</property>
                                       </object>
                                       <packing>
@@ -4819,7 +4817,6 @@
                                       <object class="GtkToolButton" id="btnInsertInsertSmartArt">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertSmartArt">SmartArt</property>
                                         <property name="action-name">.uno:InsertSmartArt</property>
                                       </object>
                                       <packing>
@@ -4946,7 +4943,6 @@
                                       <object class="GtkMenuToolButton" id="btnInsertInsertZoomMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertZoomMenu">Zoom</property>
                                         <property name="action-name">.uno:InsertZoomMenu</property>
                                       </object>
                                       <packing>
@@ -5209,7 +5205,6 @@
                                       <object class="GtkMenuToolButton" id="btnInsertInsertTextBoxMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertTextBoxMenu">Text Box</property>
                                         <property name="action-name">.uno:InsertTextBoxMenu</property>
                                       </object>
                                       <packing>
@@ -5630,7 +5625,6 @@
                                       <object class="GtkToolButton" id="btnInsertInsertScreenRecording">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertScreenRecording">Screen Recording</property>
                                         <property name="action-name">.uno:InsertScreenRecording</property>
                                       </object>
                                       <packing>

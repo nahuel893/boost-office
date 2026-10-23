@@ -2644,6 +2644,88 @@
           <value>1</value>
         </prop>
       </node>
+      <node oor:name=".uno:InsertZoomMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Zoom</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertTextBoxMenu" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Text Box</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertScreenshot" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Screenshot</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Screenshot (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:Insert3DModels" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">3D Models</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">3D Models (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertSmartArt" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">SmartArt</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">SmartArt (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertZoom?Type:string=section" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Section Zoom</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Section Zoom (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertZoom?Type:string=slide" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Slide Zoom</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Slide Zoom (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
+      <node oor:name=".uno:InsertScreenRecording" oor:op="replace">
+        <prop oor:name="Label" oor:type="xs:string">
+          <value xml:lang="en-US">Screen Recording</value>
+        </prop>
+        <prop oor:name="TooltipLabel" oor:type="xs:string">
+          <value xml:lang="en-US">Screen Recording (not available yet)</value>
+        </prop>
+        <prop oor:name="Properties" oor:type="xs:int">
+          <value>1</value>
+        </prop>
+      </node>
     </node>
   </node>
 </oor:component-data>

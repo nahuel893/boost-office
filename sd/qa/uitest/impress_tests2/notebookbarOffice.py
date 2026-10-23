@@ -28,7 +28,9 @@ OFFICE_UI = "notebookbar_office.ui"
 IMPRESS_MODULE = "com.sun.star.presentation.PresentationDocument"
 HOME_SLOTS = (0, 1, 2, 3, 4)  # SID offsets of the Home placeholders: Section family, Convert to SmartArt,
 # Regroup, the Shape Effects family, Replace Fonts
+INSERT_SLOTS = (5, 6, 7, 8, 9)  # the Screenshot, 3D Models, SmartArt, Zoom (2 variants) and Screen Recording slots
 RESET_LAYOUT = ".uno:AssignLayout?Reset:bool=true"
+INSERT_ZOOM = ".uno:InsertZoom?Type:string="
 # a 1x1 PNG, the picture of the image context
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 
@@ -251,14 +253,35 @@ class NotebookbarOffice(UITestCase):
                           for i in range(xAcc.getAccessibleChildCount())]
         self.fail("no tab list with %d tabs in the accessibility tree" % len(TABS))
 
-    def check_home_tab_is_shown(self, document, contextual):
-        """Home has a tab on screen; `contextual` (the tab of the selected object, or None) proves the context."""
+    def check_tab_is_shown(self, document, tab, contextual):
+        """`tab` has a tab on screen; `contextual` (the tab of the selected object, or None) proves the context."""
         if contextual:
             self.wait_for(lambda: contextual in self.visible_tabs(document), contextual + " tab is not shown", 10)
         else:
-            self.wait_for(lambda: "Home" in self.visible_tabs(document), "Home tab is not shown", 10)
+            self.wait_for(lambda: tab in self.visible_tabs(document), tab + " tab is not shown", 10)
             self.assertFalse(CONTEXTUAL & set(self.visible_tabs(document)))
-        self.assertIn("Home", self.visible_tabs(document))
+        self.assertIn(tab, self.visible_tabs(document))
+
+    def check_home_tab_is_shown(self, document, contextual):
+        self.check_tab_is_shown(document, "Home", contextual)
+
+    def check_tab_in_every_context(self, document, tab):
+        """`tab` shows with nothing selected, then with a text box, a shape, a table and an image selected."""
+        self.check_tab_is_shown(document, tab, None)
+        self.add_shape(document, "com.sun.star.drawing.TextShape", "text")
+        self.wait_for(lambda: tab in self.visible_tabs(document), tab + " tab is not shown", 10)
+        self.assertIn(tab, self.visible_tabs(document))
+        self.add_shape(document, "com.sun.star.drawing.RectangleShape")
+        self.check_tab_is_shown(document, tab, "Draw")
+        self.xUITest.executeCommand(".uno:InsertTable?Columns:short=2&Rows:short=2")
+        self.check_tab_is_shown(document, tab, "Table")
+        with tempfile.TemporaryDirectory() as tmp:
+            picture = Path(tmp) / "pixel.png"
+            picture.write_bytes(PNG)
+            xGraphic = self.add_shape(document, "com.sun.star.drawing.GraphicObjectShape")
+            xGraphic.GraphicURL = picture.as_uri()
+            document.CurrentController.select(xGraphic)
+            self.check_tab_is_shown(document, tab, "Image")
 
     def add_shape(self, document, service, text=None):
         """A shape of `service` on the first slide, selected."""
@@ -563,6 +586,150 @@ class NotebookbarOffice(UITestCase):
                           "bxHomeShapeFill": "Shape Fill", "bxHomeShapeOutline": "Shape Outline",
                           "bxHomeShapeEffects": "Shape Effects", "bxHomeFind": "Find",
                           "bxHomeReplace": "Replace", "bxHomeSelect": "Select"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def insert_layout(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        return json.loads((src / "product" / "ui" / "impress_insert.json").read_text(encoding="utf-8"))
+
+    def test_insert_sections_and_toolboxes(self):
+        layout = self.insert_layout()
+        prefix = layout["id_prefix"]
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(9, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xImpressDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xImpressDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Insert")
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_video_and_audio_have_distinct_widget_ids(self):
+        # design decision 16: both buttons run .uno:InsertAVMedia, the widget commands tell them apart
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                xVideo = xImpressDoc.getChild("bxInsertVideo")
+                xAudio = xImpressDoc.getChild("bxInsertAudio")
+                got = self.settle(lambda: {"Video": get_state_as_dict(xVideo.getChild("toolboxitem-1"))["Text"],
+                                           "Audio": get_state_as_dict(xAudio.getChild("toolboxitem-1"))["Text"]})
+                self.assertEqual({"Video": "Video", "Audio": "Audio"}, got)
+                self.assertEqual("1", get_state_as_dict(xVideo)["ItemCount"])
+                self.assertEqual("1", get_state_as_dict(xAudio)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_insert_placeholders_are_disabled_and_inert(self):
+        # 5 slots: Screenshot, 3D Models, SmartArt, the Zoom family (2 variants) and Screen Recording
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in INSERT_SLOTS)
+        self.assertEqual(6, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_insert_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            expected = {
+                ("InsertZoomMenu", "insert_zoom"): [".uno:SummaryPage", INSERT_ZOOM + "section",
+                                                    INSERT_ZOOM + "slide"],
+                ("InsertTextBoxMenu", "insert_textbox"): [".uno:Text", ".uno:VerticalText"],
+                # reused from Home (I2c)
+                ("InsertShapesMenu", "home_shapes"): [
+                    ".uno:ShapesLineMenu", ".uno:BasicShapes", ".uno:SymbolShapes", ".uno:ArrowShapes",
+                    ".uno:FlowChartShapes", ".uno:CalloutShapes", ".uno:StarShapes", ".uno:ArrowsToolbox",
+                    ".uno:ConnectorToolbox", ".uno:Objects3DToolbox"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+            # Summary Zoom is real (the Summary Slide command, enabled once the slide has a title), the two
+            # other Zoom entries are placeholders; Text Box's two items are real
+            self.assertFalse(self.dispatch_enabled("SummaryPage"))  # the title placeholder is still empty
+            document.DrawPages[0].getByIndex(0).String = "Title"
+            for name in ("SummaryPage", "Text", "VerticalText"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+            for name in ("InsertZoom?Type:string=section", "InsertZoom?Type:string=slide"):
+                self.assertFalse(self.dispatch_enabled(name), name)
+
+    def test_insert_shapes_submenus_open(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            xPopup = self.menu_controller(".uno:InsertShapesMenu", "home_shapes")
+            line = next(xPopup.getItemId(pos) for pos in range(xPopup.getItemCount())
+                        if xPopup.getCommand(xPopup.getItemId(pos)) == ".uno:ShapesLineMenu")
+            xSub = xPopup.getPopupMenu(line)
+            self.assertIsNotNone(xSub, "Line has no submenu")
+            self.assertEqual([".uno:Line", ".uno:Freeline_Unfilled", ".uno:Freeline", ".uno:Bezier_Unfilled",
+                              ".uno:BezierFill", ".uno:Polygon_Unfilled", ".uno:Polygon_Diagonal_Unfilled",
+                              ".uno:Polygon_Diagonal"], self.popup_commands(xSub))
+            # the other nine entries are commands whose own controllers open a shape gallery or toolbar
+            for name in ("BasicShapes", "SymbolShapes", "ArrowShapes", "FlowChartShapes", "CalloutShapes",
+                         "StarShapes", "ArrowsToolbox", "ConnectorToolbox", "Objects3DToolbox"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_insert_dropdown_and_placeholder_labels_resolve(self):
+        with self.impress_doc():
+            for command, label in (("InsertZoomMenu", "Zoom"), ("InsertTextBoxMenu", "Text Box"),
+                                   ("InsertShapesMenu", "Shapes"), ("InsertScreenshot", "Screenshot"),
+                                   ("Insert3DModels", "3D Models"), ("InsertSmartArt", "SmartArt"),
+                                   ("InsertZoom?Type:string=section", "Section Zoom"),
+                                   ("InsertZoom?Type:string=slide", "Slide Zoom"),
+                                   ("InsertScreenRecording", "Screen Recording")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_insert_commands_that_are_real_are_enabled(self):
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            document.DrawPages[0].getByIndex(0).String = "Title"  # Summary Slide needs a titled slide
+            self.add_shape(document, "com.sun.star.drawing.TextShape", "Hello world")
+            for name in ("InsertPage", "ImportFromFile", "InsertTable", "InsertGraphic", "PhotoAlbumDialog",
+                         "Gallery", "InsertObjectChart", "SummaryPage", "HyperlinkDialog", "AnimationEffects",
+                         "InsertAnnotation", "Text", "VerticalText", "HeaderAndFooter", "FontworkGalleryFloater",
+                         "InsertDateFieldVar", "InsertPageField", "InsertObject", "InsertMath", "InsertAVMedia"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+            # Symbol (the character map) needs a text edit mode; selecting a text box is not enough
+
+    def test_insert_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxInsertNewSlide": "New Slide", "bxInsertReuseSlides": "Reuse Slides",
+                          "bxInsertTable": "Table", "bxInsertPictures": "Pictures",
+                          "bxInsertScreenshot": "Screenshot", "bxInsertPhotoAlbum": "Photo Album",
+                          "bxInsertShapes": "Shapes", "bxInsertIcons": "Icons", "bxInsertModels3D": "3D Models",
+                          "bxInsertZoom": "Zoom", "bxInsertLink": "Link", "bxInsertAction": "Action",
+                          "bxInsertComment": "Comment", "bxInsertTextBox": "Text Box",
+                          "bxInsertHeaderFooter": "Header & Footer", "bxInsertWordArt": "WordArt",
+                          "bxInsertEquation": "Equation", "bxInsertSymbol": "Symbol",
+                          "bxInsertVideo": "Video", "bxInsertAudio": "Audio",
+                          "bxInsertScreenRecording": "Screen Recording"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)

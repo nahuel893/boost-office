@@ -1806,6 +1806,34 @@
           <value>home_select</value>
         </prop>
       </node>
+      <node oor:name="InsertZoomMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertZoomMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_zoom</value>
+        </prop>
+      </node>
+      <node oor:name="InsertTextBoxMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertTextBoxMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>insert_textbox</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -4203,6 +4231,28 @@
       <node oor:name="HomeSelectMenuImpressControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:HomeSelectMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertZoomMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertZoomMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="InsertTextBoxMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:InsertTextBoxMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.presentation.PresentationDocument</value>

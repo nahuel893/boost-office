@@ -39,6 +39,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/simpress,\
 	sd/uiconfig/simpress/popupmenu/home_shapeeffects \
 	sd/uiconfig/simpress/popupmenu/home_shapes \
 	sd/uiconfig/simpress/popupmenu/home_textdirection \
+	sd/uiconfig/simpress/popupmenu/insert_textbox \
+	sd/uiconfig/simpress/popupmenu/insert_zoom \
 	sd/uiconfig/simpress/popupmenu/line \
 	sd/uiconfig/simpress/popupmenu/measure \
 	sd/uiconfig/simpress/popupmenu/media \

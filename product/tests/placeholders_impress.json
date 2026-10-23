@@ -50,17 +50,20 @@
  {
   "slot": "SID_BOOST_INSERT_SCREENSHOT",
   "offset": 5,
-  "command": "InsertScreenshot"
+  "command": "InsertScreenshot",
+  "label": "Screenshot"
  },
  {
   "slot": "SID_BOOST_INSERT_3D_MODELS",
   "offset": 6,
-  "command": "Insert3DModels"
+  "command": "Insert3DModels",
+  "label": "3D Models"
  },
  {
   "slot": "SID_BOOST_INSERT_SMARTART",
   "offset": 7,
-  "command": "InsertSmartArt"
+  "command": "InsertSmartArt",
+  "label": "SmartArt"
  },
  {
   "slot": "SID_BOOST_INSERT_ZOOM",
@@ -69,12 +72,17 @@
   "variants": [
    "Type:string=section",
    "Type:string=slide"
-  ]
+  ],
+  "variant_labels": {
+   "Type:string=section": "Section Zoom",
+   "Type:string=slide": "Slide Zoom"
+  }
  },
  {
   "slot": "SID_BOOST_INSERT_SCREEN_RECORDING",
   "offset": 9,
-  "command": "InsertScreenRecording"
+  "command": "InsertScreenRecording",
+  "label": "Screen Recording"
  },
  {
   "slot": "SID_BOOST_PAGE_LAYOUT_THEME_PART",
