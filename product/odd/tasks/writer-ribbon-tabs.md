@@ -140,14 +140,16 @@ translations; T10 (a pending decision).
 | W5a / W5b | References | as W2 | a [x], b [x] | a: b4c7dbfe7 (layout + generated), 26fa4a6d0 (code); b: 6bed2991d | a: the slice from c293641c5 (2279 lines) exceeded the lens budget at START; reviewed 26fa4a6d0 alone: medium, granted, approved, acknowledged. T9w-fit (a0c9e3c2d) stays unreviewed |
 | W6a / W6b | Mailings (new page) | as W2 | a [x], b [x] | a: 7e4cf361b (layout + generated), 604c02701 (code); b: 2e760bcaf | a: reviewed 604c02701 alone (623 lines): medium, granted, approved, acknowledged |
 | W7a / W7b | Review | as W2 | a [x], b [x] | a: 820baee29 (layout + generated), 6f24be2b0 (code); b: a22437b09, e0108c293 (fit), 3942ac2b9 (test fix, controller) | a: reviewed 6f24be2b0 alone (880 lines): medium, granted, approved, acknowledged; b: medium, under budget (pending in slice from 6f24be2b0) |
-| W8a / W8b | View and Help (new page) | as W2 | a [x], b [ ] | a: 027e8f459 (layout + generated), ff29c3f19 (code) | a: ff29c3f19 alone (992 lines): medium; declined by the user (writer self-check + controller spot check) |
-| W9 | Polish across tabs: caption baseline, collapse order at 1600/1366, parked minors; the per-app accent (approved) | delegated (opus: accent C++ in vcl and sfx2) | [ ] | | |
+| W8a / W8b | View and Help (new page) | as W2 | a [x], b [x] | a: 027e8f459 (layout + generated), ff29c3f19 (code); b: 1607832ca | a: ff29c3f19 alone (992 lines): medium; declined by the user (writer self-check + controller spot check); b: with IC1, see IC1 |
+| W9a | The per-app tab accent (design 3.4): Writer Word blue, Calc green | delegated (opus: C++ in vcl and sfx2) | [ ] | | |
+| W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [ ] | | |
+| W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
-| IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [ ] | | |
-| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu; built in W9 | [ ] | | |
+| IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [x] | 2a3cb6e54 | slice ff29c3f19..1607832ca (IC1 + W8b, 599 lines): medium, budget reached; consent relayed |
+| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu; built in W9c | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
 Why this shape: the brief's shape, with W0 split in two (about 730 lines in one task would mix the shared
@@ -873,6 +875,28 @@ The controller's rulings can be overturned by the user.
     scratchpad before the answer was applied, so the controller took a fresh consent envelope for the same
     target and ran its decline invocation.
 
+- 2026-10-22/23, W8b and IC1 (route: delegated, sonnet). The controller stopped W8b when the user rejected the icon
+  fills (ruling 8), then resumed it with Amendment 1: IC1 first, then View and Help.
+  - 2a3cb6e54 (IC1): every `fill` removed from the manifest (231 entries); `test_icons.py` now pins "no fill" and
+    checks the paste icon has no yellow left. RED: "231 entries still have a fill"; GREEN after the removal. The
+    worker deleted `test_cells_are_filled_up_to_their_thin_lines`, which only tested the fill reaching the table's
+    thin lines. The renderer keeps its fill support, unused.
+  - 1607832ca (W8b): 15 new Fluent entries, none custom and none filled; nine View controls got an explicit icon
+    (six placeholders, and the three side-by-side controls that reuse Calc's entries).
+  - Evidence (report: `task-W8b-report.md`): 626 -> 625 (IC1) -> 629 (W8b) unit tests OK; build, install,
+    `check-ui.sh`, `sw.build` and one View UITest pass; Calc's `.ui` unchanged.
+  - Fit: View ends at x=1688 (232 px spare); at 1600 and 1366 Macros, then Window, collapse. Help fits everywhere.
+    Ribbon height matches Home.
+  - Menus: a click on Macros opens Run Macro and Edit Macros; Switch Windows lists the one open document.
+  - Style screenshots (`w8b/`): Calc Home and Insert, Writer Home, Insert, Layout, Mailings, Review, View and Help,
+    light and dark. The controller looked at Calc Home, Mailings, Review and View: one plain line style in both
+    apps, color only in badges. No icon reads badly without its fill.
+  - Concerns: `shot-tab.sh` finds 10 of 11 tab labels at 1366 once Help exists (the worker clicked through
+    `SHOT_AFTER`); a `SHOT_AFTER` click needs a `move` first. Both are dev tooling, for W11.
+  - Controller check: 629 OK, the tree is clean after `gen_ribbon.py --all`, no process left.
+  - RDD for ff29c3f19..1607832ca (599 lines): medium, budget reached; consent relayed while W9a runs.
+
 ## Next step
 
-W8b: View and Help, icons, 1920 fit and screenshots (delegated, sonnet). Brief: `task-W8b-brief.md`.
+W9a: the per-app tab accent (delegated, opus). Brief: `task-W9a-brief.md`. Then W9b and W9c (briefs written).
+In parallel, read-only: ID1, the Impress design and plan drafts (`task-ID1-brief.md`).
