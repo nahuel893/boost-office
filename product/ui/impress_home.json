@@ -1,0 +1,111 @@
+{
+  "page": "Home Tab",
+  "id_prefix": "Home",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu Home"],
+  "sections": [
+    {"name": "Undo", "caption": "Undo", "rows": 2, "columns": [
+      [
+        {"id": "Undo", "style": "small", "items": [
+          {"cmd": "Undo", "kind": "split", "office_label": "Undo"}
+        ]},
+        {"id": "Redo", "style": "small", "items": [
+          {"cmd": "Redo", "kind": "split", "office_label": "Redo"}
+        ]}
+      ]
+    ]},
+    {"name": "Clipboard", "caption": "Clipboard", "rows": 3, "columns": [
+      [
+        {"id": "Paste", "style": "large", "items": [
+          {"cmd": "Paste", "kind": "split", "office_label": "Paste"}
+        ]}
+      ],
+      [
+        {"id": "Cut", "style": "small", "items": [
+          {"cmd": "Cut", "office_label": "Cut"}
+        ]},
+        {"id": "Copy", "style": "small", "items": [
+          {"cmd": "Copy", "office_label": "Copy"}
+        ]},
+        {"id": "FormatPaintbrush", "style": "small", "items": [
+          {"cmd": "FormatPaintbrush", "office_label": "Format Painter"}
+        ]}
+      ]
+    ]},
+    {"name": "Slides", "caption": "Slides", "rows": 3, "columns": [
+      [
+        {"id": "NewSlide", "style": "large", "items": [
+          {"cmd": "InsertPage", "kind": "split", "office_label": "New Slide"}
+        ]}
+      ],
+      [
+        {"id": "ReuseSlides", "style": "large", "items": [
+          {"cmd": "ImportSlideFromFile", "office_label": "Reuse Slides"}
+        ]}
+      ],
+      [
+        {"id": "Layout", "style": "small-label", "items": [
+          {"cmd": "AssignLayout", "kind": "split", "office_label": "Layout"}
+        ]},
+        {"id": "Reset", "style": "small-label", "items": [
+          {"cmd": "ResetLayout", "action": ".uno:AssignLayout?Reset:bool=true",
+           "icon": "cmd/sc_assignlayout.png", "office_label": "Reset"}
+        ]},
+        {"id": "Section", "style": "small-label", "items": [
+          {"cmd": "HomeSectionMenu", "kind": "split", "office_label": "Section"}
+        ]}
+      ]
+    ]},
+    {"name": "Font", "caption": "Font", "rows": 2, "columns": [
+      [
+        {"id": "FontRow", "style": "small", "items": [
+          {"cmd": "CharFontName", "office_label": "Font"},
+          {"cmd": "FontHeight", "office_label": "Font Size"},
+          {"cmd": "Grow", "office_label": "Increase Font Size"},
+          {"cmd": "Shrink", "office_label": "Decrease Font Size"},
+          {"cmd": "SetDefault", "office_label": "Clear All Formatting"}
+        ]},
+        {"id": "FormatRow", "style": "small", "items": [
+          {"cmd": "Bold", "office_label": "Bold"},
+          {"cmd": "Italic", "office_label": "Italic"},
+          {"cmd": "Underline", "kind": "split", "office_label": "Underline"},
+          {"cmd": "Shadowed", "office_label": "Text Shadow"},
+          {"cmd": "Strikeout", "office_label": "Strikethrough"},
+          {"cmd": "Spacing", "kind": "split", "office_label": "Character Spacing"},
+          {"cmd": "HomeChangeCaseMenu", "kind": "split", "office_label": "Change Case"},
+          {"cmd": "CharBackColor", "kind": "split", "office_label": "Highlight"},
+          {"cmd": "Color", "kind": "split", "office_label": "Font Color"}
+        ]}
+      ]
+    ]},
+    {"name": "Paragraph", "caption": "Paragraph", "rows": 3, "columns": [
+      [
+        {"id": "ListRow", "style": "small", "items": [
+          {"cmd": "DefaultBullet", "kind": "split", "office_label": "Bullets"},
+          {"cmd": "DefaultNumbering", "kind": "split", "office_label": "Numbering"},
+          {"cmd": "OutlineLeft", "office_label": "Decrease List Level"},
+          {"cmd": "OutlineRight", "office_label": "Increase List Level"},
+          {"cmd": "LineSpacing", "kind": "split", "office_label": "Line Spacing"}
+        ]},
+        {"id": "AlignRow", "style": "small", "items": [
+          {"cmd": "LeftPara", "office_label": "Align Left"},
+          {"cmd": "CenterPara", "office_label": "Center"},
+          {"cmd": "RightPara", "office_label": "Align Right"},
+          {"cmd": "JustifyPara", "office_label": "Justify"},
+          {"cmd": "HomeColumnsMenu", "kind": "split", "office_label": "Add or Remove Columns"}
+        ]}
+      ],
+      [
+        {"id": "TextDirection", "style": "small-label", "items": [
+          {"cmd": "HomeTextDirectionMenu", "kind": "split", "office_label": "Text Direction"}
+        ]},
+        {"id": "AlignText", "style": "small-label", "items": [
+          {"cmd": "HomeAlignTextMenu", "kind": "split", "office_label": "Align Text"}
+        ]},
+        {"id": "ConvertToSmartArt", "style": "small-label", "items": [
+          {"cmd": "HomeConvertToSmartArt", "office_label": "Convert to SmartArt"}
+        ]}
+      ]
+    ]}
+  ]
+}
