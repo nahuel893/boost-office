@@ -148,7 +148,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I0a | Generator and test tooling for three apps; Impress office `.ui` = stock + tab operations; registration; suppressions; unique-id test | delegated (opus: shared code, Calc and Writer byte-identical) | [x] | 987d57ed7 (generated), 57a17c72f (code) | off (ruling 12): controller spot check |
 | I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts); shot-tab and the office.sh fix inline (controller) | [x] | 880e4cd87, 085cab01e, ee1b573e9 | off (ruling 12): controller spot check |
 | I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | f7c63b9f6 | off (ruling 12): controller spot check |
-| I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [ ] | | |
+| I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [x] (Columns: fallback, ruling 19) | e7d5a89ce (layout + generated), 64b7a1062 (code) | off (ruling 12): controller spot check |
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [ ] | | |
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [ ] | | |
 | I3a / I3b | Insert | as I2a / I2b | [ ] | | |
@@ -371,6 +371,14 @@ Controller rulings (2026-10-23):
     and decision 23 ("first") are corrected in I10. Draw's `GraphicViewShellBase` inherits `ViewShellBase`'s slot
     table, so in Draw the 24 commands answer as known and disabled, like the existing Impress-only
     `.uno:LeftPaneImpress`; nothing visible changes in Draw.
+18. **Builds yield to the user's machine (2026-10-23):** the user plays games on this machine while the feature
+    runs (available memory about 3.8 GB, swap in use). Every worker builds with `PARALLELISM=2` and starts a build,
+    UITest or screenshot only with at least 2500 MB available, waiting otherwise.
+19. **Columns falls back to Text Attributes (I2a):** decision 14's gate failed: `SDRATTR_TEXTCOLUMNS_NUMBER` has slot
+    id 0 (`svx/source/svdraw/svdattr.cxx:440`), so `.uno:TextColumnsNumber` with an argument never reaches the
+    shape. The Columns menu holds only `.uno:TextAttributes` ("Text Attributes..."), the three column variants are
+    gone, and a UITest pins the failure so it flags if the slot ever gets a mapping. One, Two and Three Columns as
+    real commands are later C++ work (a slot mapping in svx), outside this feature.
 
 ## Progress / evidence
 
@@ -434,6 +442,23 @@ Controller rulings (2026-10-23):
   - Rulings 16-17 record the two deviations from the brief and the design.
   - Controller check: 710 unit tests OK; the tree clean after `gen_ribbon.py --all`.
 
+- 2026-10-23, I2a (route: delegated, sonnet). Commits e7d5a89ce (`impress_home.json`, 111 lines, and the
+  regenerated `.ui` and suppressions: 3 files, +1128/-1117) and 64b7a1062 (5 popups `home_*.xml`, 10 Controller.xcu
+  nodes, labels in `DrawImpressCommands.xcu`, `test_impress_home_ui.py`, 10 UITests).
+  - Gates: decision 13 (Reset) passes (a moved title placeholder goes back; the `?Reset` URL gets no controller; it
+    passed at RED too, since the stock `.uno:AssignLayout` re-applies the layout); decision 19 passes (New Slide's
+    popup has Duplicate, Layout's has Reset Slide Layout, read through the accessible "Toggle Popup" action);
+    decision 14 fails: ruling 19.
+  - Outside the surface, accepted: `product/tests/test_commands.py` counts all Controller.xcu nodes against
+    `controller_nodes(app="writer")`; it now leaves out Impress-suffixed nodes (332 != 322 otherwise).
+  - Until I2c the Home page shows five sections, so the stock Search, Find bar and Start from First Slide buttons are
+    off it for now. Reset reuses the Layout icon and Convert to SmartArt has none: I2b.
+  - Evidence (report: `task-I2a-report.md`): 710 -> 710 (commit 1) -> 738 OK; 13 UITests pass one at a time (two
+    RED runs overlapped by mistake, the GREEN runs were single); `sd.build officecfg.build postprocess.build` exit 0;
+    `check-ui.sh` 0 new warnings or fatals; the six Calc and Writer sha256 values unchanged; `git show --check` clean.
+  - Controller check: 738 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice
+    left; no `.superpowers` file tracked.
+
 ## Next step
 
-I2a (delegated, sonnet; brief `task-I2a-brief.md`): Home part 1 (Undo, Clipboard, Slides, Font, Paragraph).
+I2c (delegated, sonnet; brief `task-I2c-brief.md`): Home part 2 (Drawing, Editing). Then I2b (icons, fit).
