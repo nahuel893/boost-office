@@ -106,6 +106,68 @@
           {"cmd": "HomeConvertToSmartArt", "office_label": "Convert to SmartArt"}
         ]}
       ]
+    ]},
+    {"name": "Drawing", "caption": "Drawing", "rows": 3, "columns": [
+      [
+        {"id": "ShapesRow1", "style": "small", "items": [
+          {"cmd": "Text", "office_label": "Text Box"},
+          {"cmd": "Line", "office_label": "Line"},
+          {"cmd": "BasicShapes.rectangle", "office_label": "Rectangle"},
+          {"cmd": "BasicShapes.ellipse", "office_label": "Oval"},
+          {"cmd": "ArrowsToolbox", "office_label": "Lines and Arrows"},
+          {"cmd": "ConnectorToolbox", "office_label": "Connectors"}
+        ]},
+        {"id": "ShapesRow2", "style": "small", "items": [
+          {"cmd": "BasicShapes", "office_label": "Basic Shapes"},
+          {"cmd": "SymbolShapes", "office_label": "Symbol Shapes"},
+          {"cmd": "ArrowShapes", "office_label": "Block Arrows"},
+          {"cmd": "FlowChartShapes", "office_label": "Flowchart"},
+          {"cmd": "CalloutShapes", "office_label": "Callouts"},
+          {"cmd": "StarShapes", "office_label": "Stars and Banners"}
+        ]},
+        {"id": "ShapesRow3", "style": "small", "items": [
+          {"cmd": "LineToolbox", "office_label": "Curves and Polygons"},
+          {"cmd": "Polygon_Unfilled", "office_label": "Freeform: Shape"},
+          {"cmd": "Bezier_Unfilled", "office_label": "Curve"},
+          {"cmd": "DrawCaption", "office_label": "Speech Bubble"},
+          {"cmd": "Objects3DToolbox", "office_label": "3D Objects"},
+          {"cmd": "InsertShapesMenu", "kind": "split", "office_label": "More Shapes"}
+        ]}
+      ],
+      [
+        {"id": "Arrange", "style": "large", "items": [
+          {"cmd": "HomeArrangeMenu", "kind": "split", "office_label": "Arrange"}
+        ]}
+      ],
+      [
+        {"id": "QuickStyles", "style": "large", "items": [
+          {"cmd": "SidebarDeck.StyleListDeck", "office_label": "Quick Styles"}
+        ]}
+      ],
+      [
+        {"id": "ShapeFill", "style": "small-label", "items": [
+          {"cmd": "FillColor", "kind": "split", "office_label": "Shape Fill"}
+        ]},
+        {"id": "ShapeOutline", "style": "small-label", "items": [
+          {"cmd": "XLineColor", "kind": "split", "office_label": "Shape Outline"}
+        ]},
+        {"id": "ShapeEffects", "style": "small-label", "items": [
+          {"cmd": "HomeShapeEffectsMenu", "kind": "split", "office_label": "Shape Effects"}
+        ]}
+      ]
+    ]},
+    {"name": "Editing", "caption": "Editing", "rows": 3, "columns": [
+      [
+        {"id": "Find", "style": "small-label", "items": [
+          {"cmd": "HomeFindMenu", "kind": "split", "office_label": "Find"}
+        ]},
+        {"id": "Replace", "style": "small-label", "items": [
+          {"cmd": "HomeReplaceMenu", "kind": "split", "office_label": "Replace"}
+        ]},
+        {"id": "Select", "style": "small-label", "items": [
+          {"cmd": "HomeSelectMenu", "kind": "split", "office_label": "Select"}
+        ]}
+      ]
     ]}
   ]
 }
