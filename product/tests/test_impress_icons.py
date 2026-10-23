@@ -150,3 +150,21 @@ class ImpressDesignIconsTest(_ImpressTabIcons, unittest.TestCase):
         background = icons.get("btnDesignSidebarDeck.PropertyDeck")
         self.assertEqual("cmd/32/sidebardeck.sdmasterpagesdeck.png", themes)
         self.assertEqual("cmd/32/sidebardeck.propertydeck.png", background)
+
+    def test_the_variants_menu_items_have_icons_in_both_themes(self):
+        # The popup's items draw their command image: the `?` placeholders look it up by the canonical name
+        # CommandImageResolver derives from the URL (`:` and `?` escaped, lower case), so each needs an alias.
+        popup = ROOT / "sd/uiconfig/simpress/popupmenu/design_variants.xml"
+        urls = [e.get("{http://openoffice.org/2001/menu}id") for e in ET.parse(popup).iter()
+                if e.get("{http://openoffice.org/2001/menu}id")]
+        self.assertEqual(4, len(urls))
+        missing = []
+        for url in urls:
+            name = url.removeprefix(".uno:").replace(":", "%3a").replace("?", "%3f").lower()
+            for theme in self.zips:
+                names, links = self.members(theme)
+                for prefix in ("cmd/sc_", "cmd/lc_"):
+                    member = f"{prefix}{name}.png"
+                    if member not in names and links.get(member) not in names:
+                        missing.append(f"{theme}:{member}")
+        self.assertEqual([], missing)
