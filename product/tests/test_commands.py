@@ -4,6 +4,7 @@
 """Command labels resolve the way LibreOffice resolves them for Calc: CalcCommands, then Generic."""
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from product.tests import commands
@@ -46,6 +47,25 @@ class CommandLookupTest(unittest.TestCase):
         labels = commands.commands_xcu()
         self.assertEqual("Print Titles", labels[".uno:PageLayoutPrintTitles"])
         self.assertIn(".uno:Open", labels)  # a Generic command
+
+
+class ControllerNodesTest(unittest.TestCase):
+
+    def test_nodes_that_share_a_name_are_all_kept(self):
+        xcu = XCU % ("Controller", "".join(
+            '<node oor:name="%s"><prop oor:name="Command"><value>%s</value></prop></node>' % pair
+            for pair in (("c1", ".uno:A"), ("c1", ".uno:B"), ("c1", ".uno:C"), ("d", ".uno:D"))))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "Controller.xcu"
+            path.write_text(xcu, encoding="utf-8")
+            nodes = commands.controller_nodes(path)
+        self.assertEqual({"c1": ".uno:A", "c1#2": ".uno:B", "c1#3": ".uno:C", "d": ".uno:D"},
+                         {name: props["Command"] for name, props in nodes.items()})
+
+    def test_every_node_of_the_real_file_that_names_a_command_is_kept(self):
+        named = [n for n in ET.parse(commands.UI_DIR / "Controller.xcu").iter("node")
+                 if any(p.get(commands.OOR + "name") == "Command" for p in n.findall("prop"))]
+        self.assertEqual(len(named), len(commands.controller_nodes(app="writer")))
 
 
 if __name__ == "__main__":

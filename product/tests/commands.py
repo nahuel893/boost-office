@@ -57,11 +57,17 @@ def controller_nodes(controller_xcu=UI_DIR / "Controller.xcu", app="calc"):
 
     A Writer node that shares its command with Calc carries a "Writer" suffix (InsertShapesMenuWriterPopup).
     Those nodes are left out unless app is "writer", so Calc's one-node-per-command checks keep their meaning.
+    Several modules can hold a node of one name (the stock "c1", "c5" language nodes, DistributeControl): the
+    first keeps the plain name, later ones get "#2", "#3", ... so no node is lost.
     """
     nodes = {}
     for node in ET.parse(controller_xcu).iter("node"):
         props = {p.get(OOR + "name"): p.findtext("value") for p in node.findall("prop")}
         name = node.get(OOR + "name")
         if "Command" in props and (app == "writer" or not name.endswith(WRITER_SUFFIX)):
-            nodes[name] = props
+            key, count = name, 1
+            while key in nodes:
+                count += 1
+                key = "%s#%d" % (name, count)
+            nodes[key] = props
     return nodes
