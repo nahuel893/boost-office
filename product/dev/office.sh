@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Open the dev build's Calc or Writer in one step, with a chosen look.
-# Usage: office.sh calc|writer [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
+# Open the dev build's Calc, Writer or Impress in one step, with a chosen look.
+# Usage: office.sh calc|writer|impress [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
 #   light         Tabbed Office, Boost icons, "Boost Light" scheme (white)  [default]
 #   dark          Tabbed Office, Boost dark icons, "Boost Dark" scheme
 #   tabbed        LibreOffice's original Tabbed ribbon, dark, no product theme
@@ -8,10 +8,12 @@
 #   compact       LibreOffice's Tabbed Compact ribbon, dark, no product theme
 #   --font        UI font: system (the desktop's), or bundled selawik or inter (any mode). Without it,
 #                 light and dark use inter; tabbed, tabbed-light and compact use system.
-# The profile is rewritten on each run. Each app has its own default, so that running Writer never
-# rewrites the Calc profile: calc /mnt/games/libreoffice/try-profile, writer
-# /mnt/games/libreoffice/try-profile-writer. Missing icon zips and the color scheme extension are
-# built and installed first. calc.sh is this script for Calc (it sets OFFICE_USAGE to its own name).
+# The profile is rewritten on each run. Each app has its own default, so that running one app never
+# rewrites another's profile: calc /mnt/games/libreoffice/try-profile, writer
+# /mnt/games/libreoffice/try-profile-writer, impress /mnt/games/libreoffice/try-profile-impress
+# (its profile turns the template dialog off, so a blank presentation opens). Missing icon zips and
+# the color scheme extension are built and installed first. calc.sh is this script for Calc (it sets
+# OFFICE_USAGE to its own name).
 set -euo pipefail
 core="$(cd "$(dirname "$0")/../.." && pwd)"
 mode=light
@@ -19,13 +21,14 @@ font=
 dry=0
 
 usage() {
-    echo "usage: ${OFFICE_USAGE:-office.sh calc|writer} [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2
+    echo "usage: ${OFFICE_USAGE:-office.sh calc|writer|impress} [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2
     exit 2
 }
 
 case "${1:-}" in
 calc)   app=calc;   App=Calc;   profile=/mnt/games/libreoffice/try-profile ;;
 writer) app=writer; App=Writer; profile=/mnt/games/libreoffice/try-profile-writer ;;
+impress) app=impress; App=Impress; profile=/mnt/games/libreoffice/try-profile-impress ;;
 *)      usage ;;
 esac
 shift

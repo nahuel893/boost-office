@@ -39,7 +39,7 @@ public:
     OUString GetSelectedMode();
     static std::optional<vcl::EnumContext::Application> GetCurrentAppEnum();
     static OUString GetCurrentApp();
-    /// Whether the app has the Tabbed Office mode (notebookbar_office.ui): Calc and Writer.
+    /// Whether the app has the Tabbed Office mode (notebookbar_office.ui): Calc, Writer and Impress.
     static bool HasTabbedOffice(std::u16string_view sApp);
     /// Map notebookbar_office.ui to the regular Tabbed mode in an app without Tabbed Office.
     static OUString GetModeForApp(const OUString& rMode, std::u16string_view sApp);

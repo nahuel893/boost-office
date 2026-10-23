@@ -28,7 +28,7 @@ class UitestScriptTest(unittest.TestCase):
         shutil.copy(SCRIPT, dev / "uitest.sh")
         (dev / "lo-make.sh").write_text(FAKE_MAKE, encoding="utf-8")
         (dev / "lo-make.sh").chmod(0o755)
-        for target in ("calc_tests", "writer_tests8"):
+        for target in ("calc_tests", "writer_tests8", "impress_tests2"):
             log = self.tmp / "workdir/UITest" / target / "done.log"
             log.parent.mkdir(parents=True)
             log.write_text("log of %s\n" % target, encoding="utf-8")
@@ -66,11 +66,24 @@ class UitestScriptTest(unittest.TestCase):
         out = self.run_script("m.C.test_a", status=1)
         self.assertIn("log of calc_tests", out.stdout)
 
+    def test_app_impress_runs_impress_tests2(self):
+        out = self.run_script("--app", "impress", "notebookbarOffice.NotebookbarOffice.test_a")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertEqual(["UITest_impress_tests2 UITEST_TEST_NAME=notebookbarOffice.NotebookbarOffice.test_a"],
+                         self.make_calls())
+
+    def test_an_impress_failure_shows_the_impress_log(self):
+        out = self.run_script("--app", "impress", "m.C.test_a", status=1)
+        self.assertEqual(1, out.returncode)
+        self.assertIn("log of impress_tests2", out.stdout)
+        self.assertNotIn("log of calc_tests", out.stdout)
+        self.assertNotIn("log of writer_tests8", out.stdout)
+
     def test_unknown_app_is_rejected_before_any_build(self):
-        for args in (("--app", "impress", "m.C.test_a"), ("--app",)):
+        for args in (("--app", "draw", "m.C.test_a"), ("--app",)):
             out = self.run_script(*args)
             self.assertEqual(2, out.returncode, args)
-            self.assertIn("usage", out.stderr.lower(), args)
+            self.assertIn("usage: uitest.sh [--app calc|writer|impress]", out.stderr, args)
         self.assertEqual([], self.make_calls())
 
 

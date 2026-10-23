@@ -14,10 +14,14 @@ TOOLBAR_MODE = "/org.openoffice.Office.UI.ToolbarMode"
 APPLICATION = TOOLBAR_MODE + "/Applications/org.openoffice.Office.UI.ToolbarMode:Application['%s']"
 CALC_APP = APPLICATION % "Calc"
 WRITER_APP = APPLICATION % "Writer"
+IMPRESS_APP = APPLICATION % "Impress"
 # app choice -> its ToolbarMode application name (Applications/<name>, Active<name>).
-APPS = {"calc": "Calc", "writer": "Writer"}
+APPS = {"calc": "Calc", "writer": "Writer", "impress": "Impress"}
 APPEARANCE = "/org.openoffice.Office.Common/Appearance"
 MISC = "/org.openoffice.Office.Common/Misc"
+# Impress's Misc/NewDoc/AutoPilot (Impress.xcs, default true) opens the template dialog on a new
+# presentation (sd/source/ui/app/optsitem.cxx).
+IMPRESS_NEWDOC = "/org.openoffice.Office.Impress/Misc/NewDoc"
 
 # ui choice -> (Applications/<app>/Active, Active<app>). Active holds the mode's
 # CommandArg (sfx2/source/appl/appserv.cxx:1015); Active<app> names the .ui file.
@@ -52,9 +56,11 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system
         items.append((MISC, "NotebookbarColorTransparency", str(tint)))
     if UI_FONTS[font]:
         items.append((UI_FONT, "FamilyName", UI_FONTS[font]))
-    # Keep screenshots free of first-start and tip dialogs.
+    # Keep screenshots free of first-start and tip dialogs, and of Impress's template dialog.
     items.append((MISC, "FirstRun", "false"))
     items.append((MISC, "ShowTipOfTheDay", "false"))
+    if app == "impress":
+        items.append((IMPRESS_NEWDOC, "AutoPilot", "false"))
     return items
 
 

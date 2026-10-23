@@ -96,7 +96,65 @@ class WriterProfileTest(unittest.TestCase):
 
     def test_unknown_app_is_refused(self):
         with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
-            profile.main(["--app", "impress", "--ui", "office", "--appearance", "light", "--profile", "/nonexistent"])
+            profile.main(["--app", "draw", "--ui", "office", "--appearance", "light", "--profile", "/nonexistent"])
+
+
+IMPRESS_NEWDOC = "/org.openoffice.Office.Impress/Misc/NewDoc"
+
+
+class ImpressProfileTest(unittest.TestCase):
+
+    def test_impress_office_sets_the_impress_mode_and_file(self):
+        p = props(profile.render(profile.build_items(
+            "office", "light", icons="boost", scheme="Boost Light", tint=255, app="impress")))
+        self.assertEqual(p[(profile.IMPRESS_APP, "Active")], "notebookbar_office.ui")
+        self.assertEqual(p[(profile.TOOLBAR_MODE, "ActiveImpress")], "notebookbar_office.ui")
+        self.assertEqual(p[(SCHEME, "CurrentColorScheme")], "Boost Light")
+
+    def test_impress_writes_no_calc_or_writer_mode(self):
+        p = props(profile.render(profile.build_items("office", "dark", app="impress")))
+        for node, active in ((profile.CALC_APP, "ActiveCalc"), (profile.WRITER_APP, "ActiveWriter")):
+            self.assertNotIn((node, "Active"), p)
+            self.assertNotIn((profile.TOOLBAR_MODE, active), p)
+
+    def test_impress_default_ui_sets_no_notebookbar_file(self):
+        p = props(profile.render(profile.build_items("default", "light", app="impress")))
+        self.assertEqual(p[(profile.IMPRESS_APP, "Active")], "Default")
+        self.assertNotIn((profile.TOOLBAR_MODE, "ActiveImpress"), p)
+
+    def test_the_impress_node_is_the_impress_application(self):
+        self.assertEqual(profile.TOOLBAR_MODE + "/Applications/org.openoffice.Office.UI.ToolbarMode:"
+                         "Application['Impress']", profile.IMPRESS_APP)
+
+    def test_impress_turns_the_template_dialog_off_in_every_mode(self):
+        # design decision 37: a new presentation opens without the template dialog
+        for ui in ("default", "compact", "tabbed", "office"):
+            p = props(profile.render(profile.build_items(ui, "light", app="impress")))
+            self.assertEqual("false", p[(IMPRESS_NEWDOC, "AutoPilot")], ui)
+
+    def test_calc_and_writer_get_no_template_dialog_item(self):
+        for app in ("calc", "writer"):
+            p = props(profile.render(profile.build_items("office", "light", app=app)))
+            self.assertNotIn((IMPRESS_NEWDOC, "AutoPilot"), p, app)
+
+    def test_the_template_dialog_item_is_the_impress_schema_property(self):
+        # Misc/NewDoc/AutoPilot of org.openoffice.Office.Impress, a boolean that defaults to true
+        schema = ET.parse(Path(__file__).resolve().parents[2]
+                          / "officecfg/registry/schema/org/openoffice/Office/Impress.xcs")
+        prop = schema.find("component/group[@{0}name='Misc']/group[@{0}name='NewDoc']"
+                           "/prop[@{0}name='AutoPilot']".format(OOR))
+        self.assertIsNotNone(prop)
+        self.assertEqual("xs:boolean", prop.get(OOR + "type"))
+        self.assertEqual("true", prop.findtext("value"))
+
+    def test_main_writes_the_impress_profile(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with contextlib.redirect_stdout(io.StringIO()):
+                profile.main(["--app", "impress", "--ui", "office", "--appearance", "light", "--profile", tmp])
+            p = props((Path(tmp) / "user/registrymodifications.xcu").read_text(encoding="utf-8"))
+            self.assertEqual(p[(profile.IMPRESS_APP, "Active")], "notebookbar_office.ui")
+            self.assertEqual(p[(profile.TOOLBAR_MODE, "ActiveImpress")], "notebookbar_office.ui")
+            self.assertEqual("false", p[(IMPRESS_NEWDOC, "AutoPilot")])
 
 
 class MenuDefaultsTest(unittest.TestCase):

@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Writer's Tabbed Office mode: its ToolbarMode node and the cui picker that offers it."""
+"""The Tabbed Office mode of Writer and Impress: their ToolbarMode nodes and the cui picker that offers it."""
 import re
 import unittest
 from pathlib import Path
@@ -49,9 +49,27 @@ class WriterToolbarModeTest(unittest.TestCase):
         positions = [m["MenuPosition"] for name, m in modes("Writer").items() if name != "TabbedOffice"]
         self.assertNotIn("9", positions)
 
-    def test_impress_and_draw_have_no_tabbed_office(self):
-        for app in ("Impress", "Draw"):
-            self.assertNotIn("TabbedOffice", modes(app), app)
+    def test_draw_has_no_tabbed_office(self):
+        # design decision 36: Draw shares sd but keeps its own notebookbar and no Tabbed Office mode
+        self.assertNotIn("TabbedOffice", modes("Draw"))
+
+
+class ImpressToolbarModeTest(unittest.TestCase):
+
+    def test_impress_has_tabbed_office_at_menu_position_9(self):
+        office = modes("Impress").get("TabbedOffice")
+        self.assertIsNotNone(office, "Impress has no TabbedOffice mode")
+        self.assertEqual("notebookbar_office.ui", office["CommandArg"])
+        self.assertEqual("9", office["MenuPosition"])
+        self.assertEqual("true", office["HasNotebookbar"])
+        self.assertEqual("Tabbed Office", office["Label"])
+
+    def test_the_impress_mode_is_a_copy_of_calcs(self):
+        self.assertEqual(modes("Calc")["TabbedOffice"], modes("Impress").get("TabbedOffice"))
+
+    def test_menu_position_9_is_free_in_impress_otherwise(self):
+        positions = [m["MenuPosition"] for name, m in modes("Impress").items() if name != "TabbedOffice"]
+        self.assertNotIn("9", positions)
 
 
 class TabbedOfficePickerTest(unittest.TestCase):
@@ -60,13 +78,12 @@ class TabbedOfficePickerTest(unittest.TestCase):
         self.tabpage = UITABPAGE.read_text(encoding="utf-8")
         self.picker = UIPICKER.read_text(encoding="utf-8")
 
-    def test_one_helper_lists_calc_and_writer_only(self):
+    def test_one_helper_lists_calc_writer_and_impress_not_draw(self):
         body = function_body(self.tabpage, "bool UITabPage::HasTabbedOffice(std::u16string_view sApp)")
         self.assertIsNotNone(body, "no UITabPage::HasTabbedOffice helper")
-        self.assertIn('u"Calc"', body)
-        self.assertIn('u"Writer"', body)
-        for app in ("Impress", "Draw"):
-            self.assertNotIn(app, body)
+        for app in ("Calc", "Writer", "Impress"):
+            self.assertIn('u"%s"' % app, body, app)
+        self.assertNotIn("Draw", body)
 
     def test_the_radio_button_and_the_mode_mapping_use_the_helper(self):
         self.assertIn("if (!HasTabbedOffice(sCurrentApp))", self.tabpage)

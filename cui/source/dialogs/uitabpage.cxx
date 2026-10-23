@@ -92,7 +92,7 @@ OUString UITabPage::GetCurrentMode()
 
 bool UITabPage::HasTabbedOffice(std::u16string_view sApp)
 {
-    return sApp == u"Calc" || sApp == u"Writer";
+    return sApp == u"Calc" || sApp == u"Writer" || sApp == u"Impress";
 }
 
 OUString UITabPage::GetModeForApp(const OUString& rMode, std::u16string_view sApp)

@@ -142,10 +142,35 @@ class OfficeLauncherTest(unittest.TestCase):
             self.assertEqual(dry_run(*args).stdout, office_dry_run("calc", *args).stdout, args)
 
     def test_unknown_or_missing_app_is_rejected_with_usage(self):
-        for args in (("impress", "light"), ("light",), ()):
+        for args in (("draw", "light"), ("light",), ()):
             out = office_dry_run(*args)
             self.assertEqual(2, out.returncode, args)
-            self.assertIn("usage: office.sh calc|writer", out.stderr, args)
+            self.assertIn("usage: office.sh calc|writer|impress ", out.stderr, args)
+
+    def test_impress_light_starts_impress_with_the_impress_profile(self):
+        out = office_dry_run("impress", "light")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("profile: python3 -I product/dev/profile.py --app impress --ui office --appearance light "
+                      "--icons boost --scheme Boost Light --tint 255 --font inter "
+                      "--profile /mnt/games/libreoffice/try-profile-impress\n", out.stdout)
+        self.assertIn("launch: GTK_THEME=adw-gtk3 soffice --impress "
+                      "-env:UserInstallation=file:///mnt/games/libreoffice/try-profile-impress\n", out.stdout)
+        self.assertNotIn("--calc", out.stdout)
+        self.assertNotIn("--writer", out.stdout)
+
+    def test_impress_never_defaults_to_the_calc_or_writer_profile(self):
+        for mode in ("light", "dark", "tabbed", "tabbed-light", "compact"):
+            out = office_dry_run("impress", mode)
+            self.assertEqual(0, out.returncode, out.stderr)
+            self.assertNotRegex(out.stdout, r"try-profile(-writer)?(\s|$)", mode)
+            self.assertIn("UserInstallation=file:///mnt/games/libreoffice/try-profile-impress", out.stdout, mode)
+
+    def test_impress_takes_the_same_options(self):
+        out = office_dry_run("impress", "dark", "--font", "selawik", "--profile", "/tmp/i-profile")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("--app impress --ui office --appearance dark --icons boost_dark --scheme Boost Dark "
+                      "--tint 255 --font selawik --profile /tmp/i-profile", out.stdout)
+        self.assertIn("soffice --impress -env:UserInstallation=file:///tmp/i-profile", out.stdout)
 
 
 if __name__ == "__main__":
