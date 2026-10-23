@@ -16,7 +16,8 @@
 # Whole run is under `timeout` (LO_SHOT_TIMEOUT, default 180 s). Needs sway, grim, jq, python3 + Pillow.
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
 #      SHOT_AFTER="swaymsg-free shell snippet" runs after the tab click with $SWAYSOCK, $WAYLAND_DISPLAY,
-#      $SHOT_W, $SHOT_H exported (used for the Shapes dropdown capture).
+#      $SHOT_W, $SHOT_H, $SHOT_PTR exported (used for the Shapes dropdown capture); write "click X Y" to
+#      "$SHOT_PTR" (the client moves onto the target first, then presses), and "wait S" to pause.
 #      SHOT_FONT=system|selawik|inter picks the UI font, like calc.sh --font (default inter,
 #      because the themes are always the Boost looks). SHOT_FONT=system keeps the desktop's font.
 set -euo pipefail
@@ -243,6 +244,8 @@ for line in sys.stdin:
     elif f[0] == "release":
         button(False)
     elif f[0] == "click":
+        # enter the surface first: a press without a prior motion over the target is dropped
+        move(int(f[1]) - 4, int(f[2]) - 4); time.sleep(0.3)
         move(f[1], f[2]); time.sleep(0.4); button(True); time.sleep(0.15); button(False)
     elif f[0] == "wait":
         time.sleep(float(f[1]))
@@ -289,7 +292,9 @@ import sys
 from PIL import Image
 img, tab, order = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 im = Image.open(img).convert("L")
-y0, y1, x0 = 14, 36, int(sys.argv[4])   # tab bar rows; x0 skips the quick access toolbar on the left
+# Tab bar label rows (the label text spans y 18..29); the selected tab's pill strokes sit below, at y 33..41,
+# and would join File with Home at 1366 px where the labels are only ~20 px apart.
+y0, y1, x0 = 14, 31, int(sys.argv[4])   # x0 skips the quick access toolbar on the left
 cols = []
 for x in range(x0, im.width - 80):
     col = [im.getpixel((x, y)) for y in range(y0, y1)]
