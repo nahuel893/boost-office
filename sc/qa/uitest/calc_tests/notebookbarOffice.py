@@ -1412,7 +1412,9 @@ class NotebookbarOffice(UITestCase):
                 self.assertEqual("true", get_state_as_dict(xTabbed)["Visible"])
 
     def settle(self, read, timeout=5):
-        """Process events until read() gives the same value twice in a row; return that value."""
+        """Process events until read() gives the same value twice in a row; return that value.
+
+        Fails when the value is still changing after `timeout` seconds."""
         xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
         deadline = time.time() + timeout
         last = None
@@ -1420,10 +1422,10 @@ class NotebookbarOffice(UITestCase):
             xToolkit.processEventsToIdle()
             value = read()
             if value == last:
-                break
+                return value
             last = value
             time.sleep(0.1)
-        return last
+        self.fail("the value did not settle in %s s, the last read was %r" % (timeout, last))
 
     def menu_item_names(self, document, menu):
         """The item names of the menu-bar menu `menu` (Insert, say), read from the accessibility tree.
@@ -1475,6 +1477,9 @@ class NotebookbarOffice(UITestCase):
                         if "office_label" in item:
                             # a box's items are inserted in order, item ids count from 1
                             items[("bx" + layout["id_prefix"] + box["id"], pos + 1)] = item["office_label"]
+        # an item id that two boxes share would silently shrink the dict: count the labels in the files
+        self.assertEqual(sum(path.read_text(encoding="utf-8").count('"office_label"')
+                             for path in (src / "product" / "ui").glob("calc_*.json")), len(items))
         return self.settle(lambda: {key: (label, get_state_as_dict(
             xCalcDoc.getChild(key[0]).getChild("toolboxitem-%d" % key[1]))["Text"])
             for key, label in items.items()})
@@ -1490,7 +1495,7 @@ class NotebookbarOffice(UITestCase):
                 xWordArt = xCalcDoc.getChild("bxInsertFontwork").getChild("toolboxitem-1")
                 self.assertEqual("WordArt", get_state_as_dict(xWordArt)["Text"])
                 texts = self.office_label_texts(src)
-                self.assertGreater(len(texts), 50)
+                self.assertGreater(len(texts), 0)  # office_label_texts checks the count against the layout files
                 self.assertEqual({key: label for key, (label, _) in texts.items()},
                                  {key: text for key, (_, text) in texts.items()})
             finally:

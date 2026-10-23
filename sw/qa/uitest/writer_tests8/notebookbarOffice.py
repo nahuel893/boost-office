@@ -405,7 +405,9 @@ class NotebookbarOffice(UITestCase):
         return int(get_state_as_dict(xParent.getChild(wid))["Size"].split("x")[0])
 
     def settle(self, read, timeout=5):
-        """Process events until read() gives the same value twice in a row; return that value."""
+        """Process events until read() gives the same value twice in a row; return that value.
+
+        Fails when the value is still changing after `timeout` seconds."""
         xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
         deadline = time.time() + timeout
         last = None
@@ -413,10 +415,10 @@ class NotebookbarOffice(UITestCase):
             xToolkit.processEventsToIdle()
             value = read()
             if value == last:
-                break
+                return value
             last = value
             time.sleep(0.1)
-        return last
+        self.fail("the value did not settle in %s s, the last read was %r" % (timeout, last))
 
     def test_home_styles_gallery_takes_the_free_width_and_shrinks_first(self):
         # Word: the Styles gallery is the widest group on Home and the one that flexes. It gets the
@@ -944,9 +946,11 @@ class NotebookbarOffice(UITestCase):
             try:
                 xWriterDoc = self.xUITest.getTopFocusWindow()
                 xBox = xWriterDoc.getChild("bxMailingsRecordNavigation")
-                self.assertEqual("5", get_state_as_dict(xBox)["ItemCount"])
-                for pos in (1, 2, 4, 5):
-                    self.assertEqual("false", get_state_as_dict(xBox.getChild("toolboxitem-%d" % pos))["Enabled"], pos)
+                self.assertEqual("5", self.settle(lambda: get_state_as_dict(xBox)["ItemCount"]))
+                # the controllers send their first state after the switch: read once it has settled
+                enabled = self.settle(lambda: {pos: get_state_as_dict(xBox.getChild("toolboxitem-%d" % pos))["Enabled"]
+                                               for pos in (1, 2, 4, 5)})
+                self.assertEqual({pos: "false" for pos in (1, 2, 4, 5)}, enabled)
                 # the box item itself stays enabled: its entry field is the greyed part
                 self.assertEqual("Record box", get_state_as_dict(xBox.getChild("toolboxitem-3"))["Text"])
             finally:
@@ -1031,8 +1035,13 @@ class NotebookbarOffice(UITestCase):
                     ".uno:RejectTrackedChangeToNext", ".uno:RejectTrackedChange", ".uno:RejectAllTrackedChanges"],
                 ("ReviewCompareMenu", "review_compare"): [".uno:CompareDocuments", ".uno:MergeDocuments"]}
             for (command, resource), items in expected.items():
-                xPopup = self.menu_controller(".uno:" + command, resource)
-                self.assertEqual(items, self.popup_commands(xPopup), command)
+                # R3-001: read the items once the controller has filled the popup (updatePopupMenu may
+                # finish after it returns), and dispose the controller so the next one starts clean
+                xPopup, xController = self.menu_controller(".uno:" + command, resource, True)
+                try:
+                    self.assertEqual(items, self.settle(lambda: self.popup_commands(xPopup)), command)
+                finally:
+                    xController.dispose()
 
     def test_review_language_submenus_are_filled_by_their_controllers(self):
         # the popup file lists only the three submenu commands. The submenus are not in the file: when the menu
@@ -1366,6 +1375,9 @@ class NotebookbarOffice(UITestCase):
                         if "office_label" in item:
                             # a box's items are inserted in order, item ids count from 1
                             items[("bx" + layout["id_prefix"] + box["id"], pos + 1)] = item["office_label"]
+        # an item id that two boxes share would silently shrink the dict: count the labels in the files
+        self.assertEqual(sum(path.read_text(encoding="utf-8").count('"office_label"')
+                             for path in (src / "product" / "ui").glob("writer_*.json")), len(items))
         return self.settle(lambda: {key: (label, get_state_as_dict(
             xWriterDoc.getChild(key[0]).getChild("toolboxitem-%d" % key[1]))["Text"])
             for key, label in items.items()})
@@ -1381,7 +1393,7 @@ class NotebookbarOffice(UITestCase):
                 xCover = xWriterDoc.getChild("bxInsertCoverPage").getChild("toolboxitem-1")
                 self.assertEqual("Cover Page", get_state_as_dict(xCover)["Text"])
                 texts = self.office_label_texts(src)
-                self.assertGreater(len(texts), 40)
+                self.assertGreater(len(texts), 0)  # office_label_texts checks the count against the layout files
                 self.assertEqual({key: label for key, (label, _) in texts.items()},
                                  {key: text for key, (_, text) in texts.items()})
             finally:
