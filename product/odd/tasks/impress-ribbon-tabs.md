@@ -146,7 +146,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
 | I0a | Generator and test tooling for three apps; Impress office `.ui` = stock + tab operations; registration; suppressions; unique-id test | delegated (opus: shared code, Calc and Writer byte-identical) | [x] | 987d57ed7 (generated), 57a17c72f (code) | off (ruling 12): controller spot check |
-| I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [ ] | | |
+| I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts); shot-tab and the office.sh fix inline (controller) | [x] | 880e4cd87, 085cab01e, ee1b573e9 | off (ruling 12): controller spot check |
 | I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [ ] | | |
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [ ] | | |
@@ -392,6 +392,30 @@ Controller rulings (2026-10-23):
     files untouched; `git show --check` clean.
   - Controller check: 679 unit tests OK; the tree clean after `gen_ribbon.py --all`; no `.superpowers` file tracked.
 
+- 2026-10-23, I0b (route: delegated, opus; the last part inline, controller). Commits:
+  - 880e4cd87: Impress `TabbedOffice` (MenuPosition 9) in `ToolbarMode.xcu`; `HasTabbedOffice` lists Impress, not
+    Draw; `profile.py` writes Impress's keys and `NewDoc/AutoPilot` = false (no template dialog); `office.sh impress`
+    with the profile `/mnt/games/libreoffice/try-profile-impress`; `uitest.sh --app impress`
+    (`UITest_impress_tests2`); the scaffold `sd/qa/uitest/impress_tests2/notebookbarOffice.py` with
+    `test_tabbed_office_loads` and `test_tab_order`; the tests that used `impress` as the invalid app use `draw`.
+    UITest RED: `'notebookbar_office.ui' != 'notebookbar.ui'` at `ActiveImpress`.
+  - 085cab01e (controller, from the worker's patch): `shot-tab.sh --app impress`. It was outside the commit because
+    `test_ui_font.py:115` also used `impress` as the unknown app; the controller switched it to `draw`. Impress's tab
+    list comes from the installed `.ui` in its own order, without the contextual tabs (a label filter would hit the
+    stock Layout tab when asked for Design).
+  - ee1b573e9 (controller): `office.sh`'s running-instance check anchors the profile path, so a running Writer or
+    Impress (`try-profile-writer`, `try-profile-impress`) no longer blocks `office.sh calc` (`try-profile`).
+  - Evidence (report: `task-I0b-report.md`): 679 -> 695 -> 697 OK; `cui.build officecfg.build postprocess.build`
+    exit 0; both Impress UITests and one Calc and one Writer UITest pass; the six Calc and Writer sha256 values and
+    their profile and launcher outputs unchanged; screenshot `impress-ribbon-tabs/i0b/impress-light-1920-design.png`:
+    File, Home, Insert, Layout, Design, Slide Show, Review, View, Extension, Tools; a blank presentation, no template
+    dialog; `x0` = 217, as Writer.
+  - For I10: design 3.2 should state the `.ui`-order rule of shot-tab's Impress tab list; the plan missed
+    `test_ui_font.py:115` and `test_shot_tab.py:60` among the tests that used `impress` as the invalid app. The stock
+    Design page's color gallery is clipped at the top (I4a rebuilds the page). Impress shows the shared preview
+    picture until I11.
+  - Controller check: 697 unit tests OK; the tree clean after `gen_ribbon.py --all`.
+
 ## Next step
 
-I0b (delegated, opus; brief `task-I0b-brief.md`): the Impress Tabbed Office mode end to end.
+I1 (delegated, opus; brief `task-I1-brief.md`): the 24 placeholder slots.
