@@ -143,14 +143,14 @@ translations; T10 (a pending decision).
 | W8a / W8b | View and Help (new page) | as W2 | a [x], b [x] | a: 027e8f459 (layout + generated), ff29c3f19 (code); b: 1607832ca | a: ff29c3f19 alone (992 lines): medium; declined by the user (writer self-check + controller spot check); b: with IC1, see IC1 |
 | W9a | The per-app tab accent (design 3.4): Writer Word blue, Calc green | delegated (opus: C++ in vcl and sfx2) | [x] | d8c601d40 | off (ruling 10): controller spot check |
 | W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [x] (spin-field width moved to W9d) | afaaee16f, 0ef912ddf, 4b384a058, 559b013a0, 0322fbed1, 1e97d761f | off (ruling 10): controller spot check |
-| W9d | What W9b could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch | delegated (opus: svx and sw C++) | [ ] | | |
-| W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [ ] | | |
+| W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [x] (T10 moved to W9d) | 30ebef3a3, a2a701896, e33cf1b7e, 434a76e28 | off (ruling 10): controller spot check |
+| W9d | What W9b and W9c could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch, and T10 (`toolkit/source/awt/vclxmenu.cxx`) | delegated (opus: svx, sw and toolkit C++) | [ ] | | |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
 | IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [x] | 2a3cb6e54 | slice ff29c3f19..1607832ca (IC1 + W8b, 599 lines): medium, budget reached; consent relayed |
-| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu; built in W9c | [ ] | | |
+| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu. W9c found the default already true and the hiding forced in `vclxmenu.cxx`; built in W9d | [ ] | | |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
 Why this shape: the brief's shape, with W0 split in two (about 730 lines in one task would mix the shared
@@ -952,9 +952,31 @@ The controller's rulings can be overturned by the user.
     soffice left; screenshots looked at: Review's Proofing and Tracking pairs sit in the top two rows; dark Home's
     style tiles are dark.
 
+- 2026-10-23, W9c (route: delegated, sonnet). Commits:
+  - 30ebef3a3: `MenuDefaultsTest` (in `test_profile.py`) pins `DontHideDisabledEntry` = true and records why popups
+    still hide. T10 not delivered: the default is already true (`Common.xcs:2434`, and in `main.xcd`), so a schema
+    edit changes nothing. The hiding is forced in `toolkit/source/awt/vclxmenu.cxx:504-505`, which ORs
+    `MenuFlags::HideDisabledEntries` into every awt `PopupMenu::execute`, the path of the ribbon dropdowns
+    (`popuptoolbarcontroller.cxx:176`). Outside the surface: moved to W9d. Calc's T10 row has the same cause.
+  - a2a701896: `controller_nodes()` keys repeated names as `name#2`...; it had lost six of 322 Controller.xcu nodes
+    (c1, c5, c8, c9, c13, DistributeControl). Two tests added.
+  - e33cf1b7e: the five `drop_implemented` + fixed-count copies (Design, Review, Mailings, View, Help) now assert the
+    remaining rows are still unimplemented registry URLs; the UITest thresholds (`> 50` Calc, `> 40` Writer) are
+    the number of `office_label` strings in the layouts (51, 193); `test_writer_icons.py` has a `LARGE_ICON_SIZE`
+    constant and compares each tab's button count with its layout JSON; the eight Calc office-label copies share
+    `office.office_labels`; the `NEW_LABELS` comment is right.
+  - 434a76e28: `settle` fails on timeout in both apps; the Mailings record-button read settles; R3-001 (the Review
+    dropdown UITest read the popup right after `updatePopupMenu()` and never disposed the controller) reads through
+    `settle` and disposes in `finally`.
+  - Explained, not changed: the UITest helpers duplicated across `sw/` and `sc/` stay, because UITest modules run
+    inside the harness and cannot import `product/tests`.
+  - Evidence (report: `task-W9c-report.md`): 646 -> 649 unit tests OK (run once on the combined tree, not per
+    commit); the changed Writer and Calc UITests and each app's load and tab-order tests pass one at a time;
+    `officecfg.build postprocess.build` exit 0; `git show --check` clean.
+  - Controller check: 649 unit tests OK; the tree clean after `gen_ribbon.py --all`.
+
 ## Next step
 
-W9c: greyed disabled menu entries (T10w) and the parked test-quality items (delegated, sonnet; brief
-`task-W9c-brief.md`). Then W9d (opus; `task-W9d-brief.md`), then W10 + W11 together (sonnet;
-`task-W10-W11-brief.md`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
+W9d: what W9b and W9c could not reach, T10 included (delegated, opus; `task-W9d-brief.md`). Then W10 + W11 together
+(sonnet; `task-W10-W11-brief.md`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
 the install script (map: `task-GH1-report.md`).
