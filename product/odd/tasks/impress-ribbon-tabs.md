@@ -145,7 +145,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 
 | ID | Task | Route | Status | Commits | RDD |
 |----|------|-------|--------|---------|-----|
-| I0a | Generator and test tooling for three apps; Impress office `.ui` = stock + tab operations; registration; suppressions; unique-id test | delegated (opus: shared code, Calc and Writer byte-identical) | [ ] | | |
+| I0a | Generator and test tooling for three apps; Impress office `.ui` = stock + tab operations; registration; suppressions; unique-id test | delegated (opus: shared code, Calc and Writer byte-identical) | [x] | 987d57ed7 (generated), 57a17c72f (code) | off (ruling 12): controller spot check |
 | I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts) | [ ] | | |
 | I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [ ] | | |
@@ -268,6 +268,8 @@ Tab-specific checks:
   Arrange menu lists its items with a shape selected.
 - I3a: Video and Audio have distinct widget ids (decision 16); the Shapes submenus open.
 - I4a: Design shows before Transitions; the theme colors box (`.uno:ThemeSelectorPanel`) still renders.
+- I5a: remove the `pmhbLayout` `valign` operation from `impress_tabs.json` in the same change that generates the
+  Layout page as Transitions (the box id disappears and `set_property` raises "object not found"; I0a report).
 - I5a: the tab reads Transitions with mnemonic N and Animations with A; every deck control opens its deck and a
   second press keeps it open (decision 25); Animation Pane toggles the Animation deck.
 - I6a: Hide Slide toggles the current slide's hidden state from Normal view (decision 28); the three Set Up
@@ -375,7 +377,21 @@ Controller rulings (2026-10-23):
 - 2026-10-23, start: Writer closed at d33ae2337 (W0a-W12, 666 unit tests OK); this branch starts there
   (ruling 13). Writer's W12 already gives every stock page plain captions in `apply_tabs`, for every app.
 
+- 2026-10-23, I0a (route: delegated, opus). Commits 987d57ed7 (the generated office `.ui`, 14637 lines; 639 office
+  lines in `simpress.suppr`; `impress_tabs.json`) and 57a17c72f (the `impress` app in `gen_ribbon.py`, per-app
+  test tooling, `sd/UIConfig_simpress.mk`, `test_impress_tabs.py` with 13 tests).
+  - `impress_tabs.json` holds 21 `valign` operations, not the design's 2: W12's shared test (no stock page centres
+    its section box) runs for every app, and all 19 of Impress's stock `pmhb*` boxes are centred. Design 3.1 is
+    corrected in I10. I5a must drop the `pmhbLayout` operation (see the I5a check).
+  - `controller_nodes(app=...)` now filters suffixed nodes both ways: each app sees only its own (Writer's or
+    Impress's), Calc neither. No result changes today.
+  - `placeholders.registry("impress")` names `placeholders_impress.json`, which I1 creates.
+  - Evidence (report: `task-I0a-report.md`): RED `KeyError: 'impress'` plus 1 FAIL and 1 ERROR in
+    `test_gen_ribbon.py`; 666 -> 679 OK (the generated commit alone 666 OK); `check-ui.sh` 0 new warnings or fatals
+    (Calc and Writer output identical); `sd.build` exit 0; the six Calc and Writer sha256 values unchanged; Draw's
+    files untouched; `git show --check` clean.
+  - Controller check: 679 unit tests OK; the tree clean after `gen_ribbon.py --all`; no `.superpowers` file tracked.
+
 ## Next step
 
-I0a (delegated, opus; brief `.superpowers/sdd/2026-10-20-writer-impress-ribbons/task-I0a-brief.md`): record the six
-Calc and Writer sha256 values first, then add the `impress` app to the generator and the test tooling.
+I0b (delegated, opus; brief `task-I0b-brief.md`): the Impress Tabbed Office mode end to end.
