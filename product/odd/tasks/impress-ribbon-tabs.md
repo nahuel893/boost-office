@@ -149,7 +149,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts); shot-tab and the office.sh fix inline (controller) | [x] | 880e4cd87, 085cab01e, ee1b573e9 | off (ruling 12): controller spot check |
 | I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | f7c63b9f6 | off (ruling 12): controller spot check |
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [x] (Columns: fallback, ruling 19) | e7d5a89ce (layout + generated), 64b7a1062 (code) | off (ruling 12): controller spot check |
-| I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [ ] | | |
+| I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [x] | 70dbfd32e, 057581424 | 741 unit tests OK; UITests pass |
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [ ] | | |
 | I3a / I3b | Insert | as I2a / I2b | [ ] | | |
 | I4a / I4b | Design (moved before Transitions) | as I2a / I2b | [ ] | | |
@@ -459,6 +459,23 @@ Controller rulings (2026-10-23):
   - Controller check: 738 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice
     left; no `.superpowers` file tracked.
 
+- 2026-10-23, I2c (route: delegated, sonnet). Commits 70dbfd32e (`impress_home.json` Drawing and Editing, and the
+  regenerated `.ui` and suppressions: 3 files, +691/-5) and 057581424 (the 6 popups, among them
+  `home_shapes.xml` for `InsertShapesMenu`, which I3a reuses; Controller.xcu nodes; labels; tests: 12 files,
+  +577/-25).
+  - Choices, accepted: Quick Styles is a plain button (a deck opener has no dropdown controller; the design says
+    "dd"); Shape Fill and Shape Outline are split buttons with their existing color controllers; the Find menu's first
+    item is the find toolbar URL, so the label-known test exempts `vnd.sun.star.findbar:` URLs.
+  - Commit 1 alone fails 16 tests and 1 error (the generated `.ui` needs the label nodes of commit 2); commit 2 makes
+    the suite green. Accepted as in Writer.
+  - The headless UITest window clips the ribbon after Font, so the shape-cell test builds each stock popup through its
+    `ToolbarAsMenuController` instead of pressing the cell. Fit and icons: I2b.
+  - Evidence (report: `task-I2c-report.md`): 738 -> 741 OK; the UITests pass one at a time;
+    `sd.build officecfg.build postprocess.build` exit 0; `check-ui.sh` 0 new warnings or fatals; the six Calc and
+    Writer sha256 values unchanged; `git show --check` clean.
+  - Controller check: 741 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked.
+
 ## Next step
 
-I2c (delegated, sonnet; brief `task-I2c-brief.md`): Home part 2 (Drawing, Editing). Then I2b (icons, fit).
+I2b (delegated, sonnet; brief `task-I2b-brief.md`): Home icons, the 1920 px fit, screenshots. Then I3a (Insert).
