@@ -48,9 +48,25 @@ private:
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
 public:
     CurrentEdit(vcl::Window* pParent)
-        : InterimItemWindow(pParent, u"modules/swriter/ui/editbox.ui"_ustr, u"EditBox"_ustr)
-        , m_xWidget(m_xBuilder->weld_entry(u"entry"_ustr))
+        : InterimItemWindow(pParent, u"svx/ui/absrecbox.ui"_ustr, u"AbsRecBox"_ustr)
+        , m_xWidget(m_xBuilder->weld_entry(u"entry-frame"_ustr))
     {
+        // The record box of the form navigation bar has a framed and a frameless entry. A framed
+        // native entry can be taller than the buttons of a compact toolbox, such as a
+        // notebookbar's: there it would make its row, and so the whole ribbon, taller than the
+        // other tabs. Use the frameless entry there, which is only as tall as its text. A toolbox
+        // that is not compact already reserves the height of a framed field.
+        m_xWidget->show();
+        if (ToolBox* pToolBox = dynamic_cast<ToolBox*>(pParent))
+        {
+            if (m_xWidget->get_preferred_size().Height() > pToolBox->CalcWindowSizePixel(1).Height())
+            {
+                m_xWidget->hide();
+                m_xWidget = m_xBuilder->weld_entry(u"entry-noframe"_ustr);
+                m_xWidget->show();
+            }
+        }
+
         InitControlBase(m_xWidget.get());
 
         m_xWidget->connect_key_press(LINK(this, CurrentEdit, KeyInputHdl));
