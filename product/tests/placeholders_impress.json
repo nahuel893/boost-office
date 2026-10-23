@@ -7,12 +7,18 @@
    "Action:string=removeall",
    "Action:string=collapseall",
    "Action:string=expandall"
-  ]
+  ],
+  "variant_labels": {
+   "Action:string=removeall": "Remove All Sections",
+   "Action:string=collapseall": "Collapse All",
+   "Action:string=expandall": "Expand All"
+  }
  },
  {
   "slot": "SID_BOOST_HOME_CONVERT_TO_SMARTART",
   "offset": 1,
-  "command": "HomeConvertToSmartArt"
+  "command": "HomeConvertToSmartArt",
+  "label": "Convert to SmartArt"
  },
  {
   "slot": "SID_BOOST_HOME_REGROUP",

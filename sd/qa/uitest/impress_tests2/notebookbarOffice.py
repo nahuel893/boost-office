@@ -6,8 +6,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+import base64
 import json
 import os
+import tempfile
 import time
 import uno
 import unohelper
@@ -17,11 +19,17 @@ from pathlib import Path
 from uitest.framework import UITestCase
 from uitest.uihelper.common import get_state_as_dict
 from libreoffice.uno.propertyvalue import mkPropertyValues
-from com.sun.star.accessibility.AccessibleRole import PAGE_TAB_LIST, DOCUMENT_PRESENTATION, DOCUMENT_TEXT, PARAGRAPH
+from com.sun.star.accessibility.AccessibleRole import PAGE_TAB_LIST, DOCUMENT_PRESENTATION, DOCUMENT_TEXT, PARAGRAPH, PUSH_BUTTON, BUTTON_DROPDOWN
+from com.sun.star.awt import Point
 from com.sun.star.beans import PropertyValue
 from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
+IMPRESS_MODULE = "com.sun.star.presentation.PresentationDocument"
+HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: the Section family, Convert to SmartArt
+RESET_LAYOUT = ".uno:AssignLayout?Reset:bool=true"
+# a 1x1 PNG, the picture of the image context
+PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 
 # The pages of today's generated Impress office .ui (sd/uiconfig/simpress/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that change the tabs update this list;
@@ -197,6 +205,285 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual(shapes, slide.Count)
             self.assertEqual("keep", slide.getByIndex(0).String)
             self.assertFalse(document.isModified())
+
+    def home_layout(self):
+        src = Path(os.environ["TDOC"]).parents[3]
+        return json.loads((src / "product" / "ui" / "impress_home.json").read_text(encoding="utf-8"))
+
+    def test_home_sections_and_toolboxes(self):
+        layout = self.home_layout()
+        prefix = layout["id_prefix"]
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(5, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xImpressDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xImpressDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def visible_tabs(self, document):
+        """The names of the ribbon tabs that have a tab on screen.
+
+        The tab list holds every page; a page that the context hides has empty bounds
+        (TabControl::SetPageVisible), which the accessible page reports as a zero width.
+        """
+        xWindow = document.CurrentController.Frame.ContainerWindow
+        xAcc = xWindow.getProperty("XAccessible").getAccessibleContext()
+        while xAcc.getAccessibleParent() is not None:
+            xAcc = xAcc.getAccessibleParent().getAccessibleContext()
+        queue = [xAcc]
+        while queue:
+            xAcc = queue.pop(0)
+            role = xAcc.getAccessibleRole()
+            if role == PAGE_TAB_LIST and xAcc.getAccessibleChildCount() == len(TABS):
+                pages = [xAcc.getAccessibleChild(i).getAccessibleContext() for i in range(len(TABS))]
+                return [page.getAccessibleName() for page in pages if page.getBounds().Width > 0]
+            if role not in (DOCUMENT_PRESENTATION, DOCUMENT_TEXT, PARAGRAPH):
+                queue += [xAcc.getAccessibleChild(i).getAccessibleContext()
+                          for i in range(xAcc.getAccessibleChildCount())]
+        self.fail("no tab list with %d tabs in the accessibility tree" % len(TABS))
+
+    def check_home_tab_is_shown(self, document, contextual):
+        """Home has a tab on screen; `contextual` (the tab of the selected object, or None) proves the context."""
+        if contextual:
+            self.wait_for(lambda: contextual in self.visible_tabs(document), contextual + " tab is not shown", 10)
+        else:
+            self.wait_for(lambda: "Home" in self.visible_tabs(document), "Home tab is not shown", 10)
+            self.assertFalse(CONTEXTUAL & set(self.visible_tabs(document)))
+        self.assertIn("Home", self.visible_tabs(document))
+
+    def add_shape(self, document, service, text=None):
+        """A shape of `service` on the first slide, selected."""
+        shape = document.createInstance(service)
+        shape.Size = uno.createUnoStruct("com.sun.star.awt.Size", 6000, 3000)
+        document.DrawPages[0].add(shape)
+        shape.Position = Point(2000, 9000)
+        if text is not None:
+            shape.String = text
+        document.CurrentController.select(shape)
+        return shape
+
+    def test_home_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_home_tab_is_shown(document, None)
+                # a text box
+                self.add_shape(document, "com.sun.star.drawing.TextShape", "text")
+                self.wait_for(lambda: "Home" in self.visible_tabs(document), "Home tab is not shown", 10)
+                self.assertIn("Home", self.visible_tabs(document))
+                # a shape
+                self.add_shape(document, "com.sun.star.drawing.RectangleShape")
+                self.check_home_tab_is_shown(document, "Draw")
+                # a table
+                self.xUITest.executeCommand(".uno:InsertTable?Columns:short=2&Rows:short=2")
+                self.check_home_tab_is_shown(document, "Table")
+                # an image
+                with tempfile.TemporaryDirectory() as tmp:
+                    picture = Path(tmp) / "pixel.png"
+                    picture.write_bytes(PNG)
+                    xGraphic = self.add_shape(document, "com.sun.star.drawing.GraphicObjectShape")
+                    xGraphic.GraphicURL = picture.as_uri()
+                    document.CurrentController.select(xGraphic)
+                    self.check_home_tab_is_shown(document, "Image")
+            finally:
+                self.switch_to("Default")
+
+    def test_home_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Section family (3 variants in its menu) and Convert to SmartArt
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in HOME_SLOTS)
+        self.assertEqual(4, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def menu_controller(self, command, resource):
+        """The awt popup menu that the ribbon dropdown `command` builds through its real menu controller.
+
+        `resource` is the popup file the ResourceMenuController reads (its "Value")."""
+        xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", self.xContext)
+        xFactory = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
+        self.assertTrue(xFactory.hasController(command, IMPRESS_MODULE), command)
+        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": IMPRESS_MODULE,
+                "Value": resource}
+        xController = xFactory.createInstanceWithArgumentsAndContext(
+            command, mkPropertyValues(args), self.xContext)
+        self.assertIsNotNone(xController, command)
+        xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
+        xController.setPopupMenu(xPopup)
+        xController.updatePopupMenu()
+        return xPopup
+
+    def popup_commands(self, xPopup):
+        commands = []
+        for pos in range(xPopup.getItemCount()):
+            command = xPopup.getCommand(xPopup.getItemId(pos))
+            if command:  # separators have none
+                commands.append(command)
+        return commands
+
+    def command_label(self, url):
+        """The label the framework resolves for a command URL (what a menu item shows)."""
+        xDescriptions = self.xContext.getValueByName("/singletons/com.sun.star.frame.theUICommandDescription")
+        props = {p.Name: p.Value for p in xDescriptions.getByName(IMPRESS_MODULE).getByName(url)}
+        return props["Label"].replace("~", "")
+
+    def test_home_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        section = ".uno:HomeSection?Action:string="
+        with self.impress_doc():
+            expected = {
+                ("HomeSectionMenu", "home_section"): [
+                    ".uno:AddSlideSection", ".uno:RenameSlideSection", ".uno:RemoveSlideSection",
+                    ".uno:RemoveSlideSectionAndSlides", ".uno:MoveSlideSectionUp", ".uno:MoveSlideSectionDown",
+                    section + "removeall", section + "collapseall", section + "expandall"],
+                ("HomeChangeCaseMenu", "home_changecase"): [
+                    ".uno:ChangeCaseToSentenceCase", ".uno:ChangeCaseToLower", ".uno:ChangeCaseToUpper",
+                    ".uno:ChangeCaseToTitleCase", ".uno:ChangeCaseToToggleCase"],
+                ("HomeColumnsMenu", "home_columns"): [".uno:TextAttributes"],  # decision 14's fallback
+                ("HomeTextDirectionMenu", "home_textdirection"): [
+                    ".uno:TextdirectionLeftToRight", ".uno:TextdirectionTopToBottom", ".uno:ParaLeftToRight",
+                    ".uno:ParaRightToLeft"],
+                ("HomeAlignTextMenu", "home_aligntext"): [".uno:CellVertTop", ".uno:CellVertCenter",
+                                                          ".uno:CellVertBottom", ".uno:TextAttributes"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_home_dropdown_and_new_label_commands_resolve_their_labels(self):
+        section = "HomeSection?Action:string="
+        with self.impress_doc():
+            for command, label in (("HomeSectionMenu", "Section"), ("HomeChangeCaseMenu", "Change Case"),
+                                   ("HomeColumnsMenu", "Columns"), ("HomeTextDirectionMenu", "Text Direction"),
+                                   ("HomeAlignTextMenu", "Align Text"),
+                                   ("AssignLayout?Reset:bool=true", "Reset Slide Layout"),
+                                   (section + "removeall", "Remove All Sections"),
+                                   (section + "collapseall", "Collapse All"), (section + "expandall", "Expand All"),
+                                   ("HomeConvertToSmartArt", "Convert to SmartArt")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+            for name in ("HomeConvertToSmartArt", section + "removeall"):
+                self.assertFalse(self.dispatch_enabled(name), name)
+
+    def test_home_commands_that_are_real_are_enabled(self):
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.add_shape(document, "com.sun.star.drawing.TextShape", "Hello world")
+            for name in ("AddSlideSection", "TextAttributes", "InsertPage", "ImportFromFile", "AssignLayout"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_home_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxHomeNewSlide": "New Slide", "bxHomeReuseSlides": "Reuse Slides",
+                          "bxHomeLayout": "Layout", "bxHomeReset": "Reset", "bxHomeSection": "Section",
+                          "bxHomePaste": "Paste", "bxHomeFormatPaintbrush": "Format Painter",
+                          "bxHomeTextDirection": "Text Direction", "bxHomeAlignText": "Align Text",
+                          "bxHomeConvertToSmartArt": "Convert to SmartArt"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_home_reset_puts_a_moved_title_placeholder_back(self):
+        # design decision 13: .uno:AssignLayout?Reset:bool=true re-applies the slide's layout
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            slide = document.DrawPages[0]
+            title = slide.getByIndex(0)
+            self.assertEqual("com.sun.star.presentation.TitleTextShape", title.ShapeType)
+            home = (title.Position.X, title.Position.Y)
+            title.Position = Point(home[0] + 4000, home[1] + 3000)
+            self.assertNotEqual(home, (title.Position.X, title.Position.Y))
+            document.CurrentController.select(title)
+            self.xUITest.executeCommand(RESET_LAYOUT)
+            title = slide.getByIndex(0)
+            self.assertEqual(home, self.settle(lambda: (slide.getByIndex(0).Position.X,
+                                                        slide.getByIndex(0).Position.Y)))
+            self.assertEqual(1, document.DrawPages.Count)
+
+    def test_home_text_column_variants_do_not_reach_a_text_box(self):
+        # design decision 14's gate FAILED: .uno:TextColumnsNumber?TextColumnsNumber:short=2 does not give a
+        # text box two columns, because SDRATTR_TEXTCOLUMNS_NUMBER has slot id 0 in the svx item info
+        # (svx/source/svdraw/svdattr.cxx:440), so a dispatched argument is never mapped to the pool item. The
+        # sidebar sets the item itself. The fallback applies: the Columns menu keeps only More Columns... If
+        # this test fails, the slot got a mapping: restore the three column items (design decision 14).
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            shape = self.add_shape(document, "com.sun.star.drawing.TextShape", "one two three four five six")
+            self.assertIsNone(shape.TextColumns)
+            self.xUITest.executeCommand(".uno:TextColumnsNumber?TextColumnsNumber:short=2")
+            self.settle(lambda: shape.TextColumns is None)
+            self.assertIsNone(shape.TextColumns)
+
+    def toolbox_item(self, document, role, name):
+        """The accessible context of the ribbon toolbox item of `role` named `name`."""
+        xWindow = document.CurrentController.Frame.ContainerWindow
+        xAcc = xWindow.getProperty("XAccessible").getAccessibleContext()
+        while xAcc.getAccessibleParent() is not None:
+            xAcc = xAcc.getAccessibleParent().getAccessibleContext()
+        queue = [xAcc]
+        while queue:
+            xAcc = queue.pop(0)
+            if xAcc.getAccessibleRole() == role and xAcc.getAccessibleName() == name:
+                return xAcc
+            if xAcc.getAccessibleRole() not in (DOCUMENT_PRESENTATION, DOCUMENT_TEXT, PARAGRAPH):
+                queue += [xAcc.getAccessibleChild(i).getAccessibleContext()
+                          for i in range(xAcc.getAccessibleChildCount())]
+        return None
+
+    def popup_buttons(self):
+        """The names of the push buttons in every top window's accessible tree (a popup is a top window)."""
+        xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
+        names = []
+        for i in range(xToolkit.getTopWindowCount()):
+            xTop = xToolkit.getTopWindow(i)
+            xAcc = xTop.getProperty("XAccessible") if xTop is not None else None
+            queue = [xAcc.getAccessibleContext()] if xAcc is not None else []
+            while queue:
+                xCtx = queue.pop(0)
+                if xCtx.getAccessibleRole() == PUSH_BUTTON:
+                    names.append(xCtx.getAccessibleName())
+                if xCtx.getAccessibleRole() not in (DOCUMENT_PRESENTATION, DOCUMENT_TEXT, PARAGRAPH):
+                    queue += [xCtx.getAccessibleChild(c).getAccessibleContext()
+                              for c in range(min(xCtx.getAccessibleChildCount(), 40))]
+        return names
+
+    def test_home_new_slide_and_layout_popups_are_the_layout_gallery_plus_one_button(self):
+        # design decision 19: New Slide's popup is the layout gallery plus Duplicate Slide, Layout's the
+        # gallery plus Reset Slide Layout (sd/source/ui/controller/slidelayoutcontroller.cxx)
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                for item, button in (("New Slide", "Duplicate"), ("Layout", "Reset Slide Layout")):
+                    xItem = self.settle(lambda: self.toolbox_item(document, BUTTON_DROPDOWN, item))
+                    self.assertIsNotNone(xItem, item)
+                    self.assertEqual(2, xItem.getAccessibleActionCount(), item)  # click and toggle popup
+                    xItem.doAccessibleAction(1)
+                    try:
+                        self.wait_for(lambda: any(n.startswith(button) for n in self.popup_buttons()),
+                                      "the %s popup has no %s button" % (item, button))
+                    finally:
+                        xItem.doAccessibleAction(1)
+            finally:
+                self.switch_to("Default")
 
     def test_tabbed_office_loads(self):
         with self.impress_doc():

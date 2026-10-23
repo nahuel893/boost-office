@@ -3193,7 +3193,6 @@
                                       <object class="GtkMenuToolButton" id="btnHomeHomeSectionMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnHomeHomeSectionMenu">Section</property>
                                         <property name="action-name">.uno:HomeSectionMenu</property>
                                       </object>
                                       <packing>
@@ -3433,7 +3432,6 @@
                                       <object class="GtkMenuToolButton" id="btnHomeHomeChangeCaseMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnHomeHomeChangeCaseMenu">Change Case</property>
                                         <property name="action-name">.uno:HomeChangeCaseMenu</property>
                                       </object>
                                       <packing>
@@ -3701,7 +3699,6 @@
                                       <object class="GtkMenuToolButton" id="btnHomeHomeTextDirectionMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnHomeHomeTextDirectionMenu">Text Direction</property>
                                         <property name="action-name">.uno:HomeTextDirectionMenu</property>
                                       </object>
                                       <packing>
@@ -3726,7 +3723,6 @@
                                       <object class="GtkMenuToolButton" id="btnHomeHomeAlignTextMenu">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnHomeHomeAlignTextMenu">Align Text</property>
                                         <property name="action-name">.uno:HomeAlignTextMenu</property>
                                       </object>
                                       <packing>
@@ -3751,7 +3747,6 @@
                                       <object class="GtkToolButton" id="btnHomeHomeConvertToSmartArt">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="TabbedImpress|btnHomeHomeConvertToSmartArt">Convert to SmartArt</property>
                                         <property name="action-name">.uno:HomeConvertToSmartArt</property>
                                       </object>
                                       <packing>

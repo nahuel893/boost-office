@@ -1652,6 +1652,76 @@
           <value>view_macros</value>
         </prop>
       </node>
+      <node oor:name="HomeSectionMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSectionMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_section</value>
+        </prop>
+      </node>
+      <node oor:name="HomeChangeCaseMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeChangeCaseMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_changecase</value>
+        </prop>
+      </node>
+      <node oor:name="HomeColumnsMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeColumnsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_columns</value>
+        </prop>
+      </node>
+      <node oor:name="HomeTextDirectionMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeTextDirectionMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_textdirection</value>
+        </prop>
+      </node>
+      <node oor:name="HomeAlignTextMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeAlignTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>home_aligntext</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -3931,6 +4001,61 @@
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.text.TextDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeSectionMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeSectionMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeChangeCaseMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeChangeCaseMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeColumnsMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeColumnsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeTextDirectionMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeTextDirectionMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="HomeAlignTextMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:HomeAlignTextMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
         </prop>
         <prop oor:name="Controller">
           <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>

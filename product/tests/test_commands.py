@@ -65,7 +65,11 @@ class ControllerNodesTest(unittest.TestCase):
     def test_every_node_of_the_real_file_that_names_a_command_is_kept(self):
         named = [n for n in ET.parse(commands.UI_DIR / "Controller.xcu").iter("node")
                  if any(p.get(commands.OOR + "name") == "Command" for p in n.findall("prop"))]
-        self.assertEqual(len(named), len(commands.controller_nodes(app="writer")))
+        # Impress's nodes (names ending ImpressPopup or ImpressControl) are left out for Writer, as Writer's
+        # are for Impress; no other node is lost to a name collision
+        others = commands.APP_SUFFIXES["impress"]
+        mine = [n for n in named if not n.get(commands.OOR + "name").endswith(others)]
+        self.assertEqual(len(mine), len(commands.controller_nodes(app="writer")))
 
 
 if __name__ == "__main__":
