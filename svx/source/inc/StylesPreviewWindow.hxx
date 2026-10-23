@@ -146,6 +146,8 @@ public:
     void dispose();
 
     void SetOptimalSize();
+
+    virtual void DataChanged(const DataChangedEvent& rDCEvt) override;
 };
 
 #endif

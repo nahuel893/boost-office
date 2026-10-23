@@ -68,6 +68,7 @@
 #include <com/sun/star/i18n/ScriptType.hpp>
 
 #include <vcl/commandevent.hxx>
+#include <vcl/event.hxx>
 
 namespace
 {
@@ -91,9 +92,23 @@ private:
     static std::map<OUString, OString> gJsonStylePreviewCache;
     static int gStylePreviewCacheClients;
     static JsonStylePreviewCacheClear gJsonIdleClear;
+    static Color gFieldColor;
+    static Color gFieldTextColor;
 
 public:
-    static std::map<OUString, Bitmap>& Get() { return gStylePreviewCache; }
+    // The previews are drawn on the field colors (GetCachedPreview), so they are kept only while
+    // those colors last: after a switch between light and dark they are drawn again.
+    static std::map<OUString, Bitmap>& Get(const StyleSettings& rStyleSettings)
+    {
+        if (rStyleSettings.GetFieldColor() != gFieldColor
+            || rStyleSettings.GetFieldTextColor() != gFieldTextColor)
+        {
+            gStylePreviewCache.clear();
+            gFieldColor = rStyleSettings.GetFieldColor();
+            gFieldTextColor = rStyleSettings.GetFieldTextColor();
+        }
+        return gStylePreviewCache;
+    }
 
     static void ClearCache(bool bHard)
     {
@@ -129,6 +144,8 @@ std::map<OUString, Bitmap> StylePreviewCache::gStylePreviewCache;
 std::map<OUString, OString> StylePreviewCache::gJsonStylePreviewCache;
 int StylePreviewCache::gStylePreviewCacheClients;
 StylePreviewCache::JsonStylePreviewCacheClear StylePreviewCache::gJsonIdleClear;
+Color StylePreviewCache::gFieldColor;
+Color StylePreviewCache::gFieldTextColor;
 }
 
 StyleStatusListener::StyleStatusListener(
@@ -537,9 +554,11 @@ void StylesListUpdateTask::Invoke()
 
 Bitmap StylesPreviewWindow_Base::GetCachedPreview(const StylePreviewDescriptor& rStyle)
 {
-    auto aFound = StylePreviewCache::Get().find(rStyle.translatedName);
-    if (aFound != StylePreviewCache::Get().end())
-        return StylePreviewCache::Get()[rStyle.translatedName];
+    const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
+    std::map<OUString, Bitmap>& rCache = StylePreviewCache::Get(rStyleSettings);
+    auto aFound = rCache.find(rStyle.translatedName);
+    if (aFound != rCache.end())
+        return aFound->second;
     else
     {
         ScopedVclPtrInstance<VirtualDevice> pImg;
@@ -547,14 +566,13 @@ Bitmap StylesPreviewWindow_Base::GetCachedPreview(const StylePreviewDescriptor& 
         pImg->SetOutputSizePixel(aSize);
         // Draw on the colors of the list around the previews, not on a virtual device's white
         // with black text, which is a white tile in a dark theme. A style's own colors still win.
-        const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
         pImg->SetFillColor(rStyleSettings.GetFieldColor());
         pImg->SetTextColor(rStyleSettings.GetFieldTextColor());
 
         StyleItemController aStyleController(rStyle);
         aStyleController.Paint(*pImg);
         Bitmap aBitmap(pImg->GetBitmap(Point(0, 0), aSize));
-        StylePreviewCache::Get()[rStyle.translatedName] = aBitmap;
+        rCache[rStyle.translatedName] = aBitmap;
 
         return aBitmap;
     }
@@ -717,5 +735,14 @@ void StylesPreviewWindow_Impl::dispose()
 }
 
 void StylesPreviewWindow_Impl::SetOptimalSize() { SetSizePixel(get_preferred_size()); }
+
+void StylesPreviewWindow_Impl::DataChanged(const DataChangedEvent& rDCEvt)
+{
+    InterimItemWindow::DataChanged(rDCEvt);
+    // new colors (a switch between light and dark): draw the previews again on them
+    if (m_xStylesView && rDCEvt.GetType() == DataChangedEventType::SETTINGS
+        && (rDCEvt.GetFlags() & AllSettingsFlags::STYLE))
+        RequestStylesListUpdate();
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
