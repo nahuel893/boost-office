@@ -24,6 +24,7 @@
 #include <cppuhelper/supportsservice.hxx>
 #include <cppuhelper/queryinterface.hxx>
 #include <cppuhelper/typeprovider.hxx>
+#include <comphelper/configuration.hxx>
 #include <tools/debug.hxx>
 #include <vcl/dialoghelper.hxx>
 #include <vcl/graph.hxx>
@@ -36,6 +37,20 @@
 #include <vcl/window.hxx>
 
 #include <com/sun/star/awt/KeyModifier.hpp>
+
+namespace
+{
+// Office.Common/View/Menu/DontHideDisabledEntry, the setting the menu bar follows
+// (framework/source/uielement/menubarmanager.cxx). toolkit does not use the generated officecfg
+// headers, so this is the property struct they would give.
+struct DontHideDisabledEntry : comphelper::ConfigurationProperty<DontHideDisabledEntry, bool>
+{
+    static OUString path()
+    {
+        return u"/org.openoffice.Office.Common/View/Menu/DontHideDisabledEntry"_ustr;
+    }
+};
+}
 
 VCLXMenu::VCLXMenu()
     : maMenuListeners( *this )
@@ -500,10 +515,10 @@ sal_Int16 VCLXMenu::execute(
             return 0;
     }
     PopupMenu* pPopupMenu = static_cast<PopupMenu*>(pMenu.get());
-    MenuFlags nMenuFlags = pPopupMenu->GetMenuFlags();
-    // #102790# context menus shall never show disabled entries
-    nMenuFlags |= MenuFlags::HideDisabledEntries;
-    pPopupMenu->SetMenuFlags(nMenuFlags);
+    // #102790# context menus hide their disabled entries, unless the user wants them shown greyed,
+    // as the menu bar does: then a popup keeps the flags it was given
+    if (!DontHideDisabledEntry::get())
+        pPopupMenu->SetMenuFlags(pPopupMenu->GetMenuFlags() | MenuFlags::HideDisabledEntries);
     // cannot call this with mutex locked because it will call back into us
     return pPopupMenu->Execute(
         VCLUnoHelper::GetWindow(rxWindowPeer), vcl::unohelper::ConvertToVCLRect(rPos),

@@ -10,6 +10,7 @@ import base64
 import json
 import os
 import tempfile
+import threading
 import time
 import uno
 import unohelper
@@ -18,7 +19,9 @@ from pathlib import Path
 from uitest.framework import UITestCase
 from uitest.uihelper.common import get_state_as_dict
 from libreoffice.uno.propertyvalue import mkPropertyValues
-from com.sun.star.accessibility.AccessibleRole import PAGE_TAB_LIST, DOCUMENT_TEXT, PARAGRAPH, MENU_BAR
+from com.sun.star.accessibility.AccessibleRole import PAGE_TAB_LIST, DOCUMENT_TEXT, PARAGRAPH, MENU_BAR, POPUP_MENU, FRAME
+from com.sun.star.accessibility.AccessibleStateType import ENABLED, VISIBLE
+from com.sun.star.awt.PopupMenuDirection import EXECUTE_DOWN
 from com.sun.star.awt.PosSize import SIZE
 from com.sun.star.beans import PropertyValue
 from com.sun.star.frame import XStatusListener
@@ -400,6 +403,86 @@ class NotebookbarOffice(UITestCase):
                                    ("HomeTextEffectsMenu", "Text Effects and Typography"),
                                    ("HomeFindMenu", "Find"), ("HomeSelectMenu", "Select")):
                 self.assertEqual(label, self.command_label(".uno:" + command))
+
+    def open_popup_menu(self, xToolkit, count):
+        """The accessible of the popup menu with `count` entries that is open now, or None."""
+        for i in range(xToolkit.getTopWindowCount()):
+            xTop = xToolkit.getTopWindow(i)
+            if xTop is None:
+                continue
+            xAcc = xTop.getProperty("XAccessible")
+            queue = [xAcc.getAccessibleContext()] if xAcc is not None else []
+            for _ in range(2):  # the menu window, or its frame's only child
+                found = [x for x in queue if x.getAccessibleRole() == POPUP_MENU and x.getAccessibleChildCount() == count]
+                if found:
+                    return found[0]
+                queue = [x.getAccessibleChild(c).getAccessibleContext()
+                         for x in queue if x.getAccessibleRole() != FRAME
+                         for c in range(min(x.getAccessibleChildCount(), 8))]
+        return None
+
+    def executed_popup_entries(self, document, xPopup):
+        """{command: (shown, enabled)} of the entries of xPopup while it runs as the ribbon runs it.
+
+        A ribbon dropdown runs XPopupMenu::execute (popuptoolbarcontroller.cxx), which returns when the menu
+        closes: it runs on a thread, and the open menu is read through the accessible of its window. An entry
+        the menu hides has no VISIBLE state (vcl/source/accessibility/accessiblemenuitemcomponent.cxx)."""
+        xToolkit = self.xContext.ServiceManager.createInstance("com.sun.star.awt.Toolkit")
+        xParent = document.CurrentController.Frame.ContainerWindow
+        rect = uno.createUnoStruct("com.sun.star.awt.Rectangle", 40, 40, 1, 1)
+        count = xPopup.getItemCount()
+        thread = threading.Thread(target=xPopup.execute, args=(xParent, rect, EXECUTE_DOWN))
+        thread.start()
+        try:
+            self.wait_for(lambda: self.open_popup_menu(xToolkit, count) is not None, "the popup did not open")
+
+            def entries():
+                xMenu = self.open_popup_menu(xToolkit, count)
+                got = {}
+                for pos in range(count):
+                    command = xPopup.getCommand(xPopup.getItemId(pos))
+                    if command:  # separators have none
+                        states = xMenu.getAccessibleChild(pos).getAccessibleContext().getAccessibleStateSet()
+                        got[command] = (bool(states & VISIBLE), bool(states & ENABLED))
+                return got
+            return self.settle(entries)
+        finally:
+            xPopup.endExecute()
+            thread.join(10)
+            self.assertFalse(thread.is_alive(), "the popup did not close")
+
+    def set_dont_hide_disabled_entry(self, value):
+        provider = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.configuration.ConfigurationProvider", self.xContext)
+        access = provider.createInstanceWithArguments(
+            "com.sun.star.configuration.ConfigurationUpdateAccess",
+            (PropertyValue(Name="nodepath", Value="/org.openoffice.Office.Common/View/Menu"),))
+        access.setPropertyValue("DontHideDisabledEntry", value)
+        access.commitChanges()
+
+    def test_ribbon_popups_show_disabled_entries_greyed(self):
+        # T10: as Office does, a ribbon dropdown shows its disabled entries greyed, the five placeholders of
+        # Text Effects here, when View/Menu/DontHideDisabledEntry is true (Common.xcs, the default). A user who
+        # sets it to false gets them hidden, as the menu bar does. VCLXMenu::execute hid them either way.
+        placeholders = [".uno:HomeTextEffect?Effect:string=" + v
+                        for v in ("reflection", "glow", "numberstyles", "ligatures", "stylisticsets")]
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            got = {}
+            for dont_hide in (True, False):
+                self.set_dont_hide_disabled_entry(dont_hide)
+                try:
+                    xPopup, xController = self.menu_controller(".uno:HomeTextEffectsMenu", "home_texteffects", True)
+                    try:
+                        got[dont_hide] = self.executed_popup_entries(document, xPopup)
+                    finally:
+                        xController.dispose()
+                finally:
+                    self.set_dont_hide_disabled_entry(True)
+            for command in (".uno:OutlineFont", ".uno:Shadowed"):
+                self.assertEqual((True, True), got[True][command], command)
+                self.assertEqual((True, True), got[False][command], command)
+            self.assertEqual({c: (True, False) for c in placeholders}, {c: got[True][c] for c in placeholders})
+            self.assertEqual({c: (False, False) for c in placeholders}, {c: got[False][c] for c in placeholders})
 
     def width(self, xParent, wid):
         return int(get_state_as_dict(xParent.getChild(wid))["Size"].split("x")[0])

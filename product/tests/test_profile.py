@@ -103,9 +103,10 @@ class MenuDefaultsTest(unittest.TestCase):
 
     def test_the_schema_shows_disabled_menu_entries_by_default(self):
         # T10: Office shows disabled entries greyed. The schema default already says so
-        # (View/Menu/DontHideDisabledEntry), so a profile needs no override. What hides entries in the
-        # ribbon popups is toolkit/source/awt/vclxmenu.cxx, which sets HideDisabledEntries on every awt
-        # PopupMenu::execute whatever this setting says.
+        # (View/Menu/DontHideDisabledEntry), so a profile needs no override. The menu bar follows it
+        # (framework's MenuBarManager), and so do the ribbon popups and context menus since W9d:
+        # toolkit/source/awt/vclxmenu.cxx sets HideDisabledEntries on an awt PopupMenu::execute only
+        # when this setting is false.
         schema = ET.parse(Path(__file__).resolve().parents[2]
                           / "officecfg/registry/schema/org/openoffice/Office/Common.xcs")
         props = [p for p in schema.iter("prop") if p.get(OOR + "name") == "DontHideDisabledEntry"]
