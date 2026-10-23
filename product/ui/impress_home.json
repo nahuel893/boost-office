@@ -49,7 +49,7 @@
         ]},
         {"id": "Reset", "style": "small-label", "items": [
           {"cmd": "ResetLayout", "action": ".uno:AssignLayout?Reset:bool=true",
-           "icon": "cmd/sc_assignlayout.png", "office_label": "Reset"}
+           "icon": "cmd/sc_resetlayout.png", "office_label": "Reset"}
         ]},
         {"id": "Section", "style": "small-label", "items": [
           {"cmd": "HomeSectionMenu", "kind": "split", "office_label": "Section"}
@@ -141,7 +141,7 @@
       ],
       [
         {"id": "QuickStyles", "style": "large", "items": [
-          {"cmd": "SidebarDeck.StyleListDeck", "office_label": "Quick Styles"}
+          {"cmd": "SidebarDeck.StyleListDeck", "icon": "cmd/32/sidebardeck.stylelistdeck.png", "office_label": "Quick Styles"}
         ]}
       ],
       [

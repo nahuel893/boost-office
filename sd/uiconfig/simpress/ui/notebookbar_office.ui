@@ -3169,7 +3169,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnHomeResetLayout">Reset</property>
                                         <property name="action-name">.uno:AssignLayout?Reset:bool=true</property>
-                                        <property name="icon_name">cmd/sc_assignlayout.png</property>
+                                        <property name="icon_name">cmd/sc_resetlayout.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -4123,6 +4123,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnHomeSidebarDeck.StyleListDeck">Quick Styles</property>
                                         <property name="action-name">.uno:SidebarDeck.StyleListDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.stylelistdeck.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
