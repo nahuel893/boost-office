@@ -251,6 +251,19 @@ public:
     virtual void SAL_CALL statusChanged(const frame::FeatureStateEvent& rEvent) override;
 };
 
+/// The mail merge config item of the active view, only if it is at a record. The Finish & Merge
+/// entries create a config item when they query their state (SwView::EnsureMailMergeConfigItem),
+/// with no data source connected: its position is then -1 (or 0), which is not a record.
+std::shared_ptr<SwMailMergeConfigItem> GetConfigItemWithRecord()
+{
+    std::shared_ptr<SwMailMergeConfigItem> xConfigItem;
+    if (SwView* pView = GetActiveView())
+        xConfigItem = pView->GetMailMergeConfigItem();
+    if (xConfigItem && xConfigItem->GetResultSetPosition() < 1)
+        xConfigItem.reset();
+    return xConfigItem;
+}
+
 void MMCurrentEntryController::disposing(std::unique_lock<std::mutex>& rGuard)
 {
     svt::ToolboxController::disposing(rGuard);
@@ -298,9 +311,7 @@ void MMCurrentEntryController::statusChanged(const frame::FeatureStateEvent& rEv
     if (!m_xCurrentEdit)
         return;
 
-    std::shared_ptr<SwMailMergeConfigItem> xConfigItem;
-    if (SwView* pView = GetActiveView())
-        xConfigItem = pView->GetMailMergeConfigItem();
+    std::shared_ptr<SwMailMergeConfigItem> xConfigItem = GetConfigItemWithRecord();
 
     if (!xConfigItem || !rEvent.IsEnabled)
     {
@@ -355,9 +366,7 @@ void MMExcludeEntryController::statusChanged(const frame::FeatureStateEvent& rEv
     if (!m_xExcludeCheckbox)
         return;
 
-    std::shared_ptr<SwMailMergeConfigItem> xConfigItem;
-    if (SwView* pView = GetActiveView())
-        xConfigItem = pView->GetMailMergeConfigItem();
+    std::shared_ptr<SwMailMergeConfigItem> xConfigItem = GetConfigItemWithRecord();
 
     if (!xConfigItem || !rEvent.IsEnabled)
     {
