@@ -128,12 +128,12 @@
     {"name": "Media", "caption": "Media", "rows": 3, "columns": [
       [
         {"id": "Video", "style": "large", "items": [
-          {"cmd": "InsertVideo", "action": ".uno:InsertAVMedia", "office_label": "Video"}
+          {"cmd": "InsertVideo", "action": ".uno:InsertAVMedia", "icon": "cmd/32/insertvideo.png", "office_label": "Video"}
         ]}
       ],
       [
         {"id": "Audio", "style": "large", "items": [
-          {"cmd": "InsertAudio", "action": ".uno:InsertAVMedia", "office_label": "Audio"}
+          {"cmd": "InsertAudio", "action": ".uno:InsertAVMedia", "icon": "cmd/32/insertaudio.png", "office_label": "Audio"}
         ]}
       ],
       [

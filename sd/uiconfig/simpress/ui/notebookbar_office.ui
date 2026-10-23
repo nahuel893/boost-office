@@ -5571,6 +5571,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertVideo">Video</property>
                                         <property name="action-name">.uno:InsertAVMedia</property>
+                                        <property name="icon_name">cmd/32/insertvideo.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -5599,6 +5600,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertAudio">Audio</property>
                                         <property name="action-name">.uno:InsertAVMedia</property>
+                                        <property name="icon_name">cmd/32/insertaudio.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>

@@ -111,3 +111,18 @@ class _ImpressTabIcons:
 
 class ImpressHomeIconsTest(_ImpressTabIcons, unittest.TestCase):
     pass
+
+
+class ImpressInsertIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "Insert"
+
+    def test_video_and_audio_have_their_own_icons(self):
+        # The two buttons share `.uno:InsertAVMedia` as their action but are distinct widgets (decision 16): each
+        # names an explicit icon, and the two differ.
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        self.assertNotIn(icons.get("btnInsertInsertVideo"), (None, icons.get("btnInsertInsertAudio")))
+        self.assertIsNotNone(icons.get("btnInsertInsertAudio"))
