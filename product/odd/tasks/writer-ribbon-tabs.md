@@ -144,13 +144,13 @@ translations; T10 (a pending decision).
 | W9a | The per-app tab accent (design 3.4): Writer Word blue, Calc green | delegated (opus: C++ in vcl and sfx2) | [x] | d8c601d40 | off (ruling 10): controller spot check |
 | W9b | Visual polish, the parked defects: Mailings height, record box "-1", spin-field width, two-button columns, blank plain-command icons, Multiple Pages, dark style previews | delegated (opus: sw/svx C++ and the shared generator) | [x] (spin-field width moved to W9d) | afaaee16f, 0ef912ddf, 4b384a058, 559b013a0, 0322fbed1, 1e97d761f | off (ruling 10): controller spot check |
 | W9c | Greyed disabled menu entries (T10w) and the parked test-quality items | delegated (sonnet) | [x] (T10 moved to W9d) | 30ebef3a3, a2a701896, e33cf1b7e, 434a76e28 | off (ruling 10): controller spot check |
-| W9d | What W9b and W9c could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch, and T10 (`toolkit/source/awt/vclxmenu.cxx`) | delegated (opus: svx, sw and toolkit C++) | [ ] | | |
+| W9d | What W9b and W9c could not reach: spin-field width (svx), record navigation enabled outside a mail merge, the unused `editbox.ui`, the style preview cache on a light/dark switch, and T10 (`toolkit/source/awt/vclxmenu.cxx`) | delegated (opus: svx, sw and toolkit C++) | [x] (spin width partly, editbox.ui kept: rulings 11-12) | 2cfcb0b68, 6573da3bb, 9d91ce3f0, 3e2ac5e38, a78d8b075 | off (ruling 10): controller spot check |
 | W10 | Docs: `product/docs/writer-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | W11 | Visual gate: contact sheets, Writer preview picture, user gate | delegated (sonnet) | [ ] | | |
 | T9w | Office labels on the ribbon, for Writer and Calc together: the generator shows `office_label`; menus, help and tooltips keep LibreOffice's labels | delegated (opus: shared generator, vcl C++; Calc's output changes on purpose) | [x] | 9871de25c (data + generated), 22e203a66 (vcl), c293641c5 (generator + tests) | high (gen_ribbon.py starts processes). First review (9871de25c..c293641c5): false BLOCKER, abandoned with the user's authorization. Second review (a91cd6f15..c293641c5): granted, approved, acknowledged |
 | T9w-fit | Calc Formulas and Data fit at 1920 px again: the longer Excel labels pushed Calculation and Analyze behind `>>` | delegated (sonnet) | [x] | a0c9e3c2d | medium, under budget (pending in slice from c293641c5) |
 | IC1 | Plain grey line icons for Writer and Calc (ruling 8): no `fill` in the manifest; the icon test pins it | delegated (sonnet), inside W8b | [x] | 2a3cb6e54 | slice ff29c3f19..1607832ca (IC1 + W8b, 599 lines): medium, budget reached; consent relayed |
-| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu. W9c found the default already true and the hiding forced in `vclxmenu.cxx`; built in W9d | [ ] | | |
+| T10w | Greyed disabled popup entries, for Calc and Writer together (Calc's T10: LibreOffice's `DontHideDisabledEntry` hides them by default) | controller ruling under ruling 9: show them greyed, as Office does, in every menu. W9c found the default already true and the hiding forced in `vclxmenu.cxx`; built in W9d | [x] | 9d91ce3f0 | with W9d |
 | A1 | The accent: answered 2026-10-20, one accent per app, built in W9 | answered | [x] | | |
 
 Why this shape: the brief's shape, with W0 split in two (about 730 lines in one task would mix the shared
@@ -340,6 +340,15 @@ The controller's rulings can be overturned by the user.
    (`gentle-ai review mode disable --scope clone`); no review starts and no consent is relayed. The gate per task is
    the writer's own verification plus the controller's spot check (the unit suite, `gen_ribbon.py --all` leaving the
    tree clean, no soffice left, a look at the screenshots).
+11. **Layout spin fields stay 186 px wide (2026-10-23):** W9d narrowed the number area to Word's 72 px, but the two
+   +/- buttons are 96 px under adw-gtk3 (`vcl/unx/gtk3/custom-theme.cxx`). Compact spin buttons there would change
+   every spin field in every app, so the controller accepts 186 px; the design lists it as a known difference.
+12. **`sw/uiconfig/swriter/ui/editbox.ui` stays (2026-10-23):** nothing in sw loads it since W9b, but
+   `static/CustomTarget_emscripten_fs_image.mk:618` lists it; removing it is churn for no user-visible gain. The
+   guard test (a78d8b075) keeps every installed Writer `.ui` backed by a file.
+13. **Greyed entries in context menus too (2026-10-23):** W9d's T10 fix makes every awt popup, document context
+   menus included, show disabled entries greyed under Boost's default, as Office does; `DontHideDisabledEntry` =
+   false restores LibreOffice's behaviour. Upstream UITests that walk context menus by position were not run.
 
 ## Progress / evidence
 
@@ -975,8 +984,33 @@ The controller's rulings can be overturned by the user.
     `officecfg.build postprocess.build` exit 0; `git show --check` clean.
   - Controller check: 649 unit tests OK; the tree clean after `gen_ribbon.py --all`.
 
+- 2026-10-23, W9d (route: delegated, opus: svx, sw and toolkit C++). Commits:
+  - 2cfcb0b68: the Layout spin fields went from 195 to 186 px; the number area is 72 px (Word's) and "0,00 cm"
+    shows in full; the +/- buttons (96 px, `custom-theme.cxx`) are outside the surface (ruling 11). The sidebar's
+    Paragraph panel has its own fields and is unchanged.
+  - 6573da3bb: a mail merge counts as running only when its data source is connected (opening Finish & Merge
+    creates the config item, which the old check took for a running merge); the record navigation is disabled
+    outside one. UITest RED (`True is not false : MailMergeFirstEntry`), then GREEN.
+  - 9d91ce3f0 (T10): `VCLXMenu::execute` hides disabled entries only when `DontHideDisabledEntry` is false, so
+    ribbon dropdowns and context menus show them greyed (ruling 13). UITest on Text Effects: with the default the
+    5 placeholders are visible and disabled; with the setting off they are absent. RED, then GREEN. A dropdown
+    created while the setting was false keeps hiding until recreated.
+  - 3e2ac5e38: the style preview cache remembers the colors it drew with and starts again when they change; the
+    open gallery redraws on a theme change. A runtime light/dark switch could not be driven in the screenshot
+    harness; light and dark startup screenshots are right.
+  - a78d8b075: a guard test that every `.ui` `sw/UIConfig_swriter.mk` installs has a file; `editbox.ui` kept
+    (ruling 12).
+  - Evidence (report: `task-W9d-report.md`): 649 -> 650 unit tests OK before every commit;
+    `svx.build sw.build toolkit.build` exit 0; six UITests pass one at a time (two mail merge, the popup, the
+    Layout spin field, `test_tabbed_office_loads`, `test_tab_order`); `git show --check` clean; screenshots in
+    `w9d/`.
+  - Known before this task: the sidebar Paragraph panel cuts its indent fields ("0,00 cr").
+  - Controller check: 650 unit tests OK; the tree clean after `gen_ribbon.py --all`; the
+    Layout screenshot looked at: four fields, each showing "0,00 cm" in full.
+
 ## Next step
 
-W9d: what W9b and W9c could not reach, T10 included (delegated, opus; `task-W9d-brief.md`). Then W10 + W11 together
-(sonnet; `task-W10-W11-brief.md`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
+W10 + W11 together (delegated, sonnet; `task-W10-W11-brief.md`): screenshot tooling, the Writer preview picture and
+a refreshed Calc one, contact sheets, and the design doc as built. Then Impress
+(`product/odd/tasks/impress-ribbon-tabs.md`, branch `feature/impress-ribbon-tabs`). After Writer, Impress (`product/odd/tasks/impress-ribbon-tabs.md`), then GitHub prep and
 the install script (map: `task-GH1-report.md`).
