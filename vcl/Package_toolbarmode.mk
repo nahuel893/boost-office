@@ -16,6 +16,7 @@ $(eval $(call gb_Package_add_files_with_dir,toolbarmode_images,$(LIBO_SHARE_FOLD
     notebookbar.png \
     notebookbar_compact.png \
     notebookbar_office.png \
+    notebookbar_office_writer.png \
     notebookbar_groupedbar_compact.png \
     notebookbar_groupedbar_full.png \
     notebookbar_single.png \
