@@ -152,7 +152,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [x] | 70dbfd32e, 057581424 | 741 unit tests OK; UITests pass |
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [x] | d04c730e5 | 745 unit tests OK; fits at 1920 |
 | I3a | Insert, layout and behaviour | delegated (sonnet) | [x] | 24b68da34, 2c339b20a | 774 unit tests OK; UITests pass |
-| I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [ ] | | |
+| I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [x] | 108404dd7 | 779 unit tests OK; fits at 1920 |
 | I4a / I4b | Design (moved before Transitions) | as I2a / I2b | [ ] | | |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
@@ -511,7 +511,19 @@ Controller rulings (2026-10-23):
   - Controller check: 774 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked.
 
+- 2026-10-23, I3b (route: delegated, sonnet). Commit 108404dd7: 10 new Fluent manifest entries (no custom glyphs),
+  among them `insertvideo` and `insertaudio`, which Video and Audio name through explicit icons since both run
+  `.uno:InsertAVMedia`; `large` added to the existing `insertshapesmenu` and `gallery` entries; the Insert class in
+  `test_impress_icons.py` (RED: 58 missing icon members). No fit commit.
+  - Fit: at 1920 the tab ends at x=1517 (403 px margin); at 1600 nothing collapses; at 1366 Media, then Symbols,
+    collapse behind `>>`. The ribbon height equals Home's.
+  - Evidence (report: `task-I3b-report.md`): 774 -> 779 OK; `test_tabbed_office_loads` passes; `check-ui.sh` 0 new
+    warnings or fatals; Calc and Writer theme members byte-identical; screenshots light and dark at 1920, 1600 and
+    1366 plus the open Shapes menu in `assets/previews/impress-ribbon-tabs/i3b/`.
+  - Controller check: 779 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the 1920 light screenshot looked at.
+
 ## Next step
 
-I3b (delegated, sonnet; brief `task-I3b-brief.md`, which binds `task-Ib-common.md`): Insert icons, fit, screenshots.
-Then I4a, I4b, ... I8b; the a briefs bind `task-Ia-common.md` from I6a on.
+I4a (delegated, sonnet; brief `task-I4a-brief.md`): the Design tab, moved before Transitions. Then I4b, I5a, ...
+I8b; the a briefs bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
