@@ -490,6 +490,45 @@ class CaptionBaselineTest(unittest.TestCase):
         self.assertEqual([], broken)
 
 
+class StockCaptionStyleTest(unittest.TestCase):
+    """The stock pages that stay (File, Tools, Extension, the contextual tabs) read as one design with
+    the generated ones: their section captions are plain too, in every app (W12)."""
+
+    def test_no_caption_of_any_office_ui_is_italic(self):
+        for name in g.APPS:
+            text = office.app(name).office.read_text(encoding="utf-8")
+            self.assertNotIn('value="italic"', text, name)
+
+    def test_stock_captions_keep_the_generated_scale(self):
+        for name in g.APPS:
+            root = ET.parse(office.app(name).office).getroot()
+            wrong = []
+            for label in root.iter("object"):
+                if label.get("class") != "GtkLabel" or not label.get("id", "").startswith("lb"):
+                    continue
+                attrs = {a.get("name"): a.get("value") for a in label.findall("attributes/attribute")}
+                if attrs and attrs != {"scale": "0.9"}:
+                    wrong.append((label.get("id"), attrs))
+            self.assertEqual([], wrong, name)
+
+    def test_no_stock_page_centers_its_section_box_in_the_band(self):
+        # centered, the captions float above the baseline of the other pages; GTK's default is fill
+        for name in g.APPS:
+            root = ET.parse(office.app(name).office).getroot()
+            centered = [o.get("id") for o in root.iter("object")
+                        if o.get("class") == "sfxlo-PriorityMergedHBox" and o.get("id", "").startswith("pmhb")
+                        and [p.text for p in o.findall("property[@name='valign']")] == ["center"]]
+            self.assertEqual([], centered, name)
+
+    def test_the_caption_operation_is_idempotent_and_only_drops_the_italic_line(self):
+        text = ('<object class="GtkLabel" id="lbX">\n  <attributes>\n'
+                '    <attribute name="style" value="italic"/>\n    <attribute name="scale" value="0.9"/>\n'
+                '  </attributes>\n</object>')
+        once = g.apply_tabs(text, {})
+        self.assertEqual(text.replace('    <attribute name="style" value="italic"/>\n', ""), once)
+        self.assertEqual(once, g.apply_tabs(once, {}))
+
+
 class StackedColumnsTest(unittest.TestCase):
     """The committed office .ui files stack exactly the short columns that sit beside a large toolbox
     in a section with a row no toolbox starts in (W9b): Calc's .ui changes on purpose for this."""

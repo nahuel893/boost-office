@@ -17,8 +17,11 @@ LABELS = {"FileLabel": "~File", "HomeLabel": "~Home", "InsertLabel": "~Insert",
           "LayoutLabel": "Page ~Layout", "FunctionsLabel1": "For~mulas", "DataLabel": "~Data",
           "ReviewLabel": "~Review", "ViewLabel": "~View", "DevLabel": "~Tools", "HelpLabel": "Hel~p"}
 # phbInsert has a generated page since T2a, like phbHome and phbData; phbReview since T5a
-UNTOUCHED = CONTEXTUAL + ["phbFile"]
-BASELINE_ONLY = ["phbExtension", "phbTools"]  # only their box's valign changes (T-F1)
+# the stock pages differ from upstream in plain captions (W12); the others also have their box's
+# valign changed (T-F1, W12), a centered box floats the captions above the other pages' baseline
+UNTOUCHED = ["phbImage"]
+BASELINE_ONLY = ["phbFile", "phbDraw", "phbObject", "phbMedia", "phbPrint", "phbForm",
+                 "phbExtension", "phbTools"]
 
 
 def tab_children():
@@ -81,7 +84,7 @@ class CalcTabsTest(unittest.TestCase):
         self.assertIn('<property name="use-underline">True</property>', label)
 
     def test_every_other_tab_is_byte_identical_to_upstream(self):
-        up, mine = self.upstream.split("\n"), self.office.split("\n")
+        up, mine = g.plain_captions(self.upstream.split("\n")), self.office.split("\n")
         for page in UNTOUCHED:
             a, b = g.child_span(up, page), g.child_span(mine, page)
             self.assertEqual(up[a[0]:a[1] + 1], mine[b[0]:b[1] + 1], page)
@@ -89,8 +92,8 @@ class CalcTabsTest(unittest.TestCase):
             a, b = g.child_span(up, label), g.child_span(mine, label)
             self.assertEqual(up[a[0]:a[1] + 1], mine[b[0]:b[1] + 1], label)
 
-    def test_extension_and_tools_differ_from_upstream_only_in_the_box_valign(self):
-        up, mine = self.upstream.split("\n"), self.office.split("\n")
+    def test_the_other_stock_pages_differ_from_upstream_only_in_the_box_valign(self):
+        up, mine = g.plain_captions(self.upstream.split("\n")), self.office.split("\n")
         for page in BASELINE_ONLY:
             a, b = g.child_span(up, page), g.child_span(mine, page)
             old, new = up[a[0]:a[1] + 1], mine[b[0]:b[1] + 1]

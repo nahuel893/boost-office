@@ -6,7 +6,13 @@
   "properties": [
     {"id": "phbLayout", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbExtension", "name": "valign", "from": "center", "to": "fill"},
-    {"id": "pmhbTools", "name": "valign", "from": "center", "to": "fill"}
+    {"id": "pmhbTools", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbFile", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbDraw", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbObject", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbMedia", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbPrint", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbForm", "name": "valign", "from": "center", "to": "fill"}
   ],
   "move": [
     {"page": "phbFunctions", "tab": "FunctionsLabel1", "before": "phbData"}

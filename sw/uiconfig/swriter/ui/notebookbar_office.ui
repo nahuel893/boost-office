@@ -1291,7 +1291,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFileNew">New</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1398,7 +1397,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFileFile">Document</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1627,7 +1625,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFilePrint">Print</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1812,7 +1809,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFileProperties">Properties</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -10524,7 +10520,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableLayout">Layout</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -10765,7 +10760,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableSelect">Selection</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -10912,7 +10906,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableStyle">Style</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11059,7 +11052,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableAlignment">Alignment</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11260,7 +11252,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableFunctions">Functions</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11389,7 +11380,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelTableNumbers">Numbers</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11645,7 +11635,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelImage">Image</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11829,7 +11818,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelImageFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12010,7 +11998,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelImageAnchorWrap">Anchor &amp; Wrap</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12223,7 +12210,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelImagePositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12452,7 +12438,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelImageModify">Modify</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12797,7 +12782,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDraw">Drawing Object</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12958,7 +12942,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDrawFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13147,7 +13130,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDrawAnchorWrap">Anchor &amp; Wrap</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13360,7 +13342,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDrawPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13589,7 +13570,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDrawGrouping">Grouping</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13720,7 +13700,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelDraw3D">3D</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13985,7 +13964,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelObject">Object</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14114,7 +14092,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelObjectFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14295,7 +14272,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelObjectAnchorWrap">Anchor &amp; Wrap</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14508,7 +14484,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelObjectPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14848,7 +14823,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelMedia">Object</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14999,7 +14973,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelMediaAnchorWrap">Anchor &amp; Wrap</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15212,7 +15185,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelMediaPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15441,7 +15413,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelMediaPlayer">Media Player</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15670,7 +15641,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelPrintMode">Mode</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15823,7 +15793,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelPrintZoom">Zoom</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15983,7 +15952,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelPrintPrint">Print</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -16214,7 +16182,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFormMode">Mode</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -16345,7 +16312,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFormProperties">Properties</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -16534,7 +16500,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelFormControls">Controls</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -17091,7 +17056,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelToolsMacro">Macro</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -17217,7 +17181,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelToolsMessage">Message</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -17348,7 +17311,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedWriter|labelToolsAutoCorrection">AutoCorrection</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>

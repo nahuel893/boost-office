@@ -535,6 +535,17 @@ def set_property(lines, obj_id, name, old, new):
     raise LayoutError(f"{obj_id!r} has no {name} property")
 
 
+ITALIC = '<attribute name="style" value="italic"/>'
+
+
+def plain_captions(lines):
+    """Drop the italic style of every label's attributes: LibreOffice's stock pages (File, Tools,
+    Extension, the contextual tabs) set their section captions in italic, the generated sections
+    use the plain 0.9 scale. One default for every app, so every page of the ribbon reads as one
+    design, as in Office. Already plain counts as done, so the operation can be re-run."""
+    return [line for line in lines if line.strip() != ITALIC]
+
+
 def move_pair_before(lines, page, tab, before):
     """Move a tab page and its tab label (adjacent children) in front of another page."""
     a, b = child_span(lines, page)[0], child_span(lines, tab)[1]
@@ -576,12 +587,12 @@ def page_lines(add, tab_indent):
 
 def apply_tabs(ui_text, tabs):
     """Apply the tab operations of an app's tabs file (calc_tabs.json, ...): relabel, page
-    properties, move, positions, add pages.
+    properties, move, positions, add pages. Every app first gets plain captions on its stock pages.
 
     Each operation can be applied twice. Run it on the upstream notebookbar.ui, before the
     generated pages are spliced in.
     """
-    lines = ui_text.split("\n")
+    lines = plain_captions(ui_text.split("\n"))
     for op in tabs.get("relabel", []):
         relabel(lines, op["id"], op["from"], op["to"])
     for op in tabs.get("properties", []):

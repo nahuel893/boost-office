@@ -1144,7 +1144,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbFile">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->
                       <object class="GtkGrid" id="gdFileNew">
@@ -1215,7 +1215,6 @@
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFileNew">New</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1267,7 +1266,6 @@
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFileFile">Document</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1446,7 +1444,6 @@
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFilePrint">Print</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -1571,7 +1568,6 @@
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFileProperties">Properties</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11181,7 +11177,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labeImageImage">Image</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11355,7 +11350,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelImageFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11555,7 +11549,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelImagePositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -11812,7 +11805,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelImageModify">Modify</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12162,7 +12154,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbDraw">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->
@@ -12183,7 +12175,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelDraw">Drawing Object</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12334,7 +12325,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelDrawFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12534,7 +12524,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelDrawPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12791,7 +12780,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelDrawGrouping">Grouping</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -12922,7 +12910,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelDraw3D">3D</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13168,7 +13155,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbObject">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->
@@ -13189,7 +13176,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelObject">Object</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13342,7 +13328,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelObjectFillBorder">Fill &amp; Border</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13542,7 +13527,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelObjectPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -13913,7 +13897,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbMedia">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=2 n-rows=3 -->
@@ -13934,7 +13918,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelMedia">Media</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14018,7 +14001,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelMediaPositioning">Positioning</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14275,7 +14257,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelMediaPlayer">Media Player</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14486,7 +14467,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbPrint">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->
@@ -14507,7 +14488,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelPrintPage">Page</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14634,7 +14614,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelPrintZoom">Zoom</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14776,7 +14755,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelPrintPrint">Print</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -14996,7 +14974,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="no" context="TabbedCalc|lbPrintClose"></property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15126,7 +15103,7 @@
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbForm">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">fill</property>
                     <property name="vexpand">True</property>
                     <child>
                       <!-- n-columns=3 n-rows=3 -->
@@ -15147,7 +15124,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFormMode">Mode</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15278,7 +15254,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFormProperties">Properties</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -15467,7 +15442,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelFormControls">Controls</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -16015,7 +15989,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelToolsMacro">Macro</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
@@ -16141,7 +16114,6 @@
                             <property name="vexpand">True</property>
                             <property name="label" translatable="yes" context="TabbedCalc|labelToolsAutoCorrection">AutoCorrection</property>
                             <attributes>
-                              <attribute name="style" value="italic"/>
                               <attribute name="scale" value="0.9"/>
                             </attributes>
                             <accessibility>
