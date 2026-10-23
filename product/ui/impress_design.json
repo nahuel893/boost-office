@@ -6,7 +6,8 @@
     {"name": "Themes", "caption": "Themes", "rows": 3, "columns": [
       [
         {"id": "Themes", "style": "large", "items": [
-          {"cmd": "SidebarDeck.SdMasterPagesDeck", "office_label": "Themes"}
+          {"cmd": "SidebarDeck.SdMasterPagesDeck", "icon": "cmd/32/sidebardeck.sdmasterpagesdeck.png",
+           "office_label": "Themes"}
         ]}
       ]
     ]},
@@ -30,7 +31,8 @@
       ],
       [
         {"id": "FormatBackground", "style": "large", "items": [
-          {"cmd": "SidebarDeck.PropertyDeck", "office_label": "Format Background"}
+          {"cmd": "SidebarDeck.PropertyDeck", "icon": "cmd/32/sidebardeck.propertydeck.png",
+           "office_label": "Format Background"}
         ]}
       ]
     ]}

@@ -29,6 +29,7 @@ def tab_page(tab):
 
 class _ImpressTabIcons:
     TAB = "Home"
+    SELF_DRAWN = frozenset()  # commands whose toolbox control paints its own widget, not a command image
 
     @classmethod
     def setUpClass(cls):
@@ -62,7 +63,7 @@ class _ImpressTabIcons:
                     wanted = [icon.text]
                 else:
                     cmd = button.find("property[@name='action-name']").text.removeprefix(".uno:").lower()
-                    if cmd in calc_icons.LIST_BOX_COMMANDS:
+                    if cmd in calc_icons.LIST_BOX_COMMANDS | self.SELF_DRAWN:
                         continue
                     wanted = [f"cmd/sc_{cmd}.png", f"cmd/lc_{cmd}.png"] + ([f"cmd/32/{cmd}.png"] if large else [])
                 for theme in self.zips:
@@ -91,7 +92,7 @@ class _ImpressTabIcons:
             action = button.find("property[@name='action-name']")
             if action is None or button.find("property[@name='icon_name']") is not None:
                 continue
-            if action.text.removeprefix(".uno:").lower() in calc_icons.LIST_BOX_COMMANDS:
+            if action.text.removeprefix(".uno:").lower() in calc_icons.LIST_BOX_COMMANDS | self.SELF_DRAWN:
                 continue
             if action.text not in listed:
                 blank.append(action.text)
@@ -126,3 +127,26 @@ class ImpressInsertIconsTest(_ImpressTabIcons, unittest.TestCase):
                 icons[button.get("id")] = icon.text
         self.assertNotIn(icons.get("btnInsertInsertVideo"), (None, icons.get("btnInsertInsertAudio")))
         self.assertIsNotNone(icons.get("btnInsertInsertAudio"))
+
+
+class ImpressDesignIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "Design"
+    # The theme colors box (`.uno:ThemeSelectorPanel`) is a stock control that draws its own swatches.
+    SELF_DRAWN = frozenset({"themeselectorpanel"})
+
+    def icon_names(self):
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        return icons
+
+    def test_the_deck_openers_name_their_own_icons(self):
+        # `.uno:SidebarDeck.*` has no command image bit (Quick Styles on Home does the same): Themes and Format
+        # Background name a 32 px icon each, and the two differ.
+        icons = self.icon_names()
+        themes = icons.get("btnDesignSidebarDeck.SdMasterPagesDeck")
+        background = icons.get("btnDesignSidebarDeck.PropertyDeck")
+        self.assertEqual("cmd/32/sidebardeck.sdmasterpagesdeck.png", themes)
+        self.assertEqual("cmd/32/sidebardeck.propertydeck.png", background)

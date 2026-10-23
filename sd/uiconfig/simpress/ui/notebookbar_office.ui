@@ -5767,6 +5767,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnDesignSidebarDeck.SdMasterPagesDeck">Themes</property>
                                         <property name="action-name">.uno:SidebarDeck.SdMasterPagesDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdmasterpagesdeck.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6043,6 +6044,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnDesignSidebarDeck.PropertyDeck">Format Background</property>
                                         <property name="action-name">.uno:SidebarDeck.PropertyDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.propertydeck.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
