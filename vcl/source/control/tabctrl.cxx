@@ -21,6 +21,7 @@
 
 #include <tools/json_writer.hxx>
 #include <tools/mapunit.hxx>
+#include <vcl/BitmapReadAccess.hxx>
 #include <vcl/builder.hxx>
 #include <vcl/help.hxx>
 #include <vcl/layout.hxx>
@@ -42,6 +43,7 @@
 #include <window.h>
 
 #include <deque>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -93,6 +95,8 @@ struct ImplTabCtrlData
 {
     std::vector< ImplTabItem >      maItemList;
     VclPtr<ListBox>                 mpListBox;
+    // Underline color of the selected tab, see NotebookbarTabControlBase::SetAccentColor
+    std::optional<Color>            moAccentColor;
 };
 
 // for the Tab positions
@@ -898,6 +902,42 @@ void TabControl::ImplDrawItem(vcl::RenderContext& rRenderContext, ImplTabItem co
         bNativeOK
             = rRenderContext.DrawNativeControl(ControlType::TabItem, ControlPart::Entire,
                                                aCtrlRegion, nState, tiValue, OUString());
+
+        // An app accent replaces the color of the selected tab's native underline: with theme colors,
+        // gtk3 draws it as "box-shadow: inset 0 -3px" in the active color (custom-theme.cxx), shaped
+        // by the GTK theme's rounded corners. Repaint exactly those pixels, so the shape stays native.
+        if (bNativeOK && (nState & ControlState::SELECTED) && mpTabCtrlData->moAccentColor
+            && ThemeColors::VclPluginCanUseThemeColors())
+        {
+            const Color aNativeColor = ThemeColors::GetThemeColors().GetActiveColor().GetRGBColor();
+            const Bitmap aTab(rRenderContext.GetBitmap(aCtrlRegion.TopLeft(), aCtrlRegion.GetSize()));
+            BitmapScopedReadAccess pAccess(aTab);
+            if (pAccess)
+            {
+                auto popIt = rRenderContext.ScopedPush(vcl::PushFlags::LINECOLOR
+                                                       | vcl::PushFlags::FILLCOLOR);
+                rRenderContext.SetLineColor();
+                rRenderContext.SetFillColor(*mpTabCtrlData->moAccentColor);
+                const tools::Long nWidth = pAccess->Width();
+                for (tools::Long nY = 0; nY < pAccess->Height(); ++nY)
+                {
+                    auto isNative = [&](tools::Long nX)
+                    { return pAccess->GetColor(nY, nX).GetRGBColor() == aNativeColor; };
+                    for (tools::Long nX = 0; nX < nWidth; ++nX)
+                    {
+                        if (!isNative(nX))
+                            continue;
+                        tools::Long nEnd = nX;
+                        while (nEnd + 1 < nWidth && isNative(nEnd + 1))
+                            ++nEnd;
+                        rRenderContext.DrawRect(tools::Rectangle(
+                            Point(aCtrlRegion.Left() + nX, aCtrlRegion.Top() + nY),
+                            Point(aCtrlRegion.Left() + nEnd, aCtrlRegion.Top() + nY)));
+                        nX = nEnd;
+                    }
+                }
+            }
+        }
     }
 
     if (!bNativeOK)
@@ -2250,6 +2290,14 @@ void NotebookbarTabControlBase::SetToolBox( ToolBox* pToolBox )
 void NotebookbarTabControlBase::SetIconClickHdl( Link<NotebookBar*, void> aHdl )
 {
     m_aIconClickHdl = aHdl;
+}
+
+void NotebookbarTabControlBase::SetAccentColor(const std::optional<Color>& rColor)
+{
+    if (mpTabCtrlData->moAccentColor == rColor)
+        return;
+    mpTabCtrlData->moAccentColor = rColor;
+    Invalidate();
 }
 
 static bool lcl_isValidPage(const ImplTabItem& rItem)

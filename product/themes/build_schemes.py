@@ -2,7 +2,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Build the "Boost Light"/"Boost Dark" ColorSchemes as a configuration-only extension."""
+"""Build the "Boost Light"/"Boost Dark" ColorSchemes as a configuration-only extension.
+
+The extension also carries each app's notebookbar tab accent (ToolbarMode AccentColor and
+AccentColorDark, design 3.4 of product/docs/writer-ribbon-tabs.md). Install or update it in a profile
+with: instdir/program/unopkg add -f product/themes/out/boost-schemes.oxt -env:UserInstallation=file://<profile>
+"""
 import argparse
 import json
 import sys
@@ -26,6 +31,8 @@ MANIFEST = """<?xml version="1.0" encoding="UTF-8"?>
 <manifest:manifest xmlns:manifest="http://openoffice.org/2001/manifest">
   <manifest:file-entry manifest:media-type="application/vnd.sun.star.configuration-data"
                        manifest:full-path="ColorSchemes.xcu"/>
+  <manifest:file-entry manifest:media-type="application/vnd.sun.star.configuration-data"
+                       manifest:full-path="ToolbarMode.xcu"/>
 </manifest:manifest>
 """
 
@@ -75,6 +82,28 @@ def xcu(palette):
     return "\n".join(lines) + "\n"
 
 
+def tab_accent_values(palette):
+    # app -> (light, dark), in the order of palette["schemes"].
+    return {app: tuple(palette["tokens"][token]) for app, token in palette.get("tab_accents", {}).items()}
+
+
+def toolbarmode_xcu(palette):
+    # One soffice process hosts every app, so a color scheme cannot carry a per-app accent: the selected
+    # notebookbar tab's underline reads it from ToolbarMode Applications/<App> (ToolbarMode.xcs, group
+    # Application). No oor:op: the app nodes exist in the stock ToolbarMode.xcu, only two values are added.
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"'
+             ' xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="ToolbarMode" oor:package="org.openoffice.Office.UI">',
+             '  <node oor:name="Applications">']
+    for app, (light, dark) in tab_accent_values(palette).items():
+        lines.append(f'    <node oor:name={quoteattr(app)}>')
+        for prop, color in (("AccentColor", light), ("AccentColorDark", dark)):
+            lines.append(f'      <prop oor:name="{prop}"><value>{int(color.lstrip("#"), 16)}</value></prop>')
+        lines.append("    </node>")
+    lines += ["  </node>", "</oor:component-data>"]
+    return "\n".join(lines) + "\n"
+
+
 def build(palette, out):
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -82,6 +111,7 @@ def build(palette, out):
         z.writestr("description.xml", DESCRIPTION)
         z.writestr("META-INF/manifest.xml", MANIFEST)
         z.writestr("ColorSchemes.xcu", xcu(palette))
+        z.writestr("ToolbarMode.xcu", toolbarmode_xcu(palette))
     return out
 
 

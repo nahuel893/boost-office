@@ -21,10 +21,13 @@
 #define INCLUDED_VCL_TABCTRL_HXX
 
 #include <config_options.h>
+#include <tools/color.hxx>
 #include <vcl/dllapi.h>
 #include <vcl/ctrl.hxx>
 #include <vcl/EnumContext.hxx>
 #include <vcl/NotebookbarContextControl.hxx>
+
+#include <optional>
 
 class ImplTabItem;
 struct ImplTabCtrlData;
@@ -183,6 +186,8 @@ public:
 
     void SetContext( vcl::EnumContext::Context eContext ) override;
     void SetIconClickHdl( Link<NotebookBar*, void> aHdl );
+    /// Draws the selected tab's native underline in rColor; std::nullopt keeps the native color.
+    void SetAccentColor(const std::optional<Color>& rColor);
     void SetToolBox( ToolBox* pToolBox );
     ToolBox* GetToolBox() { return m_pShortcuts; }
     Control* GetOpenMenu();

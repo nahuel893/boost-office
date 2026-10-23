@@ -18,9 +18,11 @@
  */
 
 #include <chrono>
+#include <optional>
 #include <vcl/builderfactory.hxx>
 #include <vcl/commandevent.hxx>
 #include <vcl/layout.hxx>
+#include <vcl/settings.hxx>
 #include <vcl/notebookbar/notebookbar.hxx>
 #include <vcl/tabpage.hxx>
 #include <sfx2/viewfrm.hxx>
@@ -39,6 +41,7 @@
 #include <sidebar/SidebarToolBox.hxx>
 #include <toolkit/awt/vclxmenu.hxx>
 #include <cppuhelper/implbase.hxx>
+#include <unotools/confignode.hxx>
 
 #define ICON_SIZE 25
 constexpr OUString TOOLBAR_STR = u"private:resource/toolbar/notebookbarshortcuts"_ustr;
@@ -147,6 +150,29 @@ public:
         return sfx2::sidebar::SidebarToolBox::KeyInput( rKEvt );
     }
 };
+
+// The optional tab accent of the module's app: ToolbarMode Applications/<App> AccentColor, or
+// AccentColorDark for a dark user interface. Unset means the native underline color.
+std::optional<Color> lcl_getTabAccentColor(const Reference<XComponentContext>& xContext,
+                                           const OUString& rModuleName, bool bDark)
+{
+    OUString aApp;
+    switch (vcl::EnumContext::GetApplicationEnum(rModuleName))
+    {
+        case vcl::EnumContext::Application::Writer: aApp = u"Writer"_ustr; break;
+        case vcl::EnumContext::Application::Calc: aApp = u"Calc"_ustr; break;
+        case vcl::EnumContext::Application::Impress: aApp = u"Impress"_ustr; break;
+        case vcl::EnumContext::Application::Draw: aApp = u"Draw"_ustr; break;
+        default: return {};
+    }
+    const utl::OConfigurationTreeRoot aAppNode(
+        xContext, "org.openoffice.Office.UI.ToolbarMode/Applications/" + aApp, false);
+    sal_Int32 nColor = 0;
+    if (aAppNode.isValid()
+        && (aAppNode.getNodeValue(bDark ? u"AccentColorDark"_ustr : u"AccentColor"_ustr) >>= nColor))
+        return Color(ColorTransparency, nColor);
+    return {};
+}
 
 }
 
@@ -291,6 +317,8 @@ void NotebookbarTabControl::StateChanged(StateChangedType nStateChange)
         m_xFrame = pViewFrm->GetFrame().GetFrameInterface();
         OUString aModuleName = xModuleManager->identify( m_xFrame );
 
+        SetAccentColor(lcl_getTabAccentColor(
+            xContext, aModuleName, GetSettings().GetStyleSettings().GetDialogColor().IsDark()));
         FillShortcutsToolBox( xContext, m_xFrame, aModuleName, pToolBox );
 
         Size aSize( pToolBox->GetOptimalSize() );

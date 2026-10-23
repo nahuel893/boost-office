@@ -35,6 +35,10 @@ TEXT_PAIRS = [  # (foreground role, background role) that carry text
     ("MenuHighlightTextColor", "MenuHighlightColor"),
 ]
 OOR = "{http://openoffice.org/2001/registry}"
+# Design 3.4 (approved 2026-10-20): one tab accent per app, as ToolbarMode Applications/<App> AccentColor
+# (light) and AccentColorDark. Word's brand blue for Writer; Calc keeps its green. The dark blue applies
+# accent.calc's light-to-dark step (same hue, +0.269 lightness, saturation x0.713) to #185ABD.
+APP_ACCENTS = {"Writer": ("#185ABD", "#83A6DB"), "Calc": ("#1B7A3E", "#5CC27E")}
 
 
 class SchemesTest(unittest.TestCase):
@@ -81,9 +85,44 @@ class SchemesTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             oxt = bs.build(self.palette, Path(tmp) / "boost-schemes.oxt")
             with zipfile.ZipFile(oxt) as z:
-                self.assertEqual({"description.xml", "META-INF/manifest.xml", "ColorSchemes.xcu"},
-                                 set(z.namelist()))
+                self.assertEqual({"description.xml", "META-INF/manifest.xml", "ColorSchemes.xcu",
+                                  "ToolbarMode.xcu"}, set(z.namelist()))
                 self.assertIn("org.boost.colorschemes", z.read("description.xml").decode())
+                manifest = z.read("META-INF/manifest.xml").decode()
+                for xcu in ("ColorSchemes.xcu", "ToolbarMode.xcu"):
+                    self.assertIn(f'manifest:full-path="{xcu}"', manifest)
+
+    def test_writer_accent_is_word_blue_with_ui_contrast(self):
+        self.assertEqual(list(APP_ACCENTS["Writer"]), self.palette["tokens"]["accent.writer"])
+        self.assertEqual(list(APP_ACCENTS["Calc"]), self.palette["tokens"]["accent.calc"])
+        light, dark = APP_ACCENTS["Writer"]
+        self.assertGreaterEqual(bs.contrast(light, SPEC["WindowColor"][0]), 3.0)
+        self.assertGreaterEqual(bs.contrast(dark, SPEC["WindowColor"][1]), 3.0)
+
+    def test_extension_carries_one_tab_accent_per_app_in_both_themes(self):
+        def child(node, name):
+            return next(c for c in node if c.get(OOR + "name") == name)
+        with tempfile.TemporaryDirectory() as tmp:
+            oxt = bs.build(self.palette, Path(tmp) / "boost-schemes.oxt")
+            with zipfile.ZipFile(oxt) as z:
+                root = ET.fromstring(z.read("ToolbarMode.xcu"))
+        self.assertEqual(("ToolbarMode", "org.openoffice.Office.UI"),
+                         (root.get(OOR + "name"), root.get(OOR + "package")))
+        apps = child(root, "Applications")
+        self.assertEqual(set(APP_ACCENTS), {node.get(OOR + "name") for node in apps})
+        for app, (light, dark) in APP_ACCENTS.items():
+            node = child(apps, app)
+            # Modify the app's existing node, never replace it: its Modes come from the stock ToolbarMode.xcu.
+            self.assertIsNone(node.get(OOR + "op"), app)
+            for prop, color in (("AccentColor", light), ("AccentColorDark", dark)):
+                self.assertEqual(str(int(color.lstrip("#"), 16)), child(node, prop).find("value").text,
+                                 f"{app} {prop}")
+
+    def test_the_global_accent_roles_stay_calc_green(self):
+        # Check boxes, focus rings, progress bars and the selection tint stay global (design 3.4).
+        for index, scheme in enumerate(("Boost Light", "Boost Dark")):
+            self.assertEqual(APP_ACCENTS["Calc"][index], self.values[scheme]["ActiveColor"])
+            self.assertEqual(APP_ACCENTS["Calc"][index], self.values[scheme]["ActiveBorderColor"])
 
 
 if __name__ == "__main__":

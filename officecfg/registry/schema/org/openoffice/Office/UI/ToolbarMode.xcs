@@ -101,6 +101,16 @@
           <desc>Contains name of currently used mode.</desc>
         </info>
       </prop>
+      <prop oor:name="AccentColor" oor:type="xs:int">
+        <info>
+          <desc>Optional color of the selected notebookbar tab's underline in this application. When unset, the native color is used.</desc>
+        </info>
+      </prop>
+      <prop oor:name="AccentColorDark" oor:type="xs:int">
+        <info>
+          <desc>Optional color of the selected notebookbar tab's underline in this application when the user interface is dark. When unset, the native color is used.</desc>
+        </info>
+      </prop>
       <set oor:name="Modes" oor:node-type="ModeEntry">
         <info>
           <desc>Contains list of toolbar modes.</desc>
