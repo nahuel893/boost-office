@@ -147,7 +147,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 |----|------|-------|--------|---------|-----|
 | I0a | Generator and test tooling for three apps; Impress office `.ui` = stock + tab operations; registration; suppressions; unique-id test | delegated (opus: shared code, Calc and Writer byte-identical) | [x] | 987d57ed7 (generated), 57a17c72f (code) | off (ruling 12): controller spot check |
 | I0b | Impress Tabbed Office mode end to end: ToolbarMode node, cui whitelist, profile (template dialog off), launcher, shot-tab, uitest.sh, UITest scaffold | delegated (opus: cui C++ and shared scripts); shot-tab and the office.sh fix inline (controller) | [x] | 880e4cd87, 085cab01e, ee1b573e9 | off (ruling 12): controller spot check |
-| I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [ ] | | |
+| I1 | All 24 placeholder slots in one sd rebuild, with the registry and the slot test | delegated (opus: C++ and `.sdi`) | [x] | f7c63b9f6 | off (ruling 12): controller spot check |
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [ ] | | |
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [ ] | | |
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [ ] | | |
@@ -364,6 +364,13 @@ Controller rulings (2026-10-23):
     decides whether the deck controls feel close enough.
 15. **Fit is through control sizes**, as in Calc and Writer: the generator has no collapse-priority key, so I2b and
     I9 change sizes, never add a priority mechanism.
+16. **Placeholder slots stay out of Tools > Customize** (I1): AccelConfig, MenuConfig and ToolBoxConfig FALSE, as
+    every Calc and Writer placeholder, not the TRUE the I1 brief copied from `AddSlideSection`.
+17. **The disable group runs last in `ViewShellBase::GetState`** (I1): `Implementation::GetSlotState` puts a state
+    for every slot it is asked about (`ViewShellBase.cxx:1552`), which replaces an earlier disable, so design 3.3
+    and decision 23 ("first") are corrected in I10. Draw's `GraphicViewShellBase` inherits `ViewShellBase`'s slot
+    table, so in Draw the 24 commands answer as known and disabled, like the existing Impress-only
+    `.uno:LeftPaneImpress`; nothing visible changes in Draw.
 
 ## Progress / evidence
 
@@ -416,6 +423,17 @@ Controller rulings (2026-10-23):
     picture until I11.
   - Controller check: 697 unit tests OK; the tree clean after `gen_ribbon.py --all`.
 
+- 2026-10-23, I1 (route: delegated, opus). Commit f7c63b9f6 (7 files, 1047 lines): `SID_BOOST` =
+  `SID_SD_START + 900` and `SID_BOOST_*` +0..+23 in `sd/inc/app.hrc` (27900-27923; the sd range used up to 27458);
+  24 declarations in `sdraw.sdi`; the slots in `ViewShellBaseView` with `GetState` only; one disable group at the
+  end of `ViewShellBase::GetState` (ruling 17); `product/tests/placeholders_impress.json` (no labels yet; the tab
+  tasks add them); `test_impress_slots.py` (13 tests); the UITest `test_placeholder_slots_disabled`.
+  - Evidence (report: `task-I1-report.md`): RED for the unit tests and the UITest (with the group first:
+    `True is not false : HomeSection?Action:string=removeall`); 697 -> 710 OK; `sd.build` exit 0; the three Impress
+    UITests pass; Draw's files and generated `sdgslots.hxx` have no Boost slots; `git show --check` clean.
+  - Rulings 16-17 record the two deviations from the brief and the design.
+  - Controller check: 710 unit tests OK; the tree clean after `gen_ribbon.py --all`.
+
 ## Next step
 
-I1 (delegated, opus; brief `task-I1-brief.md`): the 24 placeholder slots.
+I2a (delegated, sonnet; brief `task-I2a-brief.md`): Home part 1 (Undo, Clipboard, Slides, Font, Paragraph).
