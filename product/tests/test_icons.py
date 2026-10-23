@@ -189,13 +189,15 @@ class IconThemeTest(unittest.TestCase):
             for alias, target in links.items():
                 self.assertIn(target, names, f"{theme}: {alias} -> {target}")
 
-    def test_filled_icons_use_their_fill_color(self):
-        # Office-like fills: the paper of "paste" carries the yellow fill.
+    def test_icons_are_plain_lines_without_a_fill(self):
+        # Plain grey line icons: no manifest entry carries a fill, and "paste" has no pixel near the old yellow.
+        filled = [e["name"] for e in bt.load_manifest()["icons"] if "fill" in e]
+        self.assertEqual([], filled, f"{len(filled)} entries still have a fill")
         for theme, fill in (("boost", "F5C96A"), ("boost_dark", "B08A3A")):
             target = tuple(int(fill[i:i + 2], 16) for i in (0, 2, 4))
             pixels = self.image(theme, "cmd/lc_paste.png").get_flattened_data()
             close = [p for p in pixels if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 20]
-            self.assertGreater(len(close), 40, f"{theme}: paste fill missing")
+            self.assertEqual([], close, f"{theme}: paste still has the fill color")
 
     def test_badges_use_their_accent(self):
         # (icon, accent hex in light, accent hex in dark)
@@ -303,20 +305,6 @@ class IconThemeTest(unittest.TestCase):
                 self.assertEqual(outline, bbox(self.render(filled, size)), f"fill {glyph}@{size}")
                 banded = {"name": "probe", "layers": [{"glyph": glyph}, band]}
                 self.assertEqual(outline, bbox(self.render(banded, size)), f"band {glyph}@{size}")
-
-    def test_cells_are_filled_up_to_their_thin_lines(self):
-        # Fluent's filled table has 6/8/6 px columns, the outline 5/6/5 px cells: the fill must
-        # still reach every thin line, with no transparent or white sliver beside it.
-        entry = next(e for e in bt.load_manifest()["icons"] if e["name"] == "insertcell")
-        for mode in ("light", "dark"):
-            for size in (24, 32):
-                icon = self.render(entry, size, mode)
-                lo, hi = round(size * 0.19), size // 2  # top-left cells, clear of the badge
-                for y in range(lo, hi):
-                    for x in range(lo, hi):
-                        r, g, b, a = icon.getpixel((x, y))
-                        self.assertGreaterEqual(a, 250, f"{mode}:insertcell@{size} gap at {x},{y}")
-                        self.assertLess(min(r, g, b), 240, f"{mode}:insertcell@{size} white at {x},{y}")
 
     def test_inner_lines_match_the_border(self):
         for mode in ("light", "dark"):
