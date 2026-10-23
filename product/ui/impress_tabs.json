@@ -1,0 +1,25 @@
+{
+  "properties": [
+    {"id": "Home Tab", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "Layout", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbFile", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbHome", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbInsert", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbLayout", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbDesign", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbSlideShow", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbReview", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbView", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbTable", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbImage", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbDraw", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbObject", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbMedia", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbForm", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbMaster", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbOutline", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhb3D", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbExtension", "name": "valign", "from": "center", "to": "fill"},
+    {"id": "pmhbTools", "name": "valign", "from": "center", "to": "fill"}
+  ]
+}
