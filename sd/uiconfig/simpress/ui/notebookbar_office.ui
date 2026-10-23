@@ -5720,6 +5720,421 @@
               </packing>
             </child>
             <child>
+              <object class="sfxlo-PriorityHBox" id="Design">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <!-- product:Design-begin -->
+                <child>
+                  <object class="sfxlo-PriorityMergedHBox" id="pmhbDesign">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">fill</property>
+                    <child>
+                      <object class="VclOptionalBox" id="obDesignThemes">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdDesignThemes">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcDesignThemes">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxDesignThemes">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnDesignSidebarDeck.SdMasterPagesDeck">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnDesignSidebarDeck.SdMasterPagesDeck">Themes</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdMasterPagesDeck</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbDesignThemes">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelDesignThemes">Themes</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbDesignThemes"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obDesignVariants">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdDesignVariants">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcDesignVariants">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxDesignThemeColors">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnDesignThemeSelectorPanel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnDesignThemeSelectorPanel">Variants</property>
+                                        <property name="action-name">.uno:ThemeSelectorPanel</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="colDesignVariants1">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxDesignMore">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">icons</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkMenuToolButton" id="btnDesignDesignVariantsMenu">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes" context="TabbedImpress|btnDesignDesignVariantsMenu">More</property>
+                                            <property name="action-name">.uno:DesignVariantsMenu</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">False</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbDesignVariants">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelDesignVariants">Variants</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbDesignVariants"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obDesignCustomize">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdDesignCustomize">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcDesignCustomize">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxDesignSlideSize">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnDesignSlideSetup">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnDesignSlideSetup">Slide Size</property>
+                                        <property name="action-name">.uno:SlideSetup</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxDesignFormatBackground">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnDesignSidebarDeck.PropertyDeck">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnDesignSidebarDeck.PropertyDeck">Format Background</property>
+                                        <property name="action-name">.uno:SidebarDeck.PropertyDeck</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbDesignCustomize">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelDesignCustomize">Customize</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbDesignCustomize"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <!-- product:Design-end -->
+              </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="DesignLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="TabbedImpress|DesignTabLabel">~Design</property>
+                <property name="use-underline">True</property>
+              </object>
+              <packing>
+                <property name="position">3</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
               <object class="sfxlo-PriorityHBox" id="Layout">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -6317,7 +6732,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">3</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child type="tab">
@@ -6325,117 +6740,6 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes" context="TabbedImpress|LayoutTabLabel">~Layout</property>
-                <property name="use-underline">True</property>
-              </object>
-              <packing>
-                <property name="position">3</property>
-                <property name="tab-fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="sfxlo-PriorityHBox" id="Design">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
-                  <object class="sfxlo-PriorityMergedHBox" id="pmhbDesign">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="valign">fill</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <!-- n-columns=2 n-rows=3 -->
-                      <object class="GtkGrid" id="gdDesignTheme">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">6</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
-                        <child>
-                          <object class="GtkLabel" id="lbDesignTheme">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelDesignTheme">Color Theme</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
-                            <accessibility>
-                              <relation type="label-for" target="gdDesignTheme"/>
-                            </accessibility>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxDesignThemeColorsPanel">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnDesignThemeColorsPanel">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ThemeSelectorPanel</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbDesignTheme"/>
-                        </accessibility>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <object class="GtkLabel" id="DesignLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="TabbedImpress|DesignTabLabel">~Design</property>
                 <property name="use-underline">True</property>
               </object>
               <packing>

@@ -21,5 +21,11 @@
     {"id": "pmhb3D", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbExtension", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbTools", "name": "valign", "from": "center", "to": "fill"}
-  ]
+  ],
+  "move": [
+    {"page": "Design", "tab": "DesignLabel", "before": "Layout"}
+  ],
+  "positions": {
+    "Design": 3, "DesignLabel": 3, "Layout": 4, "LayoutLabel": 4
+  }
 }

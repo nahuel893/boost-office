@@ -1,0 +1,38 @@
+{
+  "page": "Design",
+  "id_prefix": "Design",
+  "context": "TabbedImpress",
+  "sections": [
+    {"name": "Themes", "caption": "Themes", "rows": 3, "columns": [
+      [
+        {"id": "Themes", "style": "large", "items": [
+          {"cmd": "SidebarDeck.SdMasterPagesDeck", "office_label": "Themes"}
+        ]}
+      ]
+    ]},
+    {"name": "Variants", "caption": "Variants", "rows": 3, "columns": [
+      [
+        {"id": "ThemeColors", "style": "large", "items": [
+          {"cmd": "ThemeSelectorPanel", "office_label": "Variants"}
+        ]}
+      ],
+      [
+        {"id": "More", "style": "small", "items": [
+          {"cmd": "DesignVariantsMenu", "kind": "split", "office_label": "More"}
+        ]}
+      ]
+    ]},
+    {"name": "Customize", "caption": "Customize", "rows": 3, "columns": [
+      [
+        {"id": "SlideSize", "style": "large", "items": [
+          {"cmd": "SlideSetup", "office_label": "Slide Size"}
+        ]}
+      ],
+      [
+        {"id": "FormatBackground", "style": "large", "items": [
+          {"cmd": "SidebarDeck.PropertyDeck", "office_label": "Format Background"}
+        ]}
+      ]
+    ]}
+  ]
+}
