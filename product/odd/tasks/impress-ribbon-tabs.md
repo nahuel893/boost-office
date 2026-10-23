@@ -154,7 +154,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I3a | Insert, layout and behaviour | delegated (sonnet) | [x] | 24b68da34, 2c339b20a | 774 unit tests OK; UITests pass |
 | I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [x] | 108404dd7 | 779 unit tests OK; fits at 1920 |
 | I4a | Design (moved before Transitions), layout and behaviour | delegated (sonnet) | [x] | 8a94a9d48, 1d6710d99 | 806 unit tests OK; UITests pass |
-| I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [ ] | | |
+| I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [x] | d76206f30, 374cf2422, 584d6a44a | 812 unit tests OK; fits at every width |
+| I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [ ] | | |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
@@ -384,6 +385,13 @@ Controller rulings (2026-10-23):
 20. **The theme colors box is fixed in svx (I4b):** the stock `svx/uiconfig/ui/themeselectorpanel.ui` clips its
     swatches in every notebookbar (it requests a height of 65 for taller items). I4b changes that file only, in its own
     `fix(svx)` commit, keeping the ribbon band at its height; the fix also helps LibreOffice's stock Design tab.
+21. **Greyed popup entries on gtk3 (I4c):** the I2b and I4b screenshots show ribbon dropdowns without their disabled
+    entries on the gtk3 backend (the real app and shot-tab), although W9d's headless UITest passes: gtk3 native
+    popups hide disabled entries unless the menu has `MenuFlags::AlwaysShowDisabledEntries`
+    (`vcl/unx/gtk3/gtksalmenu.cxx:385-399`), and W9d only stopped adding `HideDisabledEntries`
+    (`toolkit/source/awt/vclxmenu.cxx:518-521`). I4c (opus) sets the always-show flag in `VCLXMenu::execute` when
+    `DontHideDisabledEntry` is true, proves it with gtk3 screenshots in Impress, Writer and Calc, and comes before
+    I5a because it affects the finished apps too.
 
 ## Progress / evidence
 
@@ -544,7 +552,20 @@ Controller rulings (2026-10-23):
     `.superpowers` file tracked; the screenshot looked at (Design between Insert and Layout; Themes, Format Background
     and More without icons until I4b).
 
+- 2026-10-23, I4b (route: delegated, sonnet). Commits d76206f30 (Design icons, the Design class in
+  `test_impress_icons.py`), 374cf2422 (`fix(svx)`: `themeselectorpanel.ui` height-request 65 -> 80, iconview
+  margin 0, item padding 0, row spacing 5; ruling 20) and 584d6a44a (icons for the Variants menu items through
+  manifest `aliases`). No fit commit.
+  - Fit: the tab ends at about x=765; nothing collapses at 1920, 1600 or 1366. The theme colors box shows whole and
+    is about 433 px wide (was 361); the slide pane starts at y=224 on Design and on Home, so the band height holds.
+  - Finding: the Variants menu screenshot shows only "Theme...", and I2b's Arrange menu also lacks its disabled
+    entries: ruling 21, task I4c.
+  - Evidence (report: `task-I4b-report.md`): 806 -> 812 OK (RED first for the Design icon tests); screenshots light
+    and dark at 1920, 1600 and 1366 plus the open Variants menu in `assets/previews/impress-ribbon-tabs/i4b/`.
+  - Controller check: 812 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the Variants menu screenshot looked at.
+
 ## Next step
 
-I4b (delegated, sonnet; brief `task-I4b-brief.md`, which binds `task-Ib-common.md`): Design icons, fit, the theme
-colors box. Then I5a, I5b, ... I8b; the a briefs bind `task-Ia-common.md` from I6a on.
+I4c (delegated, opus; brief `task-I4c-brief.md`): greyed popup entries on gtk3. Then I5a, I5b, ... I8b; the a briefs
+bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
