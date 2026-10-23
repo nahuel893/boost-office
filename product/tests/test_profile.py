@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import contextlib
 import io
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -170,6 +171,28 @@ class MenuDefaultsTest(unittest.TestCase):
         props = [p for p in schema.iter("prop") if p.get(OOR + "name") == "DontHideDisabledEntry"]
         self.assertEqual(1, len(props))
         self.assertEqual("true", props[0].findtext("value"))
+
+    def test_awt_popups_ask_native_backends_to_show_disabled_entries(self):
+        # I4c: not adding HideDisabledEntries is enough for vcl's own menus, but gtk3's native popups
+        # (vcl/unx/gtk3/gtksalmenu.cxx, GtkSalMenu::Update) hide disabled entries unless the menu has
+        # AlwaysShowDisabledEntries. So VCLXMenu::execute sets that flag when the setting is true and
+        # the popup was not asked to hide them (controlmenucontroller.cxx's hideDisabledEntries(true)
+        # must keep working, and AlwaysShowDisabledEntries would override it), before it executes.
+        source = (Path(__file__).resolve().parents[2] / "toolkit/source/awt/vclxmenu.cxx").read_text(
+            encoding="utf-8")
+        match = re.search(r"sal_Int16 VCLXMenu::execute\([^{]*\{(.*?)\n\}", source, re.S)
+        self.assertIsNotNone(match, "no VCLXMenu::execute")
+        code = " ".join(re.sub(r"//[^\n]*", "", match.group(1)).split())
+        self.assertRegex(
+            code,
+            r"if \(!DontHideDisabledEntry::get\(\)\) [^;]*\| MenuFlags::HideDisabledEntries\); "
+            r"else if \(!\([^;]*& MenuFlags::HideDisabledEntries\)\) "
+            r"[^;]*\| MenuFlags::AlwaysShowDisabledEntries\);",
+            "the setting false hides disabled entries; true without a hide flag always shows them")
+        self.assertEqual(1, code.count("MenuFlags::AlwaysShowDisabledEntries"),
+                         "AlwaysShowDisabledEntries is set only in that branch")
+        self.assertLess(code.index("MenuFlags::AlwaysShowDisabledEntries"), code.index("->Execute("),
+                        "the flag is set before the popup executes")
 
 
 if __name__ == "__main__":

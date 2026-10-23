@@ -516,9 +516,14 @@ sal_Int16 VCLXMenu::execute(
     }
     PopupMenu* pPopupMenu = static_cast<PopupMenu*>(pMenu.get());
     // #102790# context menus hide their disabled entries, unless the user wants them shown greyed,
-    // as the menu bar does: then a popup keeps the flags it was given
+    // as the menu bar does: then a popup keeps the flags it was given, and one that was not asked to
+    // hide them also gets AlwaysShowDisabledEntries, because native popups (gtk3's
+    // GtkSalMenu::Update) hide disabled entries without it
+    const MenuFlags nMenuFlags = pPopupMenu->GetMenuFlags();
     if (!DontHideDisabledEntry::get())
-        pPopupMenu->SetMenuFlags(pPopupMenu->GetMenuFlags() | MenuFlags::HideDisabledEntries);
+        pPopupMenu->SetMenuFlags(nMenuFlags | MenuFlags::HideDisabledEntries);
+    else if (!(nMenuFlags & MenuFlags::HideDisabledEntries))
+        pPopupMenu->SetMenuFlags(nMenuFlags | MenuFlags::AlwaysShowDisabledEntries);
     // cannot call this with mutex locked because it will call back into us
     return pPopupMenu->Execute(
         VCLUnoHelper::GetWindow(rxWindowPeer), vcl::unohelper::ConvertToVCLRect(rPos),
