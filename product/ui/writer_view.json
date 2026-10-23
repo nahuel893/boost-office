@@ -6,29 +6,29 @@
   "sections": [
     {"name": "Views", "caption": "Views", "rows": 3, "columns": [
       [{"id": "ReadMode", "style": "large", "items": [
-        {"cmd": "ReadMode", "action": ".uno:ViewMode?Mode:string=read", "office_label": "Read Mode"}]}],
+        {"cmd": "ReadMode", "icon": "cmd/32/viewmode_read.png", "action": ".uno:ViewMode?Mode:string=read", "office_label": "Read Mode"}]}],
       [{"id": "PrintLayout", "style": "large", "items": [{"cmd": "PrintLayout", "office_label": "Print Layout"}]}],
       [{"id": "WebLayout", "style": "large", "items": [{"cmd": "BrowseView", "office_label": "Web Layout"}]}],
       [
         {"id": "Outline", "style": "small-label", "items": [
-          {"cmd": "Outline", "action": ".uno:ViewMode?Mode:string=outline", "office_label": "Outline"}]},
+          {"cmd": "Outline", "icon": "cmd/sc_viewmode_outline.png", "action": ".uno:ViewMode?Mode:string=outline", "office_label": "Outline"}]},
         {"id": "Draft", "style": "small-label", "items": [
-          {"cmd": "Draft", "action": ".uno:ViewMode?Mode:string=draft", "office_label": "Draft"}]}
+          {"cmd": "Draft", "icon": "cmd/sc_viewmode_draft.png", "action": ".uno:ViewMode?Mode:string=draft", "office_label": "Draft"}]}
       ]
     ]},
     {"name": "Immersive", "caption": "Immersive", "rows": 3, "columns": [
       [{"id": "Focus", "style": "large", "items": [{"cmd": "FullScreen", "office_label": "Focus"}]}],
       [{"id": "ImmersiveReader", "style": "large", "items": [
-        {"cmd": "ImmersiveReader", "action": ".uno:ViewMode?Mode:string=immersive", "office_label": "Immersive Reader"}]}]
+        {"cmd": "ImmersiveReader", "icon": "cmd/32/viewmode_immersive.png", "action": ".uno:ViewMode?Mode:string=immersive", "office_label": "Immersive Reader"}]}]
     ]},
     {"name": "DarkMode", "caption": "Dark Mode", "rows": 3, "columns": [
       [{"id": "DarkMode", "style": "large", "items": [{"cmd": "ChangeTheme", "office_label": "Dark Mode"}]}]
     ]},
     {"name": "PageMovement", "caption": "Page Movement", "rows": 3, "columns": [
       [{"id": "Vertical", "style": "large", "items": [
-        {"cmd": "PageMovementVertical", "action": ".uno:ViewPageMovement?Mode:string=vertical", "office_label": "Vertical"}]}],
+        {"cmd": "PageMovementVertical", "icon": "cmd/32/viewpagemovement_vertical.png", "action": ".uno:ViewPageMovement?Mode:string=vertical", "office_label": "Vertical"}]}],
       [{"id": "SideToSide", "style": "large", "items": [
-        {"cmd": "PageMovementSideToSide", "action": ".uno:ViewPageMovement?Mode:string=sidetoside", "office_label": "Side to Side"}]}]
+        {"cmd": "PageMovementSideToSide", "icon": "cmd/32/viewpagemovement_sidetoside.png", "action": ".uno:ViewPageMovement?Mode:string=sidetoside", "office_label": "Side to Side"}]}]
     ]},
     {"name": "Show", "caption": "Show", "rows": 3, "columns": [
       [
@@ -54,11 +54,11 @@
       [{"id": "Split", "style": "large", "items": [{"cmd": "ViewSplit", "office_label": "Split"}]}],
       [
         {"id": "ViewSideBySide", "style": "small-label", "items": [
-          {"cmd": "SideBySide", "action": ".uno:ViewSideBySide?Action:string=toggle", "office_label": "View Side by Side"}]},
+          {"cmd": "SideBySide", "icon": "cmd/sc_viewsidebyside_toggle.png", "action": ".uno:ViewSideBySide?Action:string=toggle", "office_label": "View Side by Side"}]},
         {"id": "SynchronousScrolling", "style": "small-label", "items": [
-          {"cmd": "SyncScrolling", "action": ".uno:ViewSideBySide?Action:string=sync", "office_label": "Synchronous Scrolling"}]},
+          {"cmd": "SyncScrolling", "icon": "cmd/sc_viewsidebyside_sync.png", "action": ".uno:ViewSideBySide?Action:string=sync", "office_label": "Synchronous Scrolling"}]},
         {"id": "ResetWindowPosition", "style": "small-label", "items": [
-          {"cmd": "ResetWindowPosition", "action": ".uno:ViewSideBySide?Action:string=reset", "office_label": "Reset Window Position"}]}
+          {"cmd": "ResetWindowPosition", "icon": "cmd/sc_viewsidebyside_reset.png", "action": ".uno:ViewSideBySide?Action:string=reset", "office_label": "Reset Window Position"}]}
       ],
       [{"id": "SwitchWindows", "style": "large", "items": [
         {"cmd": "ViewSwitchWindowsMenu", "kind": "split", "office_label": "Switch Windows"}]}]

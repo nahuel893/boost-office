@@ -9122,6 +9122,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewMode?Mode:string=read</property>
+                                        <property name="icon_name">cmd/32/viewmode_read.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9203,6 +9204,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewMode?Mode:string=outline</property>
+                                        <property name="icon_name">cmd/sc_viewmode_outline.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9227,6 +9229,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewMode?Mode:string=draft</property>
+                                        <property name="icon_name">cmd/sc_viewmode_draft.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9357,6 +9360,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewMode?Mode:string=immersive</property>
+                                        <property name="icon_name">cmd/32/viewmode_immersive.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9563,6 +9567,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewPageMovement?Mode:string=vertical</property>
+                                        <property name="icon_name">cmd/32/viewpagemovement_vertical.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9590,6 +9595,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewPageMovement?Mode:string=sidetoside</property>
+                                        <property name="icon_name">cmd/32/viewpagemovement_sidetoside.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -10127,6 +10133,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewSideBySide?Action:string=toggle</property>
+                                        <property name="icon_name">cmd/sc_viewsidebyside_toggle.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -10151,6 +10158,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewSideBySide?Action:string=sync</property>
+                                        <property name="icon_name">cmd/sc_viewsidebyside_sync.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -10175,6 +10183,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:ViewSideBySide?Action:string=reset</property>
+                                        <property name="icon_name">cmd/sc_viewsidebyside_reset.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
