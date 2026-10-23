@@ -153,7 +153,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [x] | d04c730e5 | 745 unit tests OK; fits at 1920 |
 | I3a | Insert, layout and behaviour | delegated (sonnet) | [x] | 24b68da34, 2c339b20a | 774 unit tests OK; UITests pass |
 | I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [x] | 108404dd7 | 779 unit tests OK; fits at 1920 |
-| I4a / I4b | Design (moved before Transitions) | as I2a / I2b | [ ] | | |
+| I4a | Design (moved before Transitions), layout and behaviour | delegated (sonnet) | [x] | 8a94a9d48, 1d6710d99 | 806 unit tests OK; UITests pass |
+| I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [ ] | | |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
@@ -380,6 +381,9 @@ Controller rulings (2026-10-23):
     shape. The Columns menu holds only `.uno:TextAttributes` ("Text Attributes..."), the three column variants are
     gone, and a UITest pins the failure so it flags if the slot ever gets a mapping. One, Two and Three Columns as
     real commands are later C++ work (a slot mapping in svx), outside this feature.
+20. **The theme colors box is fixed in svx (I4b):** the stock `svx/uiconfig/ui/themeselectorpanel.ui` clips its
+    swatches in every notebookbar (it requests a height of 65 for taller items). I4b changes that file only, in its own
+    `fix(svx)` commit, keeping the ribbon band at its height; the fix also helps LibreOffice's stock Design tab.
 
 ## Progress / evidence
 
@@ -523,7 +527,24 @@ Controller rulings (2026-10-23):
   - Controller check: 779 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked; the 1920 light screenshot looked at.
 
+- 2026-10-23, I4a (route: delegated, sonnet). Commits 8a94a9d48 (`impress_design.json`, the `move` of Design
+  before Layout with positions Design 3 and Layout 4 in `impress_tabs.json`, and the regenerated `.ui` and
+  suppressions: 4 files, +466/-114) and 1d6710d99 (the `DesignVariantsMenu` popup, Controller.xcu nodes, labels,
+  `test_impress_design_ui.py`, 10 UITests, the shot-tab fake-list test).
+  - Choices, accepted: Slide Size is a plain button (the design lists no menu); its UITest reads the TargetURL and
+    opens the dialog through `.uno:PageSetup`.
+  - Finding: the theme colors box is clipped at the top by about 10 px, as on the stock page:
+    `svx/uiconfig/ui/themeselectorpanel.ui:22-23` requests a height of 65 for taller items. Controller ruling 20:
+    I4b fixes it in that file (its surface grows by that one file), in its own commit.
+  - Commit 1 alone would fail the new design-test checks (the test file and nodes are in commit 2); not run alone.
+  - Evidence (report: `task-I4a-report.md`): 779 -> 806 OK; the 10 new UITests, the load and tab-order UITests
+    pass; the build exit 0; `check-ui.sh` 0 new warnings or fatals; the six Calc and Writer sha256 values unchanged;
+    `git show --check` clean; screenshot `assets/previews/impress-ribbon-tabs/i4a/design-light-1920.png`.
+  - Controller check: 806 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the screenshot looked at (Design between Insert and Layout; Themes, Format Background
+    and More without icons until I4b).
+
 ## Next step
 
-I4a (delegated, sonnet; brief `task-I4a-brief.md`): the Design tab, moved before Transitions. Then I4b, I5a, ...
-I8b; the a briefs bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
+I4b (delegated, sonnet; brief `task-I4b-brief.md`, which binds `task-Ib-common.md`): Design icons, fit, the theme
+colors box. Then I5a, I5b, ... I8b; the a briefs bind `task-Ia-common.md` from I6a on.
