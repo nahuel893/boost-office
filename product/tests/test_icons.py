@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OFFICE = ROOT / "sc/uiconfig/scalc/ui/notebookbar_office.ui"
 # Rendered by toolbar controllers as list boxes; they show no icon.
 LIST_BOX_COMMANDS = {"charfontname", "fontheight", "numberformattype", "styleapply"}
+LARGE_ICON_SIZE = "5"  # the .ui icon_size of a 32 px toolbox; 3 = 24 px, 1 = 16 px (gen_ribbon.STYLES)
 EXPECTED_SIZE = {"cmd/sc_": 16, "cmd/lc_": 24, "cmd/32/": 32}
 # (glyph, custom, scanline across straight strokes, outer runs only): "row" crosses vertical strokes
 # at y = pos * size, "col" crosses horizontal strokes at x = pos * size. The rings of "thousands"
@@ -124,7 +125,7 @@ class IconThemeTest(unittest.TestCase):
         for box in tab_page(tab).iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
-            large = box.find("property[@name='icon_size']").text == "5"
+            large = box.find("property[@name='icon_size']").text == LARGE_ICON_SIZE
             for button in box.findall("child/object"):
                 icon = button.find("property[@name='icon_name']")
                 action = button.find("property[@name='action-name']").text
@@ -143,7 +144,7 @@ class IconThemeTest(unittest.TestCase):
         for box in page.iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
-            large = box.find("property[@name='icon_size']").text == "5"
+            large = box.find("property[@name='icon_size']").text == LARGE_ICON_SIZE
             for button in box.findall("child/object"):
                 icon = button.find("property[@name='icon_name']")
                 if icon is not None:

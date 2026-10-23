@@ -37,3 +37,9 @@ def expected_office_ui(name="calc"):
     files = app(name)
     return g.regenerate_all(files.upstream.read_text(encoding="utf-8"),
                             json.loads(files.tabs.read_text(encoding="utf-8")), page_layouts(name))
+
+
+def office_labels(layout):
+    """URL -> office_label of every ribbon item in one page layout that carries one."""
+    return {g.item_url(i): i["office_label"] for s in layout["sections"] for b in g.boxes_of(s)
+            for i in b["items"] if "office_label" in i}

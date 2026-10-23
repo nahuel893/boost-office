@@ -158,7 +158,8 @@ class WriterHelpUiTest(unittest.TestCase):
             self.assertEqual(label, labels[url], url)
             self.assertEqual(label + " (not available yet)", tips[url], url)
             self.assertIn(url, flagged, url)
-        self.assertEqual(1, len(PLACEHOLDER_LABELS))
+        # every row left is still an unimplemented slot of the registry (implementing one drops it)
+        self.assertLessEqual(set(PLACEHOLDER_LABELS), set(placeholders.all_urls(placeholders.registry("writer"))))
 
     def test_labels_follow_the_design(self):
         labels = commands_xcu(app="writer")

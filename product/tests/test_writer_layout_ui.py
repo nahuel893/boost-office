@@ -95,7 +95,8 @@ MENUS = {
 # the dropdown commands that Calc already owns (its names, Writer nodes with a "Writer" suffix)
 CALC_NAMES = {"PageLayoutBringForwardMenu", "PageLayoutSendBackwardMenu", "PageLayoutAlignMenu",
               "PageLayoutGroupMenu", "PageLayoutRotateMenu"}
-NEW_LABELS = {  # the five missing label nodes of the plan (LibreOffice's own wording; Word's is office_label)
+NEW_LABELS = {  # the four missing spin-field label nodes (LibreOffice's own wording; Word's is office_label);
+    # the plan's fifth, .uno:PageAreaDialog, is asserted by the Design test
     ".uno:LeftParaMargin": "Before Text Indent", ".uno:RightParaMargin": "After Text Indent",
     ".uno:AboveSpacing": "Above Paragraph Spacing", ".uno:BelowSpacing": "Below Paragraph Spacing"}
 

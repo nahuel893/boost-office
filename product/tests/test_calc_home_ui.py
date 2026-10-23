@@ -31,9 +31,7 @@ class CalcHomeUiTest(unittest.TestCase):
     def test_excels_label_is_in_office_label_where_it_differs_from_libreoffices(self):
         # T9w: the ribbon shows Excel's label (gen_ribbon turns office_label into the button's label);
         # menus, help and tooltips keep LibreOffice's. Icon-only buttons and placeholders have none.
-        got = {g.item_url(i): i["office_label"] for s in self.layout["sections"] for b in g.boxes_of(s)
-               for i in b["items"] if "office_label" in i}
-        self.assertEqual(EXCEL_LABELS, got)
+        self.assertEqual(EXCEL_LABELS, office.office_labels(self.layout))
 
     def test_sections_follow_annex_1(self):
         self.assertEqual(SECTIONS, [s["name"] for s in self.layout["sections"]])

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Icon coverage of Writer's Home, Insert, Design, Layout, References, Mailings, Review, View and Help tabs: every command of the generated page has an icon in both
 themes, at the sizes the tab uses (the same contract as test_icons.py has for Calc's tabs)."""
+import json
 import tempfile
 import unittest
 import zipfile
@@ -11,6 +12,8 @@ from xml.etree import ElementTree as ET
 
 from product.icons import build_theme as bt
 from product.tests import test_icons as calc_icons
+from product.tests.test_icons import LARGE_ICON_SIZE
+from product.ui import gen_ribbon as g
 
 ROOT = Path(__file__).resolve().parents[2]
 OFFICE = ROOT / "sw/uiconfig/swriter/ui/notebookbar_office.ui"
@@ -42,7 +45,6 @@ def home_page():
 
 class _WriterTabIcons:
     TAB = "Home"
-    MIN_OBJECTS = 40
 
     @classmethod
     def setUpClass(cls):
@@ -69,7 +71,7 @@ class _WriterTabIcons:
         for box in tab_page(self.TAB).iter("object"):
             if box.get("class") != "sfxlo-NotebookbarToolBox":
                 continue
-            large = box.find("property[@name='icon_size']").text == "5"
+            large = box.find("property[@name='icon_size']").text == LARGE_ICON_SIZE
             for button in box.findall("child/object"):
                 icon = button.find("property[@name='icon_name']")
                 if icon is not None:
@@ -84,8 +86,14 @@ class _WriterTabIcons:
                     missing += [f"{theme}:{m}" for m in wanted if m not in names and links.get(m) not in names]
         return missing
 
-    def test_the_page_has_buttons(self):
-        self.assertGreater(len(list(tab_page(self.TAB).iter("object"))), self.MIN_OBJECTS)
+    def test_the_page_has_a_button_for_every_layout_item(self):
+        # the buttons of the page's toolboxes, against the items of the tab's layout file
+        layout = json.loads((ROOT / f"product/ui/writer_{self.TAB.lower()}.json").read_text(encoding="utf-8"))
+        items = sum(len(b["items"]) for s in layout["sections"] for b in g.boxes_of(s))
+        buttons = sum(len(box.findall("child/object")) for box in tab_page(self.TAB).iter("object")
+                      if box.get("class") == "sfxlo-NotebookbarToolBox")
+        self.assertGreater(items, 0)
+        self.assertEqual(items, buttons)
 
     def test_every_button_has_an_icon_in_both_themes(self):
         self.assertEqual(["boost", "boost_dark"], sorted(self.zips))
@@ -113,39 +121,31 @@ class WriterHomeIconsTest(_WriterTabIcons, unittest.TestCase):
 
 class WriterInsertIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Insert"
-    MIN_OBJECTS = 20
 
 
 class WriterDesignIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Design"
-    MIN_OBJECTS = 8
 
 
 class WriterLayoutIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Layout"
-    MIN_OBJECTS = 20
 
 
 class WriterReferencesIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "References"
-    MIN_OBJECTS = 15
 
 
 class WriterMailingsIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Mailings"
-    MIN_OBJECTS = 15
 
 
 class WriterReviewIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Review"
-    MIN_OBJECTS = 15
 
 
 class WriterViewIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "View"
-    MIN_OBJECTS = 15
 
 
 class WriterHelpIconsTest(_WriterTabIcons, unittest.TestCase):
     TAB = "Help"
-    MIN_OBJECTS = 5

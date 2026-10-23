@@ -282,7 +282,8 @@ class WriterReviewUiTest(unittest.TestCase):
         for url, label in PLACEHOLDER_LABELS.items():
             self.assertEqual(label, labels[url], url)
             self.assertEqual(label + " (not available yet)", tips[url], url)
-        self.assertEqual(8, len(PLACEHOLDER_LABELS))
+        # every row left is still an unimplemented slot of the registry (implementing one drops it)
+        self.assertLessEqual(set(PLACEHOLDER_LABELS), set(placeholders.all_urls(placeholders.registry("writer"))))
 
     def test_the_new_commands_have_the_image_flag(self):
         flagged = flagged_commands(app="writer")
