@@ -545,6 +545,11 @@ Bitmap StylesPreviewWindow_Base::GetCachedPreview(const StylePreviewDescriptor& 
         ScopedVclPtrInstance<VirtualDevice> pImg;
         const Size aSize(100, 24);
         pImg->SetOutputSizePixel(aSize);
+        // Draw on the colors of the list around the previews, not on a virtual device's white
+        // with black text, which is a white tile in a dark theme. A style's own colors still win.
+        const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
+        pImg->SetFillColor(rStyleSettings.GetFieldColor());
+        pImg->SetTextColor(rStyleSettings.GetFieldTextColor());
 
         StyleItemController aStyleController(rStyle);
         aStyleController.Paint(*pImg);
