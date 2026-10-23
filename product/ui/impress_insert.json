@@ -1,0 +1,146 @@
+{
+  "page": "Insert",
+  "id_prefix": "Insert",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu Insert"],
+  "sections": [
+    {"name": "Slides", "caption": "Slides", "rows": 3, "columns": [
+      [
+        {"id": "NewSlide", "style": "large", "items": [
+          {"cmd": "InsertPage", "kind": "split", "office_label": "New Slide"}
+        ]}
+      ],
+      [
+        {"id": "ReuseSlides", "style": "large", "items": [
+          {"cmd": "ImportSlideFromFile", "office_label": "Reuse Slides"}
+        ]}
+      ]
+    ]},
+    {"name": "Tables", "caption": "Tables", "rows": 3, "columns": [
+      [
+        {"id": "Table", "style": "large", "items": [
+          {"cmd": "InsertTable", "kind": "split", "office_label": "Table"}
+        ]}
+      ]
+    ]},
+    {"name": "Images", "caption": "Images", "rows": 3, "columns": [
+      [
+        {"id": "Pictures", "style": "large", "items": [
+          {"cmd": "InsertGraphic", "office_label": "Pictures"}
+        ]}
+      ],
+      [
+        {"id": "Screenshot", "style": "small-label", "items": [
+          {"cmd": "InsertScreenshot", "office_label": "Screenshot"}
+        ]},
+        {"id": "PhotoAlbum", "style": "small-label", "items": [
+          {"cmd": "PhotoAlbumDialog", "office_label": "Photo Album"}
+        ]}
+      ]
+    ]},
+    {"name": "Illustrations", "caption": "Illustrations", "rows": 3, "columns": [
+      [
+        {"id": "Shapes", "style": "large", "items": [
+          {"cmd": "InsertShapesMenu", "kind": "split", "office_label": "Shapes"}
+        ]}
+      ],
+      [
+        {"id": "Icons", "style": "large", "items": [
+          {"cmd": "Gallery", "office_label": "Icons"}
+        ]}
+      ],
+      [
+        {"id": "Models3D", "style": "small-label", "items": [
+          {"cmd": "Insert3DModels", "office_label": "3D Models"}
+        ]},
+        {"id": "SmartArt", "style": "small-label", "items": [
+          {"cmd": "InsertSmartArt", "office_label": "SmartArt"}
+        ]},
+        {"id": "Chart", "style": "small-label", "items": [
+          {"cmd": "InsertObjectChart", "office_label": "Chart"}
+        ]}
+      ]
+    ]},
+    {"name": "Links", "caption": "Links", "rows": 3, "columns": [
+      [
+        {"id": "Zoom", "style": "large", "items": [
+          {"cmd": "InsertZoomMenu", "kind": "split", "office_label": "Zoom"}
+        ]}
+      ],
+      [
+        {"id": "Link", "style": "large", "items": [
+          {"cmd": "HyperlinkDialog", "office_label": "Link"}
+        ]}
+      ],
+      [
+        {"id": "Action", "style": "large", "items": [
+          {"cmd": "AnimationEffects", "office_label": "Action"}
+        ]}
+      ]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [
+        {"id": "Comment", "style": "large", "items": [
+          {"cmd": "InsertAnnotation", "office_label": "Comment"}
+        ]}
+      ]
+    ]},
+    {"name": "Text", "caption": "Text", "rows": 3, "columns": [
+      [
+        {"id": "TextBox", "style": "large", "items": [
+          {"cmd": "InsertTextBoxMenu", "kind": "split", "office_label": "Text Box"}
+        ]}
+      ],
+      [
+        {"id": "HeaderFooter", "style": "large", "items": [
+          {"cmd": "HeaderAndFooter", "office_label": "Header & Footer"}
+        ]}
+      ],
+      [
+        {"id": "WordArt", "style": "large", "items": [
+          {"cmd": "FontworkGalleryFloater", "office_label": "WordArt"}
+        ]}
+      ],
+      [
+        {"id": "DateTime", "style": "small", "items": [
+          {"cmd": "InsertDateFieldVar", "office_label": "Date & Time"}
+        ]},
+        {"id": "SlideNumber", "style": "small", "items": [
+          {"cmd": "InsertSlideField", "office_label": "Slide Number"}
+        ]},
+        {"id": "Object", "style": "small", "items": [
+          {"cmd": "InsertObject", "office_label": "Object"}
+        ]}
+      ]
+    ]},
+    {"name": "Symbols", "caption": "Symbols", "rows": 3, "columns": [
+      [
+        {"id": "Equation", "style": "large", "items": [
+          {"cmd": "InsertMath", "office_label": "Equation"}
+        ]}
+      ],
+      [
+        {"id": "Symbol", "style": "large", "items": [
+          {"cmd": "CharmapControl", "kind": "split", "office_label": "Symbol"}
+        ]}
+      ]
+    ]},
+    {"name": "Media", "caption": "Media", "rows": 3, "columns": [
+      [
+        {"id": "Video", "style": "large", "items": [
+          {"cmd": "InsertVideo", "action": ".uno:InsertAVMedia", "office_label": "Video"}
+        ]}
+      ],
+      [
+        {"id": "Audio", "style": "large", "items": [
+          {"cmd": "InsertAudio", "action": ".uno:InsertAVMedia", "office_label": "Audio"}
+        ]}
+      ],
+      [
+        {"id": "ScreenRecording", "style": "large", "items": [
+          {"cmd": "InsertScreenRecording", "office_label": "Screen Recording"}
+        ]}
+      ]
+    ]}
+  ]
+}

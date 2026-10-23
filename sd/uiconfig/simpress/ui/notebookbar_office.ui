@@ -898,159 +898,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="Menu Insert">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-PhotoAlbumDialog">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:PhotoAlbumDialog</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-AnimationObjects">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:AnimationObjects</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuInsert-separator1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-Gallery">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:Gallery</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-TwainSelect">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:TwainSelect</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertAVMedia">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertAVMedia</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuInsert-separator2">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertQrCode">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertQrCode</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertObject">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertObject</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-ImportFromFile">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ImportSlideFromFile</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertMath">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertMath</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuInsert-separator3">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-DrawText">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:Text</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-VerticalText">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:VerticalText</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-FontworkGalleryFloater">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:FontworkGalleryFloater</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuInsert-separator4">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-HyperlinkDialog">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:HyperlinkDialog</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-CapturePoint">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:CapturePoint</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuInsert-separator5">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertPageField">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertSlideField</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-InsertPagesField">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertSlidesField</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuInsert-HeaderAndFooter">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:HeaderAndFooter</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkMenu" id="Menu Master">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -4448,128 +4295,137 @@
               <object class="sfxlo-PriorityHBox" id="Insert">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <!-- product:Insert-begin -->
                 <child>
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbInsert">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">fill</property>
-                    <property name="vexpand">True</property>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertSlide">
+                      <object class="VclOptionalBox" id="obInsertSlides">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertSlide">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertSlides">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertSlide">Slide</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertSlides">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertNewSlide">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertInsertPage">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertPage">New Slide</property>
+                                        <property name="action-name">.uno:InsertPage</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertReuseSlides">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertImportSlideFromFile">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertImportSlideFromFile">Reuse Slides</property>
+                                        <property name="action-name">.uno:ImportSlideFromFile</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertSlides">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertSlides">Slides</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertSlide"/>
+                              <relation type="labelled-by" target="lbInsertSlides"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertInsertSlide">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertSlide">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertDuplicatePage">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertDuplicatePage">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DuplicateSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertImportSlideFromFile">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertImportSlideFromFile">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ImportSlideFromFile</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertSlide"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-9"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4578,121 +4434,101 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertData">
+                      <object class="VclOptionalBox" id="obInsertTables">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertData">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertTables">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertData">Data</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertTables">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertTable">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertInsertTable">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:InsertTable</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertTables">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertTables">Tables</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertData"/>
+                              <relation type="labelled-by" target="lbInsertTables"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="boInsertTable">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertTable">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertTable</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertInsertObjectChart">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertObjectChart">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertObjectChart</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertInsertMath">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertMath">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertMath</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertData"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-8"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4701,121 +4537,167 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertGraphic">
+                      <object class="VclOptionalBox" id="obInsertImages">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertGraphic">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertImages">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertGraphic">Graphic</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertImages">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertPictures">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertGraphic">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertGraphic">Pictures</property>
+                                        <property name="action-name">.uno:InsertGraphic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="colInsertImages1">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">3</property>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxInsertScreenshot">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnInsertInsertScreenshot">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertScreenshot">Screenshot</property>
+                                            <property name="action-name">.uno:InsertScreenshot</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="sfxlo-NotebookbarToolBox" id="bxInsertPhotoAlbum">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="toolbar-style">both-horiz</property>
+                                        <property name="show-arrow">False</property>
+                                        <property name="icon_size">1</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="btnInsertPhotoAlbumDialog">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="action-name">.uno:PhotoAlbumDialog</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertImages">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertImages">Images</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertGraphic"/>
+                              <relation type="labelled-by" target="lbInsertImages"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertInsertGraphic">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertGraphic">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertGraphic</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertGallery">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertGallery">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Gallery</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertInsertAVMedia">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertInsertAVMedia">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertAVMedia</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertGraphic"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-7"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4824,151 +4706,203 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=4 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertText">
+                      <object class="VclOptionalBox" id="obInsertIllustrations">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertText">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertIllustrations">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertText">Text</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=3 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertIllustrations">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertShapes">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertInsertShapesMenu">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:InsertShapesMenu</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertIcons">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertGallery">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertGallery">Icons</property>
+                                        <property name="action-name">.uno:Gallery</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertModels3D">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsert3DModels">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsert3DModels">3D Models</property>
+                                        <property name="action-name">.uno:Insert3DModels</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertSmartArt">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertSmartArt">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertSmartArt">SmartArt</property>
+                                        <property name="action-name">.uno:InsertSmartArt</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertChart">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertObjectChart">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:InsertObjectChart</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertIllustrations">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertIllustrations">Illustrations</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertText"/>
+                              <relation type="labelled-by" target="lbInsertIllustrations"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">4</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertCharmapControl">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertCharmapControl">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:CharmapControl</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertVerticalText">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertVerticalText">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:VerticalText</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertText">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertText">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Text</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertHyperlinkDialog">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertHyperlinkDialog">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:HyperlinkDialog</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertText"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-6"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4977,145 +4911,158 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertFontwork">
+                      <object class="VclOptionalBox" id="obInsertLinks">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertFontwork">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertLinks">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertFontwork">Fontwork</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=3 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertLinks">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertZoom">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertInsertZoomMenu">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertZoomMenu">Zoom</property>
+                                        <property name="action-name">.uno:InsertZoomMenu</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertLink">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertHyperlinkDialog">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertHyperlinkDialog">Link</property>
+                                        <property name="action-name">.uno:HyperlinkDialog</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertAction">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertAnimationEffects">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertAnimationEffects">Action</property>
+                                        <property name="action-name">.uno:AnimationEffects</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertLinks">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertLinks">Links</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertFontwork"/>
+                              <relation type="labelled-by" target="lbInsertLinks"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertFontworkGalleryFloater">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFontworkGalleryFloater">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontworkGalleryFloater</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxFontworkTop">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFontworkShapeType">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontworkShapeType</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFontworkSameLetterHeights">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontworkSameLetterHeights</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxFontworkBottom">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFontworkAlignmentFloater">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontworkAlignmentFloater</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFontworkCharacterSpacingFloater">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FontworkCharacterSpacingFloater</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertFontwork"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-5"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -5124,266 +5071,631 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdInsertDrawingObjects">
+                      <object class="VclOptionalBox" id="obInsertComments">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">6</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbInsertDrawingObjects">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertComments">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelInsertDrawingObjects">Drawing Objects</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertComments">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertComment">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertAnnotation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:InsertAnnotation</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertComments">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertComments">Comments</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdInsertDrawingObjects"/>
+                              <relation type="labelled-by" target="lbInsertComments"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertShapes1">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertLine">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Line</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertArrowsToolbox">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ArrowsToolbox</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertPolygon_Unfilled">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Polygon_Unfilled</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertBezier_Unfilled">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Bezier_Unfilled</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertObjects3DToolbox">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Objects3DToolbox</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertShapes2">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertLineToolbox">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:LineToolbox</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertBasicShapes.rectangle">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:BasicShapes.rectangle</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertBasicShapes.ellipse">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:BasicShapes.ellipse</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertDrawCaption">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DrawCaption</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertConnectorToolbox">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ConnectorToolbox</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertShapes3">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="margin-start">6</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertBasicShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:BasicShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertSymbolShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SymbolShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertArrowShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ArrowShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxInsertShapes4">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="margin-start">6</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertStarShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:StarShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertCalloutShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:CalloutShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnInsertFlowChartShapes">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:FlowChartShapes</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbInsertDrawingObjects"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-4"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obInsertText">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertText">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=4 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertText">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertTextBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertInsertTextBoxMenu">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertTextBoxMenu">Text Box</property>
+                                        <property name="action-name">.uno:InsertTextBoxMenu</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertHeaderFooter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertHeaderAndFooter">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertHeaderAndFooter">Header &amp; Footer</property>
+                                        <property name="action-name">.uno:HeaderAndFooter</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertWordArt">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertFontworkGalleryFloater">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertFontworkGalleryFloater">WordArt</property>
+                                        <property name="action-name">.uno:FontworkGalleryFloater</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertDateTime">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">icons</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertDateFieldVar">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertDateFieldVar">Date &amp; Time</property>
+                                        <property name="action-name">.uno:InsertDateFieldVar</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertSlideNumber">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">icons</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertSlideField">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:InsertSlideField</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertObject">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">icons</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertObject">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertObject">Object</property>
+                                        <property name="action-name">.uno:InsertObject</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertText">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertText">Text</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbInsertText"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obInsertSymbols">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertSymbols">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertSymbols">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertEquation">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertMath">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertMath">Equation</property>
+                                        <property name="action-name">.uno:InsertMath</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertSymbol">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnInsertCharmapControl">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:CharmapControl</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertSymbols">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertSymbols">Symbols</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbInsertSymbols"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">7</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obInsertMedia">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdInsertMedia">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=3 n-rows=3 -->
+                              <object class="GtkGrid" id="gcInsertMedia">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertVideo">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertVideo">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertVideo">Video</property>
+                                        <property name="action-name">.uno:InsertAVMedia</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertAudio">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertAudio">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertAudio">Audio</property>
+                                        <property name="action-name">.uno:InsertAVMedia</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxInsertScreenRecording">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnInsertInsertScreenRecording">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnInsertInsertScreenRecording">Screen Recording</property>
+                                        <property name="action-name">.uno:InsertScreenRecording</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbInsertMedia">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelInsertMedia">Media</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbInsertMedia"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>
@@ -5393,99 +5705,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="sfxlo-DropdownBox" id="Insert-Menu">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkBox" id="GroupB18">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="valign">center</property>
-                        <property name="vexpand">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="svtlo-ManagedMenuButton" id="Insert-InsertButton:Menu Insert">
-                            <property name="label" translatable="yes" context="TabbedImpress|InsertMenuButton">_Insert</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="focus-on-click">False</property>
-                            <property name="receives-default">False</property>
-                            <property name="halign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="relief">none</property>
-                            <property name="use-underline">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="SectionBottom32">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="halign">end</property>
-                            <property name="hexpand">True</property>
-                            <property name="toolbar-style">icons</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">1</property>
-                            <child>
-                              <object class="GtkToolButton" id="Insert-InsertGraphic1">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertGraphic</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="Insert-Text1">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Text</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="Insert-InsertPage1">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack-type">end</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <!-- product:Insert-end -->
               </object>
               <packing>
                 <property name="position">2</property>
