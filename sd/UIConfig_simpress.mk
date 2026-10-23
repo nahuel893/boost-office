@@ -29,9 +29,15 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/simpress,\
 	sd/uiconfig/simpress/popupmenu/graphic \
 	sd/uiconfig/simpress/popupmenu/group \
 	sd/uiconfig/simpress/popupmenu/home_aligntext \
+	sd/uiconfig/simpress/popupmenu/home_arrange \
 	sd/uiconfig/simpress/popupmenu/home_changecase \
 	sd/uiconfig/simpress/popupmenu/home_columns \
+	sd/uiconfig/simpress/popupmenu/home_find \
+	sd/uiconfig/simpress/popupmenu/home_replace \
 	sd/uiconfig/simpress/popupmenu/home_section \
+	sd/uiconfig/simpress/popupmenu/home_select \
+	sd/uiconfig/simpress/popupmenu/home_shapeeffects \
+	sd/uiconfig/simpress/popupmenu/home_shapes \
 	sd/uiconfig/simpress/popupmenu/home_textdirection \
 	sd/uiconfig/simpress/popupmenu/line \
 	sd/uiconfig/simpress/popupmenu/measure \

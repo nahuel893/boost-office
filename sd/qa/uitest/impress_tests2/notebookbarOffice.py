@@ -26,7 +26,8 @@ from com.sun.star.frame import XStatusListener
 
 OFFICE_UI = "notebookbar_office.ui"
 IMPRESS_MODULE = "com.sun.star.presentation.PresentationDocument"
-HOME_SLOTS = (0, 1)  # SID offsets of the Home placeholders: the Section family, Convert to SmartArt
+HOME_SLOTS = (0, 1, 2, 3, 4)  # SID offsets of the Home placeholders: Section family, Convert to SmartArt,
+# Regroup, the Shape Effects family, Replace Fonts
 RESET_LAYOUT = ".uno:AssignLayout?Reset:bool=true"
 # a 1x1 PNG, the picture of the image context
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
@@ -217,7 +218,7 @@ class NotebookbarOffice(UITestCase):
             self.switch_to(OFFICE_UI)
             try:
                 xImpressDoc = self.xUITest.getTopFocusWindow()
-                self.assertEqual(5, len(layout["sections"]))
+                self.assertEqual(7, len(layout["sections"]))
                 for section in layout["sections"]:
                     xLabel = xImpressDoc.getChild("lb" + prefix + section["name"])
                     self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
@@ -297,10 +298,11 @@ class NotebookbarOffice(UITestCase):
                 self.switch_to("Default")
 
     def test_home_placeholders_are_disabled_and_inert(self):
-        # 2 slots: the Section family (3 variants in its menu) and Convert to SmartArt
+        # 5 slots: the Section family (3 variants), Convert to SmartArt, Regroup, the Shape Effects family
+        # (3 variants) and Replace Fonts
         src = Path(os.environ["TDOC"]).parents[3]
         names = placeholder_urls(src, lambda e: e["offset"] in HOME_SLOTS)
-        self.assertEqual(4, len(names))
+        self.assertEqual(9, len(names))
         with self.impress_doc() as document:
             slide = document.DrawPages[0]
             slide.getByIndex(0).String = "keep"
@@ -346,6 +348,7 @@ class NotebookbarOffice(UITestCase):
 
     def test_home_dropdown_popups_list_their_items_through_the_real_controllers(self):
         section = ".uno:HomeSection?Action:string="
+        effect = ".uno:HomeShapeEffect?Effect:string="
         with self.impress_doc():
             expected = {
                 ("HomeSectionMenu", "home_section"): [
@@ -360,13 +363,30 @@ class NotebookbarOffice(UITestCase):
                     ".uno:TextdirectionLeftToRight", ".uno:TextdirectionTopToBottom", ".uno:ParaLeftToRight",
                     ".uno:ParaRightToLeft"],
                 ("HomeAlignTextMenu", "home_aligntext"): [".uno:CellVertTop", ".uno:CellVertCenter",
-                                                          ".uno:CellVertBottom", ".uno:TextAttributes"]}
+                                                          ".uno:CellVertBottom", ".uno:TextAttributes"],
+                ("InsertShapesMenu", "home_shapes"): [
+                    ".uno:ShapesLineMenu", ".uno:BasicShapes", ".uno:SymbolShapes", ".uno:ArrowShapes",
+                    ".uno:FlowChartShapes", ".uno:CalloutShapes", ".uno:StarShapes", ".uno:ArrowsToolbox",
+                    ".uno:ConnectorToolbox", ".uno:Objects3DToolbox"],
+                ("HomeArrangeMenu", "home_arrange"): [
+                    ".uno:BringToFront", ".uno:SendToBack", ".uno:Forward", ".uno:Backward", ".uno:FormatGroup",
+                    ".uno:FormatUngroup", ".uno:HomeRegroup", ".uno:ObjectAlignLeft", ".uno:AlignCenter",
+                    ".uno:ObjectAlignRight", ".uno:AlignUp", ".uno:AlignMiddle", ".uno:AlignDown",
+                    ".uno:DistributeSelection", ".uno:ToggleObjectRotateMode", ".uno:MirrorVert",
+                    ".uno:MirrorHorz", ".uno:Navigator"],
+                ("HomeShapeEffectsMenu", "home_shapeeffects"): [
+                    effect + "preset", ".uno:FillShadow", effect + "reflection", ".uno:SidebarDeck.PropertyDeck",
+                    effect + "bevel", ".uno:ExtrusionToggle"],
+                ("HomeFindMenu", "home_find"): ["vnd.sun.star.findbar:FocusToFindbar", ".uno:SearchDialog"],
+                ("HomeReplaceMenu", "home_replace"): [".uno:SearchDialog", ".uno:HomeReplaceFonts"],
+                ("HomeSelectMenu", "home_select"): [".uno:SelectAll", ".uno:SelectObject", ".uno:Navigator"]}
             for (command, resource), items in expected.items():
                 xPopup = self.menu_controller(".uno:" + command, resource)
                 self.assertEqual(items, self.popup_commands(xPopup), command)
 
     def test_home_dropdown_and_new_label_commands_resolve_their_labels(self):
         section = "HomeSection?Action:string="
+        effect = "HomeShapeEffect?Effect:string="
         with self.impress_doc():
             for command, label in (("HomeSectionMenu", "Section"), ("HomeChangeCaseMenu", "Change Case"),
                                    ("HomeColumnsMenu", "Columns"), ("HomeTextDirectionMenu", "Text Direction"),
@@ -374,9 +394,16 @@ class NotebookbarOffice(UITestCase):
                                    ("AssignLayout?Reset:bool=true", "Reset Slide Layout"),
                                    (section + "removeall", "Remove All Sections"),
                                    (section + "collapseall", "Collapse All"), (section + "expandall", "Expand All"),
-                                   ("HomeConvertToSmartArt", "Convert to SmartArt")):
+                                   ("HomeConvertToSmartArt", "Convert to SmartArt"),
+                                   ("InsertShapesMenu", "Shapes"), ("HomeArrangeMenu", "Arrange"),
+                                   ("HomeShapeEffectsMenu", "Shape Effects"), ("HomeFindMenu", "Find"),
+                                   ("HomeReplaceMenu", "Replace"), ("HomeSelectMenu", "Select"),
+                                   ("HomeRegroup", "Regroup"), (effect + "preset", "Preset"),
+                                   (effect + "reflection", "Reflection"), (effect + "bevel", "Bevel"),
+                                   ("HomeReplaceFonts", "Replace Fonts...")):
                 self.assertEqual(label, self.command_label(".uno:" + command), command)
-            for name in ("HomeConvertToSmartArt", section + "removeall"):
+            for name in ("HomeConvertToSmartArt", section + "removeall", "HomeRegroup", effect + "bevel",
+                         "HomeReplaceFonts"):
                 self.assertFalse(self.dispatch_enabled(name), name)
 
     def test_home_commands_that_are_real_are_enabled(self):
@@ -482,6 +509,63 @@ class NotebookbarOffice(UITestCase):
                                       "the %s popup has no %s button" % (item, button))
                     finally:
                         xItem.doAccessibleAction(1)
+            finally:
+                self.switch_to("Default")
+
+    def test_home_arrange_menu_lists_its_items_with_a_shape_selected(self):
+        # the Arrange menu is built by its real controller; the items that act on one shape are enabled
+        # (the dispatch status decides: a menu controller's popup keeps its disabled items), Regroup is a
+        # placeholder and stays disabled
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.add_shape(document, "com.sun.star.drawing.RectangleShape")
+            xPopup = self.menu_controller(".uno:HomeArrangeMenu", "home_arrange")
+            items = self.popup_commands(xPopup)
+            self.assertEqual(18, len(items))
+            self.assertEqual(".uno:BringToFront", items[0])
+            self.assertEqual(".uno:Navigator", items[-1])
+            for name in ("SendToBack", "MirrorVert", "MirrorHorz", "ToggleObjectRotateMode", "Navigator"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+            self.assertFalse(self.dispatch_enabled("HomeRegroup"))
+
+    def test_home_find_menu_first_item_is_the_find_toolbar_and_select_all_selects(self):
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            xPopup = self.menu_controller(".uno:HomeFindMenu", "home_find")
+            self.assertEqual("vnd.sun.star.findbar:FocusToFindbar", self.popup_commands(xPopup)[0])
+            self.assertEqual("Find...", self.command_label("vnd.sun.star.findbar:FocusToFindbar"))
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("SearchDialog")))
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("SelectAll")))
+            self.xUITest.executeCommand(".uno:SelectAll")
+            self.assertGreater(self.settle(lambda: document.CurrentController.Selection.Count), 0)
+
+    def test_home_shape_cells_open_their_stock_popups(self):
+        # design decision 15: the shape sub-toolbar cells keep their stock popups, built by the
+        # ToolbarAsMenuController of each command from its toolbar (Controller.xcu). The headless window
+        # clips the ribbon before the Drawing section, so the cells' accessible items cannot be pressed
+        # here (the fit is I2b's); the controllers are what the cells attach to.
+        stock = {"ArrowsToolbox": "arrowsbar", "ConnectorToolbox": "connectorsbar", "BasicShapes": "basicshapes",
+                 "SymbolShapes": "symbolshapes", "ArrowShapes": "arrowshapes", "FlowChartShapes": "flowchartshapes",
+                 "CalloutShapes": "calloutshapes", "StarShapes": "starshapes", "LineToolbox": "linesbar",
+                 "Objects3DToolbox": "3dobjectsbar"}
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for command, resource in stock.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertGreater(len(self.popup_commands(xPopup)), 2, command)
+
+    def test_home_drawing_and_editing_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxHomeArrange": "Arrange", "bxHomeQuickStyles": "Quick Styles",
+                          "bxHomeShapeFill": "Shape Fill", "bxHomeShapeOutline": "Shape Outline",
+                          "bxHomeShapeEffects": "Shape Effects", "bxHomeFind": "Find",
+                          "bxHomeReplace": "Replace", "bxHomeSelect": "Select"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
             finally:
                 self.switch_to("Default")
 

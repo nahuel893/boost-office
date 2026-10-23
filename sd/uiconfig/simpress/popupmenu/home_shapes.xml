@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * This file is part of the LibreOffice project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+-->
+<menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
+  <menu:menu menu:id=".uno:ShapesLineMenu" menu:style="text">
+    <menu:menupopup>
+      <menu:menuitem menu:id=".uno:Line"/>
+      <menu:menuitem menu:id=".uno:Freeline_Unfilled"/>
+      <menu:menuitem menu:id=".uno:Freeline"/>
+      <menu:menuitem menu:id=".uno:Bezier_Unfilled"/>
+      <menu:menuitem menu:id=".uno:BezierFill"/>
+      <menu:menuitem menu:id=".uno:Polygon_Unfilled"/>
+      <menu:menuitem menu:id=".uno:Polygon_Diagonal_Unfilled"/>
+      <menu:menuitem menu:id=".uno:Polygon_Diagonal"/>
+    </menu:menupopup>
+  </menu:menu>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:BasicShapes"/>
+  <menu:menuitem menu:id=".uno:SymbolShapes"/>
+  <menu:menuitem menu:id=".uno:ArrowShapes"/>
+  <menu:menuitem menu:id=".uno:FlowChartShapes"/>
+  <menu:menuitem menu:id=".uno:CalloutShapes"/>
+  <menu:menuitem menu:id=".uno:StarShapes"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:ArrowsToolbox"/>
+  <menu:menuitem menu:id=".uno:ConnectorToolbox"/>
+  <menu:menuitem menu:id=".uno:Objects3DToolbox"/>
+</menu:menupopup>

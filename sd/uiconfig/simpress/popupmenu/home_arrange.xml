@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * This file is part of the LibreOffice project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+-->
+<menu:menupopup xmlns:menu="http://openoffice.org/2001/menu">
+  <menu:menuitem menu:id=".uno:BringToFront"/>
+  <menu:menuitem menu:id=".uno:SendToBack"/>
+  <menu:menuitem menu:id=".uno:Forward"/>
+  <menu:menuitem menu:id=".uno:Backward"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:FormatGroup"/>
+  <menu:menuitem menu:id=".uno:FormatUngroup"/>
+  <menu:menuitem menu:id=".uno:HomeRegroup"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:ObjectAlignLeft"/>
+  <menu:menuitem menu:id=".uno:AlignCenter"/>
+  <menu:menuitem menu:id=".uno:ObjectAlignRight"/>
+  <menu:menuitem menu:id=".uno:AlignUp"/>
+  <menu:menuitem menu:id=".uno:AlignMiddle"/>
+  <menu:menuitem menu:id=".uno:AlignDown"/>
+  <menu:menuitem menu:id=".uno:DistributeSelection"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:ToggleObjectRotateMode"/>
+  <menu:menuitem menu:id=".uno:MirrorVert"/>
+  <menu:menuitem menu:id=".uno:MirrorHorz"/>
+  <menu:menuseparator/>
+  <menu:menuitem menu:id=".uno:Navigator"/>
+</menu:menupopup>

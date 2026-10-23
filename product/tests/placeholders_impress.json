@@ -23,7 +23,8 @@
  {
   "slot": "SID_BOOST_HOME_REGROUP",
   "offset": 2,
-  "command": "HomeRegroup"
+  "command": "HomeRegroup",
+  "label": "Regroup"
  },
  {
   "slot": "SID_BOOST_HOME_SHAPE_EFFECT",
@@ -33,12 +34,18 @@
    "Effect:string=preset",
    "Effect:string=reflection",
    "Effect:string=bevel"
-  ]
+  ],
+  "variant_labels": {
+   "Effect:string=preset": "Preset",
+   "Effect:string=reflection": "Reflection",
+   "Effect:string=bevel": "Bevel"
+  }
  },
  {
   "slot": "SID_BOOST_HOME_REPLACE_FONTS",
   "offset": 4,
-  "command": "HomeReplaceFonts"
+  "command": "HomeReplaceFonts",
+  "label": "Replace Fonts..."
  },
  {
   "slot": "SID_BOOST_INSERT_SCREENSHOT",

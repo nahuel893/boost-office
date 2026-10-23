@@ -1,10 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""The Impress Home tab, part 1 (Undo, Clipboard, Slides, Font, Paragraph): layout vs
-product/docs/impress-ribbon-tabs.md section 1 "Home", the five new dropdowns (popup files, controllers,
+"""The Impress Home tab (Undo, Clipboard, Slides, Font, Paragraph, Drawing, Editing): layout vs
+product/docs/impress-ribbon-tabs.md section 1 "Home", the eleven new dropdowns (popup files, controllers,
 labels), the placeholder menu items, the Reset variant, and the commands that leave the tab
-(section 2, "Home (23)"). Drawing and Editing are task I2c."""
+(section 2, "Home (23)")."""
 import json
 import re
 import unittest
@@ -26,6 +26,7 @@ MENU = "{http://openoffice.org/2001/menu}"
 PRESENTATION_MODULE = "com.sun.star.presentation.PresentationDocument"
 SEP = "-"  # a separator in a menu item list
 SECTION = ".uno:HomeSection?Action:string="
+EFFECT = ".uno:HomeShapeEffect?Effect:string="
 RESET = ".uno:AssignLayout?Reset:bool=true"
 
 
@@ -52,8 +53,21 @@ DESIGN = {
                                    ("small-label", uno("HomeTextDirectionMenu")),
                                    ("small-label", uno("HomeAlignTextMenu")),
                                    ("small-label", uno("HomeConvertToSmartArt"))]),
+    # decision 15: 17 icon-only tool cells plus the More arrow, three rows of six
+    "Drawing": ("Drawing", 3, [("small", uno("Text", "Line", "BasicShapes.rectangle", "BasicShapes.ellipse",
+                                             "ArrowsToolbox", "ConnectorToolbox")),
+                               ("small", uno("BasicShapes", "SymbolShapes", "ArrowShapes", "FlowChartShapes",
+                                             "CalloutShapes", "StarShapes")),
+                               ("small", uno("LineToolbox", "Polygon_Unfilled", "Bezier_Unfilled", "DrawCaption",
+                                             "Objects3DToolbox", "InsertShapesMenu")),
+                               ("large", uno("HomeArrangeMenu")), ("large", uno("SidebarDeck.StyleListDeck")),
+                               ("small-label", uno("FillColor")), ("small-label", uno("XLineColor")),
+                               ("small-label", uno("HomeShapeEffectsMenu"))]),
+    "Editing": ("Editing", 3, [("small-label", uno("HomeFindMenu")), ("small-label", uno("HomeReplaceMenu")),
+                               ("small-label", uno("HomeSelectMenu"))]),
 }
-SHAPES = {"Undo": [2], "Clipboard": [1, 3], "Slides": [1, 1, 3], "Font": [2], "Paragraph": [2, 3]}
+SHAPES = {"Undo": [2], "Clipboard": [1, 3], "Slides": [1, 1, 3], "Font": [2], "Paragraph": [2, 3],
+          "Drawing": [3, 1, 1, 3], "Editing": [3]}
 # PowerPoint's label per item (T9w: the ribbon shows it, unless it equals LibreOffice's label; menus keep
 # LibreOffice's). The layout item's "cmd" is the key; Reset is the widget command ResetLayout.
 POWERPOINT_LABELS = {
@@ -68,13 +82,24 @@ POWERPOINT_LABELS = {
     "OutlineLeft": "Decrease List Level", "OutlineRight": "Increase List Level", "LineSpacing": "Line Spacing",
     "LeftPara": "Align Left", "CenterPara": "Center", "RightPara": "Align Right", "JustifyPara": "Justify",
     "HomeColumnsMenu": "Add or Remove Columns", "HomeTextDirectionMenu": "Text Direction",
-    "HomeAlignTextMenu": "Align Text", "HomeConvertToSmartArt": "Convert to SmartArt"}
+    "HomeAlignTextMenu": "Align Text", "HomeConvertToSmartArt": "Convert to SmartArt",
+    "Text": "Text Box", "Line": "Line", "BasicShapes.rectangle": "Rectangle", "BasicShapes.ellipse": "Oval",
+    "ArrowsToolbox": "Lines and Arrows", "ConnectorToolbox": "Connectors", "BasicShapes": "Basic Shapes",
+    "SymbolShapes": "Symbol Shapes", "ArrowShapes": "Block Arrows", "FlowChartShapes": "Flowchart",
+    "CalloutShapes": "Callouts", "StarShapes": "Stars and Banners", "LineToolbox": "Curves and Polygons",
+    "Polygon_Unfilled": "Freeform: Shape", "Bezier_Unfilled": "Curve", "DrawCaption": "Speech Bubble",
+    "Objects3DToolbox": "3D Objects", "InsertShapesMenu": "More Shapes", "HomeArrangeMenu": "Arrange",
+    "SidebarDeck.StyleListDeck": "Quick Styles", "FillColor": "Shape Fill", "XLineColor": "Shape Outline",
+    "HomeShapeEffectsMenu": "Shape Effects", "HomeFindMenu": "Find", "HomeReplaceMenu": "Replace",
+    "HomeSelectMenu": "Select"}
 # PowerPoint's splits and dropdowns: "split" only means "has an arrow" (a dropdown has no body action of
 # its own, but is built the same way); the placeholder Convert to SmartArt is a plain greyed button
 # (design decision 20).
 SPLITS = {"Undo", "Redo", "Paste", "InsertPage", "AssignLayout", "HomeSectionMenu", "Underline", "Spacing",
           "HomeChangeCaseMenu", "CharBackColor", "Color", "DefaultBullet", "DefaultNumbering", "LineSpacing",
-          "HomeColumnsMenu", "HomeTextDirectionMenu", "HomeAlignTextMenu"}
+          "HomeColumnsMenu", "HomeTextDirectionMenu", "HomeAlignTextMenu", "InsertShapesMenu",
+          "HomeArrangeMenu", "FillColor", "XLineColor", "HomeShapeEffectsMenu", "HomeFindMenu",
+          "HomeReplaceMenu", "HomeSelectMenu"}
 
 # command -> (label, popup resource, popup items in order); design section 1 "Menu contents"
 MENUS = {
@@ -95,13 +120,33 @@ MENUS = {
     "HomeAlignTextMenu": ("Align Text", "home_aligntext",
                           uno("CellVertTop", "CellVertCenter", "CellVertBottom") + [SEP]
                           + uno("TextAttributes")),
+    "InsertShapesMenu": ("Shapes", "home_shapes",
+                         uno("ShapesLineMenu") + [SEP] + uno("BasicShapes", "SymbolShapes", "ArrowShapes",
+                                                             "FlowChartShapes", "CalloutShapes",
+                                                             "StarShapes") + [SEP]
+                         + uno("ArrowsToolbox", "ConnectorToolbox", "Objects3DToolbox")),
+    "HomeArrangeMenu": ("Arrange", "home_arrange",
+                        uno("BringToFront", "SendToBack", "Forward", "Backward") + [SEP]
+                        + uno("FormatGroup", "FormatUngroup", "HomeRegroup") + [SEP]
+                        + uno("ObjectAlignLeft", "AlignCenter", "ObjectAlignRight", "AlignUp", "AlignMiddle",
+                              "AlignDown", "DistributeSelection") + [SEP]
+                        + uno("ToggleObjectRotateMode", "MirrorVert", "MirrorHorz") + [SEP]
+                        + uno("Navigator")),
+    "HomeShapeEffectsMenu": ("Shape Effects", "home_shapeeffects",
+                             [EFFECT + "preset"] + uno("FillShadow") + [EFFECT + "reflection"]
+                             + uno("SidebarDeck.PropertyDeck") + [EFFECT + "bevel"] + uno("ExtrusionToggle")),
+    "HomeFindMenu": ("Find", "home_find", ["vnd.sun.star.findbar:FocusToFindbar"] + uno("SearchDialog")),
+    "HomeReplaceMenu": ("Replace", "home_replace", uno("SearchDialog", "HomeReplaceFonts")),
+    "HomeSelectMenu": ("Select", "home_select", uno("SelectAll", "SelectObject", "Navigator")),
 }
-PLACEHOLDER_LABELS = {  # URL -> label (design section 5, the Home rows of this task)
+PLACEHOLDER_LABELS = {  # URL -> label (design section 5, the Home rows)
     SECTION + "removeall": "Remove All Sections", SECTION + "collapseall": "Collapse All",
-    SECTION + "expandall": "Expand All", ".uno:HomeConvertToSmartArt": "Convert to SmartArt"}
+    SECTION + "expandall": "Expand All", ".uno:HomeConvertToSmartArt": "Convert to SmartArt",
+    ".uno:HomeRegroup": "Regroup", EFFECT + "preset": "Preset", EFFECT + "reflection": "Reflection",
+    EFFECT + "bevel": "Bevel", ".uno:HomeReplaceFonts": "Replace Fonts..."}
 PLACEHOLDER_LABELS = placeholders.drop_implemented(PLACEHOLDER_LABELS, placeholders.registry("impress"))
 VARIANT_LABELS = {RESET: "Reset Slide Layout"}  # design decision 13: LibreOffice's own wording (strings.hrc)
-HOME_SLOTS = [0, 1]
+HOME_SLOTS = [0, 1, 2, 3, 4]
 
 # design section 2 "Home (23)": command -> (class, menu-bar id that keeps it reachable).
 # a: the same command is in the menu bar; b: only an equivalent entry is.
@@ -153,7 +198,7 @@ class ImpressHomeUiTest(unittest.TestCase):
         for section in self.layout["sections"]:
             got = [(b["style"], [g.item_url(i) for i in b["items"]]) for b in self.boxes(section)]
             self.assertEqual(DESIGN[section["name"]][2], got, section["name"])
-        self.assertEqual(38, len(self.items()))
+        self.assertEqual(64, len(self.items()))
 
     def test_every_section_is_the_designed_toolbox_columns(self):
         shapes = {s["name"]: [len(c) for c in s["columns"]] for s in self.layout["sections"]}
@@ -212,8 +257,7 @@ class ImpressHomeUiTest(unittest.TestCase):
 
     def test_the_stock_home_page_commands_either_stay_or_are_in_the_leave_list(self):
         # every command of the stock Home page and its overflow menu stays on the ribbon (page or dropdown
-        # item), is in the leave list, or belongs to a later task (Find, Replace and Select: I2c; Start from
-        # First Slide: I6a). The stock aliases New Slide and Duplicate Slide act through New Slide's popup.
+        # item), is in the leave list, or belongs to a later task (Start from First Slide: I6a). The stock aliases New Slide and Duplicate Slide act through New Slide's popup.
         stock = ET.parse(ROOT / "sd/uiconfig/simpress/ui/notebookbar.ui").getroot()
         commands = set()
         for wid in ("Home Tab", "Menu Home"):
@@ -221,7 +265,7 @@ class ImpressHomeUiTest(unittest.TestCase):
             commands |= {p.text for p in node.iter("property") if p.get("name") == "action-name"}
         on_tab = {g.item_command(i) for i in self.items()} | {u for _l, _r, items in MENUS.values() for u in items}
         left = {".uno:" + name for name in LEFT_THE_TAB}
-        later = {".uno:SearchDialog", ".uno:Presentation", ".uno:SelectAll", "vnd.sun.star.findbar:FocusToFindbar"}
+        later = {".uno:Presentation"}
         aliases = {".uno:InsertSlide": ".uno:InsertPage", ".uno:DuplicateSlide": ".uno:InsertPage"}
         self.assertGreater(len(commands), 50)
         for url in sorted(commands):
@@ -268,7 +312,7 @@ class ImpressHomeUiTest(unittest.TestCase):
         labels = commands_xcu(app="impress")
         for _label, _resource, items in MENUS.values():
             for url in items:
-                if url != SEP:
+                if url != SEP and not url.startswith("vnd.sun.star.findbar:"):  # framework URL, in GenericCommands
                     self.assertIn(url, labels, url)
 
     def test_the_registry_labels_every_home_slot_and_variant(self):
@@ -279,6 +323,9 @@ class ImpressHomeUiTest(unittest.TestCase):
         self.assertEqual(["Action:string=" + v for v in ("removeall", "collapseall", "expandall")],
                          entries[0]["variants"])
         self.assertEqual("Convert to SmartArt", entries[1]["label"])
+        self.assertEqual("HomeRegroup", entries[2]["command"])
+        self.assertEqual(["Effect:string=" + v for v in ("preset", "reflection", "bevel")], entries[3]["variants"])
+        self.assertEqual("HomeReplaceFonts", entries[4]["command"])
         for offset in HOME_SLOTS:
             self.assertTrue(entries[offset]["command"].startswith("Home"))
 
@@ -292,7 +339,7 @@ class ImpressHomeUiTest(unittest.TestCase):
                 if v["Command"] == command and v["Module"] == PRESENTATION_MODULE]
 
     def test_each_dropdown_has_a_popup_and_a_toolbar_controller_of_its_own(self):
-        self.assertEqual(5, len(MENUS))
+        self.assertEqual(11, len(MENUS))
         for cmd, (_label, resource, _items) in MENUS.items():
             kinds = {v["Controller"].rsplit(".", 1)[1]: v for v in self.impress_nodes(".uno:" + cmd)}
             self.assertEqual({"ResourceMenuController", "GenericPopupToolbarController"}, set(kinds), cmd)
@@ -351,6 +398,37 @@ class ImpressHomeUiTest(unittest.TestCase):
             self.assertTrue(path.exists(), resource)
             self.assertIn("\tsd/uiconfig/simpress/popupmenu/" + resource + " \\\n", mk)
             self.assertEqual(items, self.menu_ids(ET.parse(path).getroot()), resource)
+
+    def test_the_shapes_menu_has_the_line_submenu_with_the_eight_line_tools(self):
+        # design section 1: ShapesLineMenu > Line, Freeline_Unfilled, Freeline, Bezier_Unfilled, BezierFill,
+        # Polygon_Unfilled, Polygon_Diagonal_Unfilled, Polygon_Diagonal (the Insert > Shape > Line submenu)
+        root = ET.parse(POPUPMENU / "home_shapes.xml").getroot()
+        submenu = root.find(MENU + "menu")
+        self.assertEqual(".uno:ShapesLineMenu", submenu.get(MENU + "id"))
+        self.assertEqual(uno("Line", "Freeline_Unfilled", "Freeline", "Bezier_Unfilled", "BezierFill",
+                             "Polygon_Unfilled", "Polygon_Diagonal_Unfilled", "Polygon_Diagonal"),
+                         self.menu_ids(submenu.find(MENU + "menupopup")))
+
+    def test_the_find_menu_starts_with_the_find_toolbar_and_replace_with_find_and_replace(self):
+        # design decisions 10 and 12
+        find = self.menu_ids(ET.parse(POPUPMENU / "home_find.xml").getroot())
+        self.assertEqual("vnd.sun.star.findbar:FocusToFindbar", find[0])
+        self.assertEqual(".uno:SearchDialog", self.menu_ids(ET.parse(POPUPMENU / "home_replace.xml").getroot())[0])
+
+    def test_the_drawing_cells_keep_the_stock_controllers_of_their_commands(self):
+        # design decision 15: the shape sub-toolbars keep their stock popups (ToolbarAsMenuController or
+        # SubToolBarController, Controller.xcu), Shape Fill and Outline their color popups; none of them is new
+        controlled = {}
+        for v in controller_nodes(app="impress").values():
+            if v["Module"] in ("", PRESENTATION_MODULE, None):
+                controlled.setdefault(v["Command"], set()).add(v["Controller"].rsplit(".", 1)[1])
+        for name in ("ArrowsToolbox", "ConnectorToolbox", "BasicShapes", "SymbolShapes", "ArrowShapes",
+                     "FlowChartShapes", "CalloutShapes", "StarShapes", "LineToolbox", "Objects3DToolbox",
+                     "FillColor", "XLineColor"):
+            self.assertTrue(controlled.get(".uno:" + name), name)
+        for cmd in ("HomeArrangeMenu", "HomeShapeEffectsMenu", "HomeFindMenu", "HomeReplaceMenu",
+                    "HomeSelectMenu", "InsertShapesMenu"):
+            self.assertEqual({"ResourceMenuController", "GenericPopupToolbarController"}, controlled[".uno:" + cmd])
 
     def test_the_section_menu_ends_with_the_three_placeholder_items(self):
         items = self.menu_ids(ET.parse(POPUPMENU / "home_section.xml").getroot())
