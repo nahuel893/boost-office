@@ -11,7 +11,7 @@
       ],
       [
         {"id": "Labels", "style": "large", "items": [
-          {"cmd": "InsertLabels", "icon": "cmd/32/insertlabels.png", "office_label": "Labels"}
+          {"cmd": "InsertLabels", "office_label": "Labels"}
         ]}
       ]
     ]},

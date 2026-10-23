@@ -33,7 +33,7 @@
           {"cmd": "ReferencesNextFootnoteMenu", "kind": "split", "office_label": "Next Footnote"}
         ]},
         {"id": "ShowNotes", "style": "small-label", "items": [
-          {"cmd": "JumpToFootnoteOrAnchor", "icon": "cmd/sc_jumptofootnoteoranchor.png", "office_label": "Show Notes"}
+          {"cmd": "JumpToFootnoteOrAnchor", "office_label": "Show Notes"}
         ]}
       ]
     ]},

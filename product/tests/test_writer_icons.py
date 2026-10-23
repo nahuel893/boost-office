@@ -14,6 +14,20 @@ from product.tests import test_icons as calc_icons
 
 ROOT = Path(__file__).resolve().parents[2]
 OFFICE = ROOT / "sw/uiconfig/swriter/ui/notebookbar_office.ui"
+COMMANDS = ROOT / "officecfg/registry/data/org/openoffice/Office/UI"
+OOR = "{http://openoffice.org/2001/registry}"
+
+
+def image_commands(xcu):
+    """The commands of a Commands.xcu whose Properties has the image bit (1). Only those are in the
+    command image list (framework's uicommanddescription.cxx), so only those get their theme icon
+    from the command; any other command shows a blank button unless the .ui names an icon."""
+    commands = set()
+    for node in ET.parse(COMMANDS / xcu).iter("node"):
+        for prop in node.findall("prop"):
+            if prop.get(OOR + "name") == "Properties" and int(prop.find("value").text) & 1:
+                commands.add(node.get(OOR + "name"))
+    return commands
 
 
 def tab_page(tab):
@@ -76,6 +90,21 @@ class _WriterTabIcons:
     def test_every_button_has_an_icon_in_both_themes(self):
         self.assertEqual(["boost", "boost_dark"], sorted(self.zips))
         self.assertEqual([], self.missing())
+
+    def test_every_button_without_an_icon_name_has_a_command_image(self):
+        # Writer's image manager looks a command up in Writer's command image list, then in the
+        # generic one: a command in neither renders a blank button (Drop Caps, Show Notes, Labels).
+        listed = image_commands("WriterCommands.xcu") | image_commands("GenericCommands.xcu")
+        blank = []
+        for button in tab_page(self.TAB).iter("object"):
+            action = button.find("property[@name='action-name']")
+            if action is None or button.find("property[@name='icon_name']") is not None:
+                continue
+            if action.text.removeprefix(".uno:").lower() in calc_icons.LIST_BOX_COMMANDS:
+                continue
+            if action.text not in listed:
+                blank.append(action.text)
+        self.assertEqual([], blank)
 
 
 class WriterHomeIconsTest(_WriterTabIcons, unittest.TestCase):
