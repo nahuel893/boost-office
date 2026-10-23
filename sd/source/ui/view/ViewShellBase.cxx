@@ -708,6 +708,43 @@ void ViewShellBase::GetState (SfxItemSet& rSet)
     mpImpl->GetSlotState(rSet);
 
     FuBullet::GetSlotState( rSet, nullptr, &GetViewFrame() );
+
+    // Ribbon placeholders (SID_BOOST+0..+23): the slot only exists so that the ribbon button
+    // reads as unavailable, in every view; a feature adds its Execute and real state later.
+    // Last: GetSlotState puts a state for every slot of the set, which would enable them again.
+    SfxWhichIter aIter(rSet);
+    for (sal_uInt16 nWhich = aIter.FirstWhich(); nWhich; nWhich = aIter.NextWhich())
+    {
+        switch (nWhich)
+        {
+            case SID_BOOST_HOME_SECTION:
+            case SID_BOOST_HOME_CONVERT_TO_SMARTART:
+            case SID_BOOST_HOME_REGROUP:
+            case SID_BOOST_HOME_SHAPE_EFFECT:
+            case SID_BOOST_HOME_REPLACE_FONTS:
+            case SID_BOOST_INSERT_SCREENSHOT:
+            case SID_BOOST_INSERT_3D_MODELS:
+            case SID_BOOST_INSERT_SMARTART:
+            case SID_BOOST_INSERT_ZOOM:
+            case SID_BOOST_INSERT_SCREEN_RECORDING:
+            case SID_BOOST_PAGE_LAYOUT_THEME_PART:
+            case SID_BOOST_PREVIEW_EFFECTS:
+            case SID_BOOST_ANIMATION_PAINTER:
+            case SID_BOOST_SLIDESHOW_RECORD:
+            case SID_BOOST_SLIDESHOW_OPTION:
+            case SID_BOOST_REVIEW_CHECK_ACCESSIBILITY:
+            case SID_BOOST_REVIEW_TRANSLATE:
+            case SID_BOOST_REVIEW_COMPARE:
+            case SID_BOOST_REVIEW_HIDE_INK:
+            case SID_BOOST_VIEW_MODE:
+            case SID_BOOST_VIEW_ARRANGE_ALL:
+            case SID_BOOST_VIEW_CASCADE:
+            case SID_BOOST_VIEW_SPLIT:
+            case SID_BOOST_HELP_FEEDBACK:
+                rSet.DisableItem(nWhich);
+                break;
+        }
+    }
 }
 
 void ViewShellBase::WriteUserDataSequence (

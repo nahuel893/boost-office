@@ -436,4 +436,35 @@
 #define SID_MOVE_SLIDE_SECTION_DOWN         (SID_SD_START+457)
 #define SID_REMOVE_SLIDE_SECTION_AND_SLIDES (SID_SD_START+458)
 
+// SID_SD_START+900..+999 (27900-27999) is reserved for this fork: the top of the sd range
+// (SID_SD_END is 27999), well clear of the ids upstream hands out next.
+#define SID_BOOST                            (SID_SD_START+900)
+// Ribbon placeholders, SID_BOOST+0..+23: always disabled (ViewShellBase::GetState) until their
+// feature gives them an Execute. A family slot serves several buttons through URL variants; the
+// registry is product/tests/placeholders_impress.json.
+#define SID_BOOST_HOME_SECTION               (SID_BOOST+0)
+#define SID_BOOST_HOME_CONVERT_TO_SMARTART   (SID_BOOST+1)
+#define SID_BOOST_HOME_REGROUP               (SID_BOOST+2)
+#define SID_BOOST_HOME_SHAPE_EFFECT          (SID_BOOST+3)
+#define SID_BOOST_HOME_REPLACE_FONTS         (SID_BOOST+4)
+#define SID_BOOST_INSERT_SCREENSHOT          (SID_BOOST+5)
+#define SID_BOOST_INSERT_3D_MODELS           (SID_BOOST+6)
+#define SID_BOOST_INSERT_SMARTART            (SID_BOOST+7)
+#define SID_BOOST_INSERT_ZOOM                (SID_BOOST+8)
+#define SID_BOOST_INSERT_SCREEN_RECORDING    (SID_BOOST+9)
+#define SID_BOOST_PAGE_LAYOUT_THEME_PART     (SID_BOOST+10)
+#define SID_BOOST_PREVIEW_EFFECTS            (SID_BOOST+11)
+#define SID_BOOST_ANIMATION_PAINTER          (SID_BOOST+12)
+#define SID_BOOST_SLIDESHOW_RECORD           (SID_BOOST+13)
+#define SID_BOOST_SLIDESHOW_OPTION           (SID_BOOST+14)
+#define SID_BOOST_REVIEW_CHECK_ACCESSIBILITY (SID_BOOST+15)
+#define SID_BOOST_REVIEW_TRANSLATE           (SID_BOOST+16)
+#define SID_BOOST_REVIEW_COMPARE             (SID_BOOST+17)
+#define SID_BOOST_REVIEW_HIDE_INK            (SID_BOOST+18)
+#define SID_BOOST_VIEW_MODE                  (SID_BOOST+19)
+#define SID_BOOST_VIEW_ARRANGE_ALL           (SID_BOOST+20)
+#define SID_BOOST_VIEW_CASCADE               (SID_BOOST+21)
+#define SID_BOOST_VIEW_SPLIT                 (SID_BOOST+22)
+#define SID_BOOST_HELP_FEEDBACK              (SID_BOOST+23)
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

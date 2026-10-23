@@ -154,6 +154,103 @@ interface ViewShellBaseView
     ]
     SID_INSERT_DRAW
     []
+    // Ribbon placeholders (SID_BOOST+0..+23): state only, always disabled, no Execute yet
+    SID_BOOST_HOME_SECTION
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_HOME_CONVERT_TO_SMARTART
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_HOME_REGROUP
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_HOME_SHAPE_EFFECT
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_HOME_REPLACE_FONTS
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_INSERT_SCREENSHOT
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_INSERT_3D_MODELS
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_INSERT_SMARTART
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_INSERT_ZOOM
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_INSERT_SCREEN_RECORDING
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_PAGE_LAYOUT_THEME_PART
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_PREVIEW_EFFECTS
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_ANIMATION_PAINTER
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_SLIDESHOW_RECORD
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_SLIDESHOW_OPTION
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_REVIEW_CHECK_ACCESSIBILITY
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_REVIEW_TRANSLATE
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_REVIEW_COMPARE
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_REVIEW_HIDE_INK
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_VIEW_MODE
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_VIEW_ARRANGE_ALL
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_VIEW_CASCADE
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_VIEW_SPLIT
+    [
+        StateMethod = GetState ;
+    ]
+    SID_BOOST_HELP_FEEDBACK
+    [
+        StateMethod = GetState ;
+    ]
 }
 
 shell ViewShellBase

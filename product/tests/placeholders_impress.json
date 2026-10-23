@@ -1,0 +1,161 @@
+[
+ {
+  "slot": "SID_BOOST_HOME_SECTION",
+  "offset": 0,
+  "command": "HomeSection",
+  "variants": [
+   "Action:string=removeall",
+   "Action:string=collapseall",
+   "Action:string=expandall"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_HOME_CONVERT_TO_SMARTART",
+  "offset": 1,
+  "command": "HomeConvertToSmartArt"
+ },
+ {
+  "slot": "SID_BOOST_HOME_REGROUP",
+  "offset": 2,
+  "command": "HomeRegroup"
+ },
+ {
+  "slot": "SID_BOOST_HOME_SHAPE_EFFECT",
+  "offset": 3,
+  "command": "HomeShapeEffect",
+  "variants": [
+   "Effect:string=preset",
+   "Effect:string=reflection",
+   "Effect:string=bevel"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_HOME_REPLACE_FONTS",
+  "offset": 4,
+  "command": "HomeReplaceFonts"
+ },
+ {
+  "slot": "SID_BOOST_INSERT_SCREENSHOT",
+  "offset": 5,
+  "command": "InsertScreenshot"
+ },
+ {
+  "slot": "SID_BOOST_INSERT_3D_MODELS",
+  "offset": 6,
+  "command": "Insert3DModels"
+ },
+ {
+  "slot": "SID_BOOST_INSERT_SMARTART",
+  "offset": 7,
+  "command": "InsertSmartArt"
+ },
+ {
+  "slot": "SID_BOOST_INSERT_ZOOM",
+  "offset": 8,
+  "command": "InsertZoom",
+  "variants": [
+   "Type:string=section",
+   "Type:string=slide"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_INSERT_SCREEN_RECORDING",
+  "offset": 9,
+  "command": "InsertScreenRecording"
+ },
+ {
+  "slot": "SID_BOOST_PAGE_LAYOUT_THEME_PART",
+  "offset": 10,
+  "command": "PageLayoutThemePart",
+  "variants": [
+   "Part:string=fonts",
+   "Part:string=effects",
+   "Part:string=backgroundstyles"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_PREVIEW_EFFECTS",
+  "offset": 11,
+  "command": "PreviewEffects",
+  "variants": [
+   "Target:string=transition",
+   "Target:string=animation"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_ANIMATION_PAINTER",
+  "offset": 12,
+  "command": "AnimationPainter"
+ },
+ {
+  "slot": "SID_BOOST_SLIDESHOW_RECORD",
+  "offset": 13,
+  "command": "SlideShowRecord"
+ },
+ {
+  "slot": "SID_BOOST_SLIDESHOW_OPTION",
+  "offset": 14,
+  "command": "SlideShowOption",
+  "variants": [
+   "Option:string=narrations",
+   "Option:string=mediacontrols"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_REVIEW_CHECK_ACCESSIBILITY",
+  "offset": 15,
+  "command": "ReviewCheckAccessibility"
+ },
+ {
+  "slot": "SID_BOOST_REVIEW_TRANSLATE",
+  "offset": 16,
+  "command": "ReviewTranslate"
+ },
+ {
+  "slot": "SID_BOOST_REVIEW_COMPARE",
+  "offset": 17,
+  "command": "ReviewCompare",
+  "variants": [
+   "Action:string=compare",
+   "Action:string=accept",
+   "Action:string=reject",
+   "Action:string=previous",
+   "Action:string=next",
+   "Action:string=pane",
+   "Action:string=endreview"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_REVIEW_HIDE_INK",
+  "offset": 18,
+  "command": "ReviewHideInk"
+ },
+ {
+  "slot": "SID_BOOST_VIEW_MODE",
+  "offset": 19,
+  "command": "ViewMode",
+  "variants": [
+   "Mode:string=reading"
+  ]
+ },
+ {
+  "slot": "SID_BOOST_VIEW_ARRANGE_ALL",
+  "offset": 20,
+  "command": "ViewArrangeAll"
+ },
+ {
+  "slot": "SID_BOOST_VIEW_CASCADE",
+  "offset": 21,
+  "command": "ViewCascade"
+ },
+ {
+  "slot": "SID_BOOST_VIEW_SPLIT",
+  "offset": 22,
+  "command": "ViewSplit"
+ },
+ {
+  "slot": "SID_BOOST_HELP_FEEDBACK",
+  "offset": 23,
+  "command": "HelpFeedback"
+ }
+]
