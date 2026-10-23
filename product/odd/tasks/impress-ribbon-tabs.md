@@ -151,7 +151,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I2a | Home, part 1: Undo, Clipboard, Slides, Font, Paragraph (5 menus); layout, labels, popups, placeholder labels, unit tests, UITests | delegated (sonnet) | [x] (Columns: fallback, ruling 19) | e7d5a89ce (layout + generated), 64b7a1062 (code) | off (ruling 12): controller spot check |
 | I2c | Home, part 2: Drawing (shape gallery, Arrange, Shape Effects) and Editing (6 menus) | delegated (sonnet) | [x] | 70dbfd32e, 057581424 | 741 unit tests OK; UITests pass |
 | I2b | Home icons, 1920 fit (through control sizes), screenshots | delegated (sonnet), after I2c | [x] | d04c730e5 | 745 unit tests OK; fits at 1920 |
-| I3a / I3b | Insert | as I2a / I2b | [ ] | | |
+| I3a | Insert, layout and behaviour | delegated (sonnet) | [x] | 24b68da34, 2c339b20a | 774 unit tests OK; UITests pass |
+| I3b | Insert icons, 1920 fit, screenshots | delegated (sonnet), after I3a | [ ] | | |
 | I4a / I4b | Design (moved before Transitions) | as I2a / I2b | [ ] | | |
 | I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
@@ -494,7 +495,23 @@ Controller rulings (2026-10-23):
   - Controller check: 745 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked; the 1920 light screenshot looked at.
 
+- 2026-10-23, I3a (route: delegated, sonnet). Commits 24b68da34 (`impress_insert.json`, 146 lines, and the
+  regenerated `.ui` and suppressions: 3 files, +1281/-941) and 2c339b20a (the `InsertZoomMenu` and
+  `InsertTextBoxMenu` popups, Controller.xcu nodes, labels, `test_impress_insert_ui.py`, 9 UITests: 9 files,
+  +715/-15). `InsertShapesMenu` is reused from I2c.
+  - Choices, accepted: Photo Album, Link, Equation, Video, Audio and WordArt are plain buttons (no LibreOffice menu,
+    decision 9); Table, Symbol and New Slide are splits. Summary Zoom is Summary Slide, enabled only once the slide
+    has a title (`sd/source/ui/view/drviews7.cxx:451-471`); the UITest sets one first. Symbol's enabled state is not
+    asserted (it needs text edit mode).
+  - Deviations, accepted: no separate RED run of the UITests (the unit RED, 14 failing checks, stands for it); the
+    suite was not run on commit 1 alone (the new test file is in commit 2).
+  - Evidence (report: `task-I3a-report.md`): 745 -> 774 OK; the 9 new UITests and the load, tab-order,
+    placeholder and Home visibility UITests pass; the build exit 0; `check-ui.sh` 0 new warnings or fatals; the six
+    Calc and Writer sha256 values unchanged; `git show --check` clean.
+  - Controller check: 774 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked.
+
 ## Next step
 
-I3a (delegated, sonnet; brief `task-I3a-brief.md`): the Insert tab. Then I3b, I4a, I4b, ... I8b; the a briefs bind
-`task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
+I3b (delegated, sonnet; brief `task-I3b-brief.md`, which binds `task-Ib-common.md`): Insert icons, fit, screenshots.
+Then I4a, I4b, ... I8b; the a briefs bind `task-Ia-common.md` from I6a on.
