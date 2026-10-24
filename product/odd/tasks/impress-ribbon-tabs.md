@@ -158,7 +158,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [x] | b4d6c4849 | 813 unit tests OK; gtk3 screenshots |
 | I5a | Transitions (the stock Layout page, relabelled) and Animations (new page), layout and behaviour | delegated (sonnet) | [x] | 5df70028a, 5bf3d5663 | 859 unit tests OK; UITests pass |
 | I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [x] | e58265196 | 869 unit tests OK; fits at every width |
-| I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
+| I6a | Slide Show, layout and behaviour | delegated (sonnet) | [x] | 2ebf0877a, 3e7bbf6c4 | 890 unit tests OK; UITests pass |
+| I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
 | I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
 | I9 | Polish: fit and caption baseline across tabs, other views, the accent (data only: W9a's mechanism already maps Impress, design 3.4) | delegated (sonnet) | [ ] | | |
@@ -393,6 +394,16 @@ Controller rulings (2026-10-23):
     (`toolkit/source/awt/vclxmenu.cxx:518-521`). I4c (opus) sets the always-show flag in `VCLXMenu::execute` when
     `DontHideDisabledEntry` is true, proves it with gtk3 screenshots in Impress, Writer and Calc, and comes before
     I5a because it affects the finished apps too.
+22. **Speed (the user asked why it takes so long):** workers run the full unit suite once, at the end, and only the
+    affected test files while working; the controller no longer reruns the full suite after a worker (its check is
+    the tree clean after `gen_ribbon.py --all`, no soffice left, no `.superpowers` file tracked, a screenshot looked
+    at); I7 and I8 each run as one task (a and b together, two or three commits).
+23. **Hide Slide and arrows without menus (I6a findings):** `.uno:HideSlide` is hide-only in LibreOffice (once the
+    slide is hidden the slot is disabled, `sd/source/ui/slidesorter/controller/SlsSlotManager.cxx:143`, `:763-786`),
+    so decision 28's toggle needs C++: I9 makes `SID_HIDE_SLIDE` a toggle (enabled and checked while the current
+    slide is hidden, executing it shows the slide again), with a UITest. Custom Slide Show and Record were built as
+    splits whose arrows open nothing; I6b makes them plain buttons (`"kind"` removed), as Insert did for controls
+    with no LibreOffice menu.
 
 ## Progress / evidence
 
@@ -613,7 +624,21 @@ Controller rulings (2026-10-23):
   - Controller check: 869 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked; both 1920 light ribbons looked at.
 
+- 2026-10-24, I6a (route: delegated, sonnet). Commits 2ebf0877a (`impress_slideshow.json` and the regenerated `.ui`
+  and suppressions: 3 files, +530/-486) and 3e7bbf6c4 (labels for Record, Play Narrations and Show Media Controls,
+  `test_impress_slideshow_ui.py`, UITests; the I5a Hide Slide test updated: 5 files, +413/-9).
+  - Checks: Use Timings, Monitor and Use Presenter View each open the Set Up Slide Show dialog (URL dispatched; the
+    headless window clips the ribbon); From Beginning and From Current Slide are enabled (no show started); the
+    placeholders are disabled and inert; the tab shows with every selection kind. Hide Slide hides the slide but a
+    second press does nothing (hide-only in LibreOffice): ruling 23; the UITest pins the current behaviour (hide,
+    no-op, Show Slide restores).
+  - Evidence (report: `task-I6a-report.md`): 869 -> 890 OK; 11 UITests pass; the build exit 0; `check-ui.sh` 0 new
+    warnings or fatals; the six Calc and Writer sha256 values unchanged; screenshot in
+    `assets/previews/impress-ribbon-tabs/i6a/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the screenshot looked at.
+
 ## Next step
 
-I6a (delegated, sonnet; brief `task-I6a-brief.md`, which binds `task-Ia-common.md`): the Slide Show tab. Then I6b,
-I7a, I7b, I8a, I8b (the b briefs bind `task-Ib-common.md`), then I9-I11.
+I6b (delegated, sonnet; brief `task-I6b-brief.md`, which binds `task-Ib-common.md`): Slide Show icons, fit,
+screenshots, and the two plain buttons of ruling 23. Then I7 (a and b in one task), I8 (likewise), then I9-I11.
