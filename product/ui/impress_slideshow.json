@@ -1,0 +1,73 @@
+{
+  "page": "SlideShow",
+  "id_prefix": "SlideShow",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu Slide Show"],
+  "sections": [
+    {"name": "StartSlideShow", "caption": "Start Slide Show", "rows": 3, "columns": [
+      [
+        {"id": "FromBeginning", "style": "large", "items": [
+          {"cmd": "Presentation", "office_label": "From Beginning"}
+        ]}
+      ],
+      [
+        {"id": "FromCurrentSlide", "style": "large", "items": [
+          {"cmd": "PresentationCurrentSlide", "office_label": "From Current Slide"}
+        ]}
+      ],
+      [
+        {"id": "CustomSlideShow", "style": "large", "items": [
+          {"cmd": "CustomShowDialog", "kind": "split", "office_label": "Custom Slide Show"}
+        ]}
+      ]
+    ]},
+    {"name": "SetUp", "caption": "Set Up", "rows": 3, "columns": [
+      [
+        {"id": "SetUpSlideShow", "style": "large", "items": [
+          {"cmd": "PresentationDialog", "office_label": "Set Up Slide Show"}
+        ]}
+      ],
+      [
+        {"id": "HideSlide", "style": "large", "items": [
+          {"cmd": "HideSlide", "office_label": "Hide Slide"}
+        ]}
+      ],
+      [
+        {"id": "RehearseTimings", "style": "large", "items": [
+          {"cmd": "RehearseTimings", "office_label": "Rehearse Timings"}
+        ]}
+      ],
+      [
+        {"id": "Record", "style": "large", "items": [
+          {"cmd": "SlideShowRecord", "kind": "split", "office_label": "Record"}
+        ]}
+      ],
+      [
+        {"id": "PlayNarrations", "style": "small-label", "items": [
+          {"cmd": "SlideShowPlayNarrations", "action": ".uno:SlideShowOption?Option:string=narrations",
+           "icon": "cmd/sc_avmediaplayer.png", "office_label": "Play Narrations"}
+        ]},
+        {"id": "UseTimings", "style": "small-label", "items": [
+          {"cmd": "SlideShowUseTimings", "action": ".uno:PresentationDialog",
+           "icon": "cmd/sc_presentationdialog.png", "office_label": "Use Timings"}
+        ]},
+        {"id": "ShowMediaControls", "style": "small-label", "items": [
+          {"cmd": "SlideShowShowMediaControls", "action": ".uno:SlideShowOption?Option:string=mediacontrols",
+           "icon": "cmd/sc_avmediaplayer.png", "office_label": "Show Media Controls"}
+        ]}
+      ]
+    ]},
+    {"name": "Monitors", "caption": "Monitors", "rows": 3, "columns": [
+      [
+        {"id": "Monitor", "style": "small-label", "items": [
+          {"cmd": "SlideShowMonitor", "action": ".uno:PresentationDialog",
+           "icon": "cmd/sc_presentationdialog.png", "office_label": "Monitor"}
+        ]},
+        {"id": "UsePresenterView", "style": "small-label", "items": [
+          {"cmd": "SlideShowPresenterView", "action": ".uno:PresentationDialog",
+           "icon": "cmd/sc_presentationdialog.png", "office_label": "Use Presenter View"}
+        ]}
+      ]
+    ]}
+  ]
+}
