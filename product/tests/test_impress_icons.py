@@ -168,3 +168,37 @@ class ImpressDesignIconsTest(_ImpressTabIcons, unittest.TestCase):
                     if member not in names and links.get(member) not in names:
                         missing.append(f"{theme}:{member}")
         self.assertEqual([], missing)
+
+
+class _DeckIcons(_ImpressTabIcons):
+    """The Transitions and Animations controls that share one deck URL (or a `?` URL) name their own icons: a
+    32 px icon for the large ones, a 16 px icon for the small ones, each different from the others."""
+    LARGE = frozenset()
+    SMALL = frozenset()
+
+    def test_every_deck_control_names_its_own_icon(self):
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        self.assertEqual({f"btn{self.TAB}{c}" for c in self.LARGE | self.SMALL}, set(icons))
+        for cmd in self.LARGE:
+            self.assertRegex(icons[f"btn{self.TAB}{cmd}"], r"^cmd/32/[a-z]+\.png$")
+        for cmd in self.SMALL:
+            self.assertRegex(icons[f"btn{self.TAB}{cmd}"], r"^cmd/sc_[a-z]+\.png$")
+        self.assertEqual(len(icons), len(set(icons.values())))
+
+
+class ImpressTransitionsIconsTest(_DeckIcons, unittest.TestCase):
+    TAB = "Transitions"
+    LARGE = frozenset({"PreviewTransition", "TransitionStyles", "TransitionEffectOptions"})
+    SMALL = frozenset({"TransitionSound", "TransitionDuration", "TransitionApplyToAll",
+                       "TransitionOnMouseClick", "TransitionAfter"})
+
+
+class ImpressAnimationsIconsTest(_DeckIcons, unittest.TestCase):
+    TAB = "Animations"
+    LARGE = frozenset({"PreviewAnimation", "AnimationStyles", "AnimationEffectOptions", "AddAnimation"})
+    SMALL = frozenset({"AnimationTrigger", "AnimationStart", "AnimationDuration", "AnimationDelay",
+                       "AnimationMoveEarlier", "AnimationMoveLater"})

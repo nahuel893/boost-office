@@ -132,7 +132,7 @@ class ImpressTransitionsUiTest(unittest.TestCase):
         for item in decks:
             self.assertEqual(DECK, item["action"], item["cmd"])
             self.assertTrue(item.get("icon", "").startswith("cmd/"), item["cmd"])  # the deck's own icon (I5b)
-            self.assertIn("sidebardeck.sdslidetransitiondeck", item["icon"], item["cmd"])
+            self.assertIn(item["cmd"].lower() + ".png", item["icon"], item["cmd"])  # its own name (I5b)
             self.assertIn('id="btnTransitions%s"' % item["cmd"], self.office)
 
     def test_the_toggling_slide_change_command_is_not_used(self):

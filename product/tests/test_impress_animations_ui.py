@@ -103,7 +103,7 @@ class ImpressAnimationsUiTest(unittest.TestCase):
         for item in decks:
             self.assertEqual(DECK, item["action"], item["cmd"])
             self.assertTrue(item.get("icon", "").startswith("cmd/"), item["cmd"])  # the deck's own icon (I5b)
-            self.assertIn("sidebardeck.sdcustomanimationdeck", item["icon"], item["cmd"])
+            self.assertIn(item["cmd"].lower() + ".png", item["icon"], item["cmd"])  # its own name (I5b)
             self.assertIn('id="btnAnimations%s"' % item["cmd"], self.office)
 
     def test_animation_pane_is_the_exact_toggle_and_the_others_do_not_toggle(self):

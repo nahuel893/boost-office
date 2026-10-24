@@ -6012,7 +6012,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:PreviewEffects?Target:string=transition</property>
-                                        <property name="icon_name">cmd/32/presentation.png</property>
+                                        <property name="icon_name">cmd/32/previewtransition.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6117,7 +6117,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionStyles">Transition Styles</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/32/sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/32/transitionstyles.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6146,7 +6146,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionEffectOptions">Effect Options</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/32/sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/32/transitioneffectoptions.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6249,7 +6249,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionSound">Sound</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/sc_transitionsound.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6275,7 +6275,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionDuration">Duration</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/sc_transitionduration.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6301,7 +6301,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionApplyToAll">Apply To All</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/sc_transitionapplytoall.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6327,7 +6327,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionOnMouseClick">On Mouse Click</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/sc_transitiononmouseclick.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6353,7 +6353,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionAfter">After</property>
                                         <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                        <property name="icon_name">cmd/sc_transitionafter.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6492,7 +6492,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:PreviewEffects?Target:string=animation</property>
-                                        <property name="icon_name">cmd/32/presentation.png</property>
+                                        <property name="icon_name">cmd/32/previewanimation.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6597,7 +6597,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationStyles">Animation Styles</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/32/animationstyles.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6626,7 +6626,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationEffectOptions">Effect Options</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/32/animationeffectoptions.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6731,7 +6731,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAddAnimation">Add Animation</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/32/addanimation.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6783,7 +6783,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationTrigger">Trigger</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationtrigger.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6909,7 +6909,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationStart">Start</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationstart.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6935,7 +6935,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationDuration">Duration</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationduration.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6961,7 +6961,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationDelay">Delay</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationdelay.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6987,7 +6987,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationMoveEarlier">Move Earlier</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationmoveearlier.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7013,7 +7013,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationMoveLater">Move Later</property>
                                         <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
-                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                        <property name="icon_name">cmd/sc_animationmovelater.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
