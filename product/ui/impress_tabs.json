@@ -1,11 +1,11 @@
 {
+  "relabel": [{"id": "LayoutLabel", "from": "~Layout", "to": "Tra~nsitions"}],
   "properties": [
     {"id": "Home Tab", "name": "valign", "from": "center", "to": "fill"},
     {"id": "Layout", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbFile", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbHome", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbInsert", "name": "valign", "from": "center", "to": "fill"},
-    {"id": "pmhbLayout", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbDesign", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbSlideShow", "name": "valign", "from": "center", "to": "fill"},
     {"id": "pmhbReview", "name": "valign", "from": "center", "to": "fill"},
@@ -26,6 +26,25 @@
     {"page": "Design", "tab": "DesignLabel", "before": "Layout"}
   ],
   "positions": {
-    "Design": 3, "DesignLabel": 3, "Layout": 4, "LayoutLabel": 4
-  }
+    "Design": 3, "DesignLabel": 3,
+    "Layout": 4, "LayoutLabel": 4,
+    "SlideShow": 6, "SlideShowLabel": 6,
+    "Review": 7, "ReviewLabel": 7,
+    "View": 8, "ViewLabel": 8,
+    "Table": 9, "TableLabel": 9,
+    "Image": 10, "ImageLabel": 10,
+    "Draw": 11, "DrawLabel": 11,
+    "Object": 12, "ObjectLabel": 12,
+    "Media": 13, "MediaLabel": 13,
+    "Form": 14, "FormLabel": 14,
+    "Master": 15, "MasterLabel": 15,
+    "Outline": 16, "OutlineLabel": 16,
+    "3D": 17, "3DObjectLabel": 17,
+    "Extension": 18, "ExtensionLabel": 18,
+    "Tools": 19, "ToolsLabel": 19
+  },
+  "add_pages": [
+    {"page": "Animations", "prefix": "Animations", "after_tab": "LayoutLabel", "position": 5,
+     "tab_id": "AnimationsLabel", "label": "~Animations", "context": "TabbedImpress|AnimationsTabLabel"}
+  ]
 }

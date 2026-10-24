@@ -1,0 +1,48 @@
+{
+  "page": "Layout",
+  "id_prefix": "Transitions",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu Slide"],
+  "sections": [
+    {"name": "Preview", "caption": "Preview", "rows": 3, "columns": [
+      [
+        {"id": "Preview", "style": "large", "items": [
+          {"cmd": "PreviewTransition", "action": ".uno:PreviewEffects?Target:string=transition", "icon": "cmd/32/presentation.png", "office_label": "Preview"}
+        ]}
+      ]
+    ]},
+    {"name": "Transition", "caption": "Transition to This Slide", "rows": 3, "columns": [
+      [
+        {"id": "Styles", "style": "large", "items": [
+          {"cmd": "TransitionStyles", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/32/sidebardeck.sdslidetransitiondeck.png", "office_label": "Transition Styles"}
+        ]}
+      ],
+      [
+        {"id": "EffectOptions", "style": "large", "items": [
+          {"cmd": "TransitionEffectOptions", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/32/sidebardeck.sdslidetransitiondeck.png", "office_label": "Effect Options"}
+        ]}
+      ]
+    ]},
+    {"name": "Timing", "caption": "Timing", "rows": 3, "columns": [
+      [
+        {"id": "Sound", "style": "small-label", "items": [
+          {"cmd": "TransitionSound", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/sc_sidebardeck.sdslidetransitiondeck.png", "office_label": "Sound"}
+        ]},
+        {"id": "Duration", "style": "small-label", "items": [
+          {"cmd": "TransitionDuration", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/sc_sidebardeck.sdslidetransitiondeck.png", "office_label": "Duration"}
+        ]},
+        {"id": "ApplyToAll", "style": "small-label", "items": [
+          {"cmd": "TransitionApplyToAll", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/sc_sidebardeck.sdslidetransitiondeck.png", "office_label": "Apply To All"}
+        ]}
+      ],
+      [
+        {"id": "OnMouseClick", "style": "small-label", "items": [
+          {"cmd": "TransitionOnMouseClick", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/sc_sidebardeck.sdslidetransitiondeck.png", "office_label": "On Mouse Click"}
+        ]},
+        {"id": "After", "style": "small-label", "items": [
+          {"cmd": "TransitionAfter", "action": ".uno:SidebarDeck.SdSlideTransitionDeck", "icon": "cmd/sc_sidebardeck.sdslidetransitiondeck.png", "office_label": "After"}
+        ]}
+      ]
+    ]}
+  ]
+}

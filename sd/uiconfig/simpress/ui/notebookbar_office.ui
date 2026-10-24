@@ -1171,179 +1171,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="Menu Slide">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-InsertSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-DuplicateSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:DuplicateSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-DeleteSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:DeleteSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-ModifyPage">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ModifyPage</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-SlideSetup">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SlideSetup</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-SelectBackground">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SelectBackground</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator2">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-InsertMasterPage">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:InsertMasterPage</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-DeleteMasterPage">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:DeleteMasterPage</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator3">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-PresentationLayout">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:PresentationLayout</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-DisplayMasterBackground">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:DisplayMasterBackground</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-DisplayMasterObjects">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:DisplayMasterObjects</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator4">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-HideSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:HideSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-ShowSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ShowSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-RenameSlide">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:RenameSlide</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator5">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-ImportSlideFromFile">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ImportSlideFromFile</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-SummaryPage">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SummaryPage</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-ExpandPage">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ExpandPage</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuSlide-separator6">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-MoveSlideUp">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:MoveSlideUp</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuSlide-MoveSlideDown">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:MoveSlideDown</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkMenu" id="Menu Slide Show">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -6142,93 +5969,109 @@
                 <property name="can-focus">False</property>
                 <property name="valign">fill</property>
                 <property name="vexpand">True</property>
+                <!-- product:Transitions-begin -->
                 <child>
-                  <object class="sfxlo-PriorityMergedHBox" id="pmhbLayout">
+                  <object class="sfxlo-PriorityMergedHBox" id="pmhbTransitions">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">fill</property>
-                    <property name="vexpand">True</property>
                     <child>
-                      <!-- n-columns=2 n-rows=3 -->
-                      <object class="GtkGrid" id="gdLayoutFormat">
+                      <object class="VclOptionalBox" id="obTransitionsPreview">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbLayoutFormat">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdTransitionsPreview">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelLayoutFormat">Format</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcTransitionsPreview">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsPreview">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsPreviewTransition">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:PreviewEffects?Target:string=transition</property>
+                                        <property name="icon_name">cmd/32/presentation.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbTransitionsPreview">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelTransitionsPreview">Preview</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdLayoutFormat"/>
+                              <relation type="labelled-by" target="lbTransitionsPreview"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutFormat">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutSlideSetup">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SlideSetup</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutHeaderAndFooter">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:HeaderAndFooter</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbLayoutFormat"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6237,166 +6080,132 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=4 n-rows=3 -->
-                      <object class="GtkGrid" id="gdLayoutSlide">
+                      <object class="VclOptionalBox" id="obTransitionsTransition">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbLayoutSlide1">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdTransitionsTransition">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelLayoutSlide">Slide</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcTransitionsTransition">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsStyles">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionStyles">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionStyles">Transition Styles</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsEffectOptions">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionEffectOptions">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionEffectOptions">Effect Options</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbTransitionsTransition">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelTransitionsTransition">Transition to This Slide</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdLayoutSlide"/>
+                              <relation type="labelled-by" target="lbTransitionsTransition"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">3</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutMoveSlideUp">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutMoveSlideUp">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:MoveSlideUp</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutMoveSlideDown">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutMoveSlideDown">
-                                <property name="visible">True</property>
-                                <property name="halign">start</property>
-                                <property name="action-name">.uno:MoveSlideDown</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">False</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutHideSlide">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutHideSlide">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:HideSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutShowSlide">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutShowSlide">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ShowSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxRenameSlide">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutRenameSlide">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:RenameSlide</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbLayoutSlide1"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6405,121 +6214,658 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdLayoutMaster">
+                      <object class="VclOptionalBox" id="obTransitionsTiming">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbLayoutMaster">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdTransitionsTiming">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelLayoutMaster">Master</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcTransitionsTiming">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsSound">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionSound">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionSound">Sound</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsDuration">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionDuration">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionDuration">Duration</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsApplyToAll">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionApplyToAll">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionApplyToAll">Apply To All</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsOnMouseClick">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionOnMouseClick">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionOnMouseClick">On Mouse Click</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxTransitionsAfter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnTransitionsTransitionAfter">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnTransitionsTransitionAfter">After</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdSlideTransitionDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdslidetransitiondeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbTransitionsTiming">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelTransitionsTiming">Timing</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdLayoutMaster"/>
+                              <relation type="labelled-by" target="lbTransitionsTiming"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <!-- product:Transitions-end -->
+              </object>
+              <packing>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="LayoutLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="TabbedImpress|LayoutTabLabel">Tra~nsitions</property>
+                <property name="use-underline">True</property>
+              </object>
+              <packing>
+                <property name="position">4</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="sfxlo-PriorityHBox" id="Animations">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="spacing">6</property>
+                <!-- product:Animations-begin -->
+                <child>
+                  <object class="sfxlo-PriorityMergedHBox" id="pmhbAnimations">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">fill</property>
+                    <child>
+                      <object class="VclOptionalBox" id="obAnimationsPreview">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
                         <child>
-                          <object class="GtkSeparator">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdAnimationsPreview">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutPresentationLayout">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
                             <child>
-                              <object class="GtkToolButton" id="btnLayoutPresentationLayout">
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcAnimationsPreview">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:PresentationLayout</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsPreview">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsPreviewAnimation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:PreviewEffects?Target:string=animation</property>
+                                        <property name="icon_name">cmd/32/presentation.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutDisplayMasterBackground">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
                             <child>
-                              <object class="GtkToolButton" id="btnLayoutDisplayMasterBackground">
+                              <object class="GtkLabel" id="lbAnimationsPreview">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:DisplayMasterBackground</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelAnimationsPreview">Preview</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutDisplayMasterObjects">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
                             <child>
-                              <object class="GtkToolButton" id="btnLayoutDisplayMasterObjects">
+                              <object class="GtkSeparator">
                                 <property name="visible">True</property>
-                                <property name="action-name">.uno:DisplayMasterObjects</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
                               </packing>
                             </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbAnimationsPreview"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbLayoutMaster"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-4"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obAnimationsAnimation">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdAnimationsAnimation">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcAnimationsAnimation">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsStyles">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationStyles">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationStyles">Animation Styles</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsEffectOptions">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationEffectOptions">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationEffectOptions">Effect Options</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbAnimationsAnimation">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelAnimationsAnimation">Animation</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbAnimationsAnimation"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obAnimationsAdvanced">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdAnimationsAdvanced">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcAnimationsAdvanced">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsAddAnimation">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAddAnimation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAddAnimation">Add Animation</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/32/sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsPane">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsCustomAnimation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsCustomAnimation">Animation Pane</property>
+                                        <property name="action-name">.uno:CustomAnimation</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsTrigger">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationTrigger">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationTrigger">Trigger</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsPainter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationPainter">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:AnimationPainter</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbAnimationsAdvanced">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelAnimationsAdvanced">Advanced Animation</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbAnimationsAdvanced"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6528,121 +6874,204 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdLayoutBackground">
+                      <object class="VclOptionalBox" id="obAnimationsTiming">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">6</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbLayoutBackground">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdAnimationsTiming">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">end</property>
-                            <property name="vexpand">True</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelLayoutBackground">Background</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcAnimationsTiming">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsStart">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationStart">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationStart">Start</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsDuration">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationDuration">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationDuration">Duration</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsDelay">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationDelay">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationDelay">Delay</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsMoveEarlier">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationMoveEarlier">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationMoveEarlier">Move Earlier</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxAnimationsMoveLater">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnAnimationsAnimationMoveLater">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnAnimationsAnimationMoveLater">Move Later</property>
+                                        <property name="action-name">.uno:SidebarDeck.SdCustomAnimationDeck</property>
+                                        <property name="icon_name">cmd/sc_sidebardeck.sdcustomanimationdeck.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbAnimationsTiming">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelAnimationsTiming">Timing</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdLayoutBackground"/>
+                              <relation type="labelled-by" target="lbAnimationsTiming"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutToggleObjectRotateMode">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutToggleObjectRotateMode">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ToggleObjectRotateMode</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutObjectAlign">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutObjectAlign">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ObjectAlign</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxLayoutObjectPosition">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnLayoutObjectPosition">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ObjectPosition</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbLayoutBackground"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6657,95 +7086,21 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="sfxlo-DropdownBox" id="Layout-Menu">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkBox" id="GroupB24">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="valign">center</property>
-                        <property name="vexpand">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="svtlo-ManagedMenuButton" id="Slide-SlideButton:Menu Slide">
-                            <property name="label" translatable="yes" context="TabbedImpress|LayoutMenuButton">_Layout</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="focus-on-click">False</property>
-                            <property name="receives-default">False</property>
-                            <property name="halign">end</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="relief">none</property>
-                            <property name="use-underline">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="SectionBottom15">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="halign">end</property>
-                            <property name="hexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">1</property>
-                            <child>
-                              <object class="GtkToolButton" id="Slide-AssignLayout">
-                                <property name="visible">True</property>
-                                <property name="valign">center</property>
-                                <property name="action-name">.uno:AssignLayout</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack-type">end</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <!-- product:Animations-end -->
               </object>
               <packing>
-                <property name="position">4</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="LayoutLabel">
+              <object class="GtkLabel" id="AnimationsLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="TabbedImpress|LayoutTabLabel">~Layout</property>
+                <property name="label" translatable="yes" context="TabbedImpress|AnimationsTabLabel">~Animations</property>
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">4</property>
+                <property name="position">5</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -7231,7 +7586,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">5</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child type="tab">
@@ -7242,7 +7597,7 @@
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">5</property>
+                <property name="position">6</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -7771,7 +8126,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">6</property>
+                <property name="position">7</property>
               </packing>
             </child>
             <child type="tab">
@@ -7782,7 +8137,7 @@
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">6</property>
+                <property name="position">7</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -8705,7 +9060,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">7</property>
+                <property name="position">8</property>
               </packing>
             </child>
             <child type="tab">
@@ -8716,7 +9071,7 @@
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">7</property>
+                <property name="position">8</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -9348,7 +9703,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">8</property>
+                <property name="position">9</property>
               </packing>
             </child>
             <child type="tab">
@@ -9362,7 +9717,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">8</property>
+                <property name="position">9</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -10261,7 +10616,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">9</property>
+                <property name="position">10</property>
               </packing>
             </child>
             <child type="tab">
@@ -10275,7 +10630,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">9</property>
+                <property name="position">10</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -11393,7 +11748,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">10</property>
+                <property name="position">11</property>
               </packing>
             </child>
             <child type="tab">
@@ -11410,7 +11765,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">10</property>
+                <property name="position">11</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -12064,7 +12419,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">11</property>
+                <property name="position">12</property>
               </packing>
             </child>
             <child type="tab">
@@ -12079,7 +12434,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">11</property>
+                <property name="position">12</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -12561,7 +12916,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">12</property>
+                <property name="position">13</property>
               </packing>
             </child>
             <child type="tab">
@@ -12575,7 +12930,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">12</property>
+                <property name="position">13</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -13298,7 +13653,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">13</property>
+                <property name="position">14</property>
               </packing>
             </child>
             <child type="tab">
@@ -13312,7 +13667,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">13</property>
+                <property name="position">14</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -13856,7 +14211,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">14</property>
+                <property name="position">15</property>
               </packing>
             </child>
             <child type="tab">
@@ -13870,7 +14225,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">14</property>
+                <property name="position">15</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -14415,7 +14770,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">15</property>
+                <property name="position">16</property>
               </packing>
             </child>
             <child type="tab">
@@ -14430,7 +14785,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">15</property>
+                <property name="position">16</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -15187,7 +15542,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">16</property>
+                <property name="position">17</property>
               </packing>
             </child>
             <child type="tab">
@@ -15201,7 +15556,7 @@
                 </style>
               </object>
               <packing>
-                <property name="position">16</property>
+                <property name="position">17</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -15318,7 +15673,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">17</property>
+                <property name="position">18</property>
               </packing>
             </child>
             <child type="tab">
@@ -15329,7 +15684,7 @@
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">17</property>
+                <property name="position">18</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -15632,7 +15987,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">18</property>
+                <property name="position">19</property>
               </packing>
             </child>
             <child type="tab">
@@ -15643,7 +15998,7 @@
                 <property name="use-underline">True</property>
               </object>
               <packing>
-                <property name="position">18</property>
+                <property name="position">19</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>

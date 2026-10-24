@@ -1,0 +1,65 @@
+{
+  "page": "Animations",
+  "id_prefix": "Animations",
+  "context": "TabbedImpress",
+  "sections": [
+    {"name": "Preview", "caption": "Preview", "rows": 3, "columns": [
+      [
+        {"id": "Preview", "style": "large", "items": [
+          {"cmd": "PreviewAnimation", "action": ".uno:PreviewEffects?Target:string=animation", "icon": "cmd/32/presentation.png", "office_label": "Preview"}
+        ]}
+      ]
+    ]},
+    {"name": "Animation", "caption": "Animation", "rows": 3, "columns": [
+      [
+        {"id": "Styles", "style": "large", "items": [
+          {"cmd": "AnimationStyles", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/32/sidebardeck.sdcustomanimationdeck.png", "office_label": "Animation Styles"}
+        ]}
+      ],
+      [
+        {"id": "EffectOptions", "style": "large", "items": [
+          {"cmd": "AnimationEffectOptions", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/32/sidebardeck.sdcustomanimationdeck.png", "office_label": "Effect Options"}
+        ]}
+      ]
+    ]},
+    {"name": "Advanced", "caption": "Advanced Animation", "rows": 3, "columns": [
+      [
+        {"id": "AddAnimation", "style": "large", "items": [
+          {"cmd": "AddAnimation", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/32/sidebardeck.sdcustomanimationdeck.png", "office_label": "Add Animation"}
+        ]}
+      ],
+      [
+        {"id": "Pane", "style": "small-label", "items": [
+          {"cmd": "CustomAnimation", "office_label": "Animation Pane"}
+        ]},
+        {"id": "Trigger", "style": "small-label", "items": [
+          {"cmd": "AnimationTrigger", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Trigger"}
+        ]},
+        {"id": "Painter", "style": "small-label", "items": [
+          {"cmd": "AnimationPainter", "office_label": "Animation Painter"}
+        ]}
+      ]
+    ]},
+    {"name": "Timing", "caption": "Timing", "rows": 3, "columns": [
+      [
+        {"id": "Start", "style": "small-label", "items": [
+          {"cmd": "AnimationStart", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Start"}
+        ]},
+        {"id": "Duration", "style": "small-label", "items": [
+          {"cmd": "AnimationDuration", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Duration"}
+        ]},
+        {"id": "Delay", "style": "small-label", "items": [
+          {"cmd": "AnimationDelay", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Delay"}
+        ]}
+      ],
+      [
+        {"id": "MoveEarlier", "style": "small-label", "items": [
+          {"cmd": "AnimationMoveEarlier", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Move Earlier"}
+        ]},
+        {"id": "MoveLater", "style": "small-label", "items": [
+          {"cmd": "AnimationMoveLater", "action": ".uno:SidebarDeck.SdCustomAnimationDeck", "icon": "cmd/sc_sidebardeck.sdcustomanimationdeck.png", "office_label": "Move Later"}
+        ]}
+      ]
+    ]}
+  ]
+}
