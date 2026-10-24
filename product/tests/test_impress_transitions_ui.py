@@ -62,14 +62,13 @@ LEFT_THE_TAB = {
     "DeleteMasterPage": ("a", "DeleteMasterPage"), "ExpandPage": ("a", "ExpandPage"),
 }
 # stock Layout page and "Menu Slide" commands that are not in the leave list because the ribbon keeps them on
-# another tab; Hide Slide is Slide Show's (I6a, design decision 28), so until then it is only in the menu bar
-# (Slide > Hide Slide).
+# another tab; Hide Slide is Slide Show's (I6a, design decision 28).
 KEPT_ELSEWHERE = {
+    ".uno:HideSlide": "Slide Show",
     ".uno:AssignLayout": "Home", ".uno:HeaderAndFooter": "Insert", ".uno:SlideSetup": "Design",
     ".uno:ToggleObjectRotateMode": "Home (Arrange menu)", ".uno:ImportSlideFromFile": "Insert",
     ".uno:SummaryPage": "Insert (Zoom menu)"}
 ALIASES = {".uno:InsertSlide": ".uno:InsertPage", ".uno:DuplicateSlide": ".uno:InsertPage"}
-LATER = {".uno:HideSlide": "I6a"}
 MNEMONIC = re.compile(r"~(.)")
 
 
@@ -233,20 +232,18 @@ class ImpressTransitionsUiTest(unittest.TestCase):
 
     def test_the_stock_layout_page_commands_either_stay_or_are_in_the_leave_list(self):
         # every command of the stock Layout page and its overflow menu is in the leave list, or stays on the
-        # ribbon (another tab), or is an alias of a kept command, or belongs to a later task and is in the menu bar
+        # ribbon (another tab), or is an alias of a kept command
         stock = ET.parse(ROOT / "sd/uiconfig/simpress/ui/notebookbar.ui").getroot()
         commands = set()
         for wid in ("Layout", "Menu Slide"):
             node = next(o for o in stock.iter("object") if o.get("id") == wid)
             commands |= {p.text for p in node.iter("property") if p.get("name") == "action-name"}
         left = {".uno:" + name for name in LEFT_THE_TAB}
-        menubar = MENUBAR.read_text(encoding="utf-8")
         self.assertGreater(len(commands), 20)
         for url in sorted(commands):
             if url in left or url in KEPT_ELSEWHERE or url in ALIASES:
                 continue
-            self.assertIn(url, LATER, url)
-            self.assertIn('menu:id="%s"' % url, menubar, url)
+            self.fail(url)
         for url in KEPT_ELSEWHERE:
             self.assertIn(url, commands, url)
 

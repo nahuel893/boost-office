@@ -121,7 +121,8 @@
  {
   "slot": "SID_BOOST_SLIDESHOW_RECORD",
   "offset": 13,
-  "command": "SlideShowRecord"
+  "command": "SlideShowRecord",
+  "label": "Record"
  },
  {
   "slot": "SID_BOOST_SLIDESHOW_OPTION",
@@ -130,7 +131,11 @@
   "variants": [
    "Option:string=narrations",
    "Option:string=mediacontrols"
-  ]
+  ],
+  "variant_labels": {
+   "Option:string=narrations": "Play Narrations",
+   "Option:string=mediacontrols": "Show Media Controls"
+  }
  },
  {
   "slot": "SID_BOOST_REVIEW_CHECK_ACCESSIBILITY",

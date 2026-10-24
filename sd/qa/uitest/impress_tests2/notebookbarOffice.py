@@ -35,6 +35,7 @@ DESIGN_SLOTS = (10,)  # SID offset of the Design placeholders: the PageLayoutThe
 THEME_PART = ".uno:PageLayoutThemePart?Part:string="
 MOTION_SLOTS = (11, 12)  # SID offsets of the Transitions and Animations placeholders: the Preview family
 # (2 variants) and Animation Painter
+SLIDESHOW_SLOTS = (13, 14)  # SID offsets of the Slide Show placeholders: Record and the Option family (2 variants)
 TRANSITION_DECK = "SdSlideTransitionDeck"
 ANIMATION_DECK = "SdCustomAnimationDeck"
 # a 1x1 PNG, the picture of the image context
@@ -1026,6 +1027,124 @@ class NotebookbarOffice(UITestCase):
                           "bxAnimationsStyles": "Animation Styles", "bxAnimationsAddAnimation": "Add Animation",
                           "bxAnimationsPane": "Animation Pane", "bxAnimationsStart": "Start",
                           "bxAnimationsMoveEarlier": "Move Earlier"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_slideshow_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("slideshow"), 3)
+
+    def test_slideshow_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Slide Show")
+            finally:
+                self.switch_to("Default")
+
+    def test_slideshow_has_no_dropdown_menu_to_build(self):
+        # the design adds no dropdown to this tab: Custom Slide Show and Record only look like splits (the dialog,
+        # and a placeholder), so no command of the page has a menu controller in Controller.xcu
+        src = Path(os.environ["TDOC"]).parents[3]
+        controllers = (src / "officecfg/registry/data/org/openoffice/Office/UI/Controller.xcu").read_text(
+            encoding="utf-8")
+        layout = self.motion_layout("slideshow")
+        urls = {item.get("action", ".uno:" + item["cmd"]) for section in layout["sections"]
+                for column in section["columns"] for box in column for item in box["items"]}
+        self.assertEqual(9, len(urls))
+        for url in urls:
+            self.assertNotIn('<value>%s</value>' % url, controllers, url)
+
+    def test_slideshow_hide_slide_hides_the_current_slide_and_show_slide_shows_it_again(self):
+        # design decision 28: Hide Slide hides the current slide from Normal view. The stock slot is hide-only
+        # (SlsSlotManager.cxx:143, :763-786): once the slide is hidden Hide Slide is disabled and Show Slide
+        # (Slide > Show Slide in the menu bar) is the way back, so a second press of the ribbon button is a no-op
+        # and not a toggle (reported as a concern: PowerPoint has one toggle).
+        with self.impress_doc() as document:
+            self.xUITest.executeCommand(".uno:InsertPage")
+            self.wait_for(lambda: document.DrawPages.Count == 2, "no second slide")
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("HideSlide")))
+            slide = document.CurrentController.CurrentPage
+            other = document.DrawPages[0] if slide.Number == 2 else document.DrawPages[1]
+            self.assertTrue(slide.Visible)
+            self.xUITest.executeCommand(".uno:HideSlide")
+            self.wait_for(lambda: not slide.Visible, "Hide Slide did not hide the current slide")
+            self.assertTrue(other.Visible)
+            self.wait_for(lambda: self.dispatch_enabled("HideSlide") is False, "Hide Slide stayed enabled")
+            self.xUITest.executeCommand(".uno:HideSlide")  # a second press changes nothing
+            self.assertFalse(slide.Visible)
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("ShowSlide")))
+            self.xUITest.executeCommand(".uno:ShowSlide")
+            self.wait_for(lambda: slide.Visible, "Show Slide did not show the slide again")
+            self.assertTrue(other.Visible)
+
+    def test_slideshow_set_up_controls_open_the_set_up_slide_show_dialog(self):
+        # Use Timings, Monitor and Use Presenter View each run .uno:PresentationDialog (decision 25). The headless
+        # window clips the ribbon, so each box is looked up by id and the real URL is dispatched.
+        layout = self.motion_layout("slideshow")
+        controls = [(box["id"], item["cmd"]) for section in layout["sections"] for column in section["columns"]
+                    for box in column for item in box["items"]
+                    if item.get("action") == ".uno:PresentationDialog"]
+        self.assertEqual(["UseTimings", "Monitor", "UsePresenterView"], [box for box, _ in controls])
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled("PresentationDialog")))
+                for box, cmd in controls:
+                    xBox = xImpressDoc.getChild("bxSlideShow" + box)
+                    self.assertEqual("1", get_state_as_dict(xBox)["ItemCount"], cmd)
+                    with self.ui_test.execute_dialog_through_command(".uno:PresentationDialog",
+                                                                     close_button="cancel") as xDialog:
+                        self.assertIsNotNone(xDialog.getChild("manualslides"), cmd)  # Set Up Slide Show
+            finally:
+                self.switch_to("Default")
+
+    def test_slideshow_start_buttons_are_enabled_without_starting_the_show(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for name in ("Presentation", "PresentationCurrentSlide", "PresentationDialog", "CustomShowDialog",
+                         "RehearseTimings", "HideSlide"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_slideshow_placeholders_are_disabled_and_inert(self):
+        # 2 slots: Record and the Option family (Play Narrations, Show Media Controls)
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in SLIDESHOW_SLOTS)
+        self.assertEqual(3, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_slideshow_placeholder_labels_resolve(self):
+        with self.impress_doc():
+            for command, label in (("SlideShowRecord", "Record"),
+                                   ("SlideShowOption?Option:string=narrations", "Play Narrations"),
+                                   ("SlideShowOption?Option:string=mediacontrols", "Show Media Controls")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_slideshow_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxSlideShowFromBeginning": "From Beginning",
+                          "bxSlideShowFromCurrentSlide": "From Current Slide",
+                          "bxSlideShowCustomSlideShow": "Custom Slide Show",
+                          "bxSlideShowSetUpSlideShow": "Set Up Slide Show", "bxSlideShowHideSlide": "Hide Slide",
+                          "bxSlideShowRehearseTimings": "Rehearse Timings", "bxSlideShowRecord": "Record",
+                          "bxSlideShowPlayNarrations": "Play Narrations", "bxSlideShowUseTimings": "Use Timings",
+                          "bxSlideShowShowMediaControls": "Show Media Controls", "bxSlideShowMonitor": "Monitor",
+                          "bxSlideShowUsePresenterView": "Use Presenter View"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
