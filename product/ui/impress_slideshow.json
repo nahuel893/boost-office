@@ -17,7 +17,7 @@
       ],
       [
         {"id": "CustomSlideShow", "style": "large", "items": [
-          {"cmd": "CustomShowDialog", "kind": "split", "office_label": "Custom Slide Show"}
+          {"cmd": "CustomShowDialog", "office_label": "Custom Slide Show"}
         ]}
       ]
     ]},
@@ -39,7 +39,7 @@
       ],
       [
         {"id": "Record", "style": "large", "items": [
-          {"cmd": "SlideShowRecord", "kind": "split", "office_label": "Record"}
+          {"cmd": "SlideShowRecord", "office_label": "Record"}
         ]}
       ],
       [

@@ -26,8 +26,8 @@ MEDIA_CONTROLS = ".uno:SlideShowOption?Option:string=mediacontrols"
 
 # section -> (caption, rows, [(style, [url, ...]) per toolbox in document order]); design section 1
 # "Slide Show". Size: L = large, S = small-label. Custom Slide Show is a dropdown in PowerPoint and Record a split:
-# both are split buttons here (the arrow only); the check boxes and the combo that only open the Set Up Slide Show
-# dialog are buttons with PowerPoint's label (design decision 25).
+# both are plain large buttons here (no menu to open, controller ruling 23); the check boxes and the combo that
+# only open the Set Up Slide Show dialog are buttons with PowerPoint's label (design decision 25).
 DESIGN = {
     "StartSlideShow": ("Start Slide Show", 3, [("large", [".uno:Presentation"]),
                                                ("large", [".uno:PresentationCurrentSlide"]),
@@ -38,7 +38,6 @@ DESIGN = {
     "Monitors": ("Monitors", 3, [("small-label", [DIALOG]), ("small-label", [DIALOG])]),
 }
 SHAPES = {"StartSlideShow": [1, 1, 1], "SetUp": [1, 1, 1, 1, 3], "Monitors": [2]}
-SPLITS = {"CustomShowDialog", "SlideShowRecord"}
 # PowerPoint's label per item (T9w); the layout item's "cmd" (the widget command) is the key
 POWERPOINT_LABELS = {
     "Presentation": "From Beginning", "PresentationCurrentSlide": "From Current Slide",
@@ -103,11 +102,10 @@ class ImpressSlideShowUiTest(unittest.TestCase):
         shapes = {s["name"]: [len(c) for c in s["columns"]] for s in self.layout["sections"]}
         self.assertEqual(SHAPES, shapes)
 
-    def test_only_custom_slide_show_and_record_have_an_arrow(self):
-        self.assertEqual(SPLITS, {i["cmd"] for i in self.items() if i.get("kind") == "split"})
+    def test_every_control_is_a_plain_button_without_an_arrow(self):
+        # ruling 23: Custom Slide Show and Record have no menu, so no arrow
         for item in self.items():
-            if item["cmd"] not in SPLITS:
-                self.assertEqual("button", item.get("kind", "button"), item["cmd"])
+            self.assertEqual("button", item.get("kind", "button"), item["cmd"])
 
     def test_every_item_keeps_powerpoints_label_in_office_label(self):
         # T9w: gen_ribbon turns office_label into the button's label; menus, help and tooltips keep LibreOffice's

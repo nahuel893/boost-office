@@ -7098,7 +7098,7 @@
                                     <property name="show-arrow">False</property>
                                     <property name="icon_size">5</property>
                                     <child>
-                                      <object class="GtkMenuToolButton" id="btnSlideShowCustomShowDialog">
+                                      <object class="GtkToolButton" id="btnSlideShowCustomShowDialog">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:CustomShowDialog</property>
@@ -7283,7 +7283,7 @@
                                     <property name="show-arrow">False</property>
                                     <property name="icon_size">5</property>
                                     <child>
-                                      <object class="GtkMenuToolButton" id="btnSlideShowSlideShowRecord">
+                                      <object class="GtkToolButton" id="btnSlideShowSlideShowRecord">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:SlideShowRecord</property>

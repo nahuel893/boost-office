@@ -1263,3 +1263,5 @@ sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowS
 sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowSlideShowShowMediaControls'] button-no-label
 sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowSlideShowMonitor'] button-no-label
 sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowSlideShowPresenterView'] button-no-label
+sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowCustomShowDialog'] button-no-label
+sd/uiconfig/simpress/ui/notebookbar_office.ui://GtkToolButton[@id='btnSlideShowSlideShowRecord'] button-no-label
