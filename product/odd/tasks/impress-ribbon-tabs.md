@@ -157,7 +157,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [x] | d76206f30, 374cf2422, 584d6a44a | 812 unit tests OK; fits at every width |
 | I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [x] | b4d6c4849 | 813 unit tests OK; gtk3 screenshots |
 | I5a | Transitions (the stock Layout page, relabelled) and Animations (new page), layout and behaviour | delegated (sonnet) | [x] | 5df70028a, 5bf3d5663 | 859 unit tests OK; UITests pass |
-| I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [ ] | | |
+| I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [x] | e58265196 | 869 unit tests OK; fits at every width |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
 | I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
@@ -601,7 +601,19 @@ Controller rulings (2026-10-23):
     `.superpowers` file tracked; the Animations screenshot looked at (tab order File, Home, Insert, Design,
     Transitions, Animations, Slide Show, Review, View; the controls are text-only until I5b).
 
+- 2026-10-23, I5b (route: delegated, sonnet). Commit e58265196 (57 files, mostly vendored Fluent SVGs; +140/-38):
+  an explicit icon per deck control (large for Transition Styles, Effect Options, Animation Styles and Add
+  Animation), the Transitions and Animations classes in `test_impress_icons.py` (RED: 4 failures); the I5a tests that
+  asserted the shared `sidebardeck.*` icon names now assert each control's own. No fit commit.
+  - Fit: Transitions ends at x=517 and Animations at x=724 at 1920; nothing collapses at 1600 or 1366.
+  - Notes: `slide_settings` and `slide_transition` ship only at 20 and 24 px in Fluent, so their 32 px icons are
+    scaled from 24; Animation Pane's new icon also shows in the stock Impress toolbars (a new member only).
+  - Evidence (report: `task-I5b-report.md`): 859 -> 869 OK; `check-ui.sh` clean; `test_tabbed_office_loads`
+    passes; Calc and Writer zip members unchanged; 12 screenshots in `assets/previews/impress-ribbon-tabs/i5b/`.
+  - Controller check: 869 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; both 1920 light ribbons looked at.
+
 ## Next step
 
-I5b (delegated, sonnet; brief `task-I5b-brief.md`, which binds `task-Ib-common.md`): Transitions and Animations
-icons, fit, screenshots. Then I6a, I6b, ... I8b; the a briefs bind `task-Ia-common.md`.
+I6a (delegated, sonnet; brief `task-I6a-brief.md`, which binds `task-Ia-common.md`): the Slide Show tab. Then I6b,
+I7a, I7b, I8a, I8b (the b briefs bind `task-Ib-common.md`), then I9-I11.
