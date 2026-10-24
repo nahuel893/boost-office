@@ -106,12 +106,17 @@
   "variants": [
    "Target:string=transition",
    "Target:string=animation"
-  ]
+  ],
+  "variant_labels": {
+   "Target:string=transition": "Preview",
+   "Target:string=animation": "Preview"
+  }
  },
  {
   "slot": "SID_BOOST_ANIMATION_PAINTER",
   "offset": 12,
-  "command": "AnimationPainter"
+  "command": "AnimationPainter",
+  "label": "Animation Painter"
  },
  {
   "slot": "SID_BOOST_SLIDESHOW_RECORD",

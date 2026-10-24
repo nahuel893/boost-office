@@ -151,10 +151,10 @@ class ImpressDesignUiTest(unittest.TestCase):
                          {k: v for k, v in tabs["positions"].items() if k in ("Design", "DesignLabel", "Layout",
                                                                                 "LayoutLabel")})
         _book, pages, labels = self.tab_order()
-        self.assertEqual(["File", "Home Tab", "Insert", "Design", "Layout", "SlideShow", "Review", "View"],
-                         pages[:8])
-        self.assertEqual(["FileLabel", "HomeLabel", "InsertLabel", "DesignLabel", "LayoutLabel",
-                          "SlideShowLabel", "ReviewLabel", "ViewLabel"], labels[:8])
+        self.assertEqual(["File", "Home Tab", "Insert", "Design", "Layout", "Animations", "SlideShow", "Review",
+                          "View"], pages[:9])
+        self.assertEqual(["FileLabel", "HomeLabel", "InsertLabel", "DesignLabel", "LayoutLabel", "AnimationsLabel",
+                          "SlideShowLabel", "ReviewLabel", "ViewLabel"], labels[:9])
 
     def test_the_moved_tab_and_page_carry_the_new_positions(self):
         book, pages, labels = self.tab_order()
@@ -164,7 +164,8 @@ class ImpressDesignUiTest(unittest.TestCase):
             positions[obj.get("id")] = child.findtext("packing/property[@name='position']")
         self.assertEqual(("3", "3"), (positions["Design"], positions["DesignLabel"]))
         self.assertEqual(("4", "4"), (positions["Layout"], positions["LayoutLabel"]))
-        self.assertEqual(("5", "5"), (positions["SlideShow"], positions["SlideShowLabel"]))
+        self.assertEqual(("5", "5"), (positions["Animations"], positions["AnimationsLabel"]))
+        self.assertEqual(("6", "6"), (positions["SlideShow"], positions["SlideShowLabel"]))
 
     def test_the_tab_label_stays_design_with_its_mnemonic(self):
         self.assertRegex(self.office, r'context="TabbedImpress\|DesignTabLabel">~Design</property>')

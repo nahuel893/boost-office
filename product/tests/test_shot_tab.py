@@ -113,7 +113,7 @@ class ShotTabTabList(unittest.TestCase):
         self.assertTrue("modules/simpress/ui/notebookbar_office.ui" in TEXT, "no Impress office .ui in the script")
         body = heredoc('tabs=$(python3 -I - "$core/instdir/share/config/soffice.cfg/modules/simpress')
         tabs = [("~File", ()), ("~Home", ("context-default", "context-any", "context-Text")), ("~Insert", ()),
-                ("~Design", ()), ("~Layout", ()), ("~Slide Show", ()), ("~Table", ("context-Table",)),
+                ("~Design", ()), ("Tra~nsitions", ()), ("~Animations", ()), ("~Slide Show", ()), ("~Table", ("context-Table",)),
                 ("~Draw", ("context-Draw", "context-3DObject")), ("~Master", ("context-MasterPage",)),
                 ("E~xtension", ()), ("~Tools", ()), ("Hel~p", ())]
         xml = "".join(
@@ -126,7 +126,7 @@ class ShotTabTabList(unittest.TestCase):
                           encoding="utf-8")
             r = run_python(body, str(ui))
         self.assertEqual(0, r.returncode, r.stderr)
-        self.assertEqual("File,Home,Insert,Design,Layout,Slide Show,Extension,Tools,Help", r.stdout.strip())
+        self.assertEqual("File,Home,Insert,Design,Transitions,Animations,Slide Show,Extension,Tools,Help", r.stdout.strip())
 
 
 class ShotTabFinder(unittest.TestCase):

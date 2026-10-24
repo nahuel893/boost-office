@@ -33,6 +33,10 @@ RESET_LAYOUT = ".uno:AssignLayout?Reset:bool=true"
 INSERT_ZOOM = ".uno:InsertZoom?Type:string="
 DESIGN_SLOTS = (10,)  # SID offset of the Design placeholders: the PageLayoutThemePart family (3 variants)
 THEME_PART = ".uno:PageLayoutThemePart?Part:string="
+MOTION_SLOTS = (11, 12)  # SID offsets of the Transitions and Animations placeholders: the Preview family
+# (2 variants) and Animation Painter
+TRANSITION_DECK = "SdSlideTransitionDeck"
+ANIMATION_DECK = "SdCustomAnimationDeck"
 # a 1x1 PNG, the picture of the image context
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==")
 
@@ -40,8 +44,8 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4
 # in tab order: (tab label without its mnemonic, page id). Tasks that change the tabs update this list;
 # I8a reaches PowerPoint's order. Table .. 3D are the contextual tabs: they only show with their object
 # or view.
-TABS = [("File", "File"), ("Home", "Home Tab"), ("Insert", "Insert"), ("Design", "Design"), ("Layout", "Layout"),
-        ("Slide Show", "SlideShow"), ("Review", "Review"), ("View", "View"),
+TABS = [("File", "File"), ("Home", "Home Tab"), ("Insert", "Insert"), ("Design", "Design"),
+        ("Transitions", "Layout"), ("Animations", "Animations"), ("Slide Show", "SlideShow"), ("Review", "Review"), ("View", "View"),
         ("Table", "Table"), ("Image", "Image"), ("Draw", "Draw"), ("Object", "Object"), ("Media", "Media"),
         ("Form", "Form"), ("Master", "Master"), ("Outline", "Outline"), ("3D", "3D"),
         ("Extension", "Extension"), ("Tools", "Tools")]
@@ -765,11 +769,11 @@ class NotebookbarOffice(UITestCase):
             self.switch_to(OFFICE_UI)
             try:
                 labels = self.tab_labels(document, len(TABS))
-                self.assertEqual(["Insert", "Design", "Layout", "Slide Show"], labels[2:6])
+                self.assertEqual(["Insert", "Design", "Transitions", "Animations", "Slide Show"], labels[2:7])
                 self.check_tab_is_shown(document, "Design", None)
                 shown = self.visible_tabs(document)
                 self.assertLess(shown.index("Insert"), shown.index("Design"))
-                self.assertLess(shown.index("Design"), shown.index("Layout"))
+                self.assertLess(shown.index("Design"), shown.index("Transitions"))
             finally:
                 self.switch_to("Default")
 
@@ -856,6 +860,172 @@ class NotebookbarOffice(UITestCase):
                 xImpressDoc = self.xUITest.getTopFocusWindow()
                 labels = {"bxDesignThemes": "Themes", "bxDesignSlideSize": "Slide Size",
                           "bxDesignFormatBackground": "Format Background"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def motion_layout(self, name):
+        src = Path(os.environ["TDOC"]).parents[3]
+        return json.loads((src / "product" / "ui" / ("impress_%s.json" % name)).read_text(encoding="utf-8"))
+
+    def check_sections_and_toolboxes(self, layout, sections):
+        prefix = layout["id_prefix"]
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                self.assertEqual(sections, len(layout["sections"]))
+                for section in layout["sections"]:
+                    xLabel = xImpressDoc.getChild("lb" + prefix + section["name"])
+                    self.assertEqual(section["caption"], get_state_as_dict(xLabel)["Text"])
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xImpressDoc.getChild("bx" + prefix + box["id"])
+                            self.assertEqual(str(len(box["items"])), get_state_as_dict(xBox)["ItemCount"])
+            finally:
+                self.switch_to("Default")
+
+    def test_transitions_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("transitions"), 3)
+
+    def test_animations_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("animations"), 4)
+
+    def test_transitions_and_animations_follow_design_in_tab_order(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                labels = self.tab_labels(document, len(TABS))
+                self.assertEqual(["Insert", "Design", "Transitions", "Animations", "Slide Show", "Review", "View"],
+                                 labels[2:9])
+                self.assertNotIn("Layout", labels)
+                shown = self.visible_tabs(document)
+                self.assertLess(shown.index("Design"), shown.index("Transitions"))
+                self.assertLess(shown.index("Transitions"), shown.index("Animations"))
+                self.assertLess(shown.index("Animations"), shown.index("Slide Show"))
+            finally:
+                self.switch_to("Default")
+
+    def test_transitions_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Transitions")
+            finally:
+                self.switch_to("Default")
+
+    def test_animations_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Animations")
+            finally:
+                self.switch_to("Default")
+
+    def deck(self, document, name):
+        """The sidebar deck `name` (made visible first); isActive() is only safe with the sidebar shown."""
+        sidebar = document.CurrentController.getSidebar()
+        if not sidebar.isVisible():
+            sidebar.setVisible(True)
+        self.wait_for(sidebar.isVisible, "no sidebar", 10)
+        return sidebar.getDecks().getByName(name)
+
+    def deck_active(self, document, name):
+        return self.settle(lambda: self.deck(document, name).isActive())
+
+    def check_deck_controls(self, document, layout, deck_name, other_deck):
+        """Every deck control of the page opens its deck and a second press keeps it open (decision 25).
+
+        The headless window clips the ribbon, so the controls are not pressed: each one is looked up by its
+        widget id (it is on the page) and its real URL is dispatched, which is what its press runs."""
+        prefix = layout["id_prefix"]
+        url = ".uno:SidebarDeck." + deck_name
+        xImpressDoc = self.xUITest.getTopFocusWindow()
+        controls = [(box, item) for section in layout["sections"] for column in section["columns"] for box in column
+                    for item in box["items"] if item.get("action") == url]
+        self.assertGreaterEqual(len(controls), 7)
+        for box, item in controls:
+            xBox = xImpressDoc.getChild("bx" + prefix + box["id"])
+            self.assertEqual("1", get_state_as_dict(xBox)["ItemCount"], item["cmd"])
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("SidebarDeck." + deck_name)), item["cmd"])
+            self.xUITest.executeCommand(".uno:SidebarDeck." + other_deck)  # start from the other deck
+            self.wait_for(lambda: self.deck_active(document, other_deck), "no " + other_deck)
+            self.assertFalse(self.deck_active(document, deck_name), item["cmd"])
+            self.xUITest.executeCommand(url)
+            self.wait_for(lambda: self.deck_active(document, deck_name), item["cmd"] + " did not open its deck")
+            self.xUITest.executeCommand(url)  # a second press keeps it open
+            self.assertTrue(self.deck_active(document, deck_name), item["cmd"] + " closed its deck")
+            self.assertFalse(self.deck_active(document, other_deck), item["cmd"])
+
+    def test_transitions_deck_controls_open_the_deck_and_a_second_press_keeps_it_open(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_deck_controls(document, self.motion_layout("transitions"), TRANSITION_DECK,
+                                         ANIMATION_DECK)
+            finally:
+                self.switch_to("Default")
+
+    def test_animations_deck_controls_open_the_deck_and_a_second_press_keeps_it_open(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_deck_controls(document, self.motion_layout("animations"), ANIMATION_DECK,
+                                         TRANSITION_DECK)
+            finally:
+                self.switch_to("Default")
+
+    def test_animation_pane_toggles_the_animation_deck(self):
+        # the one exact control (decision 25): .uno:CustomAnimation shows the Animation deck, then hides it
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("CustomAnimation")))
+            self.assertFalse(self.deck_active(document, ANIMATION_DECK))
+            self.xUITest.executeCommand(".uno:CustomAnimation")
+            self.wait_for(lambda: self.deck_active(document, ANIMATION_DECK), "the pane did not open the deck")
+            self.xUITest.executeCommand(".uno:CustomAnimation")
+            self.wait_for(lambda: not self.deck_active(document, ANIMATION_DECK), "the pane did not close the deck")
+
+    def test_transitions_and_animations_placeholders_are_disabled_and_inert(self):
+        # 2 slots: the Preview family (Transitions and Animations variants) and Animation Painter
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in MOTION_SLOTS)
+        self.assertEqual(3, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_transitions_and_animations_labels_resolve(self):
+        with self.impress_doc():
+            for command, label in (("PreviewEffects?Target:string=transition", "Preview"),
+                                   ("PreviewEffects?Target:string=animation", "Preview"),
+                                   ("AnimationPainter", "Animation Painter")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_transitions_and_animations_commands_that_are_real_are_enabled(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for name in ("SidebarDeck." + TRANSITION_DECK, "SidebarDeck." + ANIMATION_DECK, "CustomAnimation"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_transitions_and_animations_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxTransitionsPreview": "Preview", "bxTransitionsStyles": "Transition Styles",
+                          "bxTransitionsEffectOptions": "Effect Options", "bxTransitionsSound": "Sound",
+                          "bxTransitionsApplyToAll": "Apply To All", "bxTransitionsOnMouseClick": "On Mouse Click",
+                          "bxAnimationsStyles": "Animation Styles", "bxAnimationsAddAnimation": "Add Animation",
+                          "bxAnimationsPane": "Animation Pane", "bxAnimationsStart": "Start",
+                          "bxAnimationsMoveEarlier": "Move Earlier"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
