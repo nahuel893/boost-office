@@ -156,7 +156,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I4a | Design (moved before Transitions), layout and behaviour | delegated (sonnet) | [x] | 8a94a9d48, 1d6710d99 | 806 unit tests OK; UITests pass |
 | I4b | Design icons, 1920 fit, screenshots; the theme colors box shown whole (svx) | delegated (sonnet), after I4a | [x] | d76206f30, 374cf2422, 584d6a44a | 812 unit tests OK; fits at every width |
 | I4c | Disabled popup entries greyed on the gtk3 backend (toolkit; all three apps) | delegated (opus) | [x] | b4d6c4849 | 813 unit tests OK; gtk3 screenshots |
-| I5a / I5b | Transitions (the stock Layout page, relabelled) and Animations (new page) | as I2a / I2b | [ ] | | |
+| I5a | Transitions (the stock Layout page, relabelled) and Animations (new page), layout and behaviour | delegated (sonnet) | [x] | 5df70028a, 5bf3d5663 | 859 unit tests OK; UITests pass |
+| I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [ ] | | |
 | I6a / I6b | Slide Show | as I2a / I2b | [ ] | | |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
 | I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
@@ -581,7 +582,26 @@ Controller rulings (2026-10-23):
   - Controller check: 813 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
     `.superpowers` file tracked; the after Variants screenshot looked at.
 
+- 2026-10-23, I5a (route: delegated, sonnet). Commits 5df70028a (`impress_transitions.json` on the stock Layout
+  page, the new `impress_animations.json`, `impress_tabs.json`: the `relabel` to Tra~nsitions, the `add_pages` of
+  Animations at position 5, the positions after it, the `pmhbLayout` `valign` operation removed; the regenerated
+  `.ui` and suppressions: 5 files, +1126/-652) and 5bf3d5663 (labels for the 3 placeholders, the two
+  `test_impress_*_ui.py` files, UITests, the shot-tab fake-list test).
+  - Choices, accepted: every deck control is a plain button with a distinct `cmd` and the real
+    `.uno:SidebarDeck.*` URL as `action` (a deck opener has no menu controller, so Effect Options, Add Animation and
+    Trigger show no arrow); Animation Pane uses the toggling `.uno:CustomAnimation` (decision 25). The deck UITests
+    look each box up by id and dispatch its URL (the headless window clips the ribbon), then read the deck through
+    the sidebar API; a second dispatch keeps it open.
+  - `.uno:HideSlide` left the Layout page; until I6a puts it on Slide Show a test asserts it is still in the menu bar.
+  - Commit 1 was not run alone against the suite (the new test files are in commit 2); the UITest RED ran once.
+  - Evidence (report: `task-I5a-report.md`): 813 -> 859 OK; 15 UITests pass one at a time; the build exit 0;
+    `check-ui.sh` 0 new warnings or fatals; the six Calc and Writer sha256 values unchanged; `git show --check`
+    clean; screenshots in `assets/previews/impress-ribbon-tabs/i5a/`.
+  - Controller check: 859 unit tests OK; the tree clean after `gen_ribbon.py --all`; no soffice left; no
+    `.superpowers` file tracked; the Animations screenshot looked at (tab order File, Home, Insert, Design,
+    Transitions, Animations, Slide Show, Review, View; the controls are text-only until I5b).
+
 ## Next step
 
-I5a (delegated, sonnet; brief `task-I5a-brief.md`): the Transitions and Animations tabs. Then I5b, I6a, ... I8b; the a
-briefs bind `task-Ia-common.md` from I6a on, the b briefs bind `task-Ib-common.md`.
+I5b (delegated, sonnet; brief `task-I5b-brief.md`, which binds `task-Ib-common.md`): Transitions and Animations
+icons, fit, screenshots. Then I6a, I6b, ... I8b; the a briefs bind `task-Ia-common.md`.
