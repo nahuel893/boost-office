@@ -1,0 +1,107 @@
+{
+  "page": "Review",
+  "id_prefix": "Review",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu Review"],
+  "sections": [
+    {"name": "Proofing", "caption": "Proofing", "rows": 3, "columns": [
+      [
+        {"id": "Spelling", "style": "large", "items": [
+          {"cmd": "SpellDialog", "office_label": "Spelling"}
+        ]}
+      ],
+      [
+        {"id": "Thesaurus", "style": "large", "items": [
+          {"cmd": "ThesaurusDialog", "office_label": "Thesaurus"}
+        ]}
+      ]
+    ]},
+    {"name": "Accessibility", "caption": "Accessibility", "rows": 3, "columns": [
+      [
+        {"id": "CheckAccessibility", "style": "large", "items": [
+          {"cmd": "ReviewCheckAccessibility", "office_label": "Check Accessibility"}
+        ]}
+      ]
+    ]},
+    {"name": "Language", "caption": "Language", "rows": 3, "columns": [
+      [
+        {"id": "Translate", "style": "small-label", "items": [
+          {"cmd": "ReviewTranslate", "office_label": "Translate"}
+        ]},
+        {"id": "Language", "style": "small-label", "items": [
+          {"cmd": "ReviewLanguageMenu", "kind": "split", "office_label": "Language"}
+        ]}
+      ]
+    ]},
+    {"name": "Comments", "caption": "Comments", "rows": 3, "columns": [
+      [
+        {"id": "NewComment", "style": "large", "items": [
+          {"cmd": "InsertAnnotation", "office_label": "New Comment"}
+        ]}
+      ],
+      [
+        {"id": "DeleteComment", "style": "large", "items": [
+          {"cmd": "ReviewDeleteCommentMenu", "kind": "split", "office_label": "Delete"}
+        ]}
+      ],
+      [
+        {"id": "CommentPrevious", "style": "large", "items": [
+          {"cmd": "PreviousAnnotation", "icon": "cmd/32/reviewcommentprevious.png", "office_label": "Previous"}
+        ]}
+      ],
+      [
+        {"id": "CommentNext", "style": "large", "items": [
+          {"cmd": "NextAnnotation", "icon": "cmd/32/reviewcommentnext.png", "office_label": "Next"}
+        ]}
+      ],
+      [
+        {"id": "ShowComments", "style": "large", "items": [
+          {"cmd": "ShowAnnotations", "office_label": "Show Comments"}
+        ]}
+      ]
+    ]},
+    {"name": "Compare", "caption": "Compare", "rows": 3, "columns": [
+      [
+        {"id": "Compare", "style": "small-label", "items": [
+          {"cmd": "ReviewCompare", "action": ".uno:ReviewCompare?Action:string=compare",
+           "icon": "cmd/sc_reviewcomparemenu.png", "office_label": "Compare"}
+        ]},
+        {"id": "Accept", "style": "small-label", "items": [
+          {"cmd": "ReviewCompareAccept", "action": ".uno:ReviewCompare?Action:string=accept",
+           "icon": "cmd/sc_reviewacceptmenu.png", "office_label": "Accept"}
+        ]},
+        {"id": "Reject", "style": "small-label", "items": [
+          {"cmd": "ReviewCompareReject", "action": ".uno:ReviewCompare?Action:string=reject",
+           "icon": "cmd/sc_reviewrejectmenu.png", "office_label": "Reject"}
+        ]}
+      ],
+      [
+        {"id": "ComparePrevious", "style": "small-label", "items": [
+          {"cmd": "ReviewComparePrevious", "action": ".uno:ReviewCompare?Action:string=previous",
+           "icon": "cmd/sc_reviewcomparemenu.png", "office_label": "Previous"}
+        ]},
+        {"id": "CompareNext", "style": "small-label", "items": [
+          {"cmd": "ReviewCompareNext", "action": ".uno:ReviewCompare?Action:string=next",
+           "icon": "cmd/sc_reviewcomparemenu.png", "office_label": "Next"}
+        ]},
+        {"id": "ReviewingPane", "style": "small-label", "items": [
+          {"cmd": "ReviewComparePane", "action": ".uno:ReviewCompare?Action:string=pane",
+           "icon": "cmd/sc_reviewcomparemenu.png", "office_label": "Reviewing Pane"}
+        ]}
+      ],
+      [
+        {"id": "EndReview", "style": "large", "items": [
+          {"cmd": "ReviewCompareEndReview", "action": ".uno:ReviewCompare?Action:string=endreview",
+           "icon": "cmd/32/reviewcomparemenu.png", "office_label": "End Review"}
+        ]}
+      ]
+    ]},
+    {"name": "Ink", "caption": "Ink", "rows": 3, "columns": [
+      [
+        {"id": "HideInk", "style": "large", "items": [
+          {"cmd": "ReviewHideInk", "office_label": "Hide Ink"}
+        ]}
+      ]
+    ]}
+  ]
+}

@@ -1105,72 +1105,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="Menu Review">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-SpellDialog">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SpellDialog</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-SpellOnline">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SpellOnline</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-ThesaurusDialog">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ThesaurusDialog</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem" id="MenuReview-separator1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-SetLanguageAllTextMenu">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:SetLanguageAllTextMenu</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-Hyphenation">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:Hyphenation</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-ChineseConversion">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:ChineseConversion</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-HangulHanjaConversion">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:HangulHanjaConversion</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="MenuReview-MoreDictionaries">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="action-name">.uno:MoreDictionaries</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkMenu" id="Menu Table">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -7586,136 +7520,135 @@
               <object class="sfxlo-PriorityHBox" id="Review">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <!-- product:Review-begin -->
                 <child>
                   <object class="sfxlo-PriorityMergedHBox" id="pmhbReview">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">fill</property>
-                    <property name="vexpand">True</property>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdReviewSpelling">
+                      <object class="VclOptionalBox" id="obReviewProofing">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbReviewSpelling">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewProofing">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelReviewSpelling">Spelling</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=2 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewProofing">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewSpelling">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewSpellDialog">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:SpellDialog</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewThesaurus">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewThesaurusDialog">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ThesaurusDialog</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewProofing">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewProofing">Proofing</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdReviewSpelling"/>
+                              <relation type="labelled-by" target="lbReviewProofing"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewSpelling">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewSpellDialog">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SpellDialog</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewThesaurusDialog">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ThesaurusDialog</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewSpellOnline">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewSpellOnline">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:SpellOnline</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewHyphenation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewHyphenation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:Hyphenation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbReviewSpelling"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-6"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -7724,197 +7657,101 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=5 n-rows=3 -->
-                      <object class="GtkGrid" id="gdReviewComments">
+                      <object class="VclOptionalBox" id="obReviewAccessibility">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">3</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbReviewComments">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewAccessibility">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelReviewComments">Comments</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewAccessibility">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewCheckAccessibility">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCheckAccessibility">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCheckAccessibility</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewAccessibility">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewAccessibility">Accessibility</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdReviewComments"/>
+                              <relation type="labelled-by" target="lbReviewAccessibility"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">4</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">4</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewAnnotation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewInsertAnnotation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:InsertAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewNextAnnotation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewNextAnnotation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:NextAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewDeleteAnnotation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewDeleteAnnotation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DeleteAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewPreviousAnnotation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewPreviousAnnotation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:PreviousAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewDeleteAllAnnotation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewDeleteAllAnnotation">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:DeleteAllAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewShowAnnotations">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewShowAnnotations">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:ShowAnnotations</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">3</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbReviewComments"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-5"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -7923,106 +7760,701 @@
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
-                      <object class="GtkGrid" id="gdReviewRedact">
+                      <object class="VclOptionalBox" id="obReviewLanguage">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-start">3</property>
-                        <property name="margin-end">6</property>
-                        <property name="margin-top">6</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="row-spacing">3</property>
-                        <property name="column-spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="lbReviewRedact">
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewLanguage">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes" context="TabbedImpress|labelReviewRedact">Redact</property>
-                            <attributes>
-                              <attribute name="scale" value="0.9"/>
-                            </attributes>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewLanguage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewTranslate">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewTranslate">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewTranslate</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewLanguage">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnReviewReviewLanguageMenu">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewLanguageMenu</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewLanguage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewLanguage">Language</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
                             <accessibility>
-                              <relation type="label-for" target="gdReviewRedact"/>
+                              <relation type="labelled-by" target="lbReviewLanguage"/>
                             </accessibility>
                           </object>
                           <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">2</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">2</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewRedactDoc">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewRedactDoc">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:RedactDoc</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">0</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="bxReviewEditDoc">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="valign">center</property>
-                            <property name="vexpand">True</property>
-                            <property name="toolbar-style">both</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">3</property>
-                            <child>
-                              <object class="GtkToolButton" id="btnReviewEditDoc">
-                                <property name="visible">True</property>
-                                <property name="action-name">.uno:EditDoc</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                            <property name="height">2</property>
-                          </packing>
-                        </child>
-                        <accessibility>
-                          <relation type="labelled-by" target="lbReviewRedact"/>
-                        </accessibility>
+                        <style>
+                          <class name="priority-4"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obReviewComments">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewComments">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=5 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewComments">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewNewComment">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewInsertAnnotation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnReviewInsertAnnotation">New Comment</property>
+                                        <property name="action-name">.uno:InsertAnnotation</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewDeleteComment">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkMenuToolButton" id="btnReviewReviewDeleteCommentMenu">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnReviewReviewDeleteCommentMenu">Delete</property>
+                                        <property name="action-name">.uno:ReviewDeleteCommentMenu</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewCommentPrevious">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewPreviousAnnotation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnReviewPreviousAnnotation">Previous</property>
+                                        <property name="action-name">.uno:PreviousAnnotation</property>
+                                        <property name="icon_name">cmd/32/reviewcommentprevious.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewCommentNext">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewNextAnnotation">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="TabbedImpress|btnReviewNextAnnotation">Next</property>
+                                        <property name="action-name">.uno:NextAnnotation</property>
+                                        <property name="icon_name">cmd/32/reviewcommentnext.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewShowComments">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewShowAnnotations">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ShowAnnotations</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">4</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewComments">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewComments">Comments</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbReviewComments"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-3"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obReviewCompare">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewCompare">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=3 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewCompare">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewCompare">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCompare">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=compare</property>
+                                        <property name="icon_name">cmd/sc_reviewcomparemenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewAccept">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCompareAccept">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=accept</property>
+                                        <property name="icon_name">cmd/sc_reviewacceptmenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewReject">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCompareReject">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=reject</property>
+                                        <property name="icon_name">cmd/sc_reviewrejectmenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewComparePrevious">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewComparePrevious">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=previous</property>
+                                        <property name="icon_name">cmd/sc_reviewcomparemenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewCompareNext">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCompareNext">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=next</property>
+                                        <property name="icon_name">cmd/sc_reviewcomparemenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewReviewingPane">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="toolbar-style">both-horiz</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">1</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewComparePane">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=pane</property>
+                                        <property name="icon_name">cmd/sc_reviewcomparemenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">True</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewEndReview">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewCompareEndReview">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewCompare?Action:string=endreview</property>
+                                        <property name="icon_name">cmd/32/reviewcomparemenu.png</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewCompare">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewCompare">Compare</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbReviewCompare"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-2"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="VclOptionalBox" id="obReviewInk">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <!-- n-columns=2 n-rows=2 -->
+                          <object class="GtkGrid" id="gdReviewInk">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">3</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
+                            <child>
+                              <!-- n-columns=1 n-rows=3 -->
+                              <object class="GtkGrid" id="gcReviewInk">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="vexpand">True</property>
+                                <property name="row-spacing">3</property>
+                                <property name="column-spacing">3</property>
+                                <child>
+                                  <object class="sfxlo-NotebookbarToolBox" id="bxReviewHideInk">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="toolbar-style">both</property>
+                                    <property name="show-arrow">False</property>
+                                    <property name="icon_size">5</property>
+                                    <child>
+                                      <object class="GtkToolButton" id="btnReviewReviewHideInk">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="action-name">.uno:ReviewHideInk</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="homogeneous">False</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
+                                    <property name="height">3</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbReviewInk">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">end</property>
+                                <property name="label" translatable="yes" context="TabbedImpress|labelReviewInk">Ink</property>
+                                <attributes>
+                                  <attribute name="scale" value="0.9"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
+                                <property name="height">2</property>
+                              </packing>
+                            </child>
+                            <accessibility>
+                              <relation type="labelled-by" target="lbReviewInk"/>
+                            </accessibility>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <style>
+                          <class name="priority-1"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                   </object>
@@ -8032,79 +8464,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="sfxlo-DropdownBox" id="Reference-Menu">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkBox" id="GroupB37">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="valign">center</property>
-                        <property name="vexpand">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="svtlo-ManagedMenuButton" id="Review-ReviewButton:Menu Review">
-                            <property name="label" translatable="yes" context="TabbedImpress|ReviewMenuButton">_Review</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="focus-on-click">False</property>
-                            <property name="receives-default">False</property>
-                            <property name="halign">end</property>
-                            <property name="relief">none</property>
-                            <property name="use-underline">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="sfxlo-NotebookbarToolBox" id="SectionBottom17">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="halign">end</property>
-                            <property name="hexpand">True</property>
-                            <property name="toolbar-style">both-horiz</property>
-                            <property name="show-arrow">False</property>
-                            <property name="icon_size">1</property>
-                            <child>
-                              <object class="GtkToolButton" id="Review-AcceptTrackedChanges">
-                                <property name="visible">True</property>
-                                <property name="valign">center</property>
-                                <property name="action-name">.uno:InsertAnnotation</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack-type">end</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <!-- product:Review-end -->
               </object>
               <packing>
                 <property name="position">7</property>
