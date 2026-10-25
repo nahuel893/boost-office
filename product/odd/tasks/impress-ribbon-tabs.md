@@ -159,7 +159,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I5a | Transitions (the stock Layout page, relabelled) and Animations (new page), layout and behaviour | delegated (sonnet) | [x] | 5df70028a, 5bf3d5663 | 859 unit tests OK; UITests pass |
 | I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [x] | e58265196 | 869 unit tests OK; fits at every width |
 | I6a | Slide Show, layout and behaviour | delegated (sonnet) | [x] | 2ebf0877a, 3e7bbf6c4 | 890 unit tests OK; UITests pass |
-| I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [ ] | | |
+| I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [x] | d45818a92, 93eb510e1 | 895 unit tests OK; fits at every width |
 | I7a / I7b | Review | as I2a / I2b | [ ] | | |
 | I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
 | I9 | Polish: fit and caption baseline across tabs, other views, the accent (data only: W9a's mechanism already maps Impress, design 3.4) | delegated (sonnet) | [ ] | | |
@@ -638,7 +638,18 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the screenshot looked at.
 
+- 2026-10-24, I6b (route: delegated, sonnet; resumed once after the controller session ended). Commits d45818a92
+  (Custom Slide Show and Record as plain buttons, ruling 23) and 93eb510e1 (Slide Show icons, the Slide Show class in
+  `test_impress_icons.py`; two I6a tests that asserted stock icon names updated). No fit commit.
+  - Fit: the tab ends at x=1037 at 1920; nothing collapses at 1600 or 1366.
+  - Deviation, accepted: no clean RED run for the icon test (the first run failed on unvendored glyphs).
+  - Evidence (report: `task-I6b-report.md`): 890 -> 895 OK; `build_theme.py vendor`/`build`/`install` exit 0;
+    `check-ui.sh` exit 0; `sd.build` exit 0; `test_tabbed_office_loads` passes; Calc and Writer theme members: 0
+    removed, 0 changed, 31 added; 6 screenshots in `assets/previews/impress-ribbon-tabs/i6b/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the 1920 light screenshot looked at.
+
 ## Next step
 
-I6b (delegated, sonnet; brief `task-I6b-brief.md`, which binds `task-Ib-common.md`): Slide Show icons, fit,
-screenshots, and the two plain buttons of ruling 23. Then I7 (a and b in one task), I8 (likewise), then I9-I11.
+I7 (delegated, sonnet; briefs `task-I7a-brief.md` then `task-I7b-brief.md`, in one task, ruling 22): the Review
+tab. Then I8 (likewise), I9a, I9b, I10, I11.
