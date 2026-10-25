@@ -222,3 +222,38 @@ class ImpressSlideShowIconsTest(_ImpressTabIcons, unittest.TestCase):
         for icon in icons.values():
             self.assertRegex(icon, r"^cmd/sc_slideshow[a-z]+\.png$")
         self.assertEqual(len(icons), len(set(icons.values())))
+
+
+class ImpressReviewIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "Review"
+    # Check Accessibility, Previous and Next (the real comment commands) and the Compare family are the controls
+    # without a command image of their own name: the `?` variants name an explicit icon (one per size), Previous
+    # and Next reuse the comment-arrow icons Calc and Writer ship, and the placeholder Check Accessibility shares
+    # Writer's accessibility icon through a link.
+    EXPLICIT = {"btnReviewPreviousAnnotation": "cmd/32/reviewcommentprevious.png",
+                "btnReviewNextAnnotation": "cmd/32/reviewcommentnext.png",
+                "btnReviewReviewCompare": "cmd/sc_reviewcomparemenu.png", "btnReviewReviewCompareAccept": "cmd/sc_reviewacceptmenu.png",
+                "btnReviewReviewCompareReject": "cmd/sc_reviewrejectmenu.png",
+                "btnReviewReviewComparePrevious": "cmd/sc_reviewcomparemenu.png",
+                "btnReviewReviewCompareNext": "cmd/sc_reviewcomparemenu.png",
+                "btnReviewReviewComparePane": "cmd/sc_reviewcomparemenu.png",
+                "btnReviewReviewCompareEndReview": "cmd/32/reviewcomparemenu.png"}
+
+    def test_the_controls_without_a_command_image_name_their_icons(self):
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        self.assertEqual(self.EXPLICIT, icons)
+
+    def test_check_accessibility_and_the_menu_commands_have_icons_in_both_themes(self):
+        # Check Accessibility is the placeholder URL of the family slot (no zip member of its own name yet);
+        # the dropdown commands and the two comment moves have their own members or links
+        for theme in sorted(self.zips):
+            names, links = self.members(theme)
+            for member in ("cmd/sc_reviewcheckaccessibility.png", "cmd/lc_reviewcheckaccessibility.png",
+                           "cmd/32/reviewcheckaccessibility.png", "cmd/sc_reviewlanguagemenu.png",
+                           "cmd/32/reviewlanguagemenu.png", "cmd/sc_reviewdeletecommentmenu.png",
+                           "cmd/32/reviewdeletecommentmenu.png"):
+                self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")

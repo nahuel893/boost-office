@@ -359,7 +359,7 @@
     {"name": "mailingsfinishmenu", "large": true, "layers": [{"glyph": "mail_arrow_double_back"}]},
     {"name": "wordcountdialog", "large": true, "layers": [{"glyph": "text_word_count"}]},
     {"name": "reviewreadaloud", "large": true, "layers": [{"glyph": "speaker_2"}]},
-    {"name": "accessibilitycheck", "large": true, "layers": [{"glyph": "accessibility_checkmark"}]},
+    {"name": "accessibilitycheck", "aliases": ["reviewcheckaccessibility"], "large": true, "layers": [{"glyph": "accessibility_checkmark"}]},
     {"name": "reviewtranslate", "large": true, "layers": [{"glyph": "translate"}]},
     {"name": "reviewlanguagemenu", "large": true, "layers": [{"glyph": "local_language"}]},
     {"name": "reviewdeletecommentmenu", "large": true, "layers": [{"glyph": "comment_dismiss"}]},
