@@ -97,8 +97,8 @@ and `main` ("pushea todo", standing).
 
 - [x] **S1 — layout and content** (delegated, opus; C++ and `.ui`, 2+ non-trivial files): rulings 1, 2, 3; build
   sfx2; source-pinning tests in `product/tests/`; the Start Center UITests. Commits b83628984, 6db2e0512.
-- [ ] **S2 — colors, accents, dev launcher** (delegated): rulings 4, 5, 6; screenshots light and dark with measured
-  colors.
+- [x] **S2 — colors, accents, dev launcher** (delegated): rulings 4, 5, 6; screenshots light and dark with measured
+  colors. Commits 87591a10d, 555d52702, 0a4dc606d, 12900896b, e0fea73d0.
 - [ ] **S3 — gate and docs** (delegated): acceptance 1-6 on the dev build and a scratch install; README / docs
   screenshot and text; close the feature.
 
@@ -124,6 +124,18 @@ and `main` ("pushea todo", standing).
   captions lose translations; `uitest/impress_tests/start.py` not runnable through `uitest.sh`; the in-document donation
   infobar (`sfx2/source/view/viewfrm.cxx:1810`) is outside this feature (follow-up).
 
+- 2026-10-25 S2 (delegated, opus; route: writer trigger, C++ + CSS + presets + tests): 87591a10d (view colors from the
+  schemes via `StartCenterThumbnails*` in `build_items`), 555d52702 (`office.sh start`), 0a4dc606d (workspace color
+  from `AppBackground`, style classes), 12900896b (stale suppressions, unused welcome image), e0fea73d0 (tile accents
+  and selected nav in `custom-theme.cxx`). Suite 1092 OK (22 new, RED first); `sfx2.build`, `vcl.build` exit 0;
+  notebookbarOffice popups UITest and `tdf45946` pass. Measured light / dark: views and window `#FAFAFB` / `#222226`;
+  nav `#FFFFFF` / `#2B2B2B`; selected nav `#E0E0E0` / `#454545`; strips Writer `#185ABD` / `#83A6DB`, Calc
+  `#1B7A3E` / `#5CC27E`, Impress `#C43E1C` / `#FF8F6B`, others `#9E9E9E` / `#6A6A6A`; text `#242424` / `#F2F2F2`.
+  Tile accents read from the ToolbarMode `AccentColor` settings, not hard-coded. Controller looked at
+  `s2/home-light-1280.png` and `s2/home-dark-1280.png`: matches rulings 4-5. Concerns: `new-dark` template frame
+  lighter on two edges; view colors fixed per look (a manual scheme switch leaves them); debug-only "unknown class"
+  warning on non-gtk3 backends.
+
 ## Next step
 
-S2.
+S3.
