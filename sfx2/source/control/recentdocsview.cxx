@@ -265,29 +265,17 @@ void RecentDocsView::Paint(vcl::RenderContext& rRenderContext, const tools::Rect
     if (!mItemList.empty())
         return;
 
-    if (maWelcomeImage.IsEmpty())
-    {
-        const tools::Long aWidth(aRect.GetWidth() > aRect.getOpenHeight() ? aRect.GetHeight()/2 : aRect.GetWidth()/2);
-        maWelcomeImage = SfxApplication::GetApplicationLogo(aWidth);
-    }
-
-    // No recent files to be shown yet. Show a welcome screen.
+    // No recent files to be shown yet. Show a welcome text (Boost: no product logo).
     auto popIt = rRenderContext.ScopedPush(vcl::PushFlags::FONT | vcl::PushFlags::TEXTCOLOR);
     SetMessageFont(rRenderContext);
     rRenderContext.SetTextColor(maTextColor);
 
     tools::Long nTextHeight = rRenderContext.GetTextHeight();
 
-    const Size aImgSize = maWelcomeImage.GetSizePixel();
     const Size& rSize = GetOutputSizePixel();
 
-    const int nX = (rSize.Width() - aImgSize.Width())/2;
-    int nY = (rSize.Height() - 3 * nTextHeight - aImgSize.Height())/2;
-    Point aImgPoint(nX, nY);
-    rRenderContext.DrawBitmap(aImgPoint, aImgSize, maWelcomeImage);
-
-    nY = nY + aImgSize.Height();
-    rRenderContext.DrawText(tools::Rectangle(0, nY + 1 * nTextHeight, rSize.Width(), nY + nTextHeight),
+    const int nY = (rSize.Height() - 3 * nTextHeight)/2;
+    rRenderContext.DrawText(tools::Rectangle(0, nY + 1 * nTextHeight, rSize.Width(), nY + 2 * nTextHeight),
                             maWelcomeLine1,
                             DrawTextFlags::Center);
     rRenderContext.DrawText(tools::Rectangle(0, nY + 2 * nTextHeight, rSize.Width(), rSize.Height()),

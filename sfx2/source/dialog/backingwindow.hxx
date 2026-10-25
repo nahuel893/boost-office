@@ -26,9 +26,7 @@
 #include <vcl/weld/Button.hxx>
 #include <vcl/weld/ComboBox.hxx>
 #include <vcl/weld/Container.hxx>
-#include <vcl/weld/Image.hxx>
 #include <vcl/weld/Label.hxx>
-#include <vcl/weld/LinkButton.hxx>
 #include <vcl/weld/MenuButton.hxx>
 #include <vcl/weld/ToggleButton.hxx>
 
@@ -44,8 +42,6 @@
 
 #include <memory>
 
-class BrandImage;
-
 class BackingWindow : public InterimItemWindow
 {
     css::uno::Reference<css::uno::XComponentContext> mxContext;
@@ -60,7 +56,6 @@ class BackingWindow : public InterimItemWindow
     std::unique_ptr<weld::Button> mxRemoteButton;
     std::unique_ptr<weld::ToggleButton> mxTemplateButton;
 
-    std::unique_ptr<weld::Label> mxCreateLabel;
     std::unique_ptr<weld::Label> mxAltHelpLabel;
     std::unique_ptr<weld::ComboBox> mxFilter;
     std::unique_ptr<weld::MenuButton> mxActions;
@@ -71,12 +66,12 @@ class BackingWindow : public InterimItemWindow
     std::unique_ptr<weld::Button> mxDrawAllButton;
     std::unique_ptr<weld::Button> mxDBAllButton;
     std::unique_ptr<weld::Button> mxMathAllButton;
-    std::unique_ptr<BrandImage> mxBrandImage;
-    std::unique_ptr<weld::CustomWeld> mxBrandImageWeld;
+    std::unique_ptr<weld::Container> mxTilesBox;
+    std::unique_ptr<weld::Label> mxGreeting;
+    std::unique_ptr<weld::Label> mxSectionLabel;
 
     std::unique_ptr<weld::Button> mxHelpButton;
     std::unique_ptr<weld::Button> mxExtensionsButton;
-    std::unique_ptr<weld::Button> mxDonateButton;
 
     std::unique_ptr<weld::Container> mxAllButtonsBox;
     std::unique_ptr<weld::Container> mxButtonsBox;
@@ -87,12 +82,6 @@ class BackingWindow : public InterimItemWindow
     std::unique_ptr<weld::CustomWeld> mxAllRecentThumbnailsWin;
     std::unique_ptr<TemplateDefaultView> mxLocalView;
     std::unique_ptr<weld::CustomWeld> mxLocalViewWin;
-    std::unique_ptr<weld::Image> mxDonationLeft;
-    std::unique_ptr<weld::Image> mxDonationRight;
-    std::unique_ptr<weld::LinkButton> mxDonationLink;
-    std::unique_ptr<weld::Container> mxDonationBox;
-    std::unique_ptr<weld::Label> mxDonationBoxTitle;
-    std::unique_ptr<weld::Label> mxDonationBoxText;
 
     bool mbLocalViewInitialized;
 
@@ -116,10 +105,9 @@ class BackingWindow : public InterimItemWindow
     DECL_LINK(CreateContextMenuHdl, TemplateViewItem*, void);
     DECL_LINK(OpenTemplateHdl, const OUString&, void);
     DECL_LINK(EditTemplateHdl, const OUString&, void);
-    DECL_STATIC_LINK(BackingWindow, OnDonateLinkClick, weld::LinkButton&, bool);
 
     void initControls();
-    void initDonationBanner();
+    static OUString greetingForHour(int nHour);
 
     void initializeLocalView();
 

@@ -21,7 +21,6 @@
 #include <utility>
 #include <vcl/event.hxx>
 #include <vcl/help.hxx>
-#include <vcl/metaactiontypes.hxx>
 #include <vcl/ptrstyle.hxx>
 #include <vcl/settings.hxx>
 #include <vcl/svapp.hxx>
@@ -35,7 +34,6 @@
 #include <unotools/configmgr.hxx>
 #include <svtools/openfiledroptargetlistener.hxx>
 #include <svtools/colorcfg.hxx>
-#include <svtools/langhelp.hxx>
 #include <templateviewitem.hxx>
 
 #include <comphelper/processfactory.hxx>
@@ -70,98 +68,13 @@
 #include <sfx2/sfxsids.hrc>
 #include <sfx2/strings.hrc>
 #include <sfx2/sfxresid.hxx>
-#include <bitmaps.hlst>
-#include <rtl/bootstrap.hxx>
-#include <vcl/virdev.hxx>
-#include <vcl/graph.hxx>
-#include <vcl/graphicfilter.hxx>
-
-#include <config_folders.h>
+#include <tools/time.hxx>
 
 using namespace ::com::sun::star;
 using namespace ::com::sun::star::beans;
 using namespace ::com::sun::star::frame;
 using namespace ::com::sun::star::uno;
 using namespace ::com::sun::star::document;
-
-class BrandImage final : public weld::CustomWidgetController
-{
-private:
-    Bitmap maBrandImage;
-    bool mbIsDark = false;
-    Size m_BmpSize;
-
-public:
-    const Size & getSize() { return m_BmpSize; }
-
-    virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override
-    {
-        weld::CustomWidgetController::SetDrawingArea(pDrawingArea);
-
-        const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
-        OutputDevice& rDevice = pDrawingArea->get_ref_device();
-        rDevice.SetBackground(Wallpaper(rStyleSettings.GetWindowColor()));
-
-        SetPointer(PointerStyle::RefHand);
-    }
-
-    virtual void Resize() override
-    {
-        auto nWidth = GetOutputSizePixel().Width();
-        if (maBrandImage.GetSizePixel().Width() != nWidth)
-            LoadImageForWidth(nWidth);
-        weld::CustomWidgetController::Resize();
-    }
-
-    void LoadImageForWidth(int nWidth)
-    {
-        mbIsDark = Application::GetSettings().GetStyleSettings().GetDialogColor().IsDark();
-        SfxApplication::loadBrandSvg(mbIsDark ? u"shell/logo-sc_inverted" : u"shell/logo-sc",
-                                    maBrandImage, nWidth);
-    }
-
-    void ConfigureForWidth(int nWidth)
-    {
-        LoadImageForWidth(nWidth);
-        m_BmpSize = maBrandImage.GetSizePixel();
-        set_size_request(m_BmpSize.Width(), m_BmpSize.Height());
-    }
-
-    virtual void StyleUpdated() override
-    {
-        const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
-
-        // tdf#141857 update background to current theme
-        OutputDevice& rDevice = GetDrawingArea()->get_ref_device();
-        rDevice.SetBackground(Wallpaper(rStyleSettings.GetWindowColor()));
-
-        const bool bIsDark = rStyleSettings.GetDialogColor().IsDark();
-        if (bIsDark != mbIsDark)
-            LoadImageForWidth(GetOutputSizePixel().Width());
-        weld::CustomWidgetController::StyleUpdated();
-    }
-
-    virtual bool MouseButtonUp(const MouseEvent& rMEvt) override
-    {
-        if (rMEvt.IsLeft())
-        {
-            OUString sURL = officecfg::Office::Common::Menus::VolunteerURL::get();
-            localizeWebserviceURI(sURL);
-
-            Reference<css::system::XSystemShellExecute> const xSystemShellExecute(
-                css::system::SystemShellExecute::create(
-                    ::comphelper::getProcessComponentContext()));
-            xSystemShellExecute->execute(sURL, OUString(),
-                                         css::system::SystemShellExecuteFlags::URIS_ONLY);
-        }
-        return true;
-    }
-
-    virtual void Paint(vcl::RenderContext& rRenderContext, const tools::Rectangle&) override
-    {
-        rRenderContext.DrawBitmap(Point(0, 0), maBrandImage);
-    }
-};
 
 // increase size of the text in the buttons on the left fMultiplier-times
 float const g_fMultiplier = 1.2f;
@@ -172,7 +85,6 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     , mxRecentButton(m_xBuilder->weld_toggle_button(u"open_recent"_ustr))
     , mxRemoteButton(m_xBuilder->weld_button(u"open_remote"_ustr))
     , mxTemplateButton(m_xBuilder->weld_toggle_button(u"templates_all"_ustr))
-    , mxCreateLabel(m_xBuilder->weld_label(u"create_label"_ustr))
     , mxAltHelpLabel(m_xBuilder->weld_label(u"althelplabel"_ustr))
     , mxFilter(m_xBuilder->weld_combo_box(u"cbFilter"_ustr))
     , mxActions(m_xBuilder->weld_menu_button(u"mbActions"_ustr))
@@ -182,11 +94,11 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     , mxDrawAllButton(m_xBuilder->weld_button(u"draw_all"_ustr))
     , mxDBAllButton(m_xBuilder->weld_button(u"database_all"_ustr))
     , mxMathAllButton(m_xBuilder->weld_button(u"math_all"_ustr))
-    , mxBrandImage(new BrandImage)
-    , mxBrandImageWeld(new weld::CustomWeld(*m_xBuilder, u"daBrand"_ustr, *mxBrandImage))
+    , mxTilesBox(m_xBuilder->weld_container(u"tiles_box"_ustr))
+    , mxGreeting(m_xBuilder->weld_label(u"greeting"_ustr))
+    , mxSectionLabel(m_xBuilder->weld_label(u"section_label"_ustr))
     , mxHelpButton(m_xBuilder->weld_button(u"help"_ustr))
     , mxExtensionsButton(m_xBuilder->weld_button(u"extensions"_ustr))
-    , mxDonateButton(m_xBuilder->weld_button(u"donate"_ustr))
     , mxAllButtonsBox(m_xBuilder->weld_container(u"all_buttons_box"_ustr))
     , mxButtonsBox(m_xBuilder->weld_container(u"buttons_box"_ustr))
     , mxSmallButtonsBox(m_xBuilder->weld_container(u"small_buttons_box"_ustr))
@@ -196,27 +108,14 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     , mxLocalView(new TemplateDefaultView(m_xBuilder->weld_scrolled_window(u"scrolllocal"_ustr, true),
                                           m_xBuilder->weld_menu(u"localmenu"_ustr)))
     , mxLocalViewWin(new weld::CustomWeld(*m_xBuilder, u"local_view"_ustr, *mxLocalView))
-    , mxDonationLeft(m_xBuilder->weld_image(u"imgDonationLeft"_ustr))
-    , mxDonationRight(m_xBuilder->weld_image(u"imgDonationRight"_ustr))
-    , mxDonationLink(m_xBuilder->weld_link_button(u"btnDonateLink"_ustr))
-    , mxDonationBox(m_xBuilder->weld_container(u"gdDonation"_ustr))
-    , mxDonationBoxTitle(m_xBuilder->weld_label(u"lbDonateTitle"_ustr))
-    , mxDonationBoxText(m_xBuilder->weld_label(u"lbDonateText"_ustr))
     , mbLocalViewInitialized(false)
     , mbInitControls(false)
 {
     // init background, undo InterimItemWindow defaults for this widget
     SetPaintTransparent(false);
 
-    // draw the donation image/text
-    const bool bShowDonation(officecfg::Office::Common::Misc::ShowDonation::get());
-
-    const auto t0 = std::chrono::system_clock::now().time_since_epoch();
-    const sal_Int32 nDay = std::chrono::duration_cast<std::chrono::hours>(t0).count()/24; // days since 1970-01-01
-    if (bShowDonation && (nDay % 30 == 0))  // show the donation banner every 30 days
-        initDonationBanner();
-    else
-        mxDonationBox->set_visible(false);
+    // greet by the local time of day, as Office's Home screen does
+    mxGreeting->set_label(greetingForHour(tools::Time(tools::Time::SYSTEM).GetHour()));
 
     // square action button
     auto nHeight = mxFilter->get_preferred_size().getHeight();
@@ -225,21 +124,6 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     //set an alternative help label that doesn't hotkey the H of the Help menu
     mxHelpButton->set_label(mxAltHelpLabel->get_label());
     mxHelpButton->connect_clicked(LINK(this, BackingWindow, ClickHelpHdl));
-
-    // tdf#161796 replace the extension button with a donate button
-    if (bShowDonation)
-    {
-        mxExtensionsButton->hide();
-        mxDonateButton->show();
-        mxDonateButton->set_from_icon_name(BMP_DONATE);
-        OUString sDonate(SfxResId(STR_DONATE_BUTTON));
-        if (sDonate.getLength() > 8)
-        {
-            mxDonateButton->set_tooltip_text(sDonate);
-            sDonate = OUString::Concat(sDonate.subView(0, 7)) + "...";
-        }
-        mxDonateButton->set_label(sDonate);
-    }
 
     mxDropTarget = mxAllRecentThumbnails->GetDropTarget();
 
@@ -260,49 +144,13 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
 
 }
 
-void BackingWindow::initDonationBanner()
+OUString BackingWindow::greetingForHour(int nHour)
 {
-    mxDonationLink->connect_activate_link(LINK(this, BackingWindow, OnDonateLinkClick));
-
-    mxDonationBox->set_background(COL_WHITE);
-    mxDonationBoxTitle->set_font_color(COL_BLACK);
-    mxDonationBoxText->set_font_color(COL_BLACK);
-
-    ScopedVclPtr<VirtualDevice> m_pVirDevLeft = mxDonationLeft->create_virtual_device();
-    Graphic aGraphic;
-    Size aGraphicSize;
-    OUString aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/donate1.png"_ustr;
-    rtl::Bootstrap::expandMacros( aURL );
-    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
-    {
-        aGraphicSize = Size(200, 200);
-        m_pVirDevLeft->SetOutputSizePixel(aGraphicSize);
-        m_pVirDevLeft->DrawBitmap(Point(0, 0), aGraphicSize, aGraphic.GetBitmap());
-    }
-    mxDonationLeft->set_image(m_pVirDevLeft.get());
-    m_pVirDevLeft.disposeAndClear();
-
-    ScopedVclPtr<VirtualDevice> m_pVirDevRight = mxDonationRight->create_virtual_device();
-    aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/donate2.png"_ustr;
-    rtl::Bootstrap::expandMacros( aURL );
-    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
-    {
-        aGraphicSize = Size(150, 150);
-        m_pVirDevRight->SetOutputSizePixel(aGraphicSize);
-        // image has a transparent background and needs to be drawn with the advanced function
-        m_pVirDevRight->DrawBitmap(Point(0, 0), aGraphicSize, Point(), aGraphicSize,
-                                   aGraphic.GetBitmap(), MetaActionType::BMPEX);
-    }
-    mxDonationRight->set_image(m_pVirDevRight.get());
-    m_pVirDevRight.disposeAndClear();
-}
-
-IMPL_STATIC_LINK_NOARG(BackingWindow, OnDonateLinkClick, weld::LinkButton&, bool)
-{
-    SfxDispatcher &rDispatcher = *SfxGetpApp()->GetDispatcher_Impl();
-    rDispatcher.Execute(SID_DONATION, SfxCallMode::ASYNCHRON);
-
-    return true;
+    if (nHour < 12)
+        return SfxResId(STR_START_GREETING_MORNING);
+    if (nHour < 18)
+        return SfxResId(STR_START_GREETING_AFTERNOON);
+    return SfxResId(STR_START_GREETING_EVENING);
 }
 
 IMPL_LINK(BackingWindow, ClickHelpHdl, weld::Button&, rButton, void)
@@ -333,7 +181,6 @@ void BackingWindow::dispose()
     mxRemoteButton.reset();
     mxRecentButton.reset();
     mxTemplateButton.reset();
-    mxCreateLabel.reset();
     mxAltHelpLabel.reset();
     mxFilter.reset();
     mxActions.reset();
@@ -343,10 +190,10 @@ void BackingWindow::dispose()
     mxDrawAllButton.reset();
     mxDBAllButton.reset();
     mxMathAllButton.reset();
-    mxBrandImageWeld.reset();
-    mxBrandImage.reset();
+    mxTilesBox.reset();
+    mxGreeting.reset();
+    mxSectionLabel.reset();
     mxHelpButton.reset();
-    mxDonateButton.reset();
     mxExtensionsButton.reset();
     mxAllButtonsBox.reset();
     mxButtonsBox.reset();
@@ -402,7 +249,6 @@ void BackingWindow::initControls()
     checkInstalledModules();
 
     mxExtensionsButton->connect_clicked(LINK(this, BackingWindow, ExtLinkClickHdl));
-    mxDonateButton->connect_clicked(LINK(this, BackingWindow, ExtLinkClickHdl));
 
     mxOpenButton->connect_clicked(LINK(this, BackingWindow, ClickHdl));
 
@@ -455,20 +301,18 @@ void BackingWindow::ApplyStyleSettings()
     const StyleSettings& rStyleSettings = GetSettings().GetStyleSettings();
     const Color aButtonsBackground(rStyleSettings.GetWindowColor());
     const vcl::Font& aButtonFont(rStyleSettings.GetPushButtonFont());
-    const vcl::Font& aLabelFont(rStyleSettings.GetLabelFont());
 
     // setup larger fonts
     setLargerFont(mxOpenButton, aButtonFont);
     setLargerFont(mxRemoteButton, aButtonFont);
     setLargerFont(mxRecentButton, aButtonFont);
     setLargerFont(mxTemplateButton, aButtonFont);
-    setLargerFont(mxWriterAllButton, aButtonFont);
-    setLargerFont(mxDrawAllButton, aButtonFont);
-    setLargerFont(mxCalcAllButton, aButtonFont);
-    setLargerFont(mxDBAllButton, aButtonFont);
-    setLargerFont(mxImpressAllButton, aButtonFont);
-    setLargerFont(mxMathAllButton, aButtonFont);
-    setLargerFont(mxCreateLabel, aLabelFont);
+    setLargerFont(mxHelpButton, aButtonFont);
+    setLargerFont(mxExtensionsButton, aButtonFont);
+    // the new document tiles keep the regular (not bold) button font, so the row fits a small screen
+    for (auto* pTile : { mxWriterAllButton.get(), mxCalcAllButton.get(), mxImpressAllButton.get(),
+                         mxDrawAllButton.get(), mxMathAllButton.get(), mxDBAllButton.get() })
+        pTile->set_font(aButtonFont);
 
     mxAllButtonsBox->set_background(aButtonsBackground);
     mxSmallButtonsBox->set_background(aButtonsBackground);
@@ -482,17 +326,11 @@ void BackingWindow::ApplyStyleSettings()
     // fdo#34392: we do the layout dynamically, the layout depends on the font,
     // so we should handle data changed events (font changing) of the last child
     // control, at this point all the controls have updated settings (i.e. font).
-    Size aPrefSize(mxAllButtonsBox->get_preferred_size());
+    // The minimum size keeps the whole navigation column and the row of new
+    // document tiles visible.
+    const Size aPrefSize(m_xContainer->get_preferred_size());
     set_width_request(aPrefSize.Width());
-
-    // Now set a brand image wide enough to fill this width
-    weld::DrawingArea* pDrawingArea = mxBrandImage->GetDrawingArea();
-    mxBrandImage->ConfigureForWidth(aPrefSize.Width() -
-                                    (pDrawingArea->get_margin_start() + pDrawingArea->get_margin_end()));
-    // Refetch because the brand image height to match this width is now set
-    aPrefSize = mxAllButtonsBox->get_preferred_size();
-
-    set_height_request(nMenuHeight + aPrefSize.Height() + mxBrandImage->getSize().getHeight());
+    set_height_request(nMenuHeight + aPrefSize.Height());
 }
 
 void BackingWindow::initializeLocalView()
@@ -511,13 +349,7 @@ void BackingWindow::checkInstalledModules()
     if (officecfg::Office::Common::Misc::ViewerAppMode::get())
     {
         mxTemplateButton->set_visible(false);
-        mxCreateLabel->set_visible(false);
-        mxWriterAllButton->set_visible(false);
-        mxCalcAllButton->set_visible(false);
-        mxImpressAllButton->set_visible(false);
-        mxDrawAllButton->set_visible(false);
-        mxMathAllButton->set_visible(false);
-        mxDBAllButton->set_visible(false);
+        mxTilesBox->set_visible(false);
         return;
     }
 
@@ -642,15 +474,9 @@ IMPL_STATIC_LINK_NOARG(BackingWindow, ExtLinkClickHdl, weld::Button&, void)
 {
     try
     {
-        OUString sURL;
-        if (officecfg::Office::Common::Misc::ShowDonation::get())
-            sURL = officecfg::Office::Common::Menus::DonationURL::get() +
-                "?BCP47=" + LanguageTag(utl::ConfigManager::getUILocale()).getBcp47() +
-                "&LOlang=" + LanguageTag(utl::ConfigManager::getUILocale()).getLanguage();
-        else
-            sURL = officecfg::Office::Common::Menus::ExtensionsURL::get() +
-                "?LOvers=" + utl::ConfigManager::getProductVersion() +
-                "&LOlocale=" + LanguageTag(utl::ConfigManager::getUILocale()).getBcp47();
+        const OUString sURL = officecfg::Office::Common::Menus::ExtensionsURL::get() +
+            "?LOvers=" + utl::ConfigManager::getProductVersion() +
+            "&LOlocale=" + LanguageTag(utl::ConfigManager::getUILocale()).getBcp47();
 
         Reference<css::system::XSystemShellExecute> const
             xSystemShellExecute(
@@ -696,6 +522,7 @@ IMPL_LINK( BackingWindow, ToggleHdl, weld::Toggleable&, rButton, void )
         mxAllRecentThumbnails->Show();
         mxAllRecentThumbnails->GrabFocus();
         mxTemplateButton->set_active(false);
+        mxSectionLabel->set_label(SfxResId(STR_START_RECENT));
         mxActions->show();
     }
     else
@@ -706,6 +533,7 @@ IMPL_LINK( BackingWindow, ToggleHdl, weld::Toggleable&, rButton, void )
         mxLocalView->reload();
         mxLocalView->GrabFocus();
         mxRecentButton->set_active(false);
+        mxSectionLabel->set_label(SfxResId(STR_START_TEMPLATES));
         mxActions->hide();
     }
     applyFilter();

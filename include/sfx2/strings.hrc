@@ -191,8 +191,15 @@
 #define STR_FILTER_NOT_INSTALLED                NC_("STR_FILTER_NOT_INSTALLED", "The selected filter $(FILTER) has not been installed.\nWould you like to do this now?")
 #define STR_FILTER_CONSULT_SERVICE              NC_("STR_FILTER_CONSULT_SERVICE", "The selected filter $(FILTER) is not included in your edition.\nYou can find information about orders on our homepage.")
 
-#define STR_WELCOME_LINE1                       NC_("STR_WELCOME_LINE1", "Welcome to %PRODUCTNAME!")
-#define STR_WELCOME_LINE2                       NC_("STR_WELCOME_LINE2", "Drop a document here or open an app to create one.")
+#define STR_WELCOME_LINE1                       NC_("STR_WELCOME_LINE1", "Welcome to Boost Office")
+#define STR_WELCOME_LINE2                       NC_("STR_WELCOME_LINE2", "Drop a document here or create a new one above.")
+// Translators: Start Center greeting, before noon, before 18:00 and later
+#define STR_START_GREETING_MORNING              NC_("STR_START_GREETING_MORNING", "Good morning")
+#define STR_START_GREETING_AFTERNOON            NC_("STR_START_GREETING_AFTERNOON", "Good afternoon")
+#define STR_START_GREETING_EVENING              NC_("STR_START_GREETING_EVENING", "Good evening")
+// Translators: Start Center heading over the recent documents or the templates
+#define STR_START_RECENT                        NC_("STR_START_RECENT", "Recent")
+#define STR_START_TEMPLATES                     NC_("STR_START_TEMPLATES", "Templates")
 
 // Translators: Target types in Auto-redaction dialog
 #define STR_REDACTION_TARGET_TYPE_TEXT          NC_("STR_REDACTION_TARGET_TYPE_TEXT", "Text")
