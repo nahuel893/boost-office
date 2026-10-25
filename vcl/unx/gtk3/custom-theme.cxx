@@ -216,8 +216,6 @@ OString CreateStyleString()
         "menu menuitem:disabled {"
         "  background-color: #" + aThemeColors.GetMenuColor().AsRGBHexString() + ";"
         "  color: #" + aThemeColors.GetDisabledTextColor().AsRGBHexString() + ";"
-        "  border-left: 1px solid #" + aThemeColors.GetMenuBorderColor().AsRGBHexString() + ";"
-        "  border-right: 1px solid #" + aThemeColors.GetMenuBorderColor().AsRGBHexString() + ";"
         "}"
 
         "menu menuitem accelerator {"

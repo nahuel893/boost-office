@@ -213,6 +213,19 @@ class MenuDefaultsTest(unittest.TestCase):
         self.assertLess(code.index("pMenu->Activate();"), code.index("MenuFlags::AlwaysShowDisabledEntries"),
                         "the flag is passed on after the submenu's Activate, which may ask to hide entries")
 
+    def test_custom_themes_draw_disabled_menu_entries_without_an_outline(self):
+        # I9b: the upstream gtk3 rule "menu menuitem:disabled" (vcl/unx/gtk3/custom-theme.cxx) drew a left
+        # and a right border in the menu border color, which adw-gtk3's rounded menu items turned into a
+        # faint outline around every greyed entry. Office draws plain grey text: the rule keeps its colors
+        # and draws no border.
+        source = (Path(__file__).resolve().parents[2] / "vcl/unx/gtk3/custom-theme.cxx").read_text(
+            encoding="utf-8")
+        rules = re.findall(r'"menu menuitem:disabled \{"(.*?)"\}"', source, re.S)
+        self.assertEqual(1, len(rules), "one menu menuitem:disabled rule")
+        self.assertIn("color: #\" + aThemeColors.GetDisabledTextColor()", rules[0])
+        self.assertIn("background-color: #\" + aThemeColors.GetMenuColor()", rules[0])
+        self.assertNotIn("border", rules[0])
+
 
 if __name__ == "__main__":
     unittest.main()
