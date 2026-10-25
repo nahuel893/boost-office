@@ -62,13 +62,50 @@ class ShotTabArguments(unittest.TestCase):
         self.assertIn("--app must be calc|writer|impress", r.stderr)
 
     def test_refuses_the_impress_launcher_profile_for_every_app(self):
-        for app in ("calc", "writer", "impress"):
-            r = subprocess.run(["bash", str(SCRIPT), "--app", app, "light", "Home", "/nonexistent/x.png"],
+        for app in ("calc", "writer", "impress", "start"):
+            tab = "-" if app == "start" else "Home"
+            r = subprocess.run(["bash", str(SCRIPT), "--app", app, "light", tab, "/nonexistent/x.png"],
                                capture_output=True, text=True, timeout=30,
                                env={"PATH": "/usr/bin:/bin", "LO_PROFILE": "/mnt/games/libreoffice/try-profile-impress"})
             self.assertEqual(1, r.returncode, (app, r.stderr))
             self.assertIn("refusing LO_PROFILE", r.stderr, app)
             self.assertIn("Impress profile", r.stderr, app)
+
+    def test_refuses_the_start_center_launcher_profile_for_every_app(self):
+        for app in ("calc", "writer", "impress", "start"):
+            tab = "-" if app == "start" else "Home"
+            r = subprocess.run(["bash", str(SCRIPT), "--app", app, "light", tab, "/nonexistent/x.png"],
+                               capture_output=True, text=True, timeout=30,
+                               env={"PATH": "/usr/bin:/bin", "LO_PROFILE": "/mnt/games/libreoffice/try-profile-start"})
+            self.assertEqual(1, r.returncode, (app, r.stderr))
+            self.assertIn("refusing LO_PROFILE", r.stderr, app)
+            self.assertIn("Start Center profile", r.stderr, app)
+
+    def test_start_takes_no_tab(self):
+        r = self.run_script("--app", "start", "light", "Home", "/dev/null")
+        self.assertEqual(2, r.returncode)
+        self.assertIn("--app start takes TAB -", r.stderr)
+
+    def test_start_accepts_the_smaller_screens(self):
+        # the arguments pass and the profile guard is the first thing that refuses
+        for width in ("1920", "1366", "1280", "1024"):
+            r = subprocess.run(["bash", str(SCRIPT), "--app", "start", "dark", "-", "/nonexistent/x.png", width],
+                               capture_output=True, text=True, timeout=30,
+                               env={"PATH": "/usr/bin:/bin", "LO_PROFILE": "/mnt/games/libreoffice/try-profile"})
+            self.assertEqual(1, r.returncode, (width, r.stderr))
+            self.assertIn("refusing LO_PROFILE", r.stderr, width)
+
+    def test_start_rejects_unknown_width(self):
+        r = self.run_script("--app", "start", "light", "-", "/dev/null", "800")
+        self.assertEqual(2, r.returncode)
+        self.assertIn("width: 1920|1600|1366|1280|1024", r.stderr)
+
+    def test_start_opens_soffice_without_a_module(self):
+        launch = re.search(r'\nlaunch=\(.*?\nif \[ "\$app" = start \]; then\n(.*?)\nelse\n(.*?)\nfi\nlo_pid=\$!',
+                           TEXT, re.S)
+        self.assertTrue(launch, "no start/app launch branch before lo_pid")
+        self.assertIn('"$soffice" --norestore --nologo', launch.group(1))
+        self.assertIn('"$soffice" --"$app" --norestore --nologo', launch.group(2))
 
     def test_rejects_unknown_theme(self):
         r = self.run_script("sepia", "Home", "/dev/null")

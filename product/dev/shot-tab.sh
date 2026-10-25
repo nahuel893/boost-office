@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Screenshot one ribbon tab of the dev build's Calc, Writer or Impress in a private headless sway.
-# Usage: shot-tab.sh [--app calc|writer|impress] THEME TAB OUT.png [WIDTH]
-#   --app  calc (default), writer or impress
+# Screenshot one ribbon tab of the dev build's Calc, Writer or Impress, or its Start Center, in a private
+# headless sway.
+# Usage: shot-tab.sh [--app calc|writer|impress|start] THEME TAB OUT.png [WIDTH]
+#   --app  calc (default), writer, impress, or start (soffice with no document: the Start Center; TAB must be "-")
 #   THEME  light | dark   (same look as office.sh: Tabbed Office, Boost icons and scheme)
 #   TAB    tab label to click, e.g. Insert, Home, "Page Layout" (found by its ink on the tab bar, in tab order;
 #          "-" keeps the tab the app opens with). The tab order is SHOT_TABS (comma-separated), by default
@@ -9,11 +10,12 @@
 #          without the pages the installed Writer office .ui does not have yet. Impress's is the order of the
 #          installed Impress office .ui, without its contextual tabs.
 #   OUT    PNG path (put it outside the repo)
-#   WIDTH  1920 (default), 1600 or 1366; the headless output is WIDTH x (WIDTH*9/16)
+#   WIDTH  1920 (default), 1600 or 1366; the headless output is WIDTH x (WIDTH*9/16). --app start also takes
+#          1280 (1280x800) and 1024 (1024x640) for the smaller-window checks.
 # It never touches the user's session: its own sway (WLR_BACKENDS=headless, one output, own
 # Wayland and IPC sockets), the dev profile (LO_PROFILE, default /mnt/games/libreoffice/dev-profile)
 # and a private XDG_CONFIG_HOME; it refuses the user's own profiles (office.sh's defaults
-# /mnt/games/libreoffice/try-profile, try-profile-writer and try-profile-impress). Only the PIDs it
+# /mnt/games/libreoffice/try-profile, try-profile-writer, try-profile-impress and try-profile-start). Only the PIDs it
 # started are killed.
 # Whole run is under `timeout` (LO_SHOT_TIMEOUT, default 180 s). Needs sway, grim, jq, python3 + Pillow.
 # Env: SHOT_KEEP=1 leaves the sway running (prints its SWAYSOCK) for manual follow-up clicks;
@@ -26,12 +28,20 @@ set -euo pipefail
 
 app=calc
 if [ "${1:-}" = --app ]; then
-    case "${2:-}" in calc|writer|impress) app="$2" ;; *) echo "--app must be calc|writer|impress" >&2; exit 2 ;; esac
+    case "${2:-}" in calc|writer|impress|start) app="$2" ;; *) echo "--app must be calc|writer|impress|start" >&2; exit 2 ;; esac
     shift 2
 fi
 theme="${1:?theme light|dark}"; tab="${2:?tab}"; out="${3:?out.png}"; width="${4:-1920}"
 case "$theme" in light|dark) ;; *) echo "theme must be light or dark" >&2; exit 2 ;; esac
-case "$width" in 1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; *) echo "width: 1920|1600|1366" >&2; exit 2 ;; esac
+if [ "$app" = start ]; then
+    [ "$tab" = - ] || { echo "--app start takes TAB -" >&2; exit 2; }
+    case "$width" in
+        1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; 1280) height=800 ;; 1024) height=640 ;;
+        *) echo "width: 1920|1600|1366|1280|1024" >&2; exit 2 ;;
+    esac
+else
+    case "$width" in 1920) height=1080 ;; 1600) height=900 ;; 1366) height=768 ;; *) echo "width: 1920|1600|1366" >&2; exit 2 ;; esac
+fi
 font="${SHOT_FONT:-inter}"
 case "$font" in system|selawik|inter) ;; *) echo "SHOT_FONT must be system, selawik or inter" >&2; exit 2 ;; esac
 
@@ -45,7 +55,7 @@ soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"
 # Guards first, before anything is started or any trap is installed: refusing must never touch a
 # running Calc, Writer or Impress. Never the user's own profiles, never a profile that is in use.
-case "$app" in calc) App=Calc ;; writer) App=Writer ;; impress) App=Impress ;; esac
+case "$app" in calc) App=Calc ;; writer) App=Writer ;; impress) App=Impress ;; start) App="Start Center" ;; esac
 real_profile=$(realpath -m "$profile")
 case "$real_profile" in
 /mnt/games/libreoffice/try-profile)
@@ -54,6 +64,8 @@ case "$real_profile" in
     echo "refusing LO_PROFILE=$profile: that is the user's own Writer profile." >&2; exit 1 ;;
 /mnt/games/libreoffice/try-profile-impress)
     echo "refusing LO_PROFILE=$profile: that is the user's own Impress profile." >&2; exit 1 ;;
+/mnt/games/libreoffice/try-profile-start)
+    echo "refusing LO_PROFILE=$profile: that is the user's own Start Center profile." >&2; exit 1 ;;
 esac
 if pgrep -f "soffice.bin.*UserInstallation=file://$profile" >/dev/null; then
     echo "$App already runs with $profile: close it first." >&2; exit 1
@@ -132,7 +144,12 @@ cleanup() {
 trap cleanup EXIT
 
 # --- profile: the look of office.sh light|dark (profile.py LOOKS), with SHOT_FONT's font ----------------
-args=(--app "$app" --look "$theme" --font "$font")
+# The Start Center has no module of its own: Calc's profile settings carry the look.
+if [ "$app" = start ]; then
+    args=(--app calc --look "$theme" --font "$font")
+else
+    args=(--app "$app" --look "$theme" --font "$font")
+fi
 if [ "$theme" = light ]; then gtk=adw-gtk3; else gtk=adw-gtk3-dark; fi
 env_arg="-env:UserInstallation=file://$profile"
 oxt="$core/product/themes/out/boost-schemes.oxt"
@@ -286,9 +303,14 @@ rg -q '^ready' "$work/ptr.log" 2>/dev/null || { echo "virtual pointer client fai
 export SHOT_PTR="$work/ptr"   # SHOT_AFTER snippets write commands here, e.g. echo "click 100 50" > "$SHOT_PTR"
 click() { echo "move $(($1 - 4)) $(($2 - 4))" >&8; echo "click $1 $2" >&8; }
 
-# --- Calc, Writer or Impress inside it --------------------------------------------------------
-env -u DISPLAY XDG_CONFIG_HOME="$work/cfg" GDK_BACKEND=wayland GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 \
-    setsid "$soffice" --"$app" --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
+# --- Calc, Writer, Impress or the Start Center inside it --------------------------------------
+# The Start Center is soffice with no module switch and no document.
+launch=(env -u DISPLAY XDG_CONFIG_HOME="$work/cfg" GDK_BACKEND=wayland GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 setsid)
+if [ "$app" = start ]; then
+    "${launch[@]}" "$soffice" --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
+else
+    "${launch[@]}" "$soffice" --"$app" --norestore --nologo "$env_arg" >"$work/soffice.log" 2>&1 &
+fi
 lo_pid=$!
 
 id=""
