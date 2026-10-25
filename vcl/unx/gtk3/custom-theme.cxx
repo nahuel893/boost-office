@@ -386,6 +386,16 @@ OString CreateStyleString()
         "  box-shadow: none;"
         "}"
 
+        // Framed boxes (a GtkFrame, a scrolled window with a shadow such as the
+        // Writer styles gallery, vcl's native Frame) would take their edge from
+        // the desktop theme's window colors; paint it with the scheme's
+        // FaceColor. vcl's notebook header also has the frame class and keeps
+        // its own border color.
+        "frame > border,"
+        ".frame:not(header) {"
+        "  border-color: #" + aThemeColors.GetFaceColor().AsRGBHexString() + ";"
+        "}"
+
         ".frame.view {"
         "  border-radius: 6px;"
         "}"
