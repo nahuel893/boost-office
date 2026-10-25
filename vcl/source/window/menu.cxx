@@ -2600,7 +2600,15 @@ bool Menu::HandleMenuActivateEvent(Menu* pMenu)
         pMenu->Activate();
 
         if( !aDelData.isDeleted() )
+        {
             pMenu->bInCallback = false;
+            // A native backend opens the submenu itself and reads the submenu's own
+            // flags (gtk3: GtkSalMenu::Update), so pass on the rule to show disabled
+            // entries, unless the submenu was asked to hide them.
+            if ((nMenuFlags & MenuFlags::AlwaysShowDisabledEntries)
+                && !(pMenu->nMenuFlags & MenuFlags::HideDisabledEntries))
+                pMenu->nMenuFlags |= MenuFlags::AlwaysShowDisabledEntries;
+        }
     }
     return true;
 }

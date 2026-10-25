@@ -194,6 +194,25 @@ class MenuDefaultsTest(unittest.TestCase):
         self.assertLess(code.index("MenuFlags::AlwaysShowDisabledEntries"), code.index("->Execute("),
                         "the flag is set before the popup executes")
 
+    def test_native_submenus_inherit_the_rule_to_show_disabled_entries(self):
+        # I9b: gtk3 opens a submenu natively and reads that submenu's own flags (GtkSalMenu::Activate,
+        # then GtkSalMenu::Update), so the flag VCLXMenu::execute sets on the top popup did not reach its
+        # submenus (Impress Home > Arrange > Distribute Selection showed only "[No selection possible]").
+        # Menu::HandleMenuActivateEvent, which every native backend calls on the top menu for each submenu
+        # it opens, passes AlwaysShowDisabledEntries on after the submenu's Activate, unless the submenu
+        # was asked to hide disabled entries.
+        source = (Path(__file__).resolve().parents[2] / "vcl/source/window/menu.cxx").read_text(encoding="utf-8")
+        match = re.search(r"bool Menu::HandleMenuActivateEvent\(Menu\* pMenu\)\s*\{(.*?)\n\}", source, re.S)
+        self.assertIsNotNone(match, "no Menu::HandleMenuActivateEvent")
+        code = " ".join(re.sub(r"//[^\n]*", "", match.group(1)).split())
+        self.assertRegex(
+            code,
+            r"if \(\(nMenuFlags & MenuFlags::AlwaysShowDisabledEntries\) "
+            r"&& !\(pMenu->nMenuFlags & MenuFlags::HideDisabledEntries\)\) "
+            r"pMenu->nMenuFlags \|= MenuFlags::AlwaysShowDisabledEntries;")
+        self.assertLess(code.index("pMenu->Activate();"), code.index("MenuFlags::AlwaysShowDisabledEntries"),
+                        "the flag is passed on after the submenu's Activate, which may ask to hide entries")
+
 
 if __name__ == "__main__":
     unittest.main()
