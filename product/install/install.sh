@@ -202,9 +202,15 @@ write_launcher() {
     cat >"$1" <<EOF
 #!/bin/sh
 # Boost Office launcher, written by product/install/install.sh (uninstall.sh removes it).
-# Its own profile; the desktop's GTK theme; the gtk3 VCL plugin unless SAL_USE_VCLPLUGIN says otherwise.
-: "\${SAL_USE_VCLPLUGIN:=gtk3}"
-export SAL_USE_VCLPLUGIN
+# Its own profile; the desktop's GTK theme; the gtk3 VCL plugin unless SAL_USE_VCLPLUGIN says otherwise or
+# the run is headless (--headless, --convert-to, --print-to-file, --cat: soffice then needs no display).
+if [ -z "\${SAL_USE_VCLPLUGIN:-}" ]; then
+    vcl=gtk3
+    for arg in "\$@"; do
+        case "\$arg" in --headless|--convert-to|--print-to-file|--cat) vcl= ;; esac
+    done
+    [ -z "\$vcl" ] || { SAL_USE_VCLPLUGIN=\$vcl; export SAL_USE_VCLPLUGIN; }
+fi
 exec '$prefix/program/soffice' ${2:+$2 }-env:UserInstallation="file://\$HOME/.config/boost-office" "\$@"
 EOF
     chmod 755 "$1"
