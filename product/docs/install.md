@@ -2,8 +2,56 @@
 
 `product/install/install.sh` installs a built tree (an `instdir`) for the current user. It needs no root, does not
 build anything and does not touch an installed LibreOffice: Boost Office has its own prefix, launchers and profile.
+There are two ways to get the tree: a release (no build), or your own build.
 
-## Quick path
+## From a release: one command
+
+```sh
+curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash
+```
+
+`boost-office-install.sh` is a small script attached to each release on
+<https://github.com/nahuel893/boost-office/releases>. It checks that the system is Linux x86_64 with a glibc at
+least as new as the release needs (the floor `make-release.sh` measured on the shipped files, written inside the
+script; an older system is refused before anything is downloaded, `--uninstall` is always allowed), `curl` or
+`wget`, `tar` with `xz`, `python3` and enough free disk; downloads `boost-office-VERSION-linux-x86_64.tar.xz` from
+the same release; checks the archive against the sha256 written inside the script (a mismatch installs nothing);
+extracts it into a temp folder under `${XDG_CACHE_HOME:-~/.cache}`; runs the bundled `install.sh`; and deletes the
+temp folder, also when something fails. The release archive carries the built tree, the installer and its data, with
+the icon themes prebuilt (no Pillow, no `rsvg-convert`).
+
+Options go after `bash -s --`:
+
+```sh
+curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash -s -- --theme dark
+curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash -s -- --uninstall
+curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash -s -- --uninstall --purge
+```
+
+- Every `install.sh` option below works (`--theme`, `--prefix`, `--bindir`, `--dry-run` ...).
+- **Upgrade:** run the one-liner again. An install made by `install.sh` at the prefix is replaced (the script adds
+  `--force` itself); the profile stays.
+- **Uninstall:** `--uninstall` runs the `uninstall.sh` copy that every install keeps in its prefix
+  (`~/.local/opt/boost-office/uninstall.sh`), so it downloads nothing; `--purge` also removes the profile, and
+  `--prefix DIR` picks an install made with `--prefix DIR`. Running `<prefix>/uninstall.sh` directly does the same.
+- The release notes (`product/release/notes-VERSION.md`, also on the release page) list the system it needs (the
+  minimum glibc and the libraries) and the distributions it was tested on.
+
+### Manual or offline install from the archive
+
+Download `boost-office-VERSION-linux-x86_64.tar.xz` and `SHA256SUMS` from the release page, then:
+
+```sh
+sha256sum -c --ignore-missing SHA256SUMS
+tar -xJf boost-office-0.1.0-linux-x86_64.tar.xz
+boost-office-0.1.0/install.sh                 # takes every option below; no options: this folder's instdir
+```
+
+`install.sh` and `uninstall.sh` at the top of the folder run `product/install/install.sh` and `uninstall.sh` inside
+it. The folder can be deleted after the install: the prefix keeps its own `uninstall.sh`. Release files are built
+with `product/release/make-release.sh --instdir DIR --version X --out DIR`.
+
+## From a build
 
 1. Build the tree: [building.md](building.md). The result is `instdir/` in the repository root.
 2. Install it:
@@ -20,7 +68,7 @@ If the launchers are not found, add `~/.local/bin` to your `PATH`; the installer
 
 ## Requirements
 
-- A built tree: `--instdir DIR` must contain `program/soffice`.
+- A built tree: `--instdir DIR` must contain `program/soffice` (a release archive carries one).
 - `bash` and `python3`.
 - Pillow and `rsvg-convert`, only when `images_boost.zip` and `images_boost_dark.zip` are not already in
   `--icons-dir` (default `product/icons/out`). They are then built there first.
@@ -31,7 +79,7 @@ If the launchers are not found, add `~/.local/bin` to your `PATH`; the installer
 
 | Option | Meaning | Default |
 |---|---|---|
-| `--instdir DIR` | The built tree to install; it must contain `program/soffice` | the repository's `instdir` |
+| `--instdir DIR` | The built tree to install; it must contain `program/soffice` | the `instdir` of the repository, or of the extracted release archive |
 | `--prefix DIR` | Where the tree is copied | `~/.local/opt/boost-office` |
 | `--bindir DIR` | Where the launchers `boost-office`, `boost-writer`, `boost-calc` and `boost-impress` go | `~/.local/bin` |
 | `--theme THEME` | `light` or `dark`: the look of **new** profiles | `light` |
@@ -55,6 +103,7 @@ Run `--dry-run` first to read the plan.
 | Desktop entries | `${XDG_DATA_HOME:-~/.local/share}/applications/boost-office-*.desktop` (start center, writer, calc, impress) |
 | App icons | `${XDG_DATA_HOME:-~/.local/share}/icons/hicolor/<size>/apps/boost-office-*` |
 | The install manifest | `<prefix>/.boost-office-install` |
+| A copy of `uninstall.sh` (works without the repository or the release folder) | `<prefix>/uninstall.sh` |
 | Your profile (settings, recent documents) | `~/.config/boost-office` |
 
 - **The theme is a configuration layer, not a profile.** `boost.xcd` carries the defaults, so a new profile starts in
@@ -90,6 +139,7 @@ product/install/uninstall.sh                 # remove the install, keep the prof
 product/install/uninstall.sh --purge         # also remove ~/.config/boost-office
 product/install/uninstall.sh --prefix DIR    # an install made with --prefix DIR
 product/install/uninstall.sh --dry-run       # print every action, remove nothing
+~/.local/opt/boost-office/uninstall.sh       # the copy in the prefix: the same script, the same options
 ```
 
 | Option | Meaning | Default |

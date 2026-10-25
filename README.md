@@ -2,12 +2,29 @@
 
 Boost Office is a fork of LibreOffice that gives Calc, Writer and Impress a Microsoft 365-like ribbon (LibreOffice's
 "Tabbed Office" interface, rebuilt tab by tab), Fluent-based icons, light and dark color schemes and the Inter UI
-font. It targets Linux desktops (GTK 3). You build it from this repository, then install it for your user with one
-script.
+font. It targets Linux desktops (GTK 3). Download a release archive, or build it from this repository, then install
+it for your user with one script.
 
 > **Notice.** Boost Office is not affiliated with or endorsed by The Document Foundation or Microsoft. LibreOffice
 > is a trademark of The Document Foundation. Microsoft 365, Word, Excel and PowerPoint are trademarks of Microsoft.
 > They are named here only to say which ribbon layout Boost Office follows.
+
+## Download
+
+Boost Office 0.1.0 is the first preview: a built Linux x86_64 tree, no build needed. Install it for your user, without
+root, with one command:
+
+```sh
+curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash
+```
+
+It downloads the release archive, checks its sha256, and adds `boost-writer`, `boost-calc`, `boost-impress` and
+`boost-office` and their desktop entries. Add `-s -- --theme dark` after `bash` for the dark look; run it again to
+upgrade; `-s -- --uninstall` removes it. It needs glibc 2.44 or newer (Arch Linux, Manjaro and other rolling
+distributions; the script refuses an older system before downloading), GTK 3 and `python3`. A build for Ubuntu, Debian
+and Fedora is planned. The release notes on <https://github.com/nahuel893/boost-office/releases/latest> list the
+tested distributions, and [product/docs/install.md](product/docs/install.md) has the options and the manual (offline)
+install from the archive.
 
 ![Calc, Home tab](product/docs/screenshots/calc-home-light.png)
 
@@ -33,7 +50,7 @@ All three apps are built. The windows still say "LibreOfficeDev": the product na
 
 ## Install
 
-You need a built tree (`instdir`). Then:
+With the one-command installer: see [Download](#download). From your own build (`instdir`):
 
 ```sh
 product/install/install.sh              # light theme, into ~/.local/opt/boost-office, no root

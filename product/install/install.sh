@@ -5,7 +5,8 @@
 #
 # Install a built Boost Office tree (an instdir) for the current user, without root: the tree with the Boost
 # defaults layer (boost.xcd), the Inter UI font and the Boost icon themes in a prefix, launchers, desktop
-# entries, app icons, and a manifest that uninstall.sh removes exactly. See --help.
+# entries, app icons, and a manifest that uninstall.sh removes exactly. A copy of uninstall.sh goes into the
+# prefix, so the install can be removed without the repository or the release folder. See --help.
 set -euo pipefail
 
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -25,7 +26,8 @@ Usage: install.sh [options]
 Install a built Boost Office tree (an instdir) for the current user, without root.
 
 Options:
-  --instdir DIR    the built tree (default: the repository's instdir); it must contain program/soffice
+  --instdir DIR    the built tree (default: the instdir of the repository, or of the extracted release
+                   archive); it must contain program/soffice
   --prefix DIR     where the tree is copied (default: ~/.local/opt/boost-office)
   --bindir DIR     where the launchers boost-office, boost-writer, boost-calc and boost-impress go
                    (default: ~/.local/bin)
@@ -37,8 +39,8 @@ Options:
   -h, --help       show this help
 
 Desktop entries and app icons go to \${XDG_DATA_HOME:-~/.local/share}/applications and icons/hicolor. The
-launchers use the profile ~/.config/boost-office and the desktop's GTK theme. uninstall.sh --prefix DIR
-removes everything this script wrote.
+launchers use the profile ~/.config/boost-office and the desktop's GTK theme. <prefix>/uninstall.sh (a copy
+of uninstall.sh) removes everything this script wrote.
 EOF
 }
 
@@ -188,6 +190,9 @@ for ttf in "$repo"/product/fonts/inter/*.ttf; do
     act "copy $(basename "$ttf") into $stage/share/fonts/truetype" cp -- "$ttf" "$stage/share/fonts/truetype/"
 done
 
+copy_uninstall() { cp -- "$here/uninstall.sh" "$stage/uninstall.sh" && chmod 755 "$stage/uninstall.sh"; }
+act "copy uninstall.sh into $stage" copy_uninstall
+
 act "write the manifest $stage/$MANIFEST" write_manifest "$stage/$MANIFEST"
 act "rename $stage to $prefix" mv -T -- "$stage" "$prefix"
 [ "$dry" = 1 ] || { trap - EXIT; manifest_live=1; }
@@ -197,9 +202,15 @@ write_launcher() {
     cat >"$1" <<EOF
 #!/bin/sh
 # Boost Office launcher, written by product/install/install.sh (uninstall.sh removes it).
-# Its own profile; the desktop's GTK theme; the gtk3 VCL plugin unless SAL_USE_VCLPLUGIN says otherwise.
-: "\${SAL_USE_VCLPLUGIN:=gtk3}"
-export SAL_USE_VCLPLUGIN
+# Its own profile; the desktop's GTK theme; the gtk3 VCL plugin unless SAL_USE_VCLPLUGIN says otherwise or
+# the run is headless (--headless, --convert-to, --print-to-file, --cat: soffice then needs no display).
+if [ -z "\${SAL_USE_VCLPLUGIN:-}" ]; then
+    vcl=gtk3
+    for arg in "\$@"; do
+        case "\$arg" in --headless|--convert-to|--print-to-file|--cat) vcl= ;; esac
+    done
+    [ -z "\$vcl" ] || { SAL_USE_VCLPLUGIN=\$vcl; export SAL_USE_VCLPLUGIN; }
+fi
 exec '$prefix/program/soffice' ${2:+$2 }-env:UserInstallation="file://\$HOME/.config/boost-office" "\$@"
 EOF
     chmod 755 "$1"
@@ -269,7 +280,7 @@ if [ "$dry" = 1 ]; then
 else
     say "Boost Office ($theme) is installed in $prefix: start it with boost-writer, boost-calc, boost-impress"
     say "or boost-office in $bindir, or from the desktop menu. Remove it with:"
-    say "  $here/uninstall.sh --prefix $prefix"
+    say "  $prefix/uninstall.sh --prefix $prefix"
 fi
 case ":$PATH:" in *":$bindir:"*) ;; *) say "Note: $bindir is not on your PATH." ;; esac
 if [ -d "$profile" ]; then

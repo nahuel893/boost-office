@@ -154,6 +154,25 @@ class InstallTest(InstallTestCase):
         subprocess.run([str(self.bindir / "boost-calc")], check=True, env=env, timeout=30)
         self.assertEqual("kf5", json.loads(self.log.read_text(encoding="utf-8"))["env"]["SAL_USE_VCLPLUGIN"])
 
+    def test_headless_runs_leave_the_vcl_plugin_to_soffice(self):
+        # gtk3 needs a display: a conversion on a server would fail (and exit 0) with it
+        self.install()
+        env = {**self.env, "BOOST_STUB_LOG": str(self.log)}
+        for argv in (["--headless"], ["--convert-to", "pdf", "a.odt"], ["--print-to-file", "a.odt"],
+                     ["--cat", "a.odt"], ["--headless", "--convert-to", "pdf", "--outdir", "out", "a.docx"]):
+            for launcher in ("boost-writer", "boost-office"):
+                subprocess.run([str(self.bindir / launcher), *argv], check=True, env=env, timeout=30)
+                seen = json.loads(self.log.read_text(encoding="utf-8"))
+                self.assertIsNone(seen["env"]["SAL_USE_VCLPLUGIN"], (launcher, argv))
+                self.assertEqual(argv, seen["argv"][-len(argv):], (launcher, argv))
+        # the user's own choice stays, headless or not
+        subprocess.run([str(self.bindir / "boost-calc"), "--headless"], check=True,
+                       env={**env, "SAL_USE_VCLPLUGIN": "svp"}, timeout=30)
+        self.assertEqual("svp", json.loads(self.log.read_text(encoding="utf-8"))["env"]["SAL_USE_VCLPLUGIN"])
+        # an argument that only contains a flag's text is an ordinary file name
+        subprocess.run([str(self.bindir / "boost-writer"), "--headless-notes.odt"], check=True, env=env, timeout=30)
+        self.assertEqual("gtk3", json.loads(self.log.read_text(encoding="utf-8"))["env"]["SAL_USE_VCLPLUGIN"])
+
     def test_desktop_entries_and_their_icons(self):
         self.install()
         for launcher, (_flag, name, title, icon, stock) in APPS.items():
@@ -252,6 +271,21 @@ class UninstallTest(InstallTestCase):
         self.install()
         out = self.run_script(UNINSTALL, "--prefix", str(self.prefix))
         self.assertEqual(0, out.returncode, out.stdout + out.stderr)
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_the_prefix_carries_its_own_uninstall_sh(self):
+        (self.home / ".config/boost-office/user").mkdir(parents=True)
+        before = snapshot(self.root)
+        out = self.install()
+        own = self.prefix / "uninstall.sh"
+        self.assertEqual(UNINSTALL.read_bytes(), own.read_bytes())
+        self.assertTrue(os.access(own, os.X_OK))
+        self.assertIn(f"{own} --prefix {self.prefix}", out.stdout)
+        # it works from the prefix it removes, with no repository or release folder around
+        out = self.run_script(own, "--prefix", str(self.prefix), "--purge")
+        self.assertEqual(0, out.returncode, out.stdout + out.stderr)
+        self.assertFalse((self.home / ".config/boost-office").exists())
+        del before["home/.config/boost-office"], before["home/.config/boost-office/user"]
         self.assertEqual(before, snapshot(self.root))
 
     def test_purge_also_removes_the_profile(self):
