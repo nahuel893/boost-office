@@ -164,7 +164,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I8 (a + b) | View and Help (new page): layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 223a2776c, 2fd9001f4, 9513a70c7 | 974 unit tests OK; 15 UITests pass; fits at every width |
 | I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [x] | a16b4fadc, 3fa172fa4, 90dea286f | 979 unit tests OK; underline pixels orange, green, blue |
 | I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [x] | 0fd9d7317, 770953c5a, 363567347, dfc8c42e6 | 983 unit tests OK; Hide Slide UITest RED then GREEN; gtk3 screenshots |
-| I9c | No stock context toolbars under the Impress ribbon (ruling 24) | delegated (opus) | [ ] | | |
+| I9c | No stock context toolbars under the Impress ribbon (ruling 24) | delegated (opus) | [x] | 0182f3e02 | 985 unit tests OK; gtk3 screenshots before and after |
 | I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet) | [ ] | | |
 
@@ -747,7 +747,28 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the greyed Distribute submenu and the text-edit screenshot looked at.
 
+- 2026-10-25, I9c (route: delegated, opus; ruling 24). Commit 0182f3e02: `ToolBarManager::Implementation::AddToolBar`,
+  the one place every sd toolbar request passes, now refuses every toolbar while `AreToolBarsHidden()` is true
+  (I9b's `IsDrawingToolBarHidden`, renamed); the toolbar shells stay, so the slots the ribbon dispatches keep working.
+  - Covered: Drawing, Options, Presentation, Master View, Drawing Object Properties, Text Formatting (text edit,
+    tables, outline view, notes), Image, Media Playback, Edit Points, Table, Glue Points, Outline, both Slide Sorter
+    bars and Viewer. Fontwork and 3D-Settings were already gone (svx object bars, destroyed by sfx2 under a
+    notebookbar).
+  - Proof: gtk3 screenshots before (Text Formatting with a table, Edit Points with a polygon) and after (no row in
+    title text edit, table, Edit Points, glue points, Fontwork and 3D); the Standard mode at runtime brings the
+    bars back; Draw's Tabbed mode keeps Edit Points.
+  - Known, accepted: after a runtime switch back to Standard, a context toolbar returns at the next selection or view
+    change (a hook in `sd/source/ui/docshell/docshel3.cxx:431-445` would be needed); toolbars turned on by hand under
+    the ribbon stay (sd does not track them); `IsActive()` reads the current window (I9b); sd's rule also applies under
+    LibreOfficeKit, where sfx2 skips its own (desktop builds unaffected).
+  - Brief correction: the Edit Points command is `.uno:ToggleObjectBezierMode` (`svx/sdi/svx.sdi:8882`).
+  - Evidence (report: `task-I9c-report.md`): the toolbar test RED (3 failures) then GREEN; 983 -> 985 OK (one full
+    run at the end); `sd.build` exit 0; `test_tabbed_office_loads` passes; screenshots in
+    `assets/previews/impress-ribbon-tabs/i9c/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the table screenshot looked at (no toolbar row; the stock contextual Table tab shows).
+
 ## Next step
 
-I9c (delegated, opus; brief `task-I9c-brief.md`): no stock context toolbars under the Impress ribbon (ruling 24).
-Then I10 + I11 (sonnet, one task; brief `task-I10-I11-brief.md`).
+I10 + I11 (delegated, sonnet, one task; brief `task-I10-I11-brief.md`): the Impress preview picture, the contact
+sheets and the design doc as built. Then close the feature.
