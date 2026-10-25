@@ -106,8 +106,6 @@ private:
     tools::Long mnItemMaxSize;
     size_t mnLastMouseDownItem;
 
-    /// Image that appears when there is no recent document.
-    Bitmap maWelcomeImage;
     OUString maWelcomeLine1;
     OUString maWelcomeLine2;
 

@@ -15,6 +15,8 @@ HXX = ROOT / "sfx2/source/dialog/backingwindow.hxx"
 RECENT = ROOT / "sfx2/source/control/recentdocsview.cxx"
 STRINGS = ROOT / "include/sfx2/strings.hrc"
 DIALOGS_TEST = ROOT / "sfx2/qa/unit/data/sfx2-dialogs-test.txt"
+RECENT_HXX = ROOT / "sfx2/inc/recentdocsview.hxx"
+SUPPR = ROOT / "solenv/sanitizers/ui/sfx.suppr"
 
 NAV = [("open_recent", "Home"), ("templates_all", "New"), ("open_all", "Open"), ("open_remote", "Open Remote")]
 TILES = [("writer_all", "Blank document", "res/odt_48_8.png"),
@@ -239,6 +241,23 @@ class StartCenterStyle(unittest.TestCase):
         self.assertIn("mxAllButtonsBox->set_background(aNavBackground);", body)
         self.assertIn("mxSmallButtonsBox->set_background(aNavBackground);", body)
         self.assertIn("rStyleSettings.GetWindowColor()", body)
+
+
+class StartCenterCleanup(unittest.TestCase):
+
+    def test_no_unused_welcome_image(self):
+        self.assertNotIn("maWelcomeImage", RECENT_HXX.read_text(encoding="utf-8"))
+        self.assertNotIn("maWelcomeImage", RECENT.read_text(encoding="utf-8"))
+
+    def test_every_start_center_suppression_names_an_existing_id(self):
+        root = ui_root()
+        lines = [line for line in SUPPR.read_text(encoding="utf-8").splitlines()
+                 if line.startswith("sfx2/uiconfig/ui/startcenter.ui:")]
+        self.assertGreater(len(lines), 0)
+        for line in lines:
+            wid = re.search(r"@id='([^']+)'", line).group(1)
+            self.assertIsNotNone(by_id(root, wid), line)
+
 
 if __name__ == "__main__":
     unittest.main()
