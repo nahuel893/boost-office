@@ -2,16 +2,23 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """product/release/make-release.sh with a tiny fake instdir and fake icon zips: the archive's layout, the top-level
-wrappers (./install.sh with no arguments installs the bundled instdir), the checksum file, and the refusals. The
-installs go into a temp HOME, never the user's own directories."""
+wrappers (./install.sh with no arguments installs the bundled instdir), the one-command installer
+boost-office-install.sh (served by a local HTTP server through BOOST_OFFICE_BASE_URL and piped into bash), the
+checksum file, and the refusals. The installs go into a temp HOME, never the user's own directories."""
+import functools
+import hashlib
+import http.server
 import os
+import shutil
 import subprocess
 import tarfile
 import tempfile
+import threading
 import unittest
 import zipfile
 from pathlib import Path
 
+from product.install import build_xcd
 from product.tests.test_install import STUB, snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +26,7 @@ MAKE = ROOT / "product/release/make-release.sh"
 VERSION = "9.8.7"
 TOP = f"boost-office-{VERSION}"
 ARCHIVE = f"{TOP}-linux-x86_64.tar.xz"
+BOOTSTRAP = "boost-office-install.sh"
 
 
 def fake_instdir(root):
@@ -78,9 +86,9 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(0, self.result.returncode, self.result.stdout + self.result.stderr)
 
     def test_the_out_dir_holds_the_archive_and_its_checksum(self):
-        self.assertEqual(["SHA256SUMS", ARCHIVE], sorted(p.name for p in self.out.iterdir()))
+        self.assertEqual(["SHA256SUMS", ARCHIVE, BOOTSTRAP], sorted(p.name for p in self.out.iterdir()))
         sums = (self.out / "SHA256SUMS").read_text(encoding="utf-8")
-        self.assertRegex(sums, rf"^[0-9a-f]{{64}}  {ARCHIVE}\n$")
+        self.assertRegex(sums, rf"^[0-9a-f]{{64}}  {ARCHIVE}\n[0-9a-f]{{64}}  {BOOTSTRAP}\n$")
         check = subprocess.run(["sha256sum", "-c", "SHA256SUMS"], cwd=self.out, capture_output=True, text=True)
         self.assertEqual(0, check.returncode, check.stdout + check.stderr)
 
@@ -135,6 +143,123 @@ class ReleaseTest(unittest.TestCase):
             out = subprocess.run([str(self.bundle / script), "--help"], capture_output=True, text=True, timeout=60)
             self.assertEqual(0, out.returncode, script)
             self.assertIn("--dry-run", out.stdout, script)
+
+
+class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+
+class BootstrapTest(unittest.TestCase):
+    """boost-office-install.sh piped into bash, the way the README's one-liner runs it, against a local server."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.root = Path(cls._tmp.name)
+        instdir = fake_instdir(cls.root / "instdir")
+        cls.icons = fake_icons(cls.root / "icons")
+        cls.out = cls.root / "out"
+        cls.result = make_release("--instdir", str(instdir), "--version", VERSION, "--out", str(cls.out),
+                                  "--icons-dir", str(cls.icons))
+        cls.tampered = cls.root / "tampered"
+        cls.tampered.mkdir()
+        if cls.result.returncode == 0:
+            data = bytearray((cls.out / ARCHIVE).read_bytes())
+            data[-100] ^= 0xFF
+            (cls.tampered / ARCHIVE).write_bytes(bytes(data))
+        cls.server = http.server.ThreadingHTTPServer(
+            ("127.0.0.1", 0), functools.partial(QuietHandler, directory=str(cls.root)))
+        threading.Thread(target=cls.server.serve_forever, daemon=True).start()
+        cls.url = f"http://127.0.0.1:{cls.server.server_address[1]}"
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls._tmp.cleanup()
+
+    def setUp(self):
+        self.assertEqual(0, self.result.returncode, self.result.stdout + self.result.stderr)
+        self._home = tempfile.TemporaryDirectory()
+        self.addCleanup(self._home.cleanup)
+        self.top = Path(self._home.name)
+        self.home = self.top / "home"
+        self.cache = self.home / ".cache"
+        self.cache.mkdir(parents=True)
+        self.prefix = self.home / ".local/opt/boost-office"
+        self.env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(self.home), "LANG": "C.UTF-8",
+                    "BOOST_OFFICE_BASE_URL": f"{self.url}/out"}
+
+    def pipe(self, *argv, env=None):
+        """curl -fsSL .../boost-office-install.sh | bash -s -- ARGV"""
+        script = (self.out / BOOTSTRAP).read_bytes()
+        return subprocess.run(["bash", "-s", "--", *argv], input=script, capture_output=True, cwd=self.top,
+                              env=env or self.env, timeout=300)
+
+    def assert_ok(self, out):
+        self.assertEqual(0, out.returncode, (out.stdout + out.stderr).decode())
+
+    def test_it_carries_the_version_and_the_archive_checksum(self):
+        text = (self.out / BOOTSTRAP).read_text(encoding="utf-8")
+        sha = hashlib.sha256((self.out / ARCHIVE).read_bytes()).hexdigest()
+        self.assertIn(f'VERSION="{VERSION}"', text)
+        self.assertIn(f'SHA256="{sha}"', text)
+        for placeholder in ("@VERSION@", "@SHA256@", "@ARCHIVE_MB@", "@TREE_MB@"):
+            self.assertNotIn(placeholder, text)
+        self.assertTrue(os.access(self.out / BOOTSTRAP, os.X_OK))
+        self.assertEqual(0, subprocess.run(["bash", "-n", str(self.out / BOOTSTRAP)]).returncode)
+
+    def test_the_one_liner_installs_upgrades_and_uninstalls_without_the_archive(self):
+        (self.home / ".config").mkdir()
+        before = snapshot(self.home)
+        out = self.pipe("--theme", "dark")
+        self.assert_ok(out)
+        self.assertIn(b"Checksum OK", out.stdout)
+        self.assertIn(b"--uninstall", out.stdout)
+        self.assertEqual(STUB, (self.prefix / "program/soffice").read_text(encoding="utf-8"))
+        self.assertEqual(build_xcd.render("dark"),
+                         (self.prefix / "share/registry/boost.xcd").read_text(encoding="utf-8"))
+        self.assertTrue(os.access(self.prefix / "uninstall.sh", os.X_OK))
+        self.assertEqual([], list(self.cache.iterdir()))  # the temp folder is gone
+        # running it again replaces the install (the profile stays)
+        (self.home / ".config/boost-office").mkdir()
+        out = self.pipe()
+        self.assert_ok(out)
+        self.assertIn(b"replaced", out.stdout)
+        self.assertEqual(build_xcd.render("light"),
+                         (self.prefix / "share/registry/boost.xcd").read_text(encoding="utf-8"))
+        self.assertTrue((self.home / ".config/boost-office").is_dir())
+        # --uninstall needs no download: the server is not asked
+        out = self.pipe("--uninstall", "--purge", env={**self.env, "BOOST_OFFICE_BASE_URL": "http://127.0.0.1:9"})
+        self.assert_ok(out)
+        self.assertEqual(before, snapshot(self.home))
+
+    def test_a_wrong_checksum_refuses_and_leaves_nothing(self):
+        before = snapshot(self.home)
+        out = self.pipe(env={**self.env, "BOOST_OFFICE_BASE_URL": f"{self.url}/tampered"})
+        self.assertEqual(1, out.returncode)
+        self.assertIn(b"checksum mismatch", out.stderr)
+        self.assertEqual(before, snapshot(self.home))
+
+    def test_a_failed_download_leaves_nothing(self):
+        before = snapshot(self.home)
+        out = self.pipe(env={**self.env, "BOOST_OFFICE_BASE_URL": f"{self.url}/missing"})
+        self.assertEqual(1, out.returncode)
+        self.assertIn(b"download failed", out.stderr)
+        self.assertEqual(before, snapshot(self.home))
+
+    def test_uninstall_without_an_install_fails_clearly(self):
+        out = self.pipe("--uninstall")
+        self.assertEqual(1, out.returncode)
+        self.assertIn(b"no Boost Office install", out.stderr)
+
+    def test_install_options_pass_through(self):
+        out = self.pipe("--dry-run", "--bindir", str(self.top / "bin"))
+        self.assert_ok(out)
+        self.assertIn(f"{self.top}/bin/boost-writer".encode(), out.stdout)
+        self.assertFalse(self.prefix.exists())
+        self.assertEqual([], list(self.cache.iterdir()))
 
 
 class RefusalTest(unittest.TestCase):

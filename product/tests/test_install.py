@@ -254,6 +254,21 @@ class UninstallTest(InstallTestCase):
         self.assertEqual(0, out.returncode, out.stdout + out.stderr)
         self.assertEqual(before, snapshot(self.root))
 
+    def test_the_prefix_carries_its_own_uninstall_sh(self):
+        (self.home / ".config/boost-office/user").mkdir(parents=True)
+        before = snapshot(self.root)
+        out = self.install()
+        own = self.prefix / "uninstall.sh"
+        self.assertEqual(UNINSTALL.read_bytes(), own.read_bytes())
+        self.assertTrue(os.access(own, os.X_OK))
+        self.assertIn(f"{own} --prefix {self.prefix}", out.stdout)
+        # it works from the prefix it removes, with no repository or release folder around
+        out = self.run_script(own, "--prefix", str(self.prefix), "--purge")
+        self.assertEqual(0, out.returncode, out.stdout + out.stderr)
+        self.assertFalse((self.home / ".config/boost-office").exists())
+        del before["home/.config/boost-office"], before["home/.config/boost-office/user"]
+        self.assertEqual(before, snapshot(self.root))
+
     def test_purge_also_removes_the_profile(self):
         (self.home / ".config/boost-office/user").mkdir(parents=True)
         self.install()

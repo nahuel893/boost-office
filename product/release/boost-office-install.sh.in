@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Boost Office @VERSION@: the one-command installer. make-release.sh writes it from
+# product/release/boost-office-install.sh.in with the version and the archive's sha256 filled in.
+#
+#   curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash
+#   ... | bash -s -- --theme dark          (any install.sh option)
+#   ... | bash -s -- --uninstall [--purge] (remove it; --purge also removes the profile)
+#
+# It downloads the release archive, checks its sha256, extracts it into a temp folder, runs the bundled
+# install.sh, and deletes the temp folder. BOOST_OFFICE_BASE_URL replaces the download folder (tests).
+
+# Everything runs inside main, so bash has read the whole script before it starts (curl | bash).
+main() {
+    set -euo pipefail
+    local VERSION="@VERSION@"
+    local SHA256="@SHA256@"
+    local ARCHIVE_MB="@ARCHIVE_MB@" TREE_MB="@TREE_MB@"
+    local MARKER="# boost-office-install 1"
+    local ONE_LINER="curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash"
+    local base="${BOOST_OFFICE_BASE_URL:-https://github.com/nahuel893/boost-office/releases/download/v$VERSION}"
+    local archive="boost-office-$VERSION-linux-x86_64.tar.xz"
+
+    die() { echo "boost-office-install: $*" >&2; exit 1; }
+    say() { printf '%s\n' "$*"; }
+
+    # --- options: --uninstall is ours, --prefix is read, everything else goes to install.sh/uninstall.sh ----
+    local uninstall=0 force=0 prefix="$HOME/.local/opt/boost-office" args=() i
+    for ((i = 1; i <= $#; i++)); do
+        case "${!i}" in
+        --uninstall) uninstall=1 ;;
+        -h|--help)
+            say "Boost Office $VERSION installer. Install:   $ONE_LINER"
+            say "Options go after 'bash -s --': the install.sh options (--theme dark, --prefix DIR, --bindir DIR,"
+            say "--dry-run ...), or --uninstall [--purge] [--prefix DIR] to remove an install."
+            exit 0 ;;
+        *)
+            [ "${!i}" != --force ] || force=1
+            if [ "${!i}" = --prefix ] && [ "$i" -lt $# ]; then
+                local next=$((i + 1))
+                prefix=${!next}
+            fi
+            args+=("${!i}") ;;
+        esac
+    done
+
+    if [ "$uninstall" = 1 ]; then
+        [ -f "$prefix/uninstall.sh" ] \
+            || die "no Boost Office install with an uninstall.sh at $prefix (pass --prefix DIR for another one)"
+        bash "$prefix/uninstall.sh" ${args[@]+"${args[@]}"} </dev/null
+        return
+    fi
+
+    # --- checks: nothing is written before they pass ---------------------------------------------------
+    [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = x86_64 ] \
+        || die "Boost Office $VERSION is built for Linux x86_64 only, not $(uname -s) $(uname -m)"
+    local fetch
+    if command -v curl >/dev/null; then
+        fetch=(curl -fL --retry 3 --progress-bar -o)
+    elif command -v wget >/dev/null; then
+        fetch=(wget -q -O)
+    else
+        die "curl or wget is needed to download Boost Office"
+    fi
+    command -v tar >/dev/null || die "tar is needed"
+    command -v xz >/dev/null || die "xz is needed to extract the archive (the xz or xz-utils package)"
+    command -v python3 >/dev/null || die "python3 is needed by the installer"
+    command -v sha256sum >/dev/null || die "sha256sum (coreutils) is needed"
+
+    local cache="${XDG_CACHE_HOME:-$HOME/.cache}" made_cache=0
+    [ -d "$cache" ] || { mkdir -p -- "$cache"; made_cache=1; }
+    # free MB on the filesystem of the nearest existing folder at or above $1
+    free_mb() {
+        local dir=$1
+        while [ ! -d "$dir" ]; do dir=$(dirname -- "$dir"); done
+        df -Pm -- "$dir" | awk 'NR == 2 { print $4 }'
+    }
+    device() {
+        local dir=$1
+        while [ ! -d "$dir" ]; do dir=$(dirname -- "$dir"); done
+        df -P -- "$dir" | awk 'NR == 2 { print $1 }'
+    }
+    local need_tmp=$((ARCHIVE_MB + TREE_MB)) need_prefix=$TREE_MB
+    if [ "$(device "$cache")" = "$(device "$prefix")" ]; then
+        need_tmp=$((TREE_MB * 2 > need_tmp ? TREE_MB * 2 : need_tmp))
+        need_prefix=$need_tmp
+    fi
+    [ "$(free_mb "$cache")" -ge "$need_tmp" ] \
+        || die "$cache needs $need_tmp MB free for the download and the extracted tree"
+    [ "$(free_mb "$prefix")" -ge "$need_prefix" ] || die "$prefix needs $need_prefix MB free"
+
+    # --- an earlier install made by install.sh is replaced (upgrade); anything else is install.sh's to refuse
+    if [ "$force" = 0 ] && [ "$(head -n 1 "$prefix/.boost-office-install" 2>/dev/null || true)" = "$MARKER" ]; then
+        say "Boost Office is installed in $prefix already: it is replaced (the profile stays)."
+        args+=(--force)
+    fi
+
+    # --- download, check, extract and install; the temp folder goes on any exit ------------------------
+    local tmp
+    tmp=$(mktemp -d "$cache/boost-office-install.XXXXXX")
+    # shellcheck disable=SC2064  # expand now: the trap runs after main's locals are gone
+    trap "rm -rf -- '$tmp'; [ $made_cache = 0 ] || rmdir -- '$cache' 2>/dev/null || true" EXIT
+    trap 'exit 130' INT TERM
+
+    say "Downloading Boost Office $VERSION from $base/$archive"
+    "${fetch[@]}" "$tmp/$archive" "$base/$archive" </dev/null || die "the download failed: $base/$archive"
+    local got
+    got=$(sha256sum -- "$tmp/$archive" | cut -d' ' -f1)
+    [ "$got" = "$SHA256" ] || die "checksum mismatch for $archive: expected $SHA256, got $got; nothing installed"
+    say "Checksum OK. Extracting..."
+    tar -xJf "$tmp/$archive" -C "$tmp" </dev/null
+    rm -f -- "$tmp/$archive"
+    bash "$tmp/boost-office-$VERSION/install.sh" ${args[@]+"${args[@]}"} </dev/null
+
+    say ""
+    say "Start Boost Office with boost-writer, boost-calc, boost-impress or boost-office, or from the desktop menu."
+    say "Uninstall:  $ONE_LINER -s -- --uninstall      (add --purge to also remove the profile)"
+}
+
+main "$@"

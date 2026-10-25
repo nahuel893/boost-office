@@ -3,8 +3,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Package a built Boost Office tree (an instdir) as the release archive boost-office-VERSION-linux-x86_64.tar.xz
-# and its SHA256SUMS. The archive holds one folder, boost-office-VERSION/, laid out like the repository: install.sh
+# Package a built Boost Office tree (an instdir) as the release archive boost-office-VERSION-linux-x86_64.tar.xz,
+# the one-command installer boost-office-install.sh (the archive's sha256 inside) and SHA256SUMS for both. The archive holds one folder, boost-office-VERSION/, laid out like the repository: install.sh
 # and uninstall.sh at the top, instdir/, and the files the installer reads from product/ and sysui/ (the icon
 # zips prebuilt), so ./install.sh with no arguments installs the bundled instdir. See --help.
 set -euo pipefail
@@ -12,6 +12,7 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
 STOCK_APPS="startcenter writer calc impress"
+BOOTSTRAP=boost-office-install.sh
 # Repository files the bundle carries: the installer and what it reads, the README, the install guide and the
 # licence texts. The fonts and the stock desktop entries and app icons are added below.
 FILES=(
@@ -28,12 +29,13 @@ usage() {
     cat <<EOF
 Usage: make-release.sh --instdir DIR --version VERSION --out DIR [--icons-dir DIR]
 
-Package a built Boost Office tree as boost-office-VERSION-linux-x86_64.tar.xz and SHA256SUMS in --out.
+Package a built Boost Office tree as boost-office-VERSION-linux-x86_64.tar.xz, boost-office-install.sh (the
+one-command installer for that archive) and SHA256SUMS in --out.
 
 Options:
   --instdir DIR    the built tree; it must contain program/soffice (its user/ profile and .lock are left out)
   --version X      the release version, for example 0.1.0
-  --out DIR        where the archive and SHA256SUMS are written (created when missing)
+  --out DIR        where the three files are written (created when missing)
   --icons-dir DIR  where images_boost.zip and images_boost_dark.zip come from; when they are missing they are
                    built there first, which needs Pillow and rsvg-convert (default: product/icons/out)
   -h, --help       show this help
@@ -78,6 +80,8 @@ icons=$(realpath -ms -- "$icons")
 for rel in "${FILES[@]}"; do
     [ -f "$repo/$rel" ] || die "$repo/$rel is missing"
 done
+bootstrap_in="$here/boost-office-install.sh.in"
+[ -f "$bootstrap_in" ] || die "$bootstrap_in is missing"
 build_icons=0
 [ -f "$icons/images_boost.zip" ] && [ -f "$icons/images_boost_dark.zip" ] || build_icons=1
 if [ "$build_icons" = 1 ]; then
@@ -139,10 +143,23 @@ EOF
     chmod 755 "$bundle/$script"
 done
 
-# --- the archive and its checksum ----------------------------------------------------------------------
+# --- the archive, the one-command installer and the checksums ------------------------------------------
+tree_mb=$(du -sm -- "$bundle" | cut -f1)
 say "write $archive"
 tar -C "$stage" --sort=name --owner=0 --group=0 --numeric-owner -cf - "$top" | xz -T0 -6 -c >"$archive.part"
 mv -f -- "$archive.part" "$archive"
-(cd "$out" && sha256sum -- "$name" >SHA256SUMS)
+sha=$(sha256sum -- "$archive" | cut -d' ' -f1)
+archive_mb=$((($(stat -c %s -- "$archive") + 1048575) / 1048576))
+
+say "write $out/$BOOTSTRAP (version $version, sha256 $sha)"
+text=$(<"$bootstrap_in")
+text=${text//@VERSION@/$version}
+text=${text//@SHA256@/$sha}
+text=${text//@ARCHIVE_MB@/$archive_mb}
+text=${text//@TREE_MB@/$tree_mb}
+printf '%s\n' "$text" >"$out/$BOOTSTRAP"
+chmod 755 "$out/$BOOTSTRAP"
+
+(cd "$out" && sha256sum -- "$name" "$BOOTSTRAP" >SHA256SUMS)
 say "write $out/SHA256SUMS"
-say "$(du -h -- "$archive" | cut -f1)  $(cut -d' ' -f1 "$out/SHA256SUMS")  $archive"
+say "$(du -h -- "$archive" | cut -f1)  $sha  $archive"
