@@ -160,7 +160,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I5b | Transitions and Animations icons, 1920 fit, screenshots | delegated (sonnet), after I5a | [x] | e58265196 | 869 unit tests OK; fits at every width |
 | I6a | Slide Show, layout and behaviour | delegated (sonnet) | [x] | 2ebf0877a, 3e7bbf6c4 | 890 unit tests OK; UITests pass |
 | I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [x] | d45818a92, 93eb510e1 | 895 unit tests OK; fits at every width |
-| I7a / I7b | Review | as I2a / I2b | [ ] | | |
+| I7 (a + b) | Review: layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 3570292b3, 0ba095943, 301255a0d | 927 unit tests OK; UITests pass; fits at every width |
 | I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
 | I9 | Polish: fit and caption baseline across tabs, other views, the accent (data only: W9a's mechanism already maps Impress, design 3.4) | delegated (sonnet) | [ ] | | |
 | I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
@@ -649,7 +649,28 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the 1920 light screenshot looked at.
 
+- 2026-10-24, I7 (route: delegated, sonnet; a and b in one task, ruling 22). Commits 3570292b3
+  (`impress_review.json` and the regenerated `.ui` and suppressions: 3 files, +922/-458), 0ba095943 (the
+  `ReviewLanguageMenu` and `ReviewDeleteCommentMenu` popups, Controller.xcu nodes, labels for the 10 placeholders,
+  `test_impress_review_ui.py`, UITests) and 301255a0d (Review icons and their class in `test_impress_icons.py`). No
+  fit commit.
+  - Checks: the Language menu's first item is `.uno:SetLanguageAllTextMenu` and its controller builds a submenu
+    with languages (the test creates the controller directly: a headless popup has no submenu until it activates);
+    with three comments, Next and Previous select the expected one (read through what Delete removes, one document
+    per probe, never past an end: that opens a modal wrap-around question); Delete's menu deletes one, then all; the
+    10 placeholders are disabled and inert; the tab shows with every selection kind.
+  - Choices, accepted: Hide Ink, Check Accessibility, Accept, Reject and Show Comments are plain buttons (no menu,
+    ruling 23); the seven Compare placeholders mostly share the family icon. Thesaurus is greyed in Normal view until
+    text is in edit mode (LibreOffice behaviour).
+  - Fit: the tab ends at x=1151 at 1920; nothing collapses at 1600 or 1366.
+  - Evidence (report: `task-I7-report.md`): 895 -> 927 OK (one full run at the end); every Review UITest,
+    `test_tabbed_office_loads` and `test_tab_order` pass; the build exit 0; `check-ui.sh` 0 new warnings or fatals;
+    Calc and Writer files and icon members unchanged (three alias links added to `links.txt`); screenshots, with the
+    open Delete and Language menus, in `assets/previews/impress-ribbon-tabs/i7b/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the ribbon and the Language menu looked at.
+
 ## Next step
 
-I7 (delegated, sonnet; briefs `task-I7a-brief.md` then `task-I7b-brief.md`, in one task, ruling 22): the Review
-tab. Then I8 (likewise), I9a, I9b, I10, I11.
+I8 (delegated, sonnet; briefs `task-I8a-brief.md` then `task-I8b-brief.md`, in one task, ruling 22): the View and
+Help tabs. Then I9a, I9b, I10, I11.
