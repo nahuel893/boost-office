@@ -161,8 +161,9 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I6a | Slide Show, layout and behaviour | delegated (sonnet) | [x] | 2ebf0877a, 3e7bbf6c4 | 890 unit tests OK; UITests pass |
 | I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [x] | d45818a92, 93eb510e1 | 895 unit tests OK; fits at every width |
 | I7 (a + b) | Review: layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 3570292b3, 0ba095943, 301255a0d | 927 unit tests OK; UITests pass; fits at every width |
-| I8a / I8b | View and Help (new page) | as I2a / I2b | [ ] | | |
-| I9 | Polish: fit and caption baseline across tabs, other views, the accent (data only: W9a's mechanism already maps Impress, design 3.4) | delegated (sonnet) | [ ] | | |
+| I8 (a + b) | View and Help (new page): layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 223a2776c, 2fd9001f4, 9513a70c7 | 974 unit tests OK; 15 UITests pass; fits at every width |
+| I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [ ] | | |
+| I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [ ] | | |
 | I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet) | [ ] | | |
 
@@ -670,7 +671,27 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the ribbon and the Language menu looked at.
 
+- 2026-10-24, I8 (route: delegated, sonnet; a and b in one task, ruling 22). Commits 223a2776c (View layout and the
+  new Help page: 5 files, +1220/-934 with the generated `.ui`), 2fd9001f4 (the Color/Grayscale, Switch Windows and
+  Macros menus, labels, `test_impress_view_ui.py`/Help tests, UITests) and 9513a70c7 (View and Help icons). No fit
+  commit.
+  - Checks: Switch Windows lists two windows after `.uno:NewWindow` (the test closes the second one); Help is the
+    last tab, `Hel~p`, mnemonic P unique; Normal, Outline, Slide Sorter and Notes Page each report active; Color and
+    Grayscale switch through their dispatch state; Help's four real buttons are enabled and Feedback is disabled;
+    Reading View, Arrange All, Cascade, Move Split and Feedback are disabled and inert.
+  - Fit: View ends at x=1139 at 1920, Help at x=414; nothing collapses at 1600 or 1366.
+  - Deviation, accepted: commit 1 alone fails the tab-order test (it still expected Tools last); commit 2 fixes it.
+  - Known, accepted: Arrange All, Cascade and Move Split are icon-only placeholders (three faint icons); the menu
+    items inside Color/Grayscale and Macros keep stock images, as in Calc and Writer; Macro Recorder is absent from
+    Impress's real Macros menu (disabled in Impress).
+  - Evidence (report: `task-I8-report.md`): 927 -> 974 OK (one full run at the end); 15 UITests pass, with
+    `test_tabbed_office_loads` and `test_tab_order`; the build exit 0; `check-ui.sh` 0 new warnings or fatals; Calc
+    and Writer files unchanged; theme members: 0 removed, 0 changed, 29 added, `links.txt` identical; screenshots,
+    with the open Color/Grayscale and Macros menus, in `assets/previews/impress-ribbon-tabs/i8b/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the View ribbon at 1920 looked at.
+
 ## Next step
 
-I8 (delegated, sonnet; briefs `task-I8a-brief.md` then `task-I8b-brief.md`, in one task, ruling 22): the View and
-Help tabs. Then I9a, I9b, I10, I11.
+I9a (delegated, sonnet; brief `task-I9a-brief.md`): the orange accent, one caption style, the shape cell icons,
+every-tab screenshots. Then I9b (opus), I10 + I11 (sonnet, one task).
