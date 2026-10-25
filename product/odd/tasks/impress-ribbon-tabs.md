@@ -162,7 +162,7 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I6b | Slide Show icons, 1920 fit, screenshots; Custom Slide Show and Record as plain buttons | delegated (sonnet), after I6a | [x] | d45818a92, 93eb510e1 | 895 unit tests OK; fits at every width |
 | I7 (a + b) | Review: layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 3570292b3, 0ba095943, 301255a0d | 927 unit tests OK; UITests pass; fits at every width |
 | I8 (a + b) | View and Help (new page): layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 223a2776c, 2fd9001f4, 9513a70c7 | 974 unit tests OK; 15 UITests pass; fits at every width |
-| I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [ ] | | |
+| I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [x] | a16b4fadc, 3fa172fa4, 90dea286f | 979 unit tests OK; underline pixels orange, green, blue |
 | I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [ ] | | |
 | I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet) | [ ] | | |
@@ -691,7 +691,29 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the View ribbon at 1920 looked at.
 
+- 2026-10-25, I9a (route: delegated, sonnet). Commits a16b4fadc (`accent.impress` `#C43E1C`/`#FF8F6B` and the
+  `Impress` mapping in `palette.json`; `build_schemes.py` needed no change: it writes an accent for every
+  `tab_accents` entry), 3fa172fa4 (one caption style across every Impress page; no page differed, so
+  `impress_tabs.json` and the `.ui` are unchanged) and 90dea286f (Boost icons for the shape cells).
+  - Shape cells: they draw the icon of their default sub-shape (`ShapesUtil.cxx`: `basicshapes.diamond`,
+    `symbolshapes.smiley`, ...), which Colibre's `links.txt` aliases; Boost members with the exact sub-shape names
+    override the aliases. The stock Drawing toolbar uses the same names, so it shows them too.
+  - Accent pixels, selected tab underline at 1920 (light / dark): Impress `#C43E1C` / `#FF8F6B`, Calc `#1B7A3E` /
+    `#5CC27E`, Writer `#185ABD` / `#83A6DB`.
+  - Screenshots: every tab, light and dark, at 1920; captions on one baseline (y=147); the band height equal on
+    every tab; no blank icons or clipped labels.
+  - Skipped: Home in Slide Sorter view (`shot-tab.sh` could not switch the view with a click).
+  - Deviations, accepted: the caption test passed on its first run (nothing to fix); no captured RED for the icon
+    tests (the HEAD manifest lacks the 12 members they check).
+  - Known, for I11: the Design tab's Variants thumbnails touch the top edge of the band; the slide pane's selected
+    thumbnail is drawn green (the scheme's selection color, not the accent).
+  - Evidence (report: `task-I9a-report.md`): 974 -> 979 OK (one full run at the end); `test_tabbed_office_loads`
+    passes; Calc and Writer theme members 0 removed, 0 changed, 12 added; screenshots in
+    `assets/previews/impress-ribbon-tabs/i9a/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; dark Home at 1920 looked at (orange underline).
+
 ## Next step
 
-I9a (delegated, sonnet; brief `task-I9a-brief.md`): the orange accent, one caption style, the shape cell icons,
-every-tab screenshots. Then I9b (opus), I10 + I11 (sonnet, one task).
+I9b (delegated, opus; brief `task-I9b-brief.md`): Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3
+submenus greyed, no outline on greyed entries. Then I10 + I11 (sonnet, one task).
