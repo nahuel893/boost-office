@@ -59,6 +59,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/simpress,\
 	sd/uiconfig/simpress/popupmenu/pagepanecanvas \
 	sd/uiconfig/simpress/popupmenu/pagetab \
 	sd/uiconfig/simpress/popupmenu/page \
+	sd/uiconfig/simpress/popupmenu/review_deletecomment \
+	sd/uiconfig/simpress/popupmenu/review_language \
 	sd/uiconfig/simpress/popupmenu/table \
 	sd/uiconfig/simpress/popupmenu/textbox \
 ))

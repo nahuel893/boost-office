@@ -140,12 +140,14 @@
  {
   "slot": "SID_BOOST_REVIEW_CHECK_ACCESSIBILITY",
   "offset": 15,
-  "command": "ReviewCheckAccessibility"
+  "command": "ReviewCheckAccessibility",
+  "label": "Check Accessibility"
  },
  {
   "slot": "SID_BOOST_REVIEW_TRANSLATE",
   "offset": 16,
-  "command": "ReviewTranslate"
+  "command": "ReviewTranslate",
+  "label": "Translate"
  },
  {
   "slot": "SID_BOOST_REVIEW_COMPARE",
@@ -159,12 +161,22 @@
    "Action:string=next",
    "Action:string=pane",
    "Action:string=endreview"
-  ]
+  ],
+  "variant_labels": {
+   "Action:string=compare": "Compare",
+   "Action:string=accept": "Accept",
+   "Action:string=reject": "Reject",
+   "Action:string=previous": "Previous",
+   "Action:string=next": "Next",
+   "Action:string=pane": "Reviewing Pane",
+   "Action:string=endreview": "End Review"
+  }
  },
  {
   "slot": "SID_BOOST_REVIEW_HIDE_INK",
   "offset": 18,
-  "command": "ReviewHideInk"
+  "command": "ReviewHideInk",
+  "label": "Hide Ink"
  },
  {
   "slot": "SID_BOOST_VIEW_MODE",

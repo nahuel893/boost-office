@@ -1848,6 +1848,34 @@
           <value>design_variants</value>
         </prop>
       </node>
+      <node oor:name="ReviewLanguageMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewLanguageMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_language</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewDeleteCommentMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewDeleteCommentMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>review_deletecomment</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -4278,6 +4306,28 @@
       <node oor:name="DesignVariantsMenuImpressControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:DesignVariantsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewLanguageMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewLanguageMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ReviewDeleteCommentMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ReviewDeleteCommentMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.presentation.PresentationDocument</value>

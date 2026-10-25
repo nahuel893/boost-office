@@ -36,6 +36,8 @@ THEME_PART = ".uno:PageLayoutThemePart?Part:string="
 MOTION_SLOTS = (11, 12)  # SID offsets of the Transitions and Animations placeholders: the Preview family
 # (2 variants) and Animation Painter
 SLIDESHOW_SLOTS = (13, 14)  # SID offsets of the Slide Show placeholders: Record and the Option family (2 variants)
+REVIEW_SLOTS = (15, 16, 17, 18)  # SID offsets of the Review placeholders: Check Accessibility, Translate, the
+# Compare family (7 variants) and Hide Ink
 TRANSITION_DECK = "SdSlideTransitionDeck"
 ANIMATION_DECK = "SdCustomAnimationDeck"
 # a 1x1 PNG, the picture of the image context
@@ -1145,6 +1147,155 @@ class NotebookbarOffice(UITestCase):
                           "bxSlideShowPlayNarrations": "Play Narrations", "bxSlideShowUseTimings": "Use Timings",
                           "bxSlideShowShowMediaControls": "Show Media Controls", "bxSlideShowMonitor": "Monitor",
                           "bxSlideShowUsePresenterView": "Use Presenter View"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def review_comments(self, slide):
+        """The text of every comment on `slide`, in order."""
+        xEnum = slide.createAnnotationEnumeration()
+        texts = []
+        while xEnum.hasMoreElements():
+            texts.append(xEnum.nextElement().TextRange.String)
+        return texts
+
+    def add_comments(self, document, count):
+        """`count` comments c1, c2, ... on the first slide; none is selected."""
+        slide = document.DrawPages[0]
+        for number in range(1, count + 1):
+            comment = slide.createAndInsertAnnotation()
+            comment.Author = "reviewer"
+            comment.Position = uno.createUnoStruct("com.sun.star.geometry.RealPoint2D", 1.0 * number, 1.0)
+            comment.TextRange.String = "c%d" % number
+        self.assertEqual(["c%d" % n for n in range(1, count + 1)], self.review_comments(slide))
+        return slide
+
+    def test_review_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("review"), 6)
+
+    def test_review_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Review")
+            finally:
+                self.switch_to("Default")
+
+    def test_review_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.impress_doc():
+            expected = {
+                ("ReviewLanguageMenu", "review_language"): [
+                    ".uno:SetLanguageAllTextMenu", ".uno:Hyphenation", ".uno:ChineseConversion",
+                    ".uno:HangulHanjaConversion", ".uno:MoreDictionaries"],
+                ("ReviewDeleteCommentMenu", "review_deletecomment"): [
+                    ".uno:DeleteAnnotation", ".uno:DeleteAllAnnotation"]}
+            for (command, resource), items in expected.items():
+                xPopup = self.menu_controller(".uno:" + command, resource)
+                self.assertEqual(items, self.popup_commands(xPopup), command)
+
+    def test_review_language_menu_first_item_opens_the_language_submenu_its_controller_builds(self):
+        # decision 18: .uno:SetLanguageAllTextMenu keeps LanguageSelectionMenuController (Controller.xcu:155),
+        # which fills the submenu with the languages of the document
+        with self.impress_doc():
+            xPopup = self.menu_controller(".uno:ReviewLanguageMenu", "review_language")
+            first = xPopup.getItemId(0)
+            self.assertEqual(".uno:SetLanguageAllTextMenu", xPopup.getCommand(first))
+            # the awt popup has no submenu until the menu is activated on screen, so the controller of the item is
+            # created by its own command, as the menu does when it opens the submenu
+            xSub = self.menu_controller(".uno:SetLanguageAllTextMenu", "")
+            languages = self.settle(lambda: xSub.getItemCount())
+            self.assertGreater(languages, 0, "the language submenu is empty")
+
+    def test_review_previous_and_next_move_between_the_comments_of_a_slide(self):
+        # which comment is selected shows in what Delete removes (SID_DELETE_POSTIT deletes the selected one).
+        # One document per probe: a delete leaves the removed comment selected, and Next from there would ask
+        # a modal question about wrapping around. Next/Previous never go past the ends here for the same reason.
+        def probe(moves, left):
+            with self.impress_doc() as document:
+                slide = self.add_comments(document, 3)
+                self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled("NextAnnotation")))
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled("PreviousAnnotation")))
+                self.assertFalse(self.dispatch_enabled("DeleteAnnotation"), "a comment is selected at the start")
+                for move in moves:
+                    self.xUITest.executeCommand(".uno:" + move)
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled("DeleteAnnotation")), moves)
+                self.xUITest.executeCommand(".uno:DeleteAnnotation")
+                self.wait_for(lambda: len(self.review_comments(slide)) == 2, "Delete did not remove a comment")
+                self.assertEqual(left, self.review_comments(slide), moves)
+        probe(["NextAnnotation"], ["c2", "c3"])  # none selected: Next selects the first
+        probe(["NextAnnotation", "NextAnnotation"], ["c1", "c3"])  # Next moves on to the second
+        probe(["PreviousAnnotation"], ["c1", "c2"])  # none selected: Previous selects the last
+        probe(["NextAnnotation", "NextAnnotation", "PreviousAnnotation"], ["c2", "c3"])  # and back to the first
+
+    def test_review_delete_menu_deletes_one_comment_then_all(self):
+        with self.impress_doc() as document:
+            slide = self.add_comments(document, 3)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            xPopup = self.menu_controller(".uno:ReviewDeleteCommentMenu", "review_deletecomment")
+            one, everything = self.popup_commands(xPopup)
+            self.assertEqual((".uno:DeleteAnnotation", ".uno:DeleteAllAnnotation"), (one, everything))
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("NextAnnotation")))
+            self.xUITest.executeCommand(".uno:NextAnnotation")  # selects c1
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("DeleteAnnotation")))
+            self.xUITest.executeCommand(one)
+            self.wait_for(lambda: len(self.review_comments(slide)) == 2, "the first item did not delete one comment")
+            self.assertEqual(["c2", "c3"], self.review_comments(slide))
+            self.assertTrue(self.settle(lambda: self.dispatch_enabled("DeleteAllAnnotation")))
+            self.xUITest.executeCommand(everything)
+            self.wait_for(lambda: self.review_comments(slide) == [], "the second item did not delete all comments")
+            self.assertFalse(self.settle(lambda: self.dispatch_enabled("DeleteAllAnnotation")))
+
+    def test_review_placeholders_are_disabled_and_inert(self):
+        # 4 slots: Check Accessibility, Translate, the Compare family (7 variants) and Hide Ink
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in REVIEW_SLOTS)
+        self.assertEqual(10, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_review_dropdown_and_placeholder_labels_resolve(self):
+        compare = "ReviewCompare?Action:string="
+        with self.impress_doc():
+            for command, label in (("ReviewLanguageMenu", "Language"), ("ReviewDeleteCommentMenu", "Delete Comments"),
+                                   ("ReviewCheckAccessibility", "Check Accessibility"),
+                                   ("ReviewTranslate", "Translate"), ("ReviewHideInk", "Hide Ink"),
+                                   (compare + "compare", "Compare"), (compare + "accept", "Accept"),
+                                   (compare + "reject", "Reject"), (compare + "previous", "Previous"),
+                                   (compare + "next", "Next"), (compare + "pane", "Reviewing Pane"),
+                                   (compare + "endreview", "End Review")):
+                self.assertEqual(label, self.command_label(".uno:" + command), command)
+
+    def test_review_commands_that_are_real_are_enabled(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            # Thesaurus needs a text in edit mode (reported disabled with nothing selected)
+            for name in ("SpellDialog", "InsertAnnotation", "ShowAnnotations", "Hyphenation", "MoreDictionaries"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_review_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                labels = {"bxReviewSpelling": "Spelling", "bxReviewThesaurus": "Thesaurus",
+                          "bxReviewCheckAccessibility": "Check Accessibility", "bxReviewTranslate": "Translate",
+                          "bxReviewLanguage": "Language", "bxReviewNewComment": "New Comment",
+                          "bxReviewDeleteComment": "Delete", "bxReviewCommentPrevious": "Previous",
+                          "bxReviewCommentNext": "Next", "bxReviewShowComments": "Show Comments",
+                          "bxReviewCompare": "Compare", "bxReviewAccept": "Accept", "bxReviewReject": "Reject",
+                          "bxReviewComparePrevious": "Previous", "bxReviewCompareNext": "Next",
+                          "bxReviewReviewingPane": "Reviewing Pane", "bxReviewEndReview": "End Review",
+                          "bxReviewHideInk": "Hide Ink"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
