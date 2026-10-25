@@ -111,7 +111,25 @@ class _ImpressTabIcons:
 
 
 class ImpressHomeIconsTest(_ImpressTabIcons, unittest.TestCase):
-    pass
+    # The six default shape cells are popup controllers: each draws the image of its default sub-shape (the
+    # sub-command the stock Drawing toolbar lists first), so those sub-command names are themed, not the cell's.
+    SHAPE_CELL_DEFAULTS = ("basicshapes.diamond", "symbolshapes.smiley", "arrowshapes.left-right-arrow",
+                           "flowchartshapes.flowchart-process", "calloutshapes.round-rectangular-callout",
+                           "starshapes.star5")
+
+    def test_the_default_shape_cells_have_boost_icons_in_both_themes(self):
+        for theme in sorted(self.zips):
+            names, links = self.members(theme)
+            for cmd in self.SHAPE_CELL_DEFAULTS:
+                for member in (f"cmd/sc_{cmd}.png", f"cmd/lc_{cmd}.png"):
+                    self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")
+
+    def test_the_default_shape_cell_entries_are_plain_line_icons(self):
+        entries = {e["name"]: e for e in bt.load_manifest()["icons"]}
+        for cmd in self.SHAPE_CELL_DEFAULTS:
+            self.assertIn(cmd, entries)
+            self.assertNotIn("fill", entries[cmd], cmd)
+            self.assertEqual(1, len(entries[cmd]["layers"]), cmd)
 
 
 class ImpressInsertIconsTest(_ImpressTabIcons, unittest.TestCase):
