@@ -12,6 +12,7 @@
     "text.disabled":   ["#A6A6A6", "#6E6E6E"],
     "accent.calc":     ["#1B7A3E", "#5CC27E"],
     "accent.writer":   ["#185ABD", "#83A6DB"],
+    "accent.impress":  ["#C43E1C", "#FF8F6B"],
     "selection":       ["#CFE8D7", "#1E4D2E"],
     "menu":            ["#FFFFFF", "#2B2B2B"],
     "menu.hover":      ["#F0F0F0", "#383838"]
@@ -29,5 +30,5 @@
     "MenuHighlightTextColor": "text", "MenuBorderColor": "separator"
   },
   "document": {"CalcCellFocus": "accent.calc"},
-  "tab_accents": {"Writer": "accent.writer", "Calc": "accent.calc"}
+  "tab_accents": {"Writer": "accent.writer", "Calc": "accent.calc", "Impress": "accent.impress"}
 }

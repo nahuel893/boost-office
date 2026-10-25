@@ -38,7 +38,8 @@ OOR = "{http://openoffice.org/2001/registry}"
 # Design 3.4 (approved 2026-10-20): one tab accent per app, as ToolbarMode Applications/<App> AccentColor
 # (light) and AccentColorDark. Word's brand blue for Writer; Calc keeps its green. The dark blue applies
 # accent.calc's light-to-dark step (same hue, +0.269 lightness, saturation x0.713) to #185ABD.
-APP_ACCENTS = {"Writer": ("#185ABD", "#83A6DB"), "Calc": ("#1B7A3E", "#5CC27E")}
+APP_ACCENTS = {"Writer": ("#185ABD", "#83A6DB"), "Calc": ("#1B7A3E", "#5CC27E"),
+               "Impress": ("#C43E1C", "#FF8F6B")}
 
 
 class SchemesTest(unittest.TestCase):
@@ -96,6 +97,13 @@ class SchemesTest(unittest.TestCase):
         self.assertEqual(list(APP_ACCENTS["Writer"]), self.palette["tokens"]["accent.writer"])
         self.assertEqual(list(APP_ACCENTS["Calc"]), self.palette["tokens"]["accent.calc"])
         light, dark = APP_ACCENTS["Writer"]
+        self.assertGreaterEqual(bs.contrast(light, SPEC["WindowColor"][0]), 3.0)
+        self.assertGreaterEqual(bs.contrast(dark, SPEC["WindowColor"][1]), 3.0)
+
+    def test_impress_accent_is_powerpoint_orange_with_ui_contrast(self):
+        self.assertEqual(list(APP_ACCENTS["Impress"]), self.palette["tokens"]["accent.impress"])
+        self.assertEqual("accent.impress", self.palette["tab_accents"]["Impress"])
+        light, dark = APP_ACCENTS["Impress"]
         self.assertGreaterEqual(bs.contrast(light, SPEC["WindowColor"][0]), 3.0)
         self.assertGreaterEqual(bs.contrast(dark, SPEC["WindowColor"][1]), 3.0)
 
