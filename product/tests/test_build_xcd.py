@@ -175,6 +175,17 @@ class BuildXcdTest(unittest.TestCase):
                 path = f"/org.openoffice.Office.UI/ColorScheme/ColorSchemes/{scheme}/AppBackground"
                 self.assertEqual(lookup(root, path, "Color"), str(color), (theme, scheme))
 
+    def test_the_start_center_views_take_the_workspace_and_text_colors(self):
+        # S2 (ruling 4): the same items as the dev profile (profile.build_items), from palette.json.
+        palette = build_schemes.load_palette()
+        path = "/org.openoffice.Office.Common/Help/StartCenter"
+        for index, theme in enumerate(build_xcd.THEMES):
+            root = parse(theme)
+            for prop, token in (("StartCenterThumbnailsBackgroundColor", "workspace"),
+                                ("StartCenterThumbnailsTextColor", "text")):
+                self.assertEqual(lookup(root, path, prop), str(int(palette["tokens"][token][index][1:], 16)),
+                                 (theme, prop))
+
     def test_impress_accent_is_orange(self):
         self.assertEqual(lookup(parse("light"), profile.APPLICATION % "Impress", "AccentColor"),
                          str(0xC43E1C))

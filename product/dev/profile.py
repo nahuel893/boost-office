@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Write registrymodifications.xcu for the isolated LibreOffice dev profile."""
 import argparse
+import json
 import shutil
 from pathlib import Path
 from xml.sax.saxutils import escape, quoteattr
@@ -40,6 +41,11 @@ UI_FONTS = {"system": None, "selawik": "Selawik", "inter": "Inter"}
 # A fresh profile has no ooSetupLastVersion, so the welcome dialog opens over the first document
 # (sfx2/source/view/viewfrm.cxx:1705-1717) unless Setup/Product/WhatsNew is false.
 SETUP_PRODUCT = "/org.openoffice.Setup/Product"
+# The Start Center's recent and template views paint these colors (sfx2 RecentDocsView and TemplateDefaultView
+# UpdateColors; Common.xcs defaults #666666 and #EEEEEE). A Boost scheme gives them its workspace and text
+# colors, read from the palette its color scheme is built from.
+START_CENTER = "/org.openoffice.Office.Common/Help/StartCenter"
+PALETTE = Path(__file__).resolve().parents[1] / "themes" / "palette.json"
 
 # The Boost looks: the build_items arguments of office.sh light|dark, shot-tab.sh light|dark and the
 # installed boost.xcd layer (product/install/build_xcd.py), which all take them from here. The icon themes are
@@ -50,6 +56,16 @@ LOOKS = {
     "dark": {"ui": "office", "appearance": "dark", "icons": "boost_dark", "scheme": "Boost Dark", "tint": 255,
              "font": "inter"},
 }
+
+
+def start_center_colors(scheme):
+    """(background, text) of the Start Center views for a palette.json scheme, as xs:int strings; None for
+    any other scheme."""
+    palette = json.loads(PALETTE.read_text(encoding="utf-8"))
+    if scheme not in palette["schemes"]:
+        return None
+    index = palette["schemes"].index(scheme)
+    return tuple(str(int(palette["tokens"][token][index].lstrip("#"), 16)) for token in ("workspace", "text"))
 
 
 def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system", app="calc"):
@@ -65,6 +81,10 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system
         # The theme engine ignores color schemes unless LibreOfficeTheme is 1.
         items.append((APPEARANCE, "LibreOfficeTheme", "1"))
         items.append(("/org.openoffice.Office.UI/ColorScheme", "CurrentColorScheme", scheme))
+        colors = start_center_colors(scheme)
+        if colors:
+            items.append((START_CENTER, "StartCenterThumbnailsBackgroundColor", colors[0]))
+            items.append((START_CENTER, "StartCenterThumbnailsTextColor", colors[1]))
     if tint is not None:
         items.append((MISC, "NotebookbarColorTransparency", str(tint)))
     if UI_FONTS[font]:
@@ -109,7 +129,8 @@ def install_fonts(profile, font):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--app", choices=sorted(APPS), default="calc")
+    ap.add_argument("--app", choices=[*sorted(APPS), "all"], default="calc",
+                    help="all: the items of every app, each once (the Start Center opens any of them)")
     ap.add_argument("--look", choices=sorted(LOOKS),
                     help="a Boost look from LOOKS; --ui, --appearance, --icons, --scheme, --tint or --font given as "
                          "well win over its values")
@@ -128,7 +149,10 @@ def main(argv=None):
         ap.error("--ui and --appearance are required without --look")
     if UI_FONTS[chosen["font"]]:
         install_fonts(args.profile, chosen["font"])
-    print(write(args.profile, build_items(**chosen, app=args.app)))
+    items = []
+    for app in (sorted(APPS) if args.app == "all" else [args.app]):
+        items += [item for item in build_items(**chosen, app=app) if item not in items]
+    print(write(args.profile, items))
 
 
 if __name__ == "__main__":

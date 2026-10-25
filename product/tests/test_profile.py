@@ -236,6 +236,86 @@ class ImpressProfileTest(unittest.TestCase):
             self.assertEqual("false", p[(IMPRESS_NEWDOC, "AutoPilot")])
 
 
+START_CENTER = "/org.openoffice.Office.Common/Help/StartCenter"
+PALETTE = Path(__file__).resolve().parents[2] / "product/themes/palette.json"
+
+
+def palette_int(token, index):
+    import json
+    return str(int(json.loads(PALETTE.read_text(encoding="utf-8"))["tokens"][token][index].lstrip("#"), 16))
+
+
+class StartCenterColorsTest(unittest.TestCase):
+    """S2 (ruling 4): the Start Center's recent and template views paint the StartCenterThumbnails* colors
+    (sfx2/source/control/recentdocsview.cxx, templatedefaultview.cxx UpdateColors), #666666 / #EEEEEE by
+    default. A Boost scheme gives them its workspace and text colors, from palette.json."""
+
+    def test_each_look_paints_the_views_in_its_schemes_workspace_and_text(self):
+        for index, look in enumerate(("light", "dark")):
+            for app in profile.APPS:
+                p = props(profile.render(profile.build_items(**profile.LOOKS[look], app=app)))
+                self.assertEqual(palette_int("workspace", index),
+                                 p[(START_CENTER, "StartCenterThumbnailsBackgroundColor")], (look, app))
+                self.assertEqual(palette_int("text", index),
+                                 p[(START_CENTER, "StartCenterThumbnailsTextColor")], (look, app))
+
+    def test_the_reviewed_values(self):
+        light = props(profile.render(profile.build_items(**profile.LOOKS["light"])))
+        dark = props(profile.render(profile.build_items(**profile.LOOKS["dark"])))
+        self.assertEqual(str(0xFAFAFB), light[(START_CENTER, "StartCenterThumbnailsBackgroundColor")])
+        self.assertEqual(str(0x242424), light[(START_CENTER, "StartCenterThumbnailsTextColor")])
+        self.assertEqual(str(0x222226), dark[(START_CENTER, "StartCenterThumbnailsBackgroundColor")])
+        self.assertEqual(str(0xF2F2F2), dark[(START_CENTER, "StartCenterThumbnailsTextColor")])
+
+    def test_no_boost_scheme_keeps_the_stock_colors(self):
+        for items in (profile.build_items("tabbed", "dark"),
+                      profile.build_items("office", "light", scheme="Some Other Scheme")):
+            self.assertNotIn(START_CENTER, profile.render(items))
+
+    def test_the_colors_are_read_from_the_palette_not_copied(self):
+        source = (Path(__file__).resolve().parents[2] / "product/dev/profile.py").read_text(encoding="utf-8")
+        for value in ("FAFAFB", "222226", "242424", "F2F2F2", str(0xFAFAFB), str(0x222226)):
+            self.assertNotIn(value, source.upper())
+        import json
+        from unittest import mock
+        palette = json.loads(PALETTE.read_text(encoding="utf-8"))
+        palette["tokens"]["workspace"] = ["#010203", "#040506"]
+        with tempfile.TemporaryDirectory() as tmp:
+            other = Path(tmp) / "palette.json"
+            other.write_text(json.dumps(palette), encoding="utf-8")
+            with mock.patch.object(profile, "PALETTE", other):
+                p = props(profile.render(profile.build_items(**profile.LOOKS["dark"])))
+        self.assertEqual(str(0x040506), p[(START_CENTER, "StartCenterThumbnailsBackgroundColor")])
+
+    def test_the_items_are_the_common_schema_properties(self):
+        schema = ET.parse(Path(__file__).resolve().parents[2]
+                          / "officecfg/registry/schema/org/openoffice/Office/Common.xcs")
+        group = schema.find("component/group[@{0}name='Help']/group[@{0}name='StartCenter']".format(OOR))
+        self.assertIsNotNone(group)
+        for name in ("StartCenterThumbnailsBackgroundColor", "StartCenterThumbnailsTextColor"):
+            prop = group.find("prop[@{0}name='{1}']".format(OOR, name))
+            self.assertIsNotNone(prop, name)
+            self.assertEqual("xs:int", prop.get(OOR + "type"), name)
+
+
+class AllAppsTest(unittest.TestCase):
+    """S2 (ruling 6): office.sh start's profile carries the look of every app the Start Center opens,
+    as the installed boost.xcd layer does."""
+
+    def test_all_writes_the_items_of_every_app_once(self):
+        xcu, _ = written(["--app", "all", "--look", "light", "--font", "system"])
+        p = props(xcu)
+        union = {}
+        for app in profile.APPS:
+            for path, name, value in profile.build_items(**{**profile.LOOKS["light"], "font": "system"}, app=app):
+                union[(path, name)] = value
+        self.assertEqual(union, p)
+        self.assertEqual(len(union), len(ET.fromstring(xcu).findall("item")), "each item once")
+        for node in (profile.CALC_APP, profile.WRITER_APP, profile.IMPRESS_APP):
+            self.assertEqual("notebookbar_office.ui", p[(node, "Active")])
+        self.assertEqual("false", p[(IMPRESS_NEWDOC, "AutoPilot")])
+
+
 class MenuDefaultsTest(unittest.TestCase):
 
     def test_the_schema_shows_disabled_menu_entries_by_default(self):
