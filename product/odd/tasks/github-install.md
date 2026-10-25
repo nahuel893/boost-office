@@ -120,7 +120,7 @@ on this branch, pushed after each task, fast-forward at close (ruling 12). No ch
 | G0 | Spike: a generated `boost.xcd` in a copy of `instdir` + a fresh profile shows Tabbed Office, Boost icons, scheme and accent in the three apps; Inter in `share/fonts/truetype` is used | delegated (opus; brief `task-G0-brief.md`) | [x] | 1ad6be73a | 998 unit tests OK; fresh-profile screenshots; 0 UNO mismatches |
 | G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus; brief `task-G1-brief.md`) | [x] | 79b67a9a8, a7882c335, 3ed89cb80 | 1031 unit tests OK; shellcheck clean; smoke install, workspace `#FAFAFB` |
 | G1b | Frame borders from Boost, not the user's GTK theme (ruling 18): `custom-theme.cxx` | delegated (opus; after G2) | [ ] | | |
-| G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet) | [ ] | | |
+| G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet; brief `task-G2-brief.md`) | [x] | f449aaa84, 652788830, d2ccac1e6, 674cea550, abe3df5b9 | 1045 unit tests OK; docs test RED then GREEN; scan clean |
 | G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet) | [ ] | | |
 
 Route evidence: every task touches two or more non-trivial files or needs builds and screenshots, so each is
@@ -183,7 +183,21 @@ full unit suite once at the end; the controller checks the tree, processes and o
     `install.sh --help` read; the installed Writer screenshot looked at (light workspace, Tabbed Office, blue
     underline; the gallery frame dark).
 
+- 2026-10-25, G2 (route: delegated, sonnet). Commits f449aaa84 (`lockdown.yml` and `FUNDING.yml` deleted; issue
+  templates, `config.yml`, PR template; no CI), 652788830 (README rewrite with the ruling 1 notice, three 1920x320
+  Home crops in `product/docs/screenshots/`, a per-app status table), d2ccac1e6 (`install.md`, `building.md`,
+  `licenses.md`, `CONTRIBUTING.md`, `product/README.md`) and 674cea550 (`test_repo_docs.py`, 14 tests).
+  - Scan: the user's address 0 hits in tracked files; token, key and password patterns hit only test code and
+    upstream files; no Microsoft screenshots tracked; no scrub commit needed.
+  - Controller fix (inline, mechanical): abe3df5b9 updates `fork-strategy.md`'s stale name and remote lines (outside
+    G2's surface).
+  - Known, accepted: `building.md` package names are not checked against a package database (it says `autogen.sh`
+    names what is missing); no build time recorded; `main` lacks `product/install/` until the feature closes; the
+    install troubleshooting rests on G1 until G3 runs.
+  - Evidence (report: `task-G2-report.md`): RED (9 failures, 4 errors) then GREEN; 1031 -> 1045 OK; `git show --check`
+    clean.
+  - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the README read.
+
 ## Next step
 
-G2 (delegated, sonnet; brief `task-G2-brief.md`): README, install, building and licence guides, `.github/`, the three
-screenshots, the privacy scan. Then G1b (opus), then G3 (sonnet).
+G1b (delegated, opus; brief `task-G1b-brief.md`): frame borders from Boost. Then G3 (sonnet; brief `task-G3-brief.md`).
