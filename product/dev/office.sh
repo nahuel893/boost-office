@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Open the dev build's Calc, Writer or Impress in one step, with a chosen look.
-# Usage: office.sh calc|writer|impress [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
+# Open the dev build's Calc, Writer, Impress or Start Center in one step, with a chosen look.
+# Usage: office.sh calc|writer|impress|start [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]
 #   light         Tabbed Office, Boost icons, "Boost Light" scheme (white)  [default]
 #   dark          Tabbed Office, Boost dark icons, "Boost Dark" scheme
 #   tabbed        LibreOffice's original Tabbed ribbon, dark, no product theme
@@ -12,7 +12,9 @@
 # The profile is rewritten on each run. Each app has its own default, so that running one app never
 # rewrites another's profile: calc /mnt/games/libreoffice/try-profile, writer
 # /mnt/games/libreoffice/try-profile-writer, impress /mnt/games/libreoffice/try-profile-impress
-# (its profile turns the template dialog off, so a blank presentation opens). Missing icon zips and
+# (its profile turns the template dialog off, so a blank presentation opens), start
+# /mnt/games/libreoffice/try-profile-start. start is soffice with no module and no document: the Start Center,
+# its profile carrying the look of every app it opens (profile.py --app all). Missing icon zips and
 # the color scheme extension are built and installed first. calc.sh is this script for Calc (it sets
 # OFFICE_USAGE to its own name).
 set -euo pipefail
@@ -22,7 +24,7 @@ font=
 dry=0
 
 usage() {
-    echo "usage: ${OFFICE_USAGE:-office.sh calc|writer|impress} [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2
+    echo "usage: ${OFFICE_USAGE:-office.sh calc|writer|impress|start} [light|dark|tabbed|tabbed-light|compact] [--font system|selawik|inter] [--profile DIR] [--dry-run]" >&2
     exit 2
 }
 
@@ -30,6 +32,7 @@ case "${1:-}" in
 calc)   app=calc;   App=Calc;   profile=/mnt/games/libreoffice/try-profile ;;
 writer) app=writer; App=Writer; profile=/mnt/games/libreoffice/try-profile-writer ;;
 impress) app=impress; App=Impress; profile=/mnt/games/libreoffice/try-profile-impress ;;
+start)  app=start;  App="Start Center"; profile=/mnt/games/libreoffice/try-profile-start ;;
 *)      usage ;;
 esac
 shift
@@ -44,9 +47,15 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-# profile.py writes Calc's mode unless told otherwise; Calc's command line stays as it was.
+# profile.py writes Calc's mode unless told otherwise; Calc's command line stays as it was. The Start Center
+# has no module switch and opens any app, so its profile has every app's items.
 args=()
-[ "$app" = calc ] || args=(--app "$app")
+app_args=("--$app")
+case "$app" in
+calc) ;;
+start) args=(--app all); app_args=() ;;
+*) args=(--app "$app") ;;
+esac
 scheme=""
 case "$mode" in
 light)        args+=(--look light); scheme=yes; gtk=adw-gtk3 ;;
@@ -72,7 +81,7 @@ if [ "$dry" = 1 ]; then
     echo "profile: python3 -I product/dev/profile.py ${args[*]} --profile $profile"
     case "$gtk" in *dark) ;; *) echo "private GTK config: $gtkcfg" ;; esac
     echo "extension: reinstall when changed"
-    echo "launch: GTK_THEME=$gtk soffice --$app $env_arg"
+    echo "launch: GTK_THEME=$gtk soffice ${app_args[*]}${app_args[*]:+ }$env_arg"
     exit 0
 fi
 
@@ -118,6 +127,6 @@ case "$gtk" in
     export XDG_CONFIG_HOME="$gtkcfg" ;;
 esac
 
-GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 setsid -f "$soffice" "--$app" --norestore "$env_arg" \
+GTK_THEME="$gtk" SAL_USE_VCLPLUGIN=gtk3 setsid -f "$soffice" "${app_args[@]}" --norestore "$env_arg" \
     >/dev/null 2>&1 </dev/null
 echo "$App started ($mode, profile $profile)"

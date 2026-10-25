@@ -153,7 +153,7 @@ class OfficeLauncherTest(unittest.TestCase):
         for args in (("draw", "light"), ("light",), ()):
             out = office_dry_run(*args)
             self.assertEqual(2, out.returncode, args)
-            self.assertIn("usage: office.sh calc|writer|impress ", out.stderr, args)
+            self.assertIn("usage: office.sh calc|writer|impress|start ", out.stderr, args)
 
     def test_impress_light_starts_impress_with_the_impress_profile(self):
         out = office_dry_run("impress", "light")
@@ -177,6 +177,43 @@ class OfficeLauncherTest(unittest.TestCase):
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertIn("--app impress --look dark --font selawik --profile /tmp/i-profile", out.stdout)
         self.assertIn("soffice --impress -env:UserInstallation=file:///tmp/i-profile", out.stdout)
+
+    def test_start_light_opens_the_start_center_with_its_own_profile(self):
+        # S2 (ruling 6): soffice with no module switch and no document, the Boost look of every app it opens.
+        out = office_dry_run("start", "light")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("profile: python3 -I product/dev/profile.py --app all --look light "
+                      "--profile /mnt/games/libreoffice/try-profile-start\n", out.stdout)
+        self.assertIn("private GTK config", out.stdout)
+        self.assertIn("launch: GTK_THEME=adw-gtk3 soffice "
+                      "-env:UserInstallation=file:///mnt/games/libreoffice/try-profile-start\n", out.stdout)
+        for module in ("--calc", "--writer", "--impress"):
+            self.assertNotIn(module, out.stdout)
+
+    def test_start_dark(self):
+        out = office_dry_run("start", "dark")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("--app all --look dark --profile /mnt/games/libreoffice/try-profile-start\n", out.stdout)
+        self.assertIn("launch: GTK_THEME=adw-gtk3-dark soffice -env:", out.stdout)
+        self.assertNotIn("private GTK config", out.stdout)
+
+    def test_start_defaults_to_light_and_never_to_an_app_profile(self):
+        self.assertEqual(office_dry_run("start", "light").stdout, office_dry_run("start").stdout)
+        for mode in ("light", "dark"):
+            out = office_dry_run("start", mode)
+            self.assertNotRegex(out.stdout, r"try-profile(-writer|-impress)?(\s|$)", mode)
+
+    def test_start_takes_the_same_options(self):
+        out = office_dry_run("start", "dark", "--font", "selawik", "--profile", "/tmp/s-profile")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertIn("--app all --look dark --font selawik --profile /tmp/s-profile", out.stdout)
+        self.assertIn("soffice -env:UserInstallation=file:///tmp/s-profile", out.stdout)
+
+    def test_the_header_documents_start(self):
+        header = OFFICE.read_text(encoding="utf-8").split("set -euo pipefail")[0]
+        self.assertIn("calc|writer|impress|start", header)
+        self.assertIn("/mnt/games/libreoffice/try-profile-start", header)
+        self.assertIn("Start Center", header)
 
 
 if __name__ == "__main__":
