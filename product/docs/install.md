@@ -11,7 +11,9 @@ curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/bo
 ```
 
 `boost-office-install.sh` is a small script attached to each release on
-<https://github.com/nahuel893/boost-office/releases>. It checks that the system is Linux x86_64 with `curl` or
+<https://github.com/nahuel893/boost-office/releases>. It checks that the system is Linux x86_64 with a glibc at
+least as new as the release needs (the floor `make-release.sh` measured on the shipped files, written inside the
+script; an older system is refused before anything is downloaded, `--uninstall` is always allowed), `curl` or
 `wget`, `tar` with `xz`, `python3` and enough free disk; downloads `boost-office-VERSION-linux-x86_64.tar.xz` from
 the same release; checks the archive against the sha256 written inside the script (a mismatch installs nothing);
 extracts it into a temp folder under `${XDG_CACHE_HOME:-~/.cache}`; runs the bundled `install.sh`; and deletes the

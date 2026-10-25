@@ -20,9 +20,11 @@ curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/bo
 
 It downloads the release archive, checks its sha256, and adds `boost-writer`, `boost-calc`, `boost-impress` and
 `boost-office` and their desktop entries. Add `-s -- --theme dark` after `bash` for the dark look; run it again to
-upgrade; `-s -- --uninstall` removes it. It needs glibc 2.44 or newer, GTK 3 and `python3`: the release notes on
-<https://github.com/nahuel893/boost-office/releases/latest> list the tested distributions, and
-[product/docs/install.md](product/docs/install.md) has the options and the manual (offline) install from the archive.
+upgrade; `-s -- --uninstall` removes it. It needs glibc 2.44 or newer (Arch Linux, Manjaro and other rolling
+distributions; the script refuses an older system before downloading), GTK 3 and `python3`. A build for Ubuntu, Debian
+and Fedora is planned. The release notes on <https://github.com/nahuel893/boost-office/releases/latest> list the
+tested distributions, and [product/docs/install.md](product/docs/install.md) has the options and the manual (offline)
+install from the archive.
 
 ![Calc, Home tab](product/docs/screenshots/calc-home-light.png)
 
