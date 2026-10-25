@@ -4,6 +4,7 @@
 """The Boost Start Center (feature start-center, rulings 1-3): the layout of sfx2/uiconfig/ui/startcenter.ui,
 no donation UI in it or in BackingWindow, the greeting, and the welcome text of the recent documents view."""
 import re
+import struct
 import unittest
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -257,6 +258,31 @@ class StartCenterCleanup(unittest.TestCase):
         for line in lines:
             wid = re.search(r"@id='([^']+)'", line).group(1)
             self.assertIsNotNone(by_id(root, wid), line)
+
+
+class StartCenterDocs(unittest.TestCase):
+    """The README shows the Start Center like the three apps, and the dev guide names office.sh start."""
+    SHOT = "product/docs/screenshots/start-center-light.png"
+
+    def test_the_readme_shows_the_start_center(self):
+        self.assertIn(self.SHOT, (ROOT / "README.md").read_text(encoding="utf-8"))
+
+    def test_the_screenshot_is_a_small_png_as_wide_as_the_app_crops(self):
+        data = (ROOT / self.SHOT).read_bytes()
+        self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertLess(len(data), 400 * 1024)
+        width, height = struct.unpack(">II", data[16:24])
+        app = (ROOT / "product/docs/screenshots/calc-home-light.png").read_bytes()
+        self.assertEqual((width, height), struct.unpack(">II", app[16:24]))
+
+    def test_the_screenshot_index_lists_it(self):
+        text = (ROOT / "product/docs/screenshots/README.md").read_text(encoding="utf-8")
+        self.assertIn("start-center-light.png", text)
+        self.assertIn("shot-tab.sh --app start light -", text)
+
+    def test_the_building_guide_names_the_start_center_launcher(self):
+        text = (ROOT / "product/docs/building.md").read_text(encoding="utf-8")
+        self.assertIn("office.sh calc|writer|impress|start", text)
 
 
 if __name__ == "__main__":

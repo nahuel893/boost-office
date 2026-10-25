@@ -11,6 +11,14 @@ document. Taken on 2026-10-25 with `product/dev/shot-tab.sh --app <app> light Ho
 
 ![Impress, Home tab](impress-home-light.png)
 
+## The Start Center (used by the root README)
+
+What `boost-office` opens with no document: light theme, 1920 px wide, cropped to the same top band (navigation,
+greeting, the new-document tiles and the Recent heading). Taken on 2026-10-25 with
+`product/dev/shot-tab.sh --app start light - <out> 1920`.
+
+![Start Center, light theme](start-center-light.png)
+
 ## Calc, earlier screenshots
 
 Calc in Tabbed Office mode at 1920 px, taken on this build on 2026-10-20.

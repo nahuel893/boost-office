@@ -32,6 +32,8 @@ install from the archive.
 
 ![Impress, Home tab](product/docs/screenshots/impress-home-light.png)
 
+![Start Center, opened by boost-office](product/docs/screenshots/start-center-light.png)
+
 ## Status
 
 All three apps are built. The windows still say "LibreOfficeDev": the product name is not rebranded.

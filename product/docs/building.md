@@ -94,6 +94,6 @@ python3 -I -m unittest discover -s product/tests -t .      # unit tests
 product/dev/calc.sh light --profile ~/boost-profile         # start the dev build's Calc, light look
 ```
 
-`product/dev/office.sh calc|writer|impress light|dark` starts each app with a dev profile that
-`product/dev/profile.py` rewrites on every run. Pass `--profile DIR` with a directory of its own, so no other profile
-is touched.
+`product/dev/office.sh calc|writer|impress|start light|dark` starts each app, or with `start` the Start Center (no
+document, the screen `boost-office` opens), with a dev profile that `product/dev/profile.py` rewrites on every run.
+Pass `--profile DIR` with a directory of its own, so no other profile is touched.
