@@ -1,6 +1,6 @@
 # Feature: a Boost Start Center
 
-- **Status:** in progress, started 2026-10-25.
+- **Status:** done, 2026-10-25 (merged into `dev` and `main`; not in the 0.1.0 release).
 - **Locator:** `product/odd/tasks/start-center.md`
 - **Engram mirror:** `odd/start-center/tasks`
 - **Repo / branch:** `/mnt/games/libreoffice/core`, `feature/start-center`, from `dev` (e9112a65f).
@@ -99,8 +99,8 @@ and `main` ("pushea todo", standing).
   sfx2; source-pinning tests in `product/tests/`; the Start Center UITests. Commits b83628984, 6db2e0512.
 - [x] **S2 — colors, accents, dev launcher** (delegated): rulings 4, 5, 6; screenshots light and dark with measured
   colors. Commits 87591a10d, 555d52702, 0a4dc606d, 12900896b, e0fea73d0.
-- [ ] **S3 — gate and docs** (delegated): acceptance 1-6 on the dev build and a scratch install; README / docs
-  screenshot and text; close the feature.
+- [x] **S3 — gate and docs** (delegated): acceptance 1-6 on the dev build and a scratch install; README / docs
+  screenshot and text; close the feature. Commits 65d26ccb6 (merge of origin/main), f4fb1440b.
 
 ## Checks
 
@@ -136,6 +136,21 @@ and `main` ("pushea todo", standing).
   lighter on two edges; view colors fixed per look (a manual scheme switch leaves them); debug-only "unknown class"
   warning on non-gtk3 backends.
 
+- 2026-10-25 S3 (delegated, opus; route: gate + docs + merge): 65d26ccb6 merges origin/main c84de6e32 (0.1.0 release
+  work; no conflicts), f4fb1440b `docs: show the Boost Start Center in the README` (crop in
+  `product/docs/screenshots/start-center-light.png`, `building.md` names `office.sh ... start`). Suite 1112 OK after the
+  merge, 1116 OK at f4fb1440b; `sfx2.build`/`vcl.build` no-ops. Acceptance: 1 met (light and dark, no logo, donate or
+  LibreOffice text; title bar out of scope); 2 met for Writer, Calc, Impress tiles (each opens its app with the Boost
+  ribbon, light and dark), Home/New switch, Open (GTK file dialog) and Open Remote; Drawing, Formula, Database tiles not
+  clicked; 3 met (all values equal S2's table, also on the installed light build); 4 met on S1/S2 evidence (no C++ or
+  `.ui` change since); 5 met (scratch install, `boost-office` shows it, purge leaves only `gvfs-metadata/`); 6 met.
+  Shots `/mnt/games/libreoffice/assets/previews/start-center/s3/`. Controller looked at the README crop. Incident: the
+  dark run of `office.sh start` uses the real `XDG_CONFIG_HOME`, so cancelling the Open dialog wrote the GTK
+  file-chooser size into the user's `~/.config/dconf/user` (old values unknown, not restored); the dark Open screenshot
+  showing the user's file names was blurred (outside the repo).
+
 ## Next step
 
-S3.
+None. Follow-ups: the dark template view frame edges (S2/S3); dark mode text size follows the user's GTK settings;
+`office.sh` dark mode writes the user's dconf through GTK dialogs; the in-document donation infobar
+(`sfx2/source/view/viewfrm.cxx:1810`); a release that includes the Start Center (after the portable build).
