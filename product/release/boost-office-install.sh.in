@@ -11,7 +11,8 @@
 #   ... | bash -s -- --uninstall [--purge] (remove it; --purge also removes the profile)
 #
 # It downloads the release archive, checks its sha256, extracts it into a temp folder, runs the bundled
-# install.sh, and deletes the temp folder. BOOST_OFFICE_BASE_URL replaces the download folder (tests).
+# install.sh, and deletes the temp folder. A system with an older glibc than the shipped files need is refused
+# before anything is downloaded. BOOST_OFFICE_BASE_URL replaces the download folder (tests).
 
 # Everything runs inside main, so bash has read the whole script before it starts (curl | bash).
 main() {
@@ -19,12 +20,27 @@ main() {
     local VERSION="@VERSION@"
     local SHA256="@SHA256@"
     local ARCHIVE_MB="@ARCHIVE_MB@" TREE_MB="@TREE_MB@"
+    local GLIBC_FLOOR="@GLIBC_FLOOR@"  # measured by make-release.sh on the shipped files
     local MARKER="# boost-office-install 1"
     local ONE_LINER="curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash"
     local base="${BOOST_OFFICE_BASE_URL:-https://github.com/nahuel893/boost-office/releases/download/v$VERSION}"
     local archive="boost-office-$VERSION-linux-x86_64.tar.xz"
 
     die() { echo "boost-office-install: $*" >&2; exit 1; }
+    # The system's glibc version (2.44): getconf, else the last word of ldd --version's first line.
+    system_glibc() {
+        local v
+        v=$(getconf GNU_LIBC_VERSION 2>/dev/null) || v=""
+        case "$v" in glibc\ [0-9]*) ;; *) v=$( (ldd --version 2>/dev/null || true) | head -n 1) ;; esac
+        v=${v##* }
+        case "$v" in [0-9]*.[0-9]*) printf '%s\n' "$v" ;; esac
+    }
+    # older A B: version A (major.minor) is lower than B
+    older() {
+        local a1=${1%%.*} b1=${2%%.*} a2=${1#*.} b2=${2#*.}
+        a2=${a2%%[!0-9]*}; b2=${b2%%[!0-9]*}
+        [ "$a1" -lt "$b1" ] || { [ "$a1" -eq "$b1" ] && [ "${a2:-0}" -lt "${b2:-0}" ]; }
+    }
     say() { printf '%s\n' "$*"; }
 
     # --- options: --uninstall is ours, --prefix is read, everything else goes to install.sh/uninstall.sh ----
@@ -57,6 +73,18 @@ main() {
     # --- checks: nothing is written before they pass ---------------------------------------------------
     [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = x86_64 ] \
         || die "Boost Office $VERSION is built for Linux x86_64 only, not $(uname -s) $(uname -m)"
+    local have
+    have=$(system_glibc)
+    if [ -z "$have" ] || older "$have" "$GLIBC_FLOOR"; then
+        {
+            echo "boost-office-install: Boost Office $VERSION needs glibc $GLIBC_FLOOR or newer; this system has glibc ${have:-(not found)}."
+            echo "This release runs only on rolling distributions such as Arch Linux or Manjaro. A build for"
+            echo "Ubuntu, Debian and Fedora is planned. To build Boost Office from source instead, see"
+            echo "https://github.com/nahuel893/boost-office/blob/main/product/docs/building.md"
+            echo "Nothing was downloaded or installed."
+        } >&2
+        exit 1
+    fi
     local fetch
     if command -v curl >/dev/null; then
         fetch=(curl -fL --retry 3 --progress-bar -o)

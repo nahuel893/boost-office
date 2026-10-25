@@ -39,6 +39,9 @@ Options:
   --icons-dir DIR  where images_boost.zip and images_boost_dark.zip come from; when they are missing they are
                    built there first, which needs Pillow and rsvg-convert (default: product/icons/out)
   -h, --help       show this help
+
+The glibc floor (the highest GLIBC_ symbol version the shipped files need, measured with readelf) goes
+into boost-office-install.sh, which refuses an older system before downloading anything.
 EOF
 }
 
@@ -91,6 +94,7 @@ if [ "$build_icons" = 1 ]; then
         || die "the icon zips are not in $icons, and building them needs rsvg-convert (librsvg)"
 fi
 command -v xz >/dev/null || die "xz is needed"
+command -v readelf >/dev/null || die "readelf (binutils) is needed to measure the glibc floor"
 
 top="boost-office-$version"
 name="$top-linux-x86_64.tar.xz"
@@ -143,6 +147,14 @@ EOF
     chmod 755 "$bundle/$script"
 done
 
+# --- the glibc floor: the highest GLIBC_ symbol version any shipped file needs (readelf's version needs) --
+glibc_needs() {
+    find "$1" -type f -print0 | LC_ALL=C xargs -0 readelf -V -W 2>/dev/null || true
+}
+floor=$(glibc_needs "$bundle/instdir" | sed -n 's/.*Name: GLIBC_\([0-9][0-9.]*\).*/\1/p' | sort -uV | tail -n 1)
+[ -n "$floor" ] || die "no file in $instdir needs a GLIBC_ symbol version: is it a built tree?"
+say "the shipped files need glibc $floor or newer"
+
 # --- the archive, the one-command installer and the checksums ------------------------------------------
 tree_mb=$(du -sm -- "$bundle" | cut -f1)
 say "write $archive"
@@ -151,12 +163,13 @@ mv -f -- "$archive.part" "$archive"
 sha=$(sha256sum -- "$archive" | cut -d' ' -f1)
 archive_mb=$((($(stat -c %s -- "$archive") + 1048575) / 1048576))
 
-say "write $out/$BOOTSTRAP (version $version, sha256 $sha)"
+say "write $out/$BOOTSTRAP (version $version, glibc $floor, sha256 $sha)"
 text=$(<"$bootstrap_in")
 text=${text//@VERSION@/$version}
 text=${text//@SHA256@/$sha}
 text=${text//@ARCHIVE_MB@/$archive_mb}
 text=${text//@TREE_MB@/$tree_mb}
+text=${text//@GLIBC_FLOOR@/$floor}
 printf '%s\n' "$text" >"$out/$BOOTSTRAP"
 chmod 755 "$out/$BOOTSTRAP"
 

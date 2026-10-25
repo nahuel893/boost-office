@@ -9,6 +9,7 @@ import functools
 import hashlib
 import http.server
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -29,10 +30,19 @@ ARCHIVE = f"{TOP}-linux-x86_64.tar.xz"
 BOOTSTRAP = "boost-office-install.sh"
 
 
+def glibc_floor(path):
+    """The highest GLIBC_ version an ELF file needs (readelf's version needs), e.g. '2.34'."""
+    out = subprocess.run(["readelf", "-V", "-W", str(path)], capture_output=True, text=True, check=True,
+                         env={**os.environ, "LC_ALL": "C"}).stdout
+    return max(re.findall(r"Name: GLIBC_([0-9.]+)", out), key=lambda v: tuple(int(x) for x in v.split(".")))
+
+
 def fake_instdir(root):
-    """A tree with a soffice stub, plus the runtime state a used instdir carries (a profile and a lock)."""
+    """A tree with a soffice stub and one real ELF program (for the glibc floor), plus the runtime state a used
+    instdir carries (a profile and a lock)."""
     instdir = Path(root)
     (instdir / "program").mkdir(parents=True)
+    shutil.copy(shutil.which("true"), instdir / "program/elf-sample")
     (instdir / "share/registry").mkdir(parents=True)
     soffice = instdir / "program/soffice"
     soffice.write_text(STUB, encoding="utf-8")
@@ -146,6 +156,12 @@ class ReleaseTest(unittest.TestCase):
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    requests = []  # every path asked for, so a test can show that nothing was downloaded
+
+    def do_GET(self):
+        QuietHandler.requests.append(self.path)
+        super().do_GET()
+
     def log_message(self, *args):
         pass
 
@@ -199,6 +215,41 @@ class BootstrapTest(unittest.TestCase):
 
     def assert_ok(self, out):
         self.assertEqual(0, out.returncode, (out.stdout + out.stderr).decode())
+
+    def old_glibc_env(self, getconf=True):
+        """PATH with stubs that report glibc 2.17: getconf, or (getconf failing) ldd --version."""
+        stubs = self.top / "stubs"
+        stubs.mkdir(exist_ok=True)
+        for name, body in (("getconf", 'echo "glibc 2.17"' if getconf else "exit 1"),
+                           ("ldd", 'echo "ldd (GNU libc) 2.17"; echo "Copyright (C) 2012"')):
+            (stubs / name).write_text(f"#!/bin/sh\n{body}\n", encoding="utf-8")
+            (stubs / name).chmod(0o755)
+        return {**self.env, "PATH": f"{stubs}:{self.env['PATH']}"}
+
+    def test_it_carries_the_glibc_floor_of_the_shipped_files(self):
+        text = (self.out / BOOTSTRAP).read_text(encoding="utf-8")
+        self.assertIn(f'GLIBC_FLOOR="{glibc_floor(shutil.which("true"))}"', text)
+
+    def test_an_older_glibc_refuses_before_any_download(self):
+        for getconf in (True, False):
+            QuietHandler.requests.clear()
+            before = snapshot(self.home)
+            out = self.pipe(env=self.old_glibc_env(getconf))
+            self.assertEqual(1, out.returncode, getconf)
+            err = out.stderr.decode()
+            floor = glibc_floor(shutil.which("true"))
+            self.assertIn(f"needs glibc {floor} or newer; this system has glibc 2.17", err)
+            for words in ("Arch", "Manjaro", "Ubuntu, Debian and Fedora is planned",
+                          "https://github.com/nahuel893/boost-office/blob/main/product/docs/building.md"):
+                self.assertIn(words, err)
+            self.assertEqual([], QuietHandler.requests, getconf)
+            self.assertEqual(before, snapshot(self.home))
+
+    def test_uninstall_is_not_gated_on_glibc(self):
+        self.assert_ok(self.pipe())
+        out = self.pipe("--uninstall", "--purge", env=self.old_glibc_env())
+        self.assert_ok(out)
+        self.assertFalse(self.prefix.exists())
 
     def test_it_carries_the_version_and_the_archive_checksum(self):
         text = (self.out / BOOTSTRAP).read_text(encoding="utf-8")
@@ -288,6 +339,14 @@ class RefusalTest(unittest.TestCase):
             self.assertEqual(2, out.returncode, argv)
             self.assertIn("make-release.sh", out.stderr, argv)
             self.assertFalse(self.out.exists(), argv)
+
+    def test_an_instdir_with_no_elf_file_is_refused(self):
+        (self.instdir / "program/elf-sample").unlink()
+        out = make_release("--instdir", str(self.instdir), "--version", VERSION, "--out", str(self.out),
+                           "--icons-dir", str(self.icons))
+        self.assertEqual(1, out.returncode)
+        self.assertIn("GLIBC_", out.stderr)
+        self.assertFalse((self.out / ARCHIVE).exists())
 
     def test_help(self):
         out = make_release("--help")
