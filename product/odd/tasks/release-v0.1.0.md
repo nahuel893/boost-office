@@ -1,6 +1,6 @@
 # Feature: the first public release, Boost Office 0.1.0
 
-- **Status:** in progress, started 2026-10-25.
+- **Status:** done, 2026-10-25 (published: https://github.com/nahuel893/boost-office/releases/tag/v0.1.0).
 - **Locator:** `product/odd/tasks/release-v0.1.0.md`
 - **Engram mirror:** `odd/release-v0.1.0/tasks`
 - **Repo / branch:** worktree `/mnt/games/libreoffice/core-release`, branch `release/v0.1.0`, from `main`
@@ -57,7 +57,7 @@ release.
 
 - [x] **R1 — packaging, verification, docs** (delegated, one writer: 2+ non-trivial files plus container checks):
   rulings 2-6, 8-10; commits 77a1932f9, 6533513a9, 563908f3a, d84cffdde, 9c417412f, 67aac9d81, fd6c896e0.
-- [ ] **R2 — publish** (controller, inline: `git`/`gh` state operations): spot-check the archive, push, fast-forward
+- [x] **R2 — publish** (controller, inline: `git`/`gh` state operations): spot-check the archive, push, fast-forward
   `main`/`dev`, tag `v0.1.0`, `gh release create`, download the published asset and compare its checksum.
 
 ## Acceptance criteria
@@ -102,6 +102,14 @@ release.
   Not done: libstdc++ check (unreliable, redundant with the glibc floor); `./install.sh` from the archive does not
   check glibc (notes say so).
 
+- 2026-10-25 R2 (controller, inline: git/gh state operations): pushed `release/v0.1.0`, fast-forwarded `main` and
+  `dev` to d85183e8d, annotated tag `v0.1.0`, `gh release create v0.1.0` with the three assets and
+  `product/release/notes-0.1.0.md`. Proof against the real GitHub URLs: the three `latest/download` assets downloaded,
+  `sha256sum -c` OK, the bootstrap byte-identical to `out/`; clean `ubuntu:24.04` one-liner refused (rc 1, "Nothing was
+  downloaded or installed."); clean `archlinux:latest` one-liner installed (rc 0), `boost-writer --headless
+  --convert-to pdf` wrote a `%PDF-` file (11658 B), `--uninstall --purge` rc 0. Images removed.
+
 ## Next step
 
-R2 (publish).
+None for 0.1.0. Follow-up feature: a portable build on an older base system (for example Ubuntu 22.04, glibc 2.35, in
+GitHub Actions) so Ubuntu, Debian and Fedora can run Boost Office (0.1.1).
