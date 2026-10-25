@@ -213,26 +213,44 @@ def function_body(source, signature):
     return match and " ".join(re.sub(r"//[^\n]*", "", match.group(1)).split())
 
 
-class ImpressDrawingToolBarTest(unittest.TestCase):
-    # I9b: PowerPoint has no Drawing toolbar under its ribbon, and Calc and Writer show none under theirs
-    # (sfx2's SfxWorkWindow destroys their object bars while a notebookbar is active). Impress's Drawing
-    # toolbar is no object bar: sd's ToolBarManager requests it, and the layout manager also creates it from
-    # its window state. So under an Impress notebookbar sd never requests it and destroys it on each update;
-    # Draw and the other UI modes keep it.
+class ImpressToolBarsTest(unittest.TestCase):
+    # I9b, I9c (ruling 24): PowerPoint has no toolbar under its ribbon, and Calc and Writer show none under
+    # theirs (sfx2's SfxWorkWindow destroys every object bar while a notebookbar is active, Edit Points
+    # included). sd's toolbars are no object bars: its ToolBarManager requests them by name (Drawing, Text
+    # Formatting, image, media, Edit Points, glue points, table, options, outline, slide sorter, master view,
+    # ...), and the layout manager also creates the Drawing toolbar from its window state. So under an
+    # Impress notebookbar sd requests none of them and destroys the Drawing toolbar on each update; the
+    # toolbar shells stay (they serve the slots); Draw and the other UI modes keep every toolbar.
     source = read("sd/source/ui/view/ToolBarManager.cxx")
 
-    def test_only_impress_under_a_notebookbar_hides_the_drawing_toolbar(self):
-        body = function_body(self.source, "bool ToolBarManager::Implementation::IsDrawingToolBarHidden")
-        self.assertIsNotNone(body, "no IsDrawingToolBarHidden")
+    def test_only_impress_under_a_notebookbar_hides_the_toolbars(self):
+        body = function_body(self.source, "bool ToolBarManager::Implementation::AreToolBarsHidden")
+        self.assertIsNotNone(body, "no AreToolBarsHidden")
         self.assertIn("GetDocumentType() == DocumentType::Impress", body)
         self.assertIn("sfx2::SfxNotebookBar::IsActive()", body, "a notebookbar mode, not the single toolbar")
+        self.assertNotIn("IsDrawingToolBarHidden", self.source, "one rule for every toolbar, not one toolbar")
 
-    def test_the_drawing_toolbar_is_never_requested_and_is_destroyed_while_hidden(self):
+    def test_no_toolbar_is_requested_while_hidden(self):
         add = function_body(self.source, "void ToolBarManager::Implementation::AddToolBar")
-        self.assertRegex(add, r"if \(CheckPlugInMode\(rsToolBarName\) && "
-                              r"!\(rsToolBarName == msToolBar && IsDrawingToolBarHidden\(\)\)\)")
+        self.assertRegex(add, r"^::osl::MutexGuard aGuard\(maMutex\); "
+                              r"if \(CheckPlugInMode\(rsToolBarName\) && !AreToolBarsHidden\(\)\) \{ "
+                              r"maToolBarList\.AddToolBar\(eGroup,rsToolBarName\);")
+        # every request reaches the layout manager through that one list: the rules, SetToolBar and the
+        # callers outside (fuediglu.cxx, drviews1.cxx, fucon*.cxx) all call Implementation::AddToolBar
+        self.assertEqual(self.source.count("maToolBarList.AddToolBar("), 1)
+        self.assertEqual(self.source.count("requestElement("), 1)
+        others = [p for p in (ROOT / "sd/source").rglob("*.cxx")
+                  if p.name != "ToolBarManager.cxx" and "requestElement(" in p.read_text(errors="replace")]
+        self.assertEqual(others, [])
+
+    def test_the_toolbar_shells_stay_so_their_slots_work(self):
+        shell = function_body(self.source, "void ToolBarManager::Implementation::AddToolBarShell")
+        self.assertIn("maToolBarShellList.AddShellId(eGroup,nToolBarId);", shell)
+        self.assertNotIn("AreToolBarsHidden", shell)
+
+    def test_the_drawing_toolbar_the_layout_manager_creates_is_destroyed_while_hidden(self):
         pre = function_body(self.source, "void ToolBarManager::Implementation::PreUpdate")
-        self.assertIn("if (IsDrawingToolBarHidden()) mxLayouter->destroyElement(GetToolBarResourceName(msToolBar));",
+        self.assertIn("if (AreToolBarsHidden()) mxLayouter->destroyElement(GetToolBarResourceName(msToolBar));",
                       pre)
 
 

@@ -326,11 +326,12 @@ private:
 
     static OUString GetToolBarResourceName (std::u16string_view rsBaseName);
     bool CheckPlugInMode (std::u16string_view rsName) const;
-    /** Whether the Drawing tool bar is hidden: Impress's notebookbar replaces it, as
-        Calc's and Writer's replace their tool bars (SfxWorkWindow destroys their object
-        bars). Draw and the other UI modes keep it.
+    /** Whether the tool bars are hidden: Impress's notebookbar replaces all of them, as
+        Calc's and Writer's replace theirs (SfxWorkWindow destroys their object bars, Edit
+        Points included). The tool bar shells stay, as they serve the slots. Draw and the
+        other UI modes keep the tool bars.
     */
-    bool IsDrawingToolBarHidden() const;
+    bool AreToolBarsHidden() const;
 
     DECL_LINK(UpdateCallback, void *, void);
     DECL_LINK(EventMultiplexerCallback, sdtools::EventMultiplexerEvent&, void);
@@ -603,8 +604,7 @@ void ToolBarManager::Implementation::AddToolBar (
 {
     ::osl::MutexGuard aGuard(maMutex);
 
-    if (CheckPlugInMode(rsToolBarName)
-        && !(rsToolBarName == msToolBar && IsDrawingToolBarHidden()))
+    if (CheckPlugInMode(rsToolBarName) && !AreToolBarsHidden())
     {
         maToolBarList.AddToolBar(eGroup,rsToolBarName);
 
@@ -685,7 +685,7 @@ void ToolBarManager::Implementation::PreUpdate()
     // The layout manager also creates the Drawing tool bar by itself, from its
     // window state (visible and not context sensitive), when the document is
     // attached to the frame.
-    if (IsDrawingToolBarHidden())
+    if (AreToolBarsHidden())
         mxLayouter->destroyElement(GetToolBarResourceName(msToolBar));
 
     SAL_INFO("sd.view", __func__ << ": ToolBarManager::PreUpdate ]");
@@ -904,7 +904,7 @@ bool ToolBarManager::Implementation::CheckPlugInMode (std::u16string_view rsName
     return bValid;
 }
 
-bool ToolBarManager::Implementation::IsDrawingToolBarHidden() const
+bool ToolBarManager::Implementation::AreToolBarsHidden() const
 {
     const DrawDocShell* pDocShell = mrBase.GetDocShell();
     return pDocShell != nullptr && pDocShell->GetDocumentType() == DocumentType::Impress
