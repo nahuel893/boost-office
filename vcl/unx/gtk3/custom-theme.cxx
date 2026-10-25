@@ -9,9 +9,39 @@
 
 #include "custom-theme.hxx"
 #include <vcl/themecolors.hxx>
+#include <comphelper/processfactory.hxx>
+#include <comphelper/configuration.hxx>
+#include <unotools/confignode.hxx>
 #include <gio/gio.h>
 #include <unx/gtk/gtkdata.hxx>
 #include <gtk/gtk.h>
+
+namespace
+{
+// The accent of an app's Start Center tile: its notebookbar tab accent, ToolbarMode
+// Applications/<App> AccentColor (AccentColorDark for a dark scheme), as
+// sfx2/source/notebookbar/NotebookbarTabControl.cxx reads it; rNeutral when the app has none.
+Color lcl_getAppAccentColor(const OUString& rApp, bool bDark, const Color& rNeutral)
+{
+    if (comphelper::IsFuzzing())
+        return rNeutral;
+    try
+    {
+        const utl::OConfigurationTreeRoot aAppNode(
+            comphelper::getProcessComponentContext(),
+            "org.openoffice.Office.UI.ToolbarMode/Applications/" + rApp, false);
+        sal_Int32 nColor = 0;
+        if (aAppNode.isValid()
+            && (aAppNode.getNodeValue(bDark ? u"AccentColorDark"_ustr : u"AccentColor"_ustr)
+                >>= nColor))
+            return Color(ColorTransparency, nColor);
+    }
+    catch (const css::uno::Exception&)
+    {
+    }
+    return rNeutral;
+}
+}
 
 namespace CustomTheme
 {
@@ -73,6 +103,9 @@ OString CreateStyleString()
     const OUString aCheckedTab
         = "  background-color: #" + aCheckedTabColor.AsRGBHexString() + ";"
           "  box-shadow: inset 0 -3px 0 #" + aThemeColors.GetActiveColor().AsRGBHexString() + ";";
+
+    // Start Center tiles take the accent of their app (Draw, Math and Base have none: neutral).
+    const bool bDark = aThemeColors.GetBaseColor().IsDark();
 
     // clang-format off
     OUString aStr =
@@ -593,6 +626,52 @@ OString CreateStyleString()
 
         ".view:selected {"
         "  background-color: #" + aThemeColors.GetAccentColor().AsRGBHexString() + ";"
+        "}"
+
+        /****************
+           * Start Center *
+           ****************/
+        // sfx2/uiconfig/ui/startcenter.ui, as Office's Home screen: the new document tiles are cards
+        // with their app's accent as a bottom strip, the navigation entries are flat rows and the
+        // selected one is filled. These come after the generic button rules, which have the same
+        // specificity ("button.flat:hover" would draw a border around a hovered entry).
+        "button.boost-tile {"
+        "  background-color: #" + aThemeColors.GetButtonColor().AsRGBHexString() + ";"
+        "  border: 1px solid #" + aThemeColors.GetFaceColor().AsRGBHexString() + ";"
+        "  border-radius: 4px;"
+        "  box-shadow: inset 0 -4px 0 #" + aThemeColors.GetSeparatorColor().AsRGBHexString() + ";"
+        "}"
+
+        "button.boost-tile:hover {"
+        "  background-color: #" + aThemeColors.GetMenuBarHighlightColor().AsRGBHexString() + ";"
+        "}"
+
+        "button.boost-tile-writer {"
+        "  box-shadow: inset 0 -4px 0 #" + lcl_getAppAccentColor(u"Writer"_ustr, bDark, aThemeColors.GetSeparatorColor()).AsRGBHexString() + ";"
+        "}"
+
+        "button.boost-tile-calc {"
+        "  box-shadow: inset 0 -4px 0 #" + lcl_getAppAccentColor(u"Calc"_ustr, bDark, aThemeColors.GetSeparatorColor()).AsRGBHexString() + ";"
+        "}"
+
+        "button.boost-tile-impress {"
+        "  box-shadow: inset 0 -4px 0 #" + lcl_getAppAccentColor(u"Impress"_ustr, bDark, aThemeColors.GetSeparatorColor()).AsRGBHexString() + ";"
+        "}"
+
+        "button.boost-nav {"
+        "  border: 1px solid transparent;"
+        "  box-shadow: none;"
+        "}"
+
+        "button.boost-nav:hover {"
+        "  background-color: #" + aThemeColors.GetMenuBarHighlightColor().AsRGBHexString() + ";"
+        "  border-color: transparent;"
+        "}"
+
+        "button.boost-nav:checked,"
+        "button.boost-nav:checked:hover {"
+        "  background-color: #" + aThemeColors.GetFaceColor().AsRGBHexString() + ";"
+        "  border-color: transparent;"
         "}";
     // clang-format on
 
