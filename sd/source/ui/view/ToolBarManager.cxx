@@ -19,6 +19,7 @@
 
 #include <ToolBarManager.hxx>
 
+#include <DrawDocShell.hxx>
 #include <DrawViewShell.hxx>
 #include <NotesPanelViewShell.hxx>
 #include <EventMultiplexer.hxx>
@@ -325,6 +326,11 @@ private:
 
     static OUString GetToolBarResourceName (std::u16string_view rsBaseName);
     bool CheckPlugInMode (std::u16string_view rsName) const;
+    /** Whether the Drawing tool bar is hidden: Impress's notebookbar replaces it, as
+        Calc's and Writer's replace their tool bars (SfxWorkWindow destroys their object
+        bars). Draw and the other UI modes keep it.
+    */
+    bool IsDrawingToolBarHidden() const;
 
     DECL_LINK(UpdateCallback, void *, void);
     DECL_LINK(EventMultiplexerCallback, sdtools::EventMultiplexerEvent&, void);
@@ -597,7 +603,8 @@ void ToolBarManager::Implementation::AddToolBar (
 {
     ::osl::MutexGuard aGuard(maMutex);
 
-    if (CheckPlugInMode(rsToolBarName))
+    if (CheckPlugInMode(rsToolBarName)
+        && !(rsToolBarName == msToolBar && IsDrawingToolBarHidden()))
     {
         maToolBarList.AddToolBar(eGroup,rsToolBarName);
 
@@ -674,6 +681,12 @@ void ToolBarManager::Implementation::PreUpdate()
         mxLayouter->destroyElement(sFullName);
         maToolBarList.MarkToolBarAsNotActive(aToolBar);
     }
+
+    // The layout manager also creates the Drawing tool bar by itself, from its
+    // window state (visible and not context sensitive), when the document is
+    // attached to the frame.
+    if (IsDrawingToolBarHidden())
+        mxLayouter->destroyElement(GetToolBarResourceName(msToolBar));
 
     SAL_INFO("sd.view", __func__ << ": ToolBarManager::PreUpdate ]");
 }
@@ -889,6 +902,13 @@ bool ToolBarManager::Implementation::CheckPlugInMode (std::u16string_view rsName
         bValid = ! bIsPlugInMode;
 
     return bValid;
+}
+
+bool ToolBarManager::Implementation::IsDrawingToolBarHidden() const
+{
+    const DrawDocShell* pDocShell = mrBase.GetDocShell();
+    return pDocShell != nullptr && pDocShell->GetDocumentType() == DocumentType::Impress
+        && sfx2::SfxNotebookBar::IsActive();
 }
 
 } // end of namespace sd

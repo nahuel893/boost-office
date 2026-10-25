@@ -206,5 +206,35 @@ class ImpressPlaceholderSlotsTest(unittest.TestCase):
                 self.assertIsNone(pattern.search(path.read_text(encoding="utf-8", errors="replace")), str(path))
 
 
+def function_body(source, signature):
+    """The body of the C++ function whose definition starts with `signature`, comments removed and
+    whitespace collapsed."""
+    match = re.search(re.escape(signature) + r"[^{]*\{(.*?)\n\}", source, re.S)
+    return match and " ".join(re.sub(r"//[^\n]*", "", match.group(1)).split())
+
+
+class ImpressDrawingToolBarTest(unittest.TestCase):
+    # I9b: PowerPoint has no Drawing toolbar under its ribbon, and Calc and Writer show none under theirs
+    # (sfx2's SfxWorkWindow destroys their object bars while a notebookbar is active). Impress's Drawing
+    # toolbar is no object bar: sd's ToolBarManager requests it, and the layout manager also creates it from
+    # its window state. So under an Impress notebookbar sd never requests it and destroys it on each update;
+    # Draw and the other UI modes keep it.
+    source = read("sd/source/ui/view/ToolBarManager.cxx")
+
+    def test_only_impress_under_a_notebookbar_hides_the_drawing_toolbar(self):
+        body = function_body(self.source, "bool ToolBarManager::Implementation::IsDrawingToolBarHidden")
+        self.assertIsNotNone(body, "no IsDrawingToolBarHidden")
+        self.assertIn("GetDocumentType() == DocumentType::Impress", body)
+        self.assertIn("sfx2::SfxNotebookBar::IsActive()", body, "a notebookbar mode, not the single toolbar")
+
+    def test_the_drawing_toolbar_is_never_requested_and_is_destroyed_while_hidden(self):
+        add = function_body(self.source, "void ToolBarManager::Implementation::AddToolBar")
+        self.assertRegex(add, r"if \(CheckPlugInMode\(rsToolBarName\) && "
+                              r"!\(rsToolBarName == msToolBar && IsDrawingToolBarHidden\(\)\)\)")
+        pre = function_body(self.source, "void ToolBarManager::Implementation::PreUpdate")
+        self.assertIn("if (IsDrawingToolBarHidden()) mxLayouter->destroyElement(GetToolBarResourceName(msToolBar));",
+                      pre)
+
+
 if __name__ == "__main__":
     unittest.main()
