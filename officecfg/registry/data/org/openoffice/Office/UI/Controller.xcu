@@ -1876,6 +1876,45 @@
           <value>review_deletecomment</value>
         </prop>
       </node>
+      <node oor:name="ViewColorGrayscaleMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewColorGrayscaleMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>view_colorgrayscale</value>
+        </prop>
+      </node>
+      <node oor:name="ViewSwitchWindowsMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewSwitchWindowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.WindowListMenuController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewMacrosMenuImpressPopup" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewMacrosMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.ResourceMenuController</value>
+        </prop>
+        <prop oor:name="Value">
+          <value>view_macros</value>
+        </prop>
+      </node>
     </node>
     <node oor:name="ToolBar">
       <node oor:name="lo.writer.ScrollToPrevious" oor:op="replace">
@@ -4328,6 +4367,39 @@
       <node oor:name="ReviewDeleteCommentMenuImpressControl" oor:op="replace">
         <prop oor:name="Command">
           <value>.uno:ReviewDeleteCommentMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewColorGrayscaleMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewColorGrayscaleMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewSwitchWindowsMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewSwitchWindowsMenu</value>
+        </prop>
+        <prop oor:name="Module">
+          <value>com.sun.star.presentation.PresentationDocument</value>
+        </prop>
+        <prop oor:name="Controller">
+          <value>com.sun.star.comp.framework.GenericPopupToolbarController</value>
+        </prop>
+      </node>
+      <node oor:name="ViewMacrosMenuImpressControl" oor:op="replace">
+        <prop oor:name="Command">
+          <value>.uno:ViewMacrosMenu</value>
         </prop>
         <prop oor:name="Module">
           <value>com.sun.star.presentation.PresentationDocument</value>

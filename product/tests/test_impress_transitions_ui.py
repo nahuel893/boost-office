@@ -200,8 +200,7 @@ class ImpressTransitionsUiTest(unittest.TestCase):
                           "View"], pages[:9])
         self.assertEqual(["FileLabel", "HomeLabel", "InsertLabel", "DesignLabel", "LayoutLabel", "AnimationsLabel",
                           "SlideShowLabel", "ReviewLabel", "ViewLabel"], [t.get("id") for t in tabs[:9]])
-        self.assertEqual("ExtensionLabel", tabs[-2].get("id"))
-        self.assertEqual("ToolsLabel", tabs[-1].get("id"))
+        self.assertEqual(["ExtensionLabel", "ToolsLabel", "HelpLabel"], [t.get("id") for t in tabs[-3:]])
 
     def test_every_tab_and_page_after_design_carries_its_position(self):
         book, _pages, _tabs = self.tab_order()
@@ -212,7 +211,7 @@ class ImpressTransitionsUiTest(unittest.TestCase):
                 positions[child.find("object").get("id")] = int(position)
         want = {"Design": 3, "Layout": 4, "Animations": 5, "SlideShow": 6, "Review": 7, "View": 8, "Table": 9,
                 "Image": 10, "Draw": 11, "Object": 12, "Media": 13, "Form": 14, "Master": 15, "Outline": 16,
-                "3D": 17, "Extension": 18, "Tools": 19}
+                "3D": 17, "Extension": 18, "Tools": 19, "Help": 20}
         for page, position in want.items():
             label = {"Layout": "LayoutLabel", "3D": "3DObjectLabel"}.get(page, page + "Label")
             self.assertEqual((position, position), (positions[page], positions[label]), page)

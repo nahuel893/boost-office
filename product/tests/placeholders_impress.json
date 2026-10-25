@@ -184,26 +184,33 @@
   "command": "ViewMode",
   "variants": [
    "Mode:string=reading"
-  ]
+  ],
+  "variant_labels": {
+   "Mode:string=reading": "Reading View"
+  }
  },
  {
   "slot": "SID_BOOST_VIEW_ARRANGE_ALL",
   "offset": 20,
-  "command": "ViewArrangeAll"
+  "command": "ViewArrangeAll",
+  "label": "Arrange All"
  },
  {
   "slot": "SID_BOOST_VIEW_CASCADE",
   "offset": 21,
-  "command": "ViewCascade"
+  "command": "ViewCascade",
+  "label": "Cascade"
  },
  {
   "slot": "SID_BOOST_VIEW_SPLIT",
   "offset": 22,
-  "command": "ViewSplit"
+  "command": "ViewSplit",
+  "label": "Move Split"
  },
  {
   "slot": "SID_BOOST_HELP_FEEDBACK",
   "offset": 23,
-  "command": "HelpFeedback"
+  "command": "HelpFeedback",
+  "label": "Feedback"
  }
 ]

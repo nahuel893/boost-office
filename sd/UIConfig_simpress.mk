@@ -63,6 +63,8 @@ $(eval $(call gb_UIConfig_add_popupmenufiles,modules/simpress,\
 	sd/uiconfig/simpress/popupmenu/review_language \
 	sd/uiconfig/simpress/popupmenu/table \
 	sd/uiconfig/simpress/popupmenu/textbox \
+	sd/uiconfig/simpress/popupmenu/view_colorgrayscale \
+	sd/uiconfig/simpress/popupmenu/view_macros \
 ))
 
 $(eval $(call gb_UIConfig_add_statusbarfiles,modules/simpress,\

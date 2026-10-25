@@ -38,6 +38,9 @@ MOTION_SLOTS = (11, 12)  # SID offsets of the Transitions and Animations placeho
 SLIDESHOW_SLOTS = (13, 14)  # SID offsets of the Slide Show placeholders: Record and the Option family (2 variants)
 REVIEW_SLOTS = (15, 16, 17, 18)  # SID offsets of the Review placeholders: Check Accessibility, Translate, the
 # Compare family (7 variants) and Hide Ink
+VIEW_SLOTS = (19, 20, 21, 22)  # SID offsets of the View placeholders: Reading View (the ViewMode family), Arrange All,
+# Cascade and Move Split
+HELP_SLOTS = (23,)  # SID offset of the Help placeholder: Feedback
 TRANSITION_DECK = "SdSlideTransitionDeck"
 ANIMATION_DECK = "SdCustomAnimationDeck"
 # a 1x1 PNG, the picture of the image context
@@ -45,13 +48,13 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4
 
 # The pages of today's generated Impress office .ui (sd/uiconfig/simpress/ui/notebookbar_office.ui),
 # in tab order: (tab label without its mnemonic, page id). Tasks that change the tabs update this list;
-# I8a reaches PowerPoint's order. Table .. 3D are the contextual tabs: they only show with their object
+# I8a reaches PowerPoint's order (Help is last). Table .. 3D are the contextual tabs: they only show with their object
 # or view.
 TABS = [("File", "File"), ("Home", "Home Tab"), ("Insert", "Insert"), ("Design", "Design"),
         ("Transitions", "Layout"), ("Animations", "Animations"), ("Slide Show", "SlideShow"), ("Review", "Review"), ("View", "View"),
         ("Table", "Table"), ("Image", "Image"), ("Draw", "Draw"), ("Object", "Object"), ("Media", "Media"),
         ("Form", "Form"), ("Master", "Master"), ("Outline", "Outline"), ("3D", "3D"),
-        ("Extension", "Extension"), ("Tools", "Tools")]
+        ("Extension", "Extension"), ("Tools", "Tools"), ("Help", "Help")]
 CONTEXTUAL = {"Table", "Image", "Draw", "Object", "Media", "Form", "Master", "Outline", "3D"}
 
 
@@ -345,24 +348,26 @@ class NotebookbarOffice(UITestCase):
             self.assertEqual("keep", slide.getByIndex(0).String)
             self.assertFalse(document.isModified())
 
-    def menu_controller(self, command, resource):
+    def menu_controller(self, command, resource, with_controller=False):
         """The awt popup menu that the ribbon dropdown `command` builds through its real menu controller.
 
-        `resource` is the popup file the ResourceMenuController reads (its "Value")."""
+        `resource` is the popup file the ResourceMenuController reads (its "Value"); None for a controller
+        without one (the window list). With `with_controller` the controller comes back too: (popup, controller)."""
         xDesktop = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.xContext)
         xFactory = self.xContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.PopupMenuControllerFactory", self.xContext)
         self.assertTrue(xFactory.hasController(command, IMPRESS_MODULE), command)
-        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": IMPRESS_MODULE,
-                "Value": resource}
+        args = {"Frame": xDesktop.getCurrentFrame(), "CommandURL": command, "ModuleIdentifier": IMPRESS_MODULE}
+        if resource is not None:
+            args["Value"] = resource
         xController = xFactory.createInstanceWithArgumentsAndContext(
             command, mkPropertyValues(args), self.xContext)
         self.assertIsNotNone(xController, command)
         xPopup = self.xContext.ServiceManager.createInstanceWithContext("com.sun.star.awt.PopupMenu", self.xContext)
         xController.setPopupMenu(xPopup)
         xController.updatePopupMenu()
-        return xPopup
+        return (xPopup, xController) if with_controller else xPopup
 
     def popup_commands(self, xPopup):
         commands = []
@@ -1296,6 +1301,187 @@ class NotebookbarOffice(UITestCase):
                           "bxReviewComparePrevious": "Previous", "bxReviewCompareNext": "Next",
                           "bxReviewReviewingPane": "Reviewing Pane", "bxReviewEndReview": "End Review",
                           "bxReviewHideInk": "Hide Ink"}
+                got = self.settle(lambda: {box: get_state_as_dict(
+                    xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
+                self.assertEqual(labels, got)
+            finally:
+                self.switch_to("Default")
+
+    def test_view_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("view"), 7)
+
+    def test_help_sections_and_toolboxes(self):
+        self.check_sections_and_toolboxes(self.motion_layout("help"), 1)
+
+    def test_view_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "View")
+            finally:
+                self.switch_to("Default")
+
+    def test_help_tab_is_visible_with_a_text_box_a_shape_a_table_and_an_image_selected(self):
+        with self.impress_doc() as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_tab_in_every_context(document, "Help")
+            finally:
+                self.switch_to("Default")
+
+    def experimental_mode(self):
+        provider = self.xContext.ServiceManager.createInstanceWithContext(
+            "com.sun.star.configuration.ConfigurationProvider", self.xContext)
+        access = provider.createInstanceWithArguments(
+            "com.sun.star.configuration.ConfigurationAccess",
+            (PropertyValue(Name="nodepath", Value="/org.openoffice.Office.Common/Misc"),))
+        return bool(access.getByName("ExperimentalMode"))
+
+    def test_view_dropdown_popups_list_their_items_through_the_real_controllers(self):
+        with self.impress_doc():
+            xPopup = self.menu_controller(".uno:ViewColorGrayscaleMenu", "view_colorgrayscale")
+            self.assertEqual([".uno:OutputQualityColor", ".uno:OutputQualityGrayscale",
+                              ".uno:OutputQualityBlackWhite"], self.popup_commands(xPopup))
+            # Macro Manager is flagged experimental (GenericCommands.xcu): the framework drops it from the menu
+            # unless experimental mode is on, as it does in Calc, in Writer and in Tools > Macros
+            expected = [".uno:RunMacro", ".uno:MacroRecorder", ".uno:BasicIDEAppear"]
+            if self.experimental_mode():
+                expected.insert(2, ".uno:MacroManager")
+            xPopup = self.menu_controller(".uno:ViewMacrosMenu", "view_macros")
+            self.assertEqual(expected, self.popup_commands(xPopup))
+
+    def window_count(self, document):
+        xEnum = document.getControllers()
+        count = 0
+        while xEnum.hasMoreElements():
+            xEnum.nextElement()
+            count += 1
+        return count
+
+    def test_view_switch_windows_lists_the_two_open_windows(self):
+        # the framework's window list, registered under the new command and without a popup file, lists the open
+        # windows when the dropdown opens. New Window gives a second window of the same Impress document.
+        with self.impress_doc() as document:
+            self.assertEqual(1, self.window_count(document))
+            self.xUITest.executeCommand(".uno:NewWindow")
+            try:
+                self.wait_for(lambda: self.window_count(document) == 2, "New Window did not open a second window", 15)
+                xPopup, xController = self.menu_controller(".uno:ViewSwitchWindowsMenu", None, with_controller=True)
+                event = uno.createUnoStruct("com.sun.star.awt.MenuEvent")
+                event.Source = xPopup
+                xController.itemActivated(event)
+                windows = [xPopup.getItemId(pos) for pos in range(xPopup.getItemCount())
+                           if 4600 <= xPopup.getItemId(pos) <= 4699]
+                texts = sorted(xPopup.getItemText(nId) for nId in windows)
+                self.assertEqual(2, len(windows), texts)
+                self.assertEqual(1, sum(1 for nId in windows if xPopup.isItemChecked(nId)), "the active window")
+            finally:
+                # close the second window only (the active one), so the document keeps its first window
+                if self.window_count(document) == 2:
+                    self.xUITest.executeCommand(".uno:CloseWin")
+                    self.wait_for(lambda: self.window_count(document) == 1, "the second window did not close", 15)
+
+    def test_view_buttons_switch_the_view_and_normal_brings_it_back(self):
+        # Normal, Outline View, Slide Sorter and Notes Page: each command reports its view as its state
+        with self.impress_doc() as document:
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for name in ("OutlineMode", "DiaMode", "NotesMode"):
+                self.xUITest.executeCommand(".uno:" + name)
+                self.wait_for(lambda: self.dispatch_status(name).state is True, "no view for " + name, 10)
+                self.assertTrue(self.settle(lambda: self.dispatch_status(name).state), name)
+                self.assertFalse(self.dispatch_status("NormalMultiPaneGUI").state, name)
+                self.xUITest.executeCommand(".uno:NormalMultiPaneGUI")
+                self.wait_for(lambda: self.dispatch_status("NormalMultiPaneGUI").state is True,
+                              "Normal did not bring the view back from " + name, 10)
+                self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state), name)
+                self.assertFalse(self.dispatch_status(name).state, name)
+
+    def test_view_color_grayscale_switches_to_grayscale_and_back(self):
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assertTrue(self.settle(lambda: self.dispatch_status("OutputQualityColor").state))
+            self.xUITest.executeCommand(".uno:OutputQualityGrayscale")
+            self.wait_for(lambda: self.dispatch_status("OutputQualityGrayscale").state is True,
+                          "the view did not switch to grayscale", 10)
+            self.assertFalse(self.dispatch_status("OutputQualityColor").state)
+            self.xUITest.executeCommand(".uno:OutputQualityColor")
+            self.wait_for(lambda: self.dispatch_status("OutputQualityColor").state is True,
+                          "the view did not switch back to color", 10)
+            self.assertFalse(self.dispatch_status("OutputQualityGrayscale").state)
+
+    def test_view_and_help_placeholders_are_disabled_and_inert(self):
+        # 5 URLs on 5 slots: Reading View (the ViewMode family), Arrange All, Cascade, Move Split and Feedback
+        src = Path(os.environ["TDOC"]).parents[3]
+        names = placeholder_urls(src, lambda e: e["offset"] in VIEW_SLOTS + HELP_SLOTS)
+        self.assertEqual(5, len(names))
+        with self.impress_doc() as document:
+            slide = document.DrawPages[0]
+            slide.getByIndex(0).String = "keep"
+            document.setModified(False)
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            self.assert_disabled_and_inert(names)
+            self.assertEqual(1, document.DrawPages.Count)
+            self.assertEqual("keep", slide.getByIndex(0).String)
+            self.assertFalse(document.isModified())
+
+    def test_view_and_help_dropdown_and_placeholder_labels_resolve(self):
+        with self.impress_doc():
+            for url, label in ((".uno:ViewColorGrayscaleMenu", "Color/Grayscale"),
+                               (".uno:ViewSwitchWindowsMenu", "Switch Windows"), (".uno:ViewMacrosMenu", "Macros"),
+                               (".uno:ViewMode?Mode:string=reading", "Reading View"),
+                               (".uno:ViewArrangeAll", "Arrange All"), (".uno:ViewCascade", "Cascade"),
+                               (".uno:ViewSplit", "Move Split"), (".uno:HelpFeedback", "Feedback")):
+                self.assertEqual(label, self.command_label(url), url)
+
+    def test_view_and_help_commands_that_are_real_are_enabled(self):
+        # Left out on purpose: MacroManager (hidden unless experimental mode is on)
+        with self.impress_doc():
+            self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
+            for name in ("NormalMultiPaneGUI", "OutlineMode", "DiaMode", "NotesMode", "SlideMasterPage",
+                         "HandoutMode", "NotesMasterPage", "ShowRuler", "GridVisible", "HelplinesVisible",
+                         "BottomPaneImpress", "Zoom", "ZoomPage", "OutputQualityColor", "OutputQualityGrayscale",
+                         "OutputQualityBlackWhite", "NewWindow", "RunMacro", "MacroRecorder", "BasicIDEAppear",
+                         "HelpIndex", "QuestionAnswers", "Documentation", "WhatsNew"):
+                self.assertTrue(self.settle(lambda: self.dispatch_enabled(name)), name)
+
+    def test_help_buttons_are_drawn_enabled_except_the_feedback_placeholder(self):
+        # what the ribbon draws: the toolboxitem's Enabled. Nothing is pressed: the buttons open the help and a browser.
+        layout = self.motion_layout("help")
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                drawn = {}
+                for section in layout["sections"]:
+                    for column in section["columns"]:
+                        for box in column:
+                            xBox = xImpressDoc.getChild("bx" + layout["id_prefix"] + box["id"])
+                            drawn[box["items"][0]["cmd"]] = xBox.getChild("toolboxitem-1")
+                self.assertEqual(5, len(drawn))
+                self.wait_for(lambda: all((get_state_as_dict(x)["Enabled"] == "false") == (cmd == "HelpFeedback")
+                                          for cmd, x in drawn.items()),
+                              "Help buttons not drawn as designed: " + str(
+                                  {c: get_state_as_dict(x)["Enabled"] for c, x in drawn.items()}))
+            finally:
+                self.switch_to("Default")
+
+    def test_view_and_help_ribbon_shows_powerpoints_labels(self):
+        with self.impress_doc():
+            self.switch_to(OFFICE_UI)
+            try:
+                xImpressDoc = self.xUITest.getTopFocusWindow()
+                # Arrange All, Cascade and Move Split are icon-only (design size I): no caption to read
+                labels = {"bxViewNormal": "Normal", "bxViewOutlineView": "Outline View",
+                          "bxViewSlideSorter": "Slide Sorter", "bxViewNotesPage": "Notes Page",
+                          "bxViewReadingView": "Reading View", "bxViewSlideMaster": "Slide Master",
+                          "bxViewHandoutMaster": "Handout Master", "bxViewNotesMaster": "Notes Master",
+                          "bxViewRuler": "Ruler", "bxViewGridlines": "Gridlines", "bxViewGuides": "Guides",
+                          "bxViewNotes": "Notes", "bxViewZoom": "Zoom", "bxViewFitToWindow": "Fit to Window",
+                          "bxViewColorGrayscale": "Color/Grayscale", "bxViewNewWindow": "New Window",
+                          "bxViewSwitchWindows": "Switch Windows", "bxViewMacros": "Macros",
+                          "bxHelpHelp": "Help", "bxHelpContactSupport": "Contact Support",
+                          "bxHelpFeedback": "Feedback", "bxHelpShowTraining": "Show Training",
+                          "bxHelpWhatsNew": "What's New"}
                 got = self.settle(lambda: {box: get_state_as_dict(
                     xImpressDoc.getChild(box).getChild("toolboxitem-1"))["Text"] for box in labels})
                 self.assertEqual(labels, got)
