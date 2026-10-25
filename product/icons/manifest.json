@@ -277,7 +277,7 @@
     {"name": "ruler", "layers": [{"glyph": "ruler"}]},
     {"name": "gridvisible", "layers": [{"glyph": "grid"}]},
     {"name": "viewsplit", "large": true, "layers": [{"glyph": "split_horizontal"}]},
-    {"name": "zoompage", "layers": [{"glyph": "page_fit"}]},
+    {"name": "zoompage", "large": true, "layers": [{"glyph": "page_fit"}]},
     {"name": "zoompagewidth", "layers": [{"glyph": "document_width"}]},
     {"name": "showmultiplepages", "aliases": ["multiplepagesperrow"], "layers": [{"glyph": "document_one_page_multiple"}]},
     {"name": "viewmacrosmenu", "large": true, "layers": [{"glyph": "code"}]},
@@ -452,6 +452,18 @@
     {"name": "connectorarrowend", "layers": [{"glyph": "flow_arrow"}]},
     {"name": "cube", "layers": [{"glyph": "cube"}]},
     {"name": "freeline_unfilled", "layers": [{"glyph": "ink_stroke"}]},
-    {"name": "connector", "layers": [{"glyph": "arrow_turn_right"}]}
+    {"name": "connector", "layers": [{"glyph": "arrow_turn_right"}]},
+    {"name": "normalmultipanegui", "large": true, "layers": [{"glyph": "slide_text"}]},
+    {"name": "outlinemode", "large": true, "layers": [{"glyph": "text_bullet_list_tree"}]},
+    {"name": "diamode", "layers": [{"glyph": "slide_grid"}]},
+    {"name": "notesmode", "layers": [{"glyph": "note"}]},
+    {"name": "slidemasterpage", "layers": [{"glyph": "slide_layout"}]},
+    {"name": "handoutmode", "layers": [{"glyph": "document_text"}]},
+    {"name": "notesmasterpage", "layers": [{"glyph": "note_edit"}]},
+    {"name": "showruler", "layers": [{"glyph": "ruler"}]},
+    {"name": "helplinesvisible", "layers": [{"glyph": "layout_row_two"}]},
+    {"name": "viewcascade", "layers": [{"glyph": "window_apps"}]},
+    {"name": "bottompaneimpress", "large": true, "layers": [{"glyph": "notepad"}]},
+    {"name": "viewcolorgrayscalemenu", "large": true, "layers": [{"glyph": "color"}]}
   ]
 }

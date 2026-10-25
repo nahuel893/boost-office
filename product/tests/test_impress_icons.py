@@ -257,3 +257,46 @@ class ImpressReviewIconsTest(_ImpressTabIcons, unittest.TestCase):
                            "cmd/32/reviewlanguagemenu.png", "cmd/sc_reviewdeletecommentmenu.png",
                            "cmd/32/reviewdeletecommentmenu.png"):
                 self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")
+
+
+class ImpressViewIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "View"
+    # The Reading View placeholder is a `?` URL: it names Writer's Read Mode icon (the same family) at 16 px.
+    EXPLICIT = {"btnViewViewReadingView": "cmd/sc_viewmode_read.png"}
+
+    def test_the_url_variant_names_its_icon(self):
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        self.assertEqual(self.EXPLICIT, icons)
+
+    def test_the_views_the_dropdowns_and_the_placeholders_have_icons_in_both_themes(self):
+        # the buttons draw a command image of their own name: the 16 px icons are what the small controls use,
+        # the 32 px ones the large buttons. The items inside the Color/Grayscale and Macros menus keep the stock
+        # images, as the menu items of every other tab and of Calc and Writer do.
+        large = ("normalmultipanegui", "outlinemode", "bottompaneimpress", "zoom", "zoompage",
+                 "viewcolorgrayscalemenu", "newwindow", "viewswitchwindowsmenu", "viewmacrosmenu")
+        small = ("diamode", "notesmode", "slidemasterpage", "handoutmode", "notesmasterpage", "showruler",
+                 "gridvisible", "helplinesvisible", "viewarrangeall", "viewcascade", "viewsplit")
+        for theme in sorted(self.zips):
+            names, links = self.members(theme)
+            for member in [f"cmd/32/{c}.png" for c in large] + [f"cmd/sc_{c}.png" for c in small] \
+                    + [f"cmd/lc_{c}.png" for c in small]:
+                self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")
+
+
+class ImpressHelpIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "Help"
+
+    def test_the_help_buttons_name_no_icon_and_use_the_command_images(self):
+        # every Help button is a plain command: the image manager draws its image at 32 px (Feedback shares
+        # Calc's and Writer's help-feedback icon)
+        for button in tab_page(self.TAB).iter("object"):
+            self.assertIsNone(button.find("property[@name='icon_name']"), button.get("id"))
+        for theme in sorted(self.zips):
+            names, links = self.members(theme)
+            for command in ("helpindex", "questionanswers", "helpfeedback", "documentation", "whatsnew"):
+                member = f"cmd/32/{command}.png"
+                self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")
