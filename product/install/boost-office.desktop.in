@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=@NAME@
+GenericName=@GENERIC_NAME@
+Comment=@COMMENT@
+Icon=@ICON@
+Exec=@EXEC@ %U
+TryExec=@EXEC@
+Terminal=false
+StartupNotify=true
+Categories=@CATEGORIES@
+MimeType=@MIME_TYPES@

@@ -1,0 +1,24 @@
+# Boost Office: the configure flags its builds use. Copy this file to autogen.input in the repository root,
+# then run ./autogen.sh (it reads autogen.input) and build with product/dev/lo-make.sh. See
+# product/docs/building.md.
+#
+# Fail on a misspelled flag instead of ignoring it.
+--enable-option-checking=fatal
+# User interface: the GTK 3 backend only (the Boost look and the screenshots are GTK 3); no GTK 4, Qt or KDE.
+--enable-gtk3
+--disable-gtk4
+--disable-qt5
+--disable-qt6
+--disable-kf5
+--disable-kf6
+# Leave out what Boost does not use, to shorten the build: Java, the help, the spelling dictionaries, the API
+# documentation and the Firebird and PostgreSQL database drivers.
+--without-java
+--without-help
+--without-helppack-integration
+--without-myspell-dicts
+--without-doxygen
+--disable-firebird-sdbc
+--disable-postgresql-sdbc
+# Parallel jobs are not set here: lo-make.sh passes PARALLELISM (default 6); a machine with more memory can
+# add --with-parallelism=N to its own autogen.input.
