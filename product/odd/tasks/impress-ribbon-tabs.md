@@ -1,7 +1,7 @@
 # Feature: Impress ribbon tabs like PowerPoint (Tabbed Office)
 
-- **Status:** planned, 2026-10-23 (written in task ID1, accepted by the controller). Started 2026-10-23, after Writer
-  closed (design decision 38, ruling 13).
+- **Status:** done, 2026-10-25 (every task checked; `dev` and `main` fast-forwarded to the closing commit). Planned
+  2026-10-23 (task ID1); started 2026-10-23, after Writer closed (design decision 38, ruling 13).
 - **Locator:** `product/odd/tasks/impress-ribbon-tabs.md`
 - **Engram mirror:** `odd/impress-ribbon-tabs/tasks`
 - **Repo / branch:** `/mnt/games/libreoffice/core`, `feature/impress-ribbon-tabs`, branched from the tip of
@@ -165,8 +165,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [x] | a16b4fadc, 3fa172fa4, 90dea286f | 979 unit tests OK; underline pixels orange, green, blue |
 | I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [x] | 0fd9d7317, 770953c5a, 363567347, dfc8c42e6 | 983 unit tests OK; Hide Slide UITest RED then GREEN; gtk3 screenshots |
 | I9c | No stock context toolbars under the Impress ribbon (ruling 24) | delegated (opus) | [x] | 0182f3e02 | 985 unit tests OK; gtk3 screenshots before and after |
-| I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
-| I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet) | [ ] | | |
+| I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet), with I11 | [x] | 342ce6e9c | passive (docs); refs checked against HEAD |
+| I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet), with I10 | [x] | 468dfbc31 | 987 unit tests OK; picture test RED then GREEN; sheets looked at |
 
 Route evidence: every task touches two or more non-trivial files, so each is delegated to one writer (writer
 trigger); the parent keeps the spot checks.
@@ -768,7 +768,33 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; the table screenshot looked at (no toolbar row; the stock contextual Table tab shows).
 
+- 2026-10-25, I10 + I11 (route: delegated, sonnet, one task). Commits 468dfbc31 (the 321x125 Impress preview picture
+  in `extras/source/toolbarmode/`, its `vcl/Package_toolbarmode.mk` line, the test) and 342ce6e9c (the design doc as
+  built, with a new section 3.6 for the C++ changes; 33 `Controller.xcu` refs shifted by 263 lines, and the
+  `calc_tabs.json` and Writer doc refs fixed).
+  - Picture: a 440x171 crop at x=0, y=0 of the 1920 light Home screenshot, scaled to 321x125 as W12 did (a plain 321
+    px crop cuts the Home label); installed under `instdir/share/toolbarmode/`; View > User Interface shows it (the
+    image widget trims its right edge slightly; the Home label is whole).
+  - Contact sheets: `assets/previews/impress-ribbon-tabs-light.png` and `-dark.png` (Home through Help); the
+    underline is exactly `#C43E1C` / `#FF8F6B` on all 18 strips; no clipped label, blank icon, misaligned row,
+    section of another height or toolbar row under the ribbon; one caption baseline.
+  - Visual findings, accepted: the Design Variants swatches start at the band's top edge; the selected variant and
+    the slide pane's selected thumbnail are green (the scheme's selection color, not the accent); Arrange All,
+    Cascade and Move Split are three faint icon-only placeholders (I8); Date & Time, Slide Number and Object are
+    small icon-only cells (I3a).
+  - Final counts: 12 tabs on the bar, 43 sections, 171 controls, 26 placeholder buttons and 13 placeholder menu
+    items (39 entries on 24 slots), 20 dropdowns on 19 menus, 70 leave-list rows (68 commands), 987 unit tests; 80
+    Impress UITest methods (74 Writer, 72 Calc; counted, not re-run: no source they read changed).
+  - User gate: replaced by the controller's look at the sheets and the picture, as the user asked for no review
+    stops ("basta ya de pedir revisiones").
+  - Evidence (report: `task-I10-I11-report.md`): the picture test RED (2 failures, 1 error) then GREEN; 985 -> 987
+    OK; `vcl.build` exit 0; `gen_ribbon.py --all` clean; `git show --check` clean.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the light contact sheet and the picture looked at (321x125).
+
 ## Next step
 
-I10 + I11 (delegated, sonnet, one task; brief `task-I10-I11-brief.md`): the Impress preview picture, the contact
-sheets and the design doc as built. Then close the feature.
+None: the feature is done. Follow-ups, unscheduled: green selection color in the slide pane and Design variants (a
+scheme token, not the accent); the Variants swatches' top margin; Hide Slide with the slide pane closed (an `.sdi`
+change); context toolbars after a runtime switch back to Standard (`docshel3.cxx:431-445`). Next feature: GitHub and
+the install script (`product/odd/tasks/github-install.md`).
