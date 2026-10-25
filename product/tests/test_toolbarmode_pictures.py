@@ -15,7 +15,8 @@ MAKEFILE = ROOT / "vcl/Package_toolbarmode.mk"
 class ToolbarmodePicturesTest(unittest.TestCase):
 
     def test_pictures_are_321_by_125_pngs(self):
-        for name in ("notebookbar_office.png", "notebookbar_office_writer.png"):
+        for name in ("notebookbar_office.png", "notebookbar_office_writer.png",
+                     "notebookbar_office_impress.png"):
             path = PICTURES / name
             self.assertTrue(path.is_file(), name)
             with Image.open(path) as im:
@@ -26,6 +27,17 @@ class ToolbarmodePicturesTest(unittest.TestCase):
         with Image.open(PICTURES / "notebookbar_office.png") as a, \
                 Image.open(PICTURES / "notebookbar_office_writer.png") as b:
             self.assertNotEqual(a.convert("RGB").tobytes(), b.convert("RGB").tobytes())
+
+    def test_impress_picture_differs_from_the_others(self):
+        with Image.open(PICTURES / "notebookbar_office_impress.png") as im:
+            impress = im.convert("RGB").tobytes()
+        for name in ("notebookbar_office.png", "notebookbar_office_writer.png"):
+            with Image.open(PICTURES / name) as other:
+                self.assertNotEqual(other.convert("RGB").tobytes(), impress, name)
+
+    def test_impress_picture_is_packaged(self):
+        files = [line.strip().rstrip("\\").strip() for line in MAKEFILE.read_text(encoding="utf-8").splitlines()]
+        self.assertIn("notebookbar_office_impress.png", files)
 
     def test_writer_picture_is_packaged(self):
         files = [line.strip().rstrip("\\").strip() for line in MAKEFILE.read_text(encoding="utf-8").splitlines()]
