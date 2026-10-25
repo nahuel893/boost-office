@@ -73,6 +73,10 @@ configuration.
 17. **One table for the presets:** G1 moves the light and dark presets (appearance, icon theme, scheme, tint) into one
     table shared by `profile.py`, `office.sh`'s users and `build_xcd.py`, and makes `build_theme.py`'s Pillow import
     lazy, so nothing is copied by hand.
+18. **Frames follow Boost, not the user's GTK theme (G1 finding, 2026-10-25):** the Writer styles gallery's frame
+    border is `#151519` under the user's dark GTK colors, against `#DADADB` in the reviewed shots; no scheme entry
+    controls it, so task G1b adds a border color rule in `vcl/unx/gtk3/custom-theme.cxx` (as I9b's disabled-entry
+    rule) and checks other framed boxes for the same leak.
 
 ## Scope
 
@@ -114,7 +118,8 @@ on this branch, pushed after each task, fast-forward at close (ruling 12). No ch
 | ID | Task | Route | Done | Commits | Checks |
 |----|------|-------|------|---------|--------|
 | G0 | Spike: a generated `boost.xcd` in a copy of `instdir` + a fresh profile shows Tabbed Office, Boost icons, scheme and accent in the three apps; Inter in `share/fonts/truetype` is used | delegated (opus; brief `task-G0-brief.md`) | [x] | 1ad6be73a | 998 unit tests OK; fresh-profile screenshots; 0 UNO mismatches |
-| G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus) | [ ] | | |
+| G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus; brief `task-G1-brief.md`) | [x] | 79b67a9a8, a7882c335, 3ed89cb80 | 1031 unit tests OK; shellcheck clean; smoke install, workspace `#FAFAFB` |
+| G1b | Frame borders from Boost, not the user's GTK theme (ruling 18): `custom-theme.cxx` | delegated (opus; after G2) | [ ] | | |
 | G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet) | [ ] | | |
 | G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet) | [ ] | | |
 
@@ -154,6 +159,31 @@ full unit suite once at the end; the controller checks the tree, processes and o
   - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the Impress fresh-profile
     screenshot looked at (Tabbed Office, orange underline, Boost icons).
 
+- 2026-10-25, G1 (route: delegated, opus). Commits 79b67a9a8 (one `LOOKS` table in `profile.py` with `--look
+  light|dark`, used by `office.sh`, `shot-tab.sh` and `build_xcd.py`; `build_theme.py` imports Pillow lazily;
+  `WhatsNew` joins the shared items; `boost.xcd` byte-identical to HEAD's), a7882c335 (`AppBackground` `#FAFAFB` /
+  `#222226` in the Boost schemes) and 3ed89cb80 (`install.sh`, `uninstall.sh`, the desktop entry template,
+  `autogen.input.boost`, 20 tests in `test_install.py`).
+  - Options (`install.sh --help`): `--instdir`, `--prefix` (`~/.local/opt/boost-office`), `--bindir`
+    (`~/.local/bin`), `--theme light|dark`, `--icons-dir` (pre-made zips, else built there), `--force`, `--dry-run`.
+    `uninstall.sh --prefix DIR` removes the manifest's files; `--purge` also removes `~/.config/boost-office`.
+  - Smoke run: the real `instdir` installed into a scratch prefix in about 4 s; `boost-writer` launched in a private
+    sway with a copy of the user's GTK config; the workspace measures `#FAFAFB` (G0: `#131317`); `uninstall.sh
+    --purge` restored the scratch home except `gvfs-metadata/`, which the running app writes (not an installer path).
+  - Choices, accepted: `--icons-dir` instead of `--skip-icons`, so tests still run the icon install step; `--force`
+    uninstalls before copying, so the new manifest lists exactly what it wrote (a failed copy leaves no install);
+    paths with spaces or special characters are refused; no `StartupWMClass` (windows still say LibreOfficeDev).
+  - Deviation, accepted: 10 assertions in `test_calc_launcher.py` rewritten for `--look light`; a new test proves
+    `--look` writes the same profile as the old flag lists.
+  - Finding, ruled (ruling 18, task G1b): the styles gallery's frame border follows the user's GTK theme.
+  - Evidence (report: `task-G1-report.md`): RED then GREEN per item; 998 -> 1031 OK; `bash -n`, `shellcheck`,
+    `desktop-file-validate` clean; `gen_ribbon.py --all` clean; `git show --check` clean; screenshot in
+    `assets/previews/github-install/g1/`.
+  - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the scratch tree deleted;
+    `install.sh --help` read; the installed Writer screenshot looked at (light workspace, Tabbed Office, blue
+    underline; the gallery frame dark).
+
 ## Next step
 
-G1 (delegated, opus; brief `task-G1-brief.md`): `product/install/` scripts, the shared presets table, `AppBackground`.
+G2 (delegated, sonnet; brief `task-G2-brief.md`): README, install, building and licence guides, `.github/`, the three
+screenshots, the privacy scan. Then G1b (opus), then G3 (sonnet).
