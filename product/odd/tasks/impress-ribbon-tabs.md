@@ -163,7 +163,8 @@ PowerPoint's Draw and Record tabs, File backstage and contextual tabs; Draw's ri
 | I7 (a + b) | Review: layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 3570292b3, 0ba095943, 301255a0d | 927 unit tests OK; UITests pass; fits at every width |
 | I8 (a + b) | View and Help (new page): layout, behaviour, icons, fit, screenshots (one task, ruling 22) | delegated (sonnet) | [x] | 223a2776c, 2fd9001f4, 9513a70c7 | 974 unit tests OK; 15 UITests pass; fits at every width |
 | I9a | Polish without C++: the orange accent, one caption style, the shape cell icons, every-tab screenshots | delegated (sonnet) | [x] | a16b4fadc, 3fa172fa4, 90dea286f | 979 unit tests OK; underline pixels orange, green, blue |
-| I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [ ] | | |
+| I9b | Polish in C++: Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3 submenus greyed, no outline on greyed entries | delegated (opus) | [x] | 0fd9d7317, 770953c5a, 363567347, dfc8c42e6 | 983 unit tests OK; Hide Slide UITest RED then GREEN; gtk3 screenshots |
+| I9c | No stock context toolbars under the Impress ribbon (ruling 24) | delegated (opus) | [ ] | | |
 | I10 | Docs: `product/docs/impress-ribbon-tabs.md` from the draft and the results | delegated (sonnet) | [ ] | | passive (docs) |
 | I11 | Visual gate: contact sheets, Impress preview picture, user gate | delegated (sonnet) | [ ] | | |
 
@@ -405,6 +406,12 @@ Controller rulings (2026-10-23):
     slide is hidden, executing it shows the slide again), with a UITest. Custom Slide Show and Record were built as
     splits whose arrows open nothing; I6b makes them plain buttons (`"kind"` removed), as Insert did for controls
     with no LibreOffice menu.
+24. **No stock context toolbars under the Impress ribbon (I9b finding, 2026-10-25):** I9b removed the Drawing
+    toolbar, but sd still shows its context toolbars under the ribbon (Text Formatting in text edit, and image,
+    media, Edit Points, glue points, Fontwork and 3D by the same route). Calc and Writer destroy every object bar
+    while a notebookbar is active (`sfx2/source/appl/workwin.cxx:1207-1208`), Edit Points included, so Impress does
+    the same: under a ribbon, sd requests none of its stock toolbars (I9c); other UI modes and Draw keep them.
+    PowerPoint has no toolbars under its ribbon.
 
 ## Progress / evidence
 
@@ -713,7 +720,34 @@ Controller rulings (2026-10-23):
   - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
     file tracked; dark Home at 1920 looked at (orange underline).
 
+- 2026-10-25, I9b (route: delegated, opus). Four commits, one per item.
+  - 0fd9d7317, Hide Slide toggles (ruling 23): `SlsSlotManager.cxx` shows the selected slides when every one is
+    hidden and hides them otherwise; the slot stays enabled and reports checked while the selection is hidden; Show
+    Slide still works. The I6a UITest now pins hide, press again, shown (RED before: the slot was disabled).
+  - 770953c5a, no Drawing toolbar under the ribbon: sd's `ToolBarManager.cxx` requested it, and the framework
+    layout manager also creates it at document load (Impress's defaults mark it visible); it is not an sfx2 object
+    bar, so sfx2's notebookbar rule never reached it. Under a ribbon in Impress it is no longer requested and is
+    removed on each toolbar update; Draw and the other UI modes keep it.
+  - 363567347, gtk3 submenus greyed (I4c follow-up): `Menu::HandleMenuActivateEvent` (vcl) passes the top popup's
+    always-show flag to each submenu gtk3 opens, unless the submenu asks to hide disabled entries. Arrange >
+    Distribute Selection with nothing selected now shows its eight entries greyed.
+  - dfc8c42e6, no outline on greyed entries: the left and right borders of `menu menuitem:disabled` in
+    `custom-theme.cxx` are gone (colors kept); greyed labels now line up with enabled ones. The history before the
+    upstream snapshot is not in this repository, so why the borders existed is unknown.
+  - Finding, ruled (ruling 24, task I9c): the other stock context toolbars still show under the ribbon (Text
+    Formatting in text edit, seen in `after-light-home-1920-title-text-edit.png`).
+  - Known, accepted: the ribbon check reads the current window, as existing sd code does (with another app's window
+    in front, an updating Impress window follows that app's UI mode); with the slide pane closed Hide Slide stays
+    disabled, as before (an `.sdi` change); Hide Slide now shows a check mark in the Slide and context menus; the
+    inherited submenu flag survives a runtime switch of the hide-disabled setting (as I4c's concern 4).
+  - Evidence (report: `task-I9b-report.md`): 979 -> 983 OK (one full run at the end); the Hide Slide UITest,
+    `test_tabbed_office_loads`, `test_tab_order` and Writer's `test_ribbon_popups_show_disabled_entries_greyed`
+    pass; sd, vcl builds exit 0; `git show --check` clean; before and after screenshots in
+    `assets/previews/impress-ribbon-tabs/i9b/`.
+  - Controller check (ruling 22): the tree clean after `gen_ribbon.py --all`; no soffice left; no `.superpowers`
+    file tracked; the greyed Distribute submenu and the text-edit screenshot looked at.
+
 ## Next step
 
-I9b (delegated, opus; brief `task-I9b-brief.md`): Hide Slide toggle, no Drawing toolbar under the ribbon, gtk3
-submenus greyed, no outline on greyed entries. Then I10 + I11 (sonnet, one task).
+I9c (delegated, opus; brief `task-I9c-brief.md`): no stock context toolbars under the Impress ribbon (ruling 24).
+Then I10 + I11 (sonnet, one task; brief `task-I10-I11-brief.md`).
