@@ -205,5 +205,40 @@ class StartCenterStrings(unittest.TestCase):
         self.assertNotIn("GetApplicationLogo", src)
 
 
+def style_classes(obj):
+    return [c.get("name") for c in obj.findall("style/class")]
+
+
+class StartCenterStyle(unittest.TestCase):
+    """S2 (rulings 4, 5): the CSS classes the gtk3 custom theme draws the tile accents and the selected
+    navigation entry with, and the workspace color of the content pane."""
+
+    def setUp(self):
+        self.root = ui_root()
+
+    def test_every_tile_is_a_boost_tile_with_its_app(self):
+        for wid, app in (("writer_all", "writer"), ("calc_all", "calc"), ("impress_all", "impress"),
+                         ("draw_all", "draw"), ("math_all", "math"), ("database_all", "base")):
+            self.assertEqual(["boost-tile", "boost-tile-" + app], style_classes(by_id(self.root, wid)), wid)
+
+    def test_every_nav_entry_is_a_boost_nav_entry(self):
+        for wid, _ in NAV:
+            self.assertEqual(["boost-nav"], style_classes(by_id(self.root, wid)), wid)
+        for wid in ("help", "extensions"):
+            self.assertEqual(["boost-nav"], style_classes(by_id(self.root, wid)), wid)
+
+    def test_the_content_pane_and_the_window_take_the_workspace_color(self):
+        # The scheme's WindowColor (surface, #FFFFFF / #2B2B2B) is what GetWindowColor() and the gtk3 theme's
+        # ".background" give; the workspace is the scheme's AppBackground (palette "document" role), which
+        # svtools::ColorConfig reads from the active scheme.
+        src = CXX.read_text(encoding="utf-8")
+        body = re.search(r"void BackingWindow::ApplyStyleSettings\(\)\n\{(.*?)\n\}", src, re.S).group(1)
+        self.assertIn("svtools::ColorConfig().GetColorValue(svtools::APPBACKGROUND).nColor", body)
+        self.assertIn("m_xContainer->set_background(aWorkspace);", body)
+        self.assertIn("SetBackground(aWorkspace);", body)
+        self.assertIn("mxAllButtonsBox->set_background(aNavBackground);", body)
+        self.assertIn("mxSmallButtonsBox->set_background(aNavBackground);", body)
+        self.assertIn("rStyleSettings.GetWindowColor()", body)
+
 if __name__ == "__main__":
     unittest.main()

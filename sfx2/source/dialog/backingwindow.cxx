@@ -299,7 +299,11 @@ void BackingWindow::setLargerFont(WidgetClass& pWidget, const vcl::Font& rFont)
 void BackingWindow::ApplyStyleSettings()
 {
     const StyleSettings& rStyleSettings = GetSettings().GetStyleSettings();
-    const Color aButtonsBackground(rStyleSettings.GetWindowColor());
+    // The navigation column keeps the window color (a Boost scheme's surface, like the ribbon); the
+    // content pane takes the scheme's workspace color (AppBackground), like the area around a document,
+    // which the window color is not.
+    const Color aNavBackground(rStyleSettings.GetWindowColor());
+    const Color aWorkspace(svtools::ColorConfig().GetColorValue(svtools::APPBACKGROUND).nColor);
     const vcl::Font& aButtonFont(rStyleSettings.GetPushButtonFont());
 
     // setup larger fonts
@@ -314,9 +318,10 @@ void BackingWindow::ApplyStyleSettings()
                          mxDrawAllButton.get(), mxMathAllButton.get(), mxDBAllButton.get() })
         pTile->set_font(aButtonFont);
 
-    mxAllButtonsBox->set_background(aButtonsBackground);
-    mxSmallButtonsBox->set_background(aButtonsBackground);
-    SetBackground(aButtonsBackground);
+    m_xContainer->set_background(aWorkspace);
+    mxAllButtonsBox->set_background(aNavBackground);
+    mxSmallButtonsBox->set_background(aNavBackground);
+    SetBackground(aWorkspace);
 
     // compute the menubar height
     sal_Int32 nMenuHeight = 0;
