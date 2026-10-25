@@ -141,8 +141,17 @@ void SlotManager::FuTemporary (SfxRequest& rRequest)
             break;
 
         case SID_HIDE_SLIDE:
-            ChangeSlideExclusionState(model::SharedPageDescriptor(), true);
+        {
+            // Hide Slide toggles, as PowerPoint's does: it shows the selected
+            // slides again when all of them are hidden, and hides them otherwise.
+            model::PageEnumeration aSelectedPages (
+                model::PageEnumerationProvider::CreateSelectedPagesEnumeration(
+                    mrSlideSorter.GetModel()));
+            const SlideExclusionState eState (GetSlideExclusionState(aSelectedPages));
+            if (eState != UNDEFINED)
+                ChangeSlideExclusionState(model::SharedPageDescriptor(), eState != EXCLUDED);
             break;
+        }
 
         case SID_SHOW_SLIDE:
             ChangeSlideExclusionState(model::SharedPageDescriptor(), false);
@@ -771,13 +780,16 @@ void SlotManager::GetMenuState (SfxItemSet& rSet)
         {
             case MIXED:
                 // Show both entries.
+                rSet.Put(SfxBoolItem(SID_HIDE_SLIDE, false));
                 break;
 
             case EXCLUDED:
-                rSet.DisableItem(SID_HIDE_SLIDE);
+                // Hide Slide is a toggle: checked while every selected slide is hidden.
+                rSet.Put(SfxBoolItem(SID_HIDE_SLIDE, true));
                 break;
 
             case INCLUDED:
+                rSet.Put(SfxBoolItem(SID_HIDE_SLIDE, false));
                 rSet.DisableItem(SID_SHOW_SLIDE);
                 break;
 

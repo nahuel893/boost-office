@@ -1064,29 +1064,39 @@ class NotebookbarOffice(UITestCase):
         for url in urls:
             self.assertNotIn('<value>%s</value>' % url, controllers, url)
 
-    def test_slideshow_hide_slide_hides_the_current_slide_and_show_slide_shows_it_again(self):
-        # design decision 28: Hide Slide hides the current slide from Normal view. The stock slot is hide-only
-        # (SlsSlotManager.cxx:143, :763-786): once the slide is hidden Hide Slide is disabled and Show Slide
-        # (Slide > Show Slide in the menu bar) is the way back, so a second press of the ribbon button is a no-op
-        # and not a toggle (reported as a concern: PowerPoint has one toggle).
+    def test_slideshow_hide_slide_toggles_the_current_slide(self):
+        # design decision 28, ruling 23: Hide Slide is a toggle, as PowerPoint's is. From Normal view it hides the
+        # current slide and then reports checked and stays enabled; a second press shows the slide again
+        # (SlsSlotManager.cxx, FuTemporary and GetMenuState). Show Slide (Slide > Show Slide in the menu bar) still
+        # shows a hidden slide, and is disabled while the slide is shown.
+        def hide_slide():
+            status = self.dispatch_status("HideSlide")
+            return status.enabled, bool(status.state)
+
         with self.impress_doc() as document:
             self.xUITest.executeCommand(".uno:InsertPage")
             self.wait_for(lambda: document.DrawPages.Count == 2, "no second slide")
             self.assertTrue(self.settle(lambda: self.dispatch_status("NormalMultiPaneGUI").state))
-            self.assertTrue(self.settle(lambda: self.dispatch_enabled("HideSlide")))
+            self.assertEqual((True, False), self.settle(hide_slide))
             slide = document.CurrentController.CurrentPage
             other = document.DrawPages[0] if slide.Number == 2 else document.DrawPages[1]
             self.assertTrue(slide.Visible)
             self.xUITest.executeCommand(".uno:HideSlide")
             self.wait_for(lambda: not slide.Visible, "Hide Slide did not hide the current slide")
             self.assertTrue(other.Visible)
-            self.wait_for(lambda: self.dispatch_enabled("HideSlide") is False, "Hide Slide stayed enabled")
-            self.xUITest.executeCommand(".uno:HideSlide")  # a second press changes nothing
-            self.assertFalse(slide.Visible)
+            self.assertEqual((True, True), self.settle(hide_slide), "a hidden slide: Hide Slide enabled and checked")
+            self.xUITest.executeCommand(".uno:HideSlide")  # the second press shows the slide again
+            self.wait_for(lambda: slide.Visible, "a second Hide Slide did not show the slide again")
+            self.assertTrue(other.Visible)
+            self.assertEqual((True, False), self.settle(hide_slide))
+            self.assertFalse(self.settle(lambda: self.dispatch_enabled("ShowSlide")))
+            self.xUITest.executeCommand(".uno:HideSlide")
+            self.wait_for(lambda: not slide.Visible, "Hide Slide did not hide the slide a second time")
             self.assertTrue(self.settle(lambda: self.dispatch_enabled("ShowSlide")))
             self.xUITest.executeCommand(".uno:ShowSlide")
             self.wait_for(lambda: slide.Visible, "Show Slide did not show the slide again")
             self.assertTrue(other.Visible)
+            self.assertEqual((True, False), self.settle(hide_slide))
 
     def test_slideshow_set_up_controls_open_the_set_up_slide_show_dialog(self):
         # Use Timings, Monitor and Use Presenter View each run .uno:PresentationDialog (decision 25). The headless
