@@ -4,7 +4,7 @@ Decision date: 2026-10-12. Status: accepted.
 
 ## Goal
 
-Ship an installable, open-source office suite based on LibreOffice, under a different product name (not chosen yet), competing in the market.
+Ship an installable, open-source office suite based on LibreOffice, under the name Boost Office (no configure-level rebranding yet: the windows still say LibreOfficeDev), competing in the market.
 
 ## Model: develop on master, ship from release branches
 
@@ -36,4 +36,4 @@ This mirrors how existing vendors work: upstream hosts `distro/<vendor>/<version
 ## Local setup
 
 - **Checkout:** `/mnt/games/libreoffice/core`, a shallow clone (`--depth 1`). Fetch without `--depth` so new commits connect to the existing history.
-- **Remote:** `upstream` points to `https://git.libreoffice.org/core`. The product remote (`origin`) does not exist yet.
+- **Remote:** `upstream` points to `https://git.libreoffice.org/core`. The product remote `origin` is `https://github.com/nahuel893/boost-office` (`main` is the default branch, `dev` the integration branch).
