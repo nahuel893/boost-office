@@ -119,7 +119,7 @@ on this branch, pushed after each task, fast-forward at close (ruling 12). No ch
 |----|------|-------|------|---------|--------|
 | G0 | Spike: a generated `boost.xcd` in a copy of `instdir` + a fresh profile shows Tabbed Office, Boost icons, scheme and accent in the three apps; Inter in `share/fonts/truetype` is used | delegated (opus; brief `task-G0-brief.md`) | [x] | 1ad6be73a | 998 unit tests OK; fresh-profile screenshots; 0 UNO mismatches |
 | G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus; brief `task-G1-brief.md`) | [x] | 79b67a9a8, a7882c335, 3ed89cb80 | 1031 unit tests OK; shellcheck clean; smoke install, workspace `#FAFAFB` |
-| G1b | Frame borders from Boost, not the user's GTK theme (ruling 18): `custom-theme.cxx` | delegated (opus; after G2) | [ ] | | |
+| G1b | Frame borders from Boost, not the user's GTK theme (ruling 18): `custom-theme.cxx` | delegated (opus; after G2; brief `task-G1b-brief.md`) | [x] | 512040c0d | 1048 unit tests OK; frame `#E0E0E0` / `#454545` under the user's GTK colors |
 | G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet; brief `task-G2-brief.md`) | [x] | f449aaa84, 652788830, d2ccac1e6, 674cea550, abe3df5b9 | 1045 unit tests OK; docs test RED then GREEN; scan clean |
 | G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet) | [ ] | | |
 
@@ -198,6 +198,21 @@ full unit suite once at the end; the controller checks the tree, processes and o
     clean.
   - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the README read.
 
+- 2026-10-25, G1b (route: delegated, opus; ruling 18). Commit 512040c0d: one rule in
+  `vcl/unx/gtk3/custom-theme.cxx:389-397`, `frame > border, .frame:not(header) { border-color: FaceColor }` (the
+  `:not(header)` keeps the notebook tab strip's own border; its pixels are unchanged), and `test_custom_theme.py`.
+  - Measured (Writer Home styles gallery, fresh profile, the user's GTK colors), before -> after (reviewed): light
+    `#151519` -> `#E0E0E0` (`#DADADB`); dark `#343438` -> `#454545` (`#414144`). Impress Design Variants and the
+    sidebar Layouts box: `#151519` -> `#E0E0E0` in light. The font boxes never leaked.
+  - Choice, accepted: `FaceColor`, the scheme color nearest the reviewed frame (no exact match exists); a test pins it.
+  - Known: every framed box in custom themes takes it, dialogs included (G3 looks at a dialog); dialog title bars
+    still follow the user's GTK theme.
+  - Evidence (report: `task-G1b-report.md`): RED (1 failure) then GREEN; 1045 -> 1048 OK; `vcl.build` exit 0; Writer's
+    `test_ribbon_popups_show_disabled_entries_greyed` passes; `git show --check` clean; screenshots in
+    `assets/previews/github-install/g1b/`.
+  - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the light Writer after shot
+    looked at (light gallery frame).
+
 ## Next step
 
-G1b (delegated, opus; brief `task-G1b-brief.md`): frame borders from Boost. Then G3 (sonnet; brief `task-G3-brief.md`).
+G3 (delegated, sonnet; brief `task-G3-brief.md`): the install gate. Then close the feature and fast-forward.
