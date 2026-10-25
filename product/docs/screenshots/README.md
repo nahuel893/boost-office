@@ -1,5 +1,18 @@
 # Screenshots
 
+## The three apps (used by the root README)
+
+Home tab, light theme, 1920 px wide, cropped to the top band: quick access bar, tabs, ribbon and a little of the
+document. Taken on 2026-10-25 with `product/dev/shot-tab.sh --app <app> light Home`. The UI font is Inter.
+
+![Calc, Home tab](calc-home-light.png)
+
+![Writer, Home tab](writer-home-light.png)
+
+![Impress, Home tab](impress-home-light.png)
+
+## Calc, earlier screenshots
+
 Calc in Tabbed Office mode at 1920 px, taken on this build on 2026-10-20.
 The UI font is Inter.
 

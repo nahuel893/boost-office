@@ -1,71 +1,77 @@
 # Boost Office
 
-An office suite based on LibreOffice, with a ribbon that follows Microsoft 365.
-"Boost Office" is a working name.
+Boost Office is a fork of LibreOffice that gives Calc, Writer and Impress a Microsoft 365-like ribbon (LibreOffice's
+"Tabbed Office" interface, rebuilt tab by tab), Fluent-based icons, light and dark color schemes and the Inter UI
+font. It targets Linux desktops (GTK 3). You build it from this repository, then install it for your user with one
+script.
 
-The first application is Calc. Its Tabbed Office ribbon is being rebuilt to match
-Excel 365, section by section and button by button.
+> **Notice.** Boost Office is not affiliated with or endorsed by The Document Foundation or Microsoft. LibreOffice
+> is a trademark of The Document Foundation. Microsoft 365, Word, Excel and PowerPoint are trademarks of Microsoft.
+> They are named here only to say which ribbon layout Boost Office follows.
 
-![Calc Home tab, light theme](product/docs/screenshots/home-light.png)
+![Calc, Home tab](product/docs/screenshots/calc-home-light.png)
+
+![Writer, Home tab](product/docs/screenshots/writer-home-light.png)
+
+![Impress, Home tab](product/docs/screenshots/impress-home-light.png)
 
 ## Status
 
-| Branch | Content |
+All three apps are built. The windows still say "LibreOfficeDev": the product name is not rebranded.
+
+| App | Ribbon | Placeholders (greyed) | Design record |
+|---|---|---|---|
+| Calc | Excel-like: File, Home, Insert, Page Layout, Formulas, Data, Review, View, Help (plus LibreOffice's Extension and Tools) | 65 buttons and menu items | [calc-ribbon-tabs.md](product/docs/calc-ribbon-tabs.md) |
+| Writer | Word-like: File, Home, Insert, Design, Layout, References, Mailings, Review, View, Help (plus Extension and Tools) | 42 buttons | [writer-ribbon-tabs.md](product/docs/writer-ribbon-tabs.md) |
+| Impress | PowerPoint-like: File, Home, Insert, Design, Transitions, Animations, Slide Show, Review, View, Help (plus Extension and Tools) | 26 buttons | [impress-ribbon-tabs.md](product/docs/impress-ribbon-tabs.md) |
+
+- **A greyed button is a placeholder.** Microsoft's ribbon has it, LibreOffice has no such feature yet. It shows the
+  tooltip "<Label> (not available yet)" and does nothing. The design records list every one.
+- **Menu bar.** LibreOffice features without a Microsoft button leave the ribbon and stay in the menu bar.
+- **English only.** The new labels and tooltips are not translated.
+- **Linux only.** No Windows or macOS build, and no distribution packages.
+
+## Install
+
+You need a built tree (`instdir`). Then:
+
+```sh
+product/install/install.sh              # light theme, into ~/.local/opt/boost-office, no root
+product/install/install.sh --theme dark
+```
+
+It adds the launchers `boost-office`, `boost-writer`, `boost-calc` and `boost-impress` and desktop entries, and keeps
+its own profile in `~/.config/boost-office`. Every option, the uninstall and troubleshooting are in
+[product/docs/install.md](product/docs/install.md).
+
+## Build
+
+[product/docs/building.md](product/docs/building.md): packages, the configure flags
+(`product/install/autogen.input.boost`), `product/dev/lo-make.sh`, and the disk and memory a build takes. A full
+LibreOffice build is long; plan for a first build that runs unattended.
+
+## Develop
+
+| Where | What |
 |---|---|
-| `main` | Calc Home and Data tabs, Fluent-based icons, light and dark color schemes |
-| `dev` | Everything on `main`, plus the other Calc tabs: Insert, Page Layout, Formulas, Review, View and Help. It moves to `main` after review |
+| [product/README.md](product/README.md) | Index of everything Boost adds to LibreOffice |
+| `product/dev/` | Dev launchers, `shot-tab.sh` (screenshots), `uitest.sh` (UI tests), `lo-make.sh` (memory-capped build) |
+| `product/tests/` | Unit tests: `python3 -I -m unittest discover -s product/tests -t .` |
+| `product/docs/`, `product/odd/tasks/` | Design records and feature plans |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to propose a change |
 
-- Buttons for Excel features that LibreOffice lacks are shown greyed out. They are
-  placeholders for features still to be built. The lists are in
-  [calc-data-redesign.md](product/docs/calc-data-redesign.md) and, on `dev`, in
-  [calc-ribbon-tabs.md](https://github.com/nahuel893/boost-office/blob/dev/product/docs/calc-ribbon-tabs.md).
-- The new labels and tooltips are in English only.
-- Writer, Impress and the other applications are unchanged from LibreOffice.
+## Branches
 
-## Screenshots
+| Branch | Use |
+|---|---|
+| `main` | Default branch: the state of the last closed feature |
+| `dev` | Integration branch: it moves to the same commit when a feature closes |
+| `feature/*` | One feature each, until it closes |
 
-- [Home and Data tabs](product/docs/screenshots/README.md)
-- [Every tab (dev)](https://github.com/nahuel893/boost-office/blob/dev/product/docs/screenshots/README.md)
+## Licences
 
-## Where things are
+Boost's own files are under the [MPL 2.0](COPYING.MPL), as most of LibreOffice; inherited code keeps its licences
+([COPYING](COPYING) and [COPYING.LGPL](COPYING.LGPL) hold the other texts). The bundled fonts and icons have their
+own: see [product/docs/licenses.md](product/docs/licenses.md).
 
-- `product/` holds what belongs to Boost Office and not to LibreOffice:
-  - `ui/`: the ribbon layouts and the generator that writes the ribbon pages;
-  - `icons/`: the icon theme builder;
-  - `themes/`: the color scheme builder;
-  - `dev/`: build, run, screenshot and test scripts;
-  - `tests/`: unit tests;
-  - `docs/`: design notes, research and decisions.
-- Everything else is LibreOffice core, plus the changes the ribbon needs. Most of
-  those are in `sc/uiconfig/`.
-
-## Build and run (Linux)
-
-1. Install LibreOffice's build dependencies, as described in
-   [Building on Linux](https://wiki.documentfoundation.org/Development/BuildingOnLinux).
-2. Put the configure options in `autogen.input`, then run `./autogen.sh`. The
-   development machine uses gtk3 only, without Java, help, Firebird or PostgreSQL.
-3. Build with `product/dev/lo-make.sh`. It runs `make` under a memory cap.
-4. After a full build, install the icon theme into the build:
-   `python3 -I product/icons/build_theme.py install --instdir instdir`.
-5. Open Calc with the product look:
-   `product/dev/calc.sh light --profile ~/boost-profile` (or `dark`). The script
-   rewrites that profile on each run. The UI font is Inter (bundled, SIL OFL);
-   `product/dev/calc.sh light --font system` keeps the desktop's font.
-
-## Tests
-
-- Unit tests: `python3 -I -m unittest discover -s product/tests -t .`
-- One Calc UI test: `product/dev/uitest.sh notebookbarOffice.NotebookbarOffice.<test name>`
-
-## License
-
-Same licenses as LibreOffice: see [COPYING](COPYING), [COPYING.MPL](COPYING.MPL)
-and [COPYING.LGPL](COPYING.LGPL).
-
-## LibreOffice
-
-This repository is a fork of LibreOffice core. LibreOffice's own README, with an
-overview of its code, is in [README-LibreOffice.md](README-LibreOffice.md).
-LibreOffice is a trademark of The Document Foundation. Boost Office is not
-affiliated with The Document Foundation.
+LibreOffice's own README is [README-LibreOffice.md](README-LibreOffice.md).
