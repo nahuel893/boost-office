@@ -490,6 +490,41 @@ class CaptionBaselineTest(unittest.TestCase):
         self.assertEqual([], broken)
 
 
+class ImpressCaptionBaselineTest(unittest.TestCase):
+    """Every Impress office page, generated and stock, draws its section captions in one style (I9a)."""
+
+    def setUp(self):
+        self.root = ET.parse(office.app("impress").office).getroot()
+        self.captions = [o for o in self.root.iter("object")
+                         if o.get("class") == "GtkLabel" and o.get("id", "").startswith("lb")]
+
+    def test_every_caption_shares_one_style_and_no_alignment_override(self):
+        self.assertGreater(len(self.captions), 50)
+        wrong = []
+        for label in self.captions:
+            attrs = {a.get("name"): a.get("value") for a in label.findall("attributes/attribute")}
+            props = {p.get("name"): p.text for p in label.findall("property")}
+            # only a bottom alignment (and the vexpand some stock pages add) may differ from the default
+            if attrs != {"scale": "0.9"} or props.get("valign", "end") != "end" or "halign" in props \
+                    or "xalign" in props:
+                wrong.append((label.get("id"), attrs, props.get("valign"), props.get("halign")))
+        self.assertEqual([], wrong)
+
+    def test_every_generated_caption_is_bottom_aligned_in_a_section_grid(self):
+        layouts = office.page_layouts("impress")
+        self.assertEqual({"Home", "Insert", "Design", "Transitions", "Animations", "SlideShow", "Review", "View",
+                          "Help"}, {layout["id_prefix"] for layout in layouts})
+        broken = []
+        for layout in layouts:
+            for section in layout["sections"]:
+                grid = self.root.find(f".//object[@id='gd{layout['id_prefix']}{section['name']}']")
+                wid, rules = section_grid_rule(grid)
+                label = grid.find(f".//object[@id='lb{layout['id_prefix']}{section['name']}']")
+                if rules or label is None or label.findtext("property[@name='valign']") != "end":
+                    broken.append((wid, rules))
+        self.assertEqual([], broken)
+
+
 class StockCaptionStyleTest(unittest.TestCase):
     """The stock pages that stay (File, Tools, Extension, the contextual tabs) read as one design with
     the generated ones: their section captions are plain too, in every app (W12)."""
