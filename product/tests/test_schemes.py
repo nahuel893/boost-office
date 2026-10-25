@@ -126,6 +126,19 @@ class SchemesTest(unittest.TestCase):
                 self.assertEqual(str(int(color.lstrip("#"), 16)), child(node, prop).find("value").text,
                                  f"{app} {prop}")
 
+    def test_the_workspace_is_the_reviewed_app_background(self):
+        # Without AppBackground the workspace around Writer's page takes the desktop's GTK window color
+        # (svtools/source/config/colorcfg.cxx:599-600; G0 saw #131317 under a dark GTK theme in light).
+        # These are the colors the ribbons were reviewed with (the dev launcher forced adw-gtk3).
+        def child(node, name):
+            return next(c for c in node if c.get(OOR + "name") == name)
+        documents = bs.document_values(self.palette)
+        schemes = child(child(ET.fromstring(bs.xcu(self.palette)), "ColorScheme"), "ColorSchemes")
+        for scheme, expected in (("Boost Light", "#FAFAFB"), ("Boost Dark", "#222226")):
+            self.assertEqual(expected, documents[scheme]["AppBackground"], scheme)
+            node = child(child(schemes, scheme), "AppBackground")
+            self.assertEqual(str(int(expected.lstrip("#"), 16)), node.find("prop/value").text, scheme)
+
     def test_the_global_accent_roles_stay_calc_green(self):
         # Check boxes, focus rings, progress bars and the selection tint stay global (design 3.4).
         for index, scheme in enumerate(("Boost Light", "Boost Dark")):

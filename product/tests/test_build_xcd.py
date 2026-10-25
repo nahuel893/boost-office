@@ -167,6 +167,14 @@ class BuildXcdTest(unittest.TestCase):
                 self.assertEqual(lookup(root, path, "AccentColor"), str(int(light.lstrip("#"), 16)), (theme, app))
                 self.assertEqual(lookup(root, path, "AccentColorDark"), str(int(dark.lstrip("#"), 16)), (theme, app))
 
+    def test_both_schemes_set_the_workspace_color(self):
+        # The workspace must not follow the user's GTK theme (ruling 14): light #FAFAFB, dark #222226.
+        for theme in build_xcd.THEMES:
+            root = parse(theme)
+            for scheme, color in (("Boost Light", 0xFAFAFB), ("Boost Dark", 0x222226)):
+                path = f"/org.openoffice.Office.UI/ColorScheme/ColorSchemes/{scheme}/AppBackground"
+                self.assertEqual(lookup(root, path, "Color"), str(color), (theme, scheme))
+
     def test_impress_accent_is_orange(self):
         self.assertEqual(lookup(parse("light"), profile.APPLICATION % "Impress", "AccentColor"),
                          str(0xC43E1C))
