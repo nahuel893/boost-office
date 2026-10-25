@@ -1,7 +1,7 @@
 # Feature: GitHub-ready repository and an install script
 
-- **Status:** in progress, 2026-10-25 (started after Impress closed at 214697bc3; drafted by the controller on
-  2026-10-23).
+- **Status:** done, 2026-10-25 (every task checked; `dev` and `main` fast-forwarded to the closing commit). Started
+  after Impress closed at 214697bc3; drafted by the controller on 2026-10-23.
 - **Locator:** `product/odd/tasks/github-install.md`
 - **Engram mirror:** `odd/github-install/tasks`
 - **Repo / branch:** `/mnt/games/libreoffice/core`, `feature/github-install`, from the tip of
@@ -121,7 +121,7 @@ on this branch, pushed after each task, fast-forward at close (ruling 12). No ch
 | G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus; brief `task-G1-brief.md`) | [x] | 79b67a9a8, a7882c335, 3ed89cb80 | 1031 unit tests OK; shellcheck clean; smoke install, workspace `#FAFAFB` |
 | G1b | Frame borders from Boost, not the user's GTK theme (ruling 18): `custom-theme.cxx` | delegated (opus; after G2; brief `task-G1b-brief.md`) | [x] | 512040c0d | 1048 unit tests OK; frame `#E0E0E0` / `#454545` under the user's GTK colors |
 | G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet; brief `task-G2-brief.md`) | [x] | f449aaa84, 652788830, d2ccac1e6, 674cea550, abe3df5b9 | 1045 unit tests OK; docs test RED then GREEN; scan clean |
-| G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet) | [ ] | | |
+| G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet; brief `task-G3-brief.md`) | [x] | none (no fix needed) | every acceptance criterion met; 8 gate screenshots |
 
 Route evidence: every task touches two or more non-trivial files or needs builds and screenshots, so each is
 delegated to one writer (writer trigger); the parent keeps the spot checks (Impress ruling 22: the worker runs the
@@ -213,6 +213,27 @@ full unit suite once at the end; the controller checks the tree, processes and o
   - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the light Writer after shot
     looked at (light gallery frame).
 
+- 2026-10-25, G3 (route: delegated, sonnet; gate). No commit: nothing needed a fix.
+  - Install: `install.sh` with the documented defaults under a scratch `HOME` and XDG directories (the user's GTK
+    config copied read-only): 2.8 s, 718 MB, a manifest of 61 files and 25 directories. `instdir` current for HEAD
+    (`libvclplug_gtk3lo.so` linked after G1b's edit; the installed copy byte-identical).
+  - Launch: `boost-writer`, `boost-calc`, `boost-impress`, `boost-office`, and Writer from the parsed `Exec` of
+    `boost-office-writer.desktop`: Tabbed Office, Boost pages and icons, no welcome dialog or tip; underlines
+    `#1B7A3E`, `#185ABD`, `#C43E1C`; Writer workspace `#FAFAFB`; frames `#E0E0E0`; Tools > Options shows Boost Light
+    and the Boost icons, its framed tree box `#E0E0E0` (the title bar follows the user's GTK theme, as documented).
+  - Dark: `--force --theme dark` with a new profile gives workspace `#222226`, underline `#83A6DB`, frame `#454545`;
+    with that profile present, `--force --theme light` prints the ruling 16 note.
+  - Uninstall: `--dry-run` removed nothing; `--purge` restored the scratch home except `gvfs-metadata/`, which the apps
+    write.
+  - Follow-ups, unscheduled: `boost-office` opens the stock Start Center (classic menu bar, LibreOffice logo,
+    "Welcome to LibreOfficeDev!", a Donate button); window titles and the app id say LibreOfficeDev (no
+    `StartupWMClass`: it would also match an installed LibreOffice); only Tools > Options was shot among dialogs.
+  - Evidence (report: `task-G3-report.md`): screenshots in `assets/previews/github-install/g3/`.
+  - Controller check: the tree clean; no soffice left; the scratch tree deleted; the Calc launcher shot looked at
+    (Tabbed Office, green underline, light frames).
+
 ## Next step
 
-G3 (delegated, sonnet; brief `task-G3-brief.md`): the install gate. Then close the feature and fast-forward.
+None: the feature is done. Follow-ups, unscheduled: a Boost Start Center; configure-level rebranding (ruling 1); a
+CI workflow for the product tests (ruling 9); the Writer styles gallery frame is `FaceColor`, near but not equal to
+the reviewed `#DADADB`.
