@@ -16,7 +16,8 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from PIL import Image, ImageDraw, ImageFilter
+# Pillow is imported only in the functions that draw (ring_ink, filled_cells, render_png, sheet), so that
+# THEMES can be read without it (product/install/build_xcd.py imports this module).
 
 HERE = Path(__file__).resolve().parent
 FLUENT = HERE / "fluent"
@@ -59,6 +60,7 @@ def ring_ink(path, pad):
     """Count visible pixels (alpha > 40) in the outer `pad` px ring of a 20 px glyph."""
     if pad == 0:
         return 0
+    from PIL import Image
     with tempfile.TemporaryDirectory() as tmp:
         png = Path(tmp) / "g.png"
         subprocess.run(["rsvg-convert", "-w", "20", "-h", "20", "-f", "png", "-o", str(png), str(path)], check=True)
@@ -75,6 +77,8 @@ def filled_cells(outline, silhouette, transform, size, scale=4):
     (the filled table has 6/8/6 px columns, the outline 5/6/5 px cells), which leaves slivers
     of no fill beside thin lines. Cut-outs and open shapes, which the silhouette leaves (mostly)
     empty or which open to the outside, stay open."""
+    from PIL import Image, ImageFilter
+
     def alpha(inner):
         svg = (f'<svg xmlns="{SVG_NS}" width="{size * scale}" height="{size * scale}" '
                f'viewBox="0 0 {size} {size}"><g transform="{transform}">{inner}</g></svg>')
@@ -258,6 +262,7 @@ def compose(entry, colors, size, sources):
 
 def render_png(svg_text, size, out):
     """Render at the SVG's own pixel size, box-filtered down to `size` when it is oversampled."""
+    from PIL import Image
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile("w", suffix=".svg", delete=False, encoding="utf-8") as f:
         f.write(svg_text)
@@ -323,6 +328,7 @@ def vendor(manifest, src_dir, license_file):
 
 def sheet(zips, out):
     """Contact sheet: every icon at 16/24/32 in light and dark, upscaled 2x."""
+    from PIL import Image, ImageDraw
     rows = []
     for theme, zip_path in zips.items():
         with zipfile.ZipFile(zip_path) as z:

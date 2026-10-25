@@ -101,6 +101,84 @@ class WriterProfileTest(unittest.TestCase):
 
 
 IMPRESS_NEWDOC = "/org.openoffice.Office.Impress/Misc/NewDoc"
+SETUP_PRODUCT = "/org.openoffice.Setup/Product"
+
+
+def written(argv):
+    """registrymodifications.xcu and the user/fonts names profile.main writes for `argv`."""
+    with tempfile.TemporaryDirectory() as tmp:
+        with contextlib.redirect_stdout(io.StringIO()):
+            profile.main([*argv, "--profile", tmp])
+        fonts = Path(tmp) / "user/fonts"
+        return ((Path(tmp) / "user/registrymodifications.xcu").read_text(encoding="utf-8"),
+                sorted(p.name for p in fonts.iterdir()) if fonts.exists() else [])
+
+
+class LooksTest(unittest.TestCase):
+    """The Boost light and dark looks: one table for profile.py, office.sh, shot-tab.sh and build_xcd.py."""
+
+    # The flag lists office.sh and shot-tab.sh passed by hand before the table existed.
+    HAND_FLAGS = {
+        "light": ["--ui", "office", "--appearance", "light", "--icons", "boost", "--scheme", "Boost Light",
+                  "--tint", "255", "--font", "inter"],
+        "dark": ["--ui", "office", "--appearance", "dark", "--icons", "boost_dark", "--scheme", "Boost Dark",
+                 "--tint", "255", "--font", "inter"],
+    }
+
+    def test_the_table_holds_the_reviewed_looks(self):
+        self.assertEqual({"light", "dark"}, set(profile.LOOKS))
+        self.assertEqual({"ui": "office", "appearance": "light", "icons": "boost", "scheme": "Boost Light",
+                          "tint": 255, "font": "inter"}, profile.LOOKS["light"])
+        self.assertEqual({"ui": "office", "appearance": "dark", "icons": "boost_dark", "scheme": "Boost Dark",
+                          "tint": 255, "font": "inter"}, profile.LOOKS["dark"])
+
+    def test_look_writes_what_the_hand_written_flags_wrote(self):
+        for look, flags in self.HAND_FLAGS.items():
+            for app in profile.APPS:
+                self.assertEqual(written(["--app", app, *flags]), written(["--app", app, "--look", look]),
+                                 (look, app))
+
+    def test_a_flag_given_with_the_look_wins(self):
+        xcu, fonts = written(["--look", "dark", "--font", "selawik", "--tint", "128"])
+        p = props(xcu)
+        self.assertEqual("Selawik", p[("/org.openoffice.VCL/VCLSettings/UIFont", "FamilyName")])
+        self.assertEqual("128", p[(MISC, "NotebookbarColorTransparency")])
+        self.assertEqual("boost_dark", p[(MISC, "SymbolStyle")])
+        self.assertIn("selawk.ttf", fonts)
+
+    def test_look_with_the_system_font_writes_no_font(self):
+        xcu, fonts = written(["--look", "light", "--font", "system"])
+        self.assertNotIn("UIFont", xcu)
+        self.assertEqual([], fonts)
+        self.assertEqual("Boost Light", props(xcu)[(SCHEME, "CurrentColorScheme")])
+
+    def test_ui_and_appearance_are_required_without_a_look(self):
+        for argv in (["--ui", "office"], ["--appearance", "light"], []):
+            with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+                profile.main([*argv, "--profile", "/nonexistent"])
+
+    def test_unknown_look_is_refused(self):
+        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+            profile.main(["--look", "sepia", "--profile", "/nonexistent"])
+
+
+class FirstStartTest(unittest.TestCase):
+
+    def test_every_profile_turns_the_welcome_dialog_off(self):
+        # A fresh profile has no ooSetupLastVersion, so the welcome dialog opens over the first document
+        # (sfx2/source/view/viewfrm.cxx:1705-1717) unless Setup/Product/WhatsNew is false. The dev profile
+        # and boost.xcd carry it from the same list.
+        for app in profile.APPS:
+            for ui in ("default", "office"):
+                p = props(profile.render(profile.build_items(ui, "light", app=app)))
+                self.assertEqual("false", p[(SETUP_PRODUCT, "WhatsNew")], (app, ui))
+
+    def test_whats_new_is_the_setup_schema_property(self):
+        schema = ET.parse(Path(__file__).resolve().parents[2]
+                          / "officecfg/registry/schema/org/openoffice/Setup.xcs")
+        prop = schema.find("component/group[@{0}name='Product']/prop[@{0}name='WhatsNew']".format(OOR))
+        self.assertIsNotNone(prop)
+        self.assertEqual("xs:boolean", prop.get(OOR + "type"))
 
 
 class ImpressProfileTest(unittest.TestCase):

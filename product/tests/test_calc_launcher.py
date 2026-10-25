@@ -20,7 +20,8 @@ class CalcLauncherTest(unittest.TestCase):
     def test_light_uses_office_ui_green_scheme_and_light_gtk(self):
         out = dry_run("light")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("--ui office --appearance light --icons boost --scheme Boost Light --tint 255", out.stdout)
+        # the Boost look is profile.py's LOOKS["light"] (Tabbed Office, Boost icons and scheme, tint, Inter)
+        self.assertIn("profile.py --look light --profile ", out.stdout)
         self.assertIn("GTK_THEME=adw-gtk3 ", out.stdout)
         self.assertIn("private GTK config", out.stdout)
         self.assertIn("/mnt/games/libreoffice/try-profile", out.stdout)
@@ -32,7 +33,7 @@ class CalcLauncherTest(unittest.TestCase):
     def test_dark_uses_office_ui_dark_scheme_and_dark_gtk(self):
         out = dry_run("dark")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("--ui office --appearance dark --icons boost_dark --scheme Boost Dark --tint 255", out.stdout)
+        self.assertIn("profile.py --look dark --profile ", out.stdout)
         self.assertIn("GTK_THEME=adw-gtk3-dark ", out.stdout)
         self.assertNotIn("private GTK config", out.stdout)
 
@@ -57,19 +58,21 @@ class CalcLauncherTest(unittest.TestCase):
         for font in ("inter", "selawik"):
             out = dry_run("light", "--font", font)
             self.assertEqual(0, out.returncode, out.stderr)
-            self.assertIn("--tint 255 --font %s --profile" % font, out.stdout)
+            self.assertIn("--look light --font %s --profile" % font, out.stdout)
 
     def test_font_works_with_every_mode(self):
         out = dry_run("--font", "inter", "tabbed")
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertIn("--ui tabbed --appearance dark --font inter --profile", out.stdout)
 
-    def test_no_font_in_the_boost_looks_means_inter(self):
+    def test_no_font_in_the_boost_looks_means_the_looks_font(self):
+        # No --font: profile.py takes the look's own font, Inter (test_profile.LooksTest pins that it writes
+        # what --font inter wrote).
         for mode in ("light", "dark"):
             plain = dry_run(mode)
             self.assertEqual(0, plain.returncode, plain.stderr)
-            self.assertEqual(dry_run(mode, "--font", "inter").stdout, plain.stdout, mode)
-            self.assertIn("--tint 255 --font inter --profile", plain.stdout, mode)
+            self.assertIn("--look %s --profile" % mode, plain.stdout, mode)
+            self.assertNotIn("--font", plain.stdout, mode)
 
     def test_no_font_in_the_stock_modes_changes_nothing(self):
         for mode in ("tabbed", "tabbed-light", "compact"):
@@ -79,14 +82,20 @@ class CalcLauncherTest(unittest.TestCase):
             self.assertNotIn("--font", plain.stdout, mode)
 
     def test_system_font_means_no_font_item_in_every_mode(self):
-        for mode in ("light", "dark", "tabbed", "tabbed-light", "compact"):
+        # The stock modes have no font item anyway; a Boost look is told to drop its Inter
+        # (test_profile.LooksTest: --look with --font system writes no font item).
+        for mode in ("tabbed", "tabbed-light", "compact"):
             system = dry_run(mode, "--font", "system")
             self.assertEqual(0, system.returncode, system.stderr)
             self.assertNotIn("--font", system.stdout, mode)
+        for mode in ("light", "dark"):
+            system = dry_run(mode, "--font", "system")
+            self.assertEqual(0, system.returncode, system.stderr)
+            self.assertIn("--look %s --font system --profile" % mode, system.stdout, mode)
 
     def test_explicit_font_wins_in_the_boost_looks(self):
         out = dry_run("dark", "--font", "selawik")
-        self.assertIn("--tint 255 --font selawik --profile", out.stdout)
+        self.assertIn("--look dark --font selawik --profile", out.stdout)
         self.assertNotIn("inter", out.stdout)
 
     def test_unknown_font_is_rejected_with_usage(self):
@@ -116,8 +125,7 @@ class OfficeLauncherTest(unittest.TestCase):
     def test_writer_light_starts_writer_with_the_writer_profile(self):
         out = office_dry_run("writer", "light")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("profile: python3 -I product/dev/profile.py --app writer --ui office --appearance light "
-                      "--icons boost --scheme Boost Light --tint 255 --font inter "
+        self.assertIn("profile: python3 -I product/dev/profile.py --app writer --look light "
                       "--profile /mnt/games/libreoffice/try-profile-writer\n", out.stdout)
         self.assertIn("launch: GTK_THEME=adw-gtk3 soffice --writer "
                       "-env:UserInstallation=file:///mnt/games/libreoffice/try-profile-writer\n", out.stdout)
@@ -133,7 +141,7 @@ class OfficeLauncherTest(unittest.TestCase):
     def test_writer_takes_the_same_options(self):
         out = office_dry_run("writer", "dark", "--font", "selawik", "--profile", "/tmp/w-profile")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("--scheme Boost Dark --tint 255 --font selawik --profile /tmp/w-profile", out.stdout)
+        self.assertIn("--app writer --look dark --font selawik --profile /tmp/w-profile", out.stdout)
         self.assertIn("soffice --writer -env:UserInstallation=file:///tmp/w-profile", out.stdout)
 
     def test_office_sh_calc_prints_what_calc_sh_prints(self):
@@ -150,8 +158,7 @@ class OfficeLauncherTest(unittest.TestCase):
     def test_impress_light_starts_impress_with_the_impress_profile(self):
         out = office_dry_run("impress", "light")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("profile: python3 -I product/dev/profile.py --app impress --ui office --appearance light "
-                      "--icons boost --scheme Boost Light --tint 255 --font inter "
+        self.assertIn("profile: python3 -I product/dev/profile.py --app impress --look light "
                       "--profile /mnt/games/libreoffice/try-profile-impress\n", out.stdout)
         self.assertIn("launch: GTK_THEME=adw-gtk3 soffice --impress "
                       "-env:UserInstallation=file:///mnt/games/libreoffice/try-profile-impress\n", out.stdout)
@@ -168,8 +175,7 @@ class OfficeLauncherTest(unittest.TestCase):
     def test_impress_takes_the_same_options(self):
         out = office_dry_run("impress", "dark", "--font", "selawik", "--profile", "/tmp/i-profile")
         self.assertEqual(0, out.returncode, out.stderr)
-        self.assertIn("--app impress --ui office --appearance dark --icons boost_dark --scheme Boost Dark "
-                      "--tint 255 --font selawik --profile /tmp/i-profile", out.stdout)
+        self.assertIn("--app impress --look dark --font selawik --profile /tmp/i-profile", out.stdout)
         self.assertIn("soffice --impress -env:UserInstallation=file:///tmp/i-profile", out.stdout)
 
 

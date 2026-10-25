@@ -4,19 +4,21 @@
 import contextlib
 import io
 import re
-import shlex
+import subprocess
+import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 from product.dev import profile
+from product.icons import build_theme
 from product.install import build_xcd
 from product.themes import build_schemes
 
 ROOT = Path(__file__).resolve().parents[2]
 OOR = "{http://openoffice.org/2001/registry}"
-OFFICE_SH = ROOT / "product/dev/office.sh"
 
 
 def parse(theme):
@@ -48,14 +50,6 @@ def lookup(root, path, prop):
     if len(found) != 1:
         raise KeyError(f"{path}/{prop}: {len(found)} props")
     return found[0].findtext("value")
-
-
-def office_sh_preset(theme):
-    """The profile.py arguments office.sh passes for its light or dark look."""
-    text = OFFICE_SH.read_text(encoding="utf-8")
-    line = re.search(rf"^{theme}\)\s+args\+=\(([^)]*)\)", text, re.M).group(1)
-    words = shlex.split(line)
-    return {words[i].lstrip("-"): words[i + 1] for i in range(0, len(words), 2)}
 
 
 class BuildXcdTest(unittest.TestCase):
@@ -116,15 +110,39 @@ class BuildXcdTest(unittest.TestCase):
         for theme in build_xcd.THEMES:
             self.assertEqual(lookup(parse(theme), "/org.openoffice.Setup/Product", "WhatsNew"), "false")
 
-    def test_presets_are_office_sh_looks(self):
+    def test_presets_are_the_shared_looks(self):
+        # One table (profile.LOOKS) for the dev launchers and the layer: nothing is copied by hand.
         for theme in build_xcd.THEMES:
-            preset = build_xcd.preset(theme)
-            sh = office_sh_preset(theme)
-            self.assertEqual({k: preset[k] for k in ("ui", "appearance", "icons", "scheme")},
-                             {k: sh[k] for k in ("ui", "appearance", "icons", "scheme")}, theme)
-            self.assertEqual(preset["tint"], int(sh["tint"]), theme)
-            # office.sh's light and dark looks default to Inter
-            self.assertEqual(preset["font"], "inter", theme)
+            self.assertEqual(build_xcd.preset(theme), profile.LOOKS[theme], theme)
+        source = (ROOT / "product/install/build_xcd.py").read_text(encoding="utf-8")
+        self.assertNotIn("255", source)
+        self.assertNotRegex(source, r"(?m)^import ast|ast\.")
+
+    def test_each_look_names_a_built_icon_theme_and_a_palette_scheme(self):
+        palette = build_schemes.load_palette()
+        for theme in build_xcd.THEMES:
+            look = profile.LOOKS[theme]
+            self.assertEqual(build_theme.THEMES[look["icons"]], theme, theme)
+            self.assertEqual(palette["schemes"][build_xcd.THEMES.index(theme)], look["scheme"], theme)
+
+    def test_a_look_that_disagrees_with_the_icon_themes_or_the_palette_is_refused(self):
+        palette = build_schemes.load_palette()
+        wrong = {**profile.LOOKS["light"], "icons": "boost_dark"}
+        with mock.patch.dict(profile.LOOKS, {"light": wrong}), self.assertRaises(ValueError):
+            build_xcd.preset("light", palette)
+        wrong = {**profile.LOOKS["dark"], "scheme": "Boost Light"}
+        with mock.patch.dict(profile.LOOKS, {"dark": wrong}), self.assertRaises(ValueError):
+            build_xcd.preset("dark", palette)
+
+    def test_the_icon_themes_are_readable_without_pillow(self):
+        # build_xcd.py imports build_theme.THEMES; Pillow is needed only where icons are drawn.
+        code = ("import sys; sys.modules['PIL'] = None; sys.path.insert(0, sys.argv[1]); "
+                "from product.icons import build_theme; from product.install import build_xcd; "
+                "print(sorted(build_theme.THEMES)); build_xcd.render('light')")
+        out = subprocess.run([sys.executable, "-I", "-c", code, str(ROOT)], capture_output=True, text=True,
+                             check=False, timeout=60)
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertEqual("['boost', 'boost_dark']", out.stdout.strip())
 
     def test_both_color_schemes_and_the_tab_accents_come_from_build_schemes(self):
         palette = build_schemes.load_palette()

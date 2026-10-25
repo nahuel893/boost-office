@@ -7,7 +7,8 @@
 #   tabbed-light  LibreOffice's original Tabbed ribbon, light, no product theme
 #   compact       LibreOffice's Tabbed Compact ribbon, dark, no product theme
 #   --font        UI font: system (the desktop's), or bundled selawik or inter (any mode). Without it,
-#                 light and dark use inter; tabbed, tabbed-light and compact use system.
+#                 light and dark use their look's font (inter); tabbed, tabbed-light and compact use system.
+# light and dark are profile.py's LOOKS (profile.py --look), the same table the installed layer is built from.
 # The profile is rewritten on each run. Each app has its own default, so that running one app never
 # rewrites another's profile: calc /mnt/games/libreoffice/try-profile, writer
 # /mnt/games/libreoffice/try-profile-writer, impress /mnt/games/libreoffice/try-profile-impress
@@ -48,20 +49,19 @@ args=()
 [ "$app" = calc ] || args=(--app "$app")
 scheme=""
 case "$mode" in
-light)        args+=(--ui office --appearance light --icons boost --scheme "Boost Light" --tint 255)
-              scheme=yes; gtk=adw-gtk3 ;;
-dark)         args+=(--ui office --appearance dark --icons boost_dark --scheme "Boost Dark" --tint 255)
-              scheme=yes; gtk=adw-gtk3-dark ;;
+light)        args+=(--look light); scheme=yes; gtk=adw-gtk3 ;;
+dark)         args+=(--look dark); scheme=yes; gtk=adw-gtk3-dark ;;
 tabbed)       args+=(--ui tabbed --appearance dark); gtk=adw-gtk3-dark ;;
 tabbed-light) args+=(--ui tabbed --appearance light); gtk=adw-gtk3 ;;
 compact)      args+=(--ui compact --appearance dark); gtk=adw-gtk3-dark ;;
 esac
-# Default font: Inter in the Boost looks, the desktop's font in the stock modes. --font wins.
-if [ -z "$font" ]; then
-    case "$mode" in light|dark) font=inter ;; *) font=system ;; esac
-fi
-# The font goes to the profile: the bundled TTFs into user/fonts and VCL's UIFont/FamilyName item.
-[ "$font" = system ] || args+=(--font "$font")
+# The font goes to the profile: the bundled TTFs into user/fonts and VCL's UIFont/FamilyName item. A Boost
+# look brings its own font (Inter), so --font is passed only when given; the stock modes keep the desktop's
+# font unless --font names a bundled one.
+case "$mode" in
+light|dark) [ -z "$font" ] || args+=(--font "$font") ;;
+*)          [ "${font:-system}" = system ] || args+=(--font "$font") ;;
+esac
 
 soffice="$core/instdir/program/soffice"
 unopkg="$core/instdir/program/unopkg"

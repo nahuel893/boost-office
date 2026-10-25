@@ -131,13 +131,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# --- profile: same settings as office.sh light|dark -----------------------------------------
-if [ "$theme" = light ]; then
-    args=(--app "$app" --ui office --appearance light --icons boost --scheme "Boost Light" --tint 255); gtk=adw-gtk3
-else
-    args=(--app "$app" --ui office --appearance dark --icons boost_dark --scheme "Boost Dark" --tint 255); gtk=adw-gtk3-dark
-fi
-[ "$font" = system ] || args+=(--font "$font")
+# --- profile: the look of office.sh light|dark (profile.py LOOKS), with SHOT_FONT's font ----------------
+args=(--app "$app" --look "$theme" --font "$font")
+if [ "$theme" = light ]; then gtk=adw-gtk3; else gtk=adw-gtk3-dark; fi
 env_arg="-env:UserInstallation=file://$profile"
 oxt="$core/product/themes/out/boost-schemes.oxt"
 [ -f "$oxt" ] || python3 -I "$core/product/themes/build_schemes.py" >/dev/null

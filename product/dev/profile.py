@@ -37,6 +37,19 @@ APPEARANCES = {"light": "1", "dark": "2"}
 # desktop's UI font family. "system" writes nothing and keeps the desktop's font.
 UI_FONT = "/org.openoffice.VCL/VCLSettings/UIFont"
 UI_FONTS = {"system": None, "selawik": "Selawik", "inter": "Inter"}
+# A fresh profile has no ooSetupLastVersion, so the welcome dialog opens over the first document
+# (sfx2/source/view/viewfrm.cxx:1705-1717) unless Setup/Product/WhatsNew is false.
+SETUP_PRODUCT = "/org.openoffice.Setup/Product"
+
+# The Boost looks: the build_items arguments of office.sh light|dark, shot-tab.sh light|dark and the
+# installed boost.xcd layer (product/install/build_xcd.py), which all take them from here. The icon themes are
+# product/icons/build_theme.py's THEMES, the schemes product/themes/palette.json's.
+LOOKS = {
+    "light": {"ui": "office", "appearance": "light", "icons": "boost", "scheme": "Boost Light", "tint": 255,
+              "font": "inter"},
+    "dark": {"ui": "office", "appearance": "dark", "icons": "boost_dark", "scheme": "Boost Dark", "tint": 255,
+             "font": "inter"},
+}
 
 
 def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system", app="calc"):
@@ -56,9 +69,10 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system
         items.append((MISC, "NotebookbarColorTransparency", str(tint)))
     if UI_FONTS[font]:
         items.append((UI_FONT, "FamilyName", UI_FONTS[font]))
-    # Keep screenshots free of first-start and tip dialogs, and of Impress's template dialog.
+    # Keep screenshots free of first-start, welcome and tip dialogs, and of Impress's template dialog.
     items.append((MISC, "FirstRun", "false"))
     items.append((MISC, "ShowTipOfTheDay", "false"))
+    items.append((SETUP_PRODUCT, "WhatsNew", "false"))
     if app == "impress":
         items.append((IMPRESS_NEWDOC, "AutoPilot", "false"))
     return items
@@ -96,18 +110,25 @@ def install_fonts(profile, font):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--app", choices=sorted(APPS), default="calc")
-    ap.add_argument("--ui", choices=sorted(UI_MODES), required=True)
-    ap.add_argument("--appearance", choices=sorted(APPEARANCES), required=True)
+    ap.add_argument("--look", choices=sorted(LOOKS),
+                    help="a Boost look from LOOKS; --ui, --appearance, --icons, --scheme, --tint or --font given as "
+                         "well win over its values")
+    ap.add_argument("--ui", choices=sorted(UI_MODES), help="required without --look")
+    ap.add_argument("--appearance", choices=sorted(APPEARANCES), help="required without --look")
     ap.add_argument("--icons")
     ap.add_argument("--scheme")
     ap.add_argument("--tint", type=int)
-    ap.add_argument("--font", choices=list(UI_FONTS), default="system")
+    ap.add_argument("--font", choices=list(UI_FONTS), help="default: the look's font, else system")
     ap.add_argument("--profile", type=Path, default=DEFAULT_PROFILE)
     args = ap.parse_args(argv)
-    if UI_FONTS[args.font]:
-        install_fonts(args.profile, args.font)
-    print(write(args.profile, build_items(args.ui, args.appearance, args.icons, args.scheme, args.tint,
-                                          args.font, args.app)))
+    chosen = {"font": "system", **LOOKS.get(args.look, {})}
+    chosen.update({key: getattr(args, key) for key in ("ui", "appearance", "icons", "scheme", "tint", "font")
+                   if getattr(args, key) is not None})
+    if "ui" not in chosen or "appearance" not in chosen:
+        ap.error("--ui and --appearance are required without --look")
+    if UI_FONTS[chosen["font"]]:
+        install_fonts(args.profile, chosen["font"])
+    print(write(args.profile, build_items(**chosen, app=args.app)))
 
 
 if __name__ == "__main__":

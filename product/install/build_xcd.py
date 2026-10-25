@@ -12,7 +12,6 @@ schemes and the per-app tab accents of the scheme extension (product/themes/buil
 Usage: python3 -I product/install/build_xcd.py [--theme light|dark] [--out FILE]
 """
 import argparse
-import ast
 import sys
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -22,39 +21,30 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(ROOT))
 
 from product.dev import profile  # noqa: E402
+from product.icons import build_theme  # noqa: E402
 from product.themes import build_schemes  # noqa: E402
 
 OOR = "http://openoffice.org/2001/registry"
 ET.register_namespace("oor", OOR)
 # Every token in palette.json and every scheme list is ordered (light, dark).
 THEMES = ("light", "dark")
-# office.sh's light and dark looks pass --tint 255 (the one value not in a Python table yet).
-TINT = 255
-FONT = "inter"
-BUILD_THEME = ROOT / "product" / "icons" / "build_theme.py"
-# Not in the dev profile, whose ooSetupLastVersion is set: a fresh profile has none, so the welcome
-# dialog opens over the first document (sfx2/source/view/viewfrm.cxx:1705-1717) unless WhatsNew is off.
-FIRST_START = [("/org.openoffice.Setup/Product", "WhatsNew", "false")]
 
 
 def _q(name):
     return f"{{{OOR}}}{name}"
 
 
-def icon_themes():
-    """build_theme.THEMES (icon theme -> mode), read from its source: importing it needs Pillow."""
-    for node in ast.parse(BUILD_THEME.read_text(encoding="utf-8")).body:
-        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "THEMES" for t in node.targets):
-            return ast.literal_eval(node.value)
-    raise LookupError(f"no THEMES in {BUILD_THEME}")
-
-
 def preset(theme, palette=None):
-    """profile.build_items arguments of the Boost look (office.sh light|dark)."""
+    """profile.build_items arguments of the Boost look: profile.LOOKS[theme], the table office.sh and
+    shot-tab.sh use. Its icon theme must be the one build_theme.py builds for that mode and its scheme the
+    palette's, or the layer would name an icon theme or a scheme that is not installed."""
     palette = palette or build_schemes.load_palette()
-    icons = {mode: name for name, mode in icon_themes().items()}[theme]
-    return {"ui": "office", "appearance": theme, "icons": icons,
-            "scheme": palette["schemes"][THEMES.index(theme)], "tint": TINT, "font": FONT}
+    look = profile.LOOKS[theme]
+    if build_theme.THEMES.get(look["icons"]) != theme:
+        raise ValueError(f"LOOKS[{theme!r}] icons {look['icons']!r}: build_theme.THEMES has {build_theme.THEMES}")
+    if palette["schemes"][THEMES.index(theme)] != look["scheme"]:
+        raise ValueError(f"LOOKS[{theme!r}] scheme {look['scheme']!r}: palette.json has {palette['schemes']}")
+    return dict(look)
 
 
 def items(theme, palette=None):
@@ -62,7 +52,7 @@ def items(theme, palette=None):
     args = preset(theme, palette)
     out = {}
     for app in profile.APPS:
-        for path, prop, value in profile.build_items(**args, app=app) + FIRST_START:
+        for path, prop, value in profile.build_items(**args, app=app):
             if out.setdefault((path, prop), value) != value:
                 raise ValueError(f"{path}/{prop}: {out[(path, prop)]} or {value}")
     return [(path, prop, value) for (path, prop), value in out.items()]
