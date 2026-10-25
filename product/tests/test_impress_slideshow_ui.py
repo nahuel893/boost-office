@@ -118,7 +118,7 @@ class ImpressSlideShowUiTest(unittest.TestCase):
         self.assertNotIn("action", dialog[0])  # Set Up Slide Show is the real command
         for item in dialog[1:]:
             self.assertEqual(DIALOG, item["action"], item["cmd"])
-            self.assertEqual("cmd/sc_presentationdialog.png", item["icon"], item["cmd"])  # shared URL: own icon
+            self.assertEqual("cmd/sc_%s.png" % item["cmd"].lower(), item["icon"], item["cmd"])  # shared URL: own icon
             self.assertIn('id="btnSlideShow%s"' % item["cmd"], self.office)
 
     def test_hide_slide_is_the_real_command_without_an_action(self):
@@ -130,11 +130,14 @@ class ImpressSlideShowUiTest(unittest.TestCase):
         self.assertIn('menu:id=".uno:ShowSlide"', MENUBAR.read_text(encoding="utf-8"))
 
     def test_the_url_variants_have_an_explicit_icon_that_exists(self):
+        manifest = json.loads((ROOT / "product/icons/manifest.json").read_text(encoding="utf-8"))
         for item in self.items():
             if "?" in g.item_url(item):
                 self.assertTrue(item.get("icon"), item["cmd"])
             if "icon" in item:
-                self.assertTrue((ROOT / "icon-themes/colibre" / item["icon"]).is_file(), item["cmd"])
+                # a Boost manifest entry of that name (test_impress_icons checks the built members)
+                name = item["icon"].removeprefix("cmd/").removeprefix("sc_").removesuffix(".png")
+                self.assertIn(name, {e["name"] for e in manifest["icons"]}, item["cmd"])
 
     def test_the_overflow_menu_goes_with_the_stock_buttons(self):
         self.assertEqual(["Menu Slide Show"], self.layout["remove_objects"])

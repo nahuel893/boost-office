@@ -7312,7 +7312,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:SlideShowOption?Option:string=narrations</property>
-                                        <property name="icon_name">cmd/sc_avmediaplayer.png</property>
+                                        <property name="icon_name">cmd/sc_slideshowplaynarrations.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7338,7 +7338,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnSlideShowSlideShowUseTimings">Use Timings</property>
                                         <property name="action-name">.uno:PresentationDialog</property>
-                                        <property name="icon_name">cmd/sc_presentationdialog.png</property>
+                                        <property name="icon_name">cmd/sc_slideshowusetimings.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7363,7 +7363,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="action-name">.uno:SlideShowOption?Option:string=mediacontrols</property>
-                                        <property name="icon_name">cmd/sc_avmediaplayer.png</property>
+                                        <property name="icon_name">cmd/sc_slideshowshowmediacontrols.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7465,7 +7465,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnSlideShowSlideShowMonitor">Monitor</property>
                                         <property name="action-name">.uno:PresentationDialog</property>
-                                        <property name="icon_name">cmd/sc_presentationdialog.png</property>
+                                        <property name="icon_name">cmd/sc_slideshowmonitor.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -7491,7 +7491,7 @@
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="TabbedImpress|btnSlideShowSlideShowPresenterView">Use Presenter View</property>
                                         <property name="action-name">.uno:PresentationDialog</property>
-                                        <property name="icon_name">cmd/sc_presentationdialog.png</property>
+                                        <property name="icon_name">cmd/sc_slideshowpresenterview.png</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>

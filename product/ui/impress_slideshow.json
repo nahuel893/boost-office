@@ -45,15 +45,15 @@
       [
         {"id": "PlayNarrations", "style": "small-label", "items": [
           {"cmd": "SlideShowPlayNarrations", "action": ".uno:SlideShowOption?Option:string=narrations",
-           "icon": "cmd/sc_avmediaplayer.png", "office_label": "Play Narrations"}
+           "icon": "cmd/sc_slideshowplaynarrations.png", "office_label": "Play Narrations"}
         ]},
         {"id": "UseTimings", "style": "small-label", "items": [
           {"cmd": "SlideShowUseTimings", "action": ".uno:PresentationDialog",
-           "icon": "cmd/sc_presentationdialog.png", "office_label": "Use Timings"}
+           "icon": "cmd/sc_slideshowusetimings.png", "office_label": "Use Timings"}
         ]},
         {"id": "ShowMediaControls", "style": "small-label", "items": [
           {"cmd": "SlideShowShowMediaControls", "action": ".uno:SlideShowOption?Option:string=mediacontrols",
-           "icon": "cmd/sc_avmediaplayer.png", "office_label": "Show Media Controls"}
+           "icon": "cmd/sc_slideshowshowmediacontrols.png", "office_label": "Show Media Controls"}
         ]}
       ]
     ]},
@@ -61,11 +61,11 @@
       [
         {"id": "Monitor", "style": "small-label", "items": [
           {"cmd": "SlideShowMonitor", "action": ".uno:PresentationDialog",
-           "icon": "cmd/sc_presentationdialog.png", "office_label": "Monitor"}
+           "icon": "cmd/sc_slideshowmonitor.png", "office_label": "Monitor"}
         ]},
         {"id": "UsePresenterView", "style": "small-label", "items": [
           {"cmd": "SlideShowPresenterView", "action": ".uno:PresentationDialog",
-           "icon": "cmd/sc_presentationdialog.png", "office_label": "Use Presenter View"}
+           "icon": "cmd/sc_slideshowpresenterview.png", "office_label": "Use Presenter View"}
         ]}
       ]
     ]}

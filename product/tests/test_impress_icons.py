@@ -202,3 +202,23 @@ class ImpressAnimationsIconsTest(_DeckIcons, unittest.TestCase):
     LARGE = frozenset({"PreviewAnimation", "AnimationStyles", "AnimationEffectOptions", "AddAnimation"})
     SMALL = frozenset({"AnimationTrigger", "AnimationStart", "AnimationDuration", "AnimationDelay",
                        "AnimationMoveEarlier", "AnimationMoveLater"})
+
+
+class ImpressSlideShowIconsTest(_ImpressTabIcons, unittest.TestCase):
+    TAB = "SlideShow"
+    # The three controls that only open the Set Up Slide Show dialog and the two `?` variants share a URL with
+    # another control: each names an explicit 16 px icon of its own.
+    SMALL = frozenset({"PlayNarrations", "UseTimings", "ShowMediaControls", "Monitor", "UsePresenterView"})
+
+    def test_the_shared_url_controls_name_their_own_icons(self):
+        icons = {}
+        for button in tab_page(self.TAB).iter("object"):
+            icon = button.find("property[@name='icon_name']")
+            if icon is not None:
+                icons[button.get("id")] = icon.text
+        self.assertEqual({f"btn{self.TAB}SlideShow{c}" for c in
+                          ("PlayNarrations", "UseTimings", "ShowMediaControls", "Monitor", "PresenterView")},
+                         set(icons))
+        for icon in icons.values():
+            self.assertRegex(icon, r"^cmd/sc_slideshow[a-z]+\.png$")
+        self.assertEqual(len(icons), len(set(icons.values())))
