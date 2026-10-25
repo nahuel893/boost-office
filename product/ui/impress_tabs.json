@@ -45,6 +45,8 @@
   },
   "add_pages": [
     {"page": "Animations", "prefix": "Animations", "after_tab": "LayoutLabel", "position": 5,
-     "tab_id": "AnimationsLabel", "label": "~Animations", "context": "TabbedImpress|AnimationsTabLabel"}
+     "tab_id": "AnimationsLabel", "label": "~Animations", "context": "TabbedImpress|AnimationsTabLabel"},
+    {"page": "Help", "prefix": "Help", "after_tab": "ToolsLabel", "position": 20,
+     "tab_id": "HelpLabel", "label": "Hel~p", "context": "TabbedImpress|HelpTabLabel"}
   ]
 }

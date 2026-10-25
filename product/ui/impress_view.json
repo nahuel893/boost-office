@@ -1,0 +1,59 @@
+{
+  "page": "View",
+  "id_prefix": "View",
+  "context": "TabbedImpress",
+  "remove_objects": ["Menu View"],
+  "sections": [
+    {"name": "PresentationViews", "caption": "Presentation Views", "rows": 3, "columns": [
+      [{"id": "Normal", "style": "large", "items": [{"cmd": "NormalMultiPaneGUI", "office_label": "Normal"}]}],
+      [{"id": "OutlineView", "style": "large", "items": [{"cmd": "OutlineMode", "office_label": "Outline View"}]}],
+      [
+        {"id": "SlideSorter", "style": "small-label", "items": [{"cmd": "DiaMode", "office_label": "Slide Sorter"}]},
+        {"id": "NotesPage", "style": "small-label", "items": [{"cmd": "NotesMode", "office_label": "Notes Page"}]},
+        {"id": "ReadingView", "style": "small-label", "items": [
+          {"cmd": "ViewReadingView", "action": ".uno:ViewMode?Mode:string=reading",
+           "icon": "cmd/sc_viewmode_read.png", "office_label": "Reading View"}]}
+      ]
+    ]},
+    {"name": "MasterViews", "caption": "Master Views", "rows": 3, "columns": [
+      [
+        {"id": "SlideMaster", "style": "small-label", "items": [
+          {"cmd": "SlideMasterPage", "office_label": "Slide Master"}]},
+        {"id": "HandoutMaster", "style": "small-label", "items": [
+          {"cmd": "HandoutMode", "office_label": "Handout Master"}]},
+        {"id": "NotesMaster", "style": "small-label", "items": [
+          {"cmd": "NotesMasterPage", "office_label": "Notes Master"}]}
+      ]
+    ]},
+    {"name": "Show", "caption": "Show", "rows": 3, "columns": [
+      [
+        {"id": "Ruler", "style": "small-label", "items": [{"cmd": "ShowRuler", "office_label": "Ruler"}]},
+        {"id": "Gridlines", "style": "small-label", "items": [{"cmd": "GridVisible", "office_label": "Gridlines"}]},
+        {"id": "Guides", "style": "small-label", "items": [{"cmd": "HelplinesVisible", "office_label": "Guides"}]}
+      ],
+      [{"id": "Notes", "style": "large", "items": [{"cmd": "BottomPaneImpress", "office_label": "Notes"}]}]
+    ]},
+    {"name": "Zoom", "caption": "Zoom", "rows": 3, "columns": [
+      [{"id": "Zoom", "style": "large", "items": [{"cmd": "Zoom", "office_label": "Zoom"}]}],
+      [{"id": "FitToWindow", "style": "large", "items": [{"cmd": "ZoomPage", "office_label": "Fit to Window"}]}]
+    ]},
+    {"name": "ColorGrayscale", "caption": "Color/Grayscale", "rows": 3, "columns": [
+      [{"id": "ColorGrayscale", "style": "large", "items": [
+        {"cmd": "ViewColorGrayscaleMenu", "kind": "split", "office_label": "Color/Grayscale"}]}]
+    ]},
+    {"name": "Window", "caption": "Window", "rows": 3, "columns": [
+      [{"id": "NewWindow", "style": "large", "items": [{"cmd": "NewWindow", "office_label": "New Window"}]}],
+      [
+        {"id": "ArrangeAll", "style": "small", "items": [{"cmd": "ViewArrangeAll", "office_label": "Arrange All"}]},
+        {"id": "Cascade", "style": "small", "items": [{"cmd": "ViewCascade", "office_label": "Cascade"}]},
+        {"id": "MoveSplit", "style": "small", "items": [{"cmd": "ViewSplit", "office_label": "Move Split"}]}
+      ],
+      [{"id": "SwitchWindows", "style": "large", "items": [
+        {"cmd": "ViewSwitchWindowsMenu", "kind": "split", "office_label": "Switch Windows"}]}]
+    ]},
+    {"name": "Macros", "caption": "Macros", "rows": 3, "columns": [
+      [{"id": "Macros", "style": "large", "items": [
+        {"cmd": "ViewMacrosMenu", "kind": "split", "office_label": "Macros"}]}]
+    ]}
+  ]
+}
