@@ -59,6 +59,20 @@ configuration.
     user's e-mail address and any credential if one is found.
 12. **Delivery (updated 2026-10-25):** commits on `feature/github-install`, pushed after each task (the user: "pushea
     todo"); `dev` and `main` fast-forward to the closing commit when the feature closes, as Writer and Impress did.
+13. **G0 outcome (2026-10-25):** the `boost.xcd` layer carries every setting; the fallbacks (bundled `.oxt`, profile
+    seeding) are not used. `Setup/Product/WhatsNew` false joins the defaults (without it a welcome dialog opens over
+    every fresh profile), and so does Impress's `AutoPilot` off.
+14. **The workspace color comes from the scheme, not GTK:** without `AppBackground` Writer's workspace takes the
+    user's GTK window color (G0: `#131317` under the user's theme in light). G1 adds `AppBackground` (and any other
+    scheme entry the dev launcher's forced GTK colors hid) to `palette.json` / `build_schemes.py`.
+15. **Fonts:** Inter in `<prefix>/share/fonts/truetype/` is enough (G0: `soffice.bin` loads it from there); no user
+    font folder and no `fc-cache`. The UI font size follows the desktop (ruling 6).
+16. **Theme after the first start:** a profile keeps the scheme it first ran with, so reinstalling with another
+    `--theme` does not switch an existing profile; `install.sh` says so when the profile exists, and `install.md`
+    explains switching in Tools > Options. No profile rewriting.
+17. **One table for the presets:** G1 moves the light and dark presets (appearance, icon theme, scheme, tint) into one
+    table shared by `profile.py`, `office.sh`'s users and `build_xcd.py`, and makes `build_theme.py`'s Pillow import
+    lazy, so nothing is copied by hand.
 
 ## Scope
 
@@ -99,7 +113,7 @@ on this branch, pushed after each task, fast-forward at close (ruling 12). No ch
 
 | ID | Task | Route | Done | Commits | Checks |
 |----|------|-------|------|---------|--------|
-| G0 | Spike: a generated `boost.xcd` in a copy of `instdir` + a fresh profile shows Tabbed Office, Boost icons, scheme and accent in the three apps; Inter in `share/fonts/truetype` is used | delegated (opus; brief `task-G0-brief.md`) | [ ] | | |
+| G0 | Spike: a generated `boost.xcd` in a copy of `instdir` + a fresh profile shows Tabbed Office, Boost icons, scheme and accent in the three apps; Inter in `share/fonts/truetype` is used | delegated (opus; brief `task-G0-brief.md`) | [x] | 1ad6be73a | 998 unit tests OK; fresh-profile screenshots; 0 UNO mismatches |
 | G1 | `product/install/`: the xcd generator (shared data with `profile.py`), `install.sh`, `uninstall.sh`, desktop entry template, flag sample; tests (generator output, install/uninstall into a temp prefix with `--dry-run` and for real) | delegated (opus) | [ ] | | |
 | G2 | GitHub: README rewrite, `CONTRIBUTING.md`, `product/docs/install.md`, `building.md`, `licenses.md`, `product/README.md` index, `.github/` cleanup and templates, screenshots, e-mail scan | delegated (sonnet) | [ ] | | |
 | G3 | Gate: a real install with a scratch `HOME` and XDG directories (never the user's own `~/.local`), launch each app from its launcher and desktop entry `Exec`, screenshots, uninstall leaves nothing | delegated (sonnet) | [ ] | | |
@@ -119,6 +133,27 @@ full unit suite once at the end; the controller checks the tree, processes and o
 - 2026-10-25: branch created from 214697bc3; this document created from the 2026-10-23 draft; ruling 12 updated to
   the user's "pushea todo".
 
+- 2026-10-25, G0 (route: delegated, opus; spike). Commit 1ad6be73a: `product/install/build_xcd.py` (stdlib; writes
+  `boost.xcd` for `--theme light|dark` from `profile.py`'s `build_items` and `build_schemes`) and
+  `product/tests/test_build_xcd.py` (11 tests).
+  - Proof: a scratch `instdir` copy with the icon zips, `boost.xcd` in `share/registry/` and Inter in
+    `share/fonts/truetype/`; fresh profiles, gtk3, no `GTK_THEME`, no private `XDG_CONFIG_HOME`, no `--nologo`.
+    Calc, Writer and Impress open in Tabbed Office with the Boost pages, icons, scheme and Inter; underlines measure
+    `#1B7A3E`, `#185ABD`, `#C43E1C` (and `#83A6DB` Writer dark); every value read over UNO matches the layer (0
+    mismatches in four launches).
+  - Every setting group works from the layer: Tabbed Office, `SymbolStyle`, `ApplicationAppearance`,
+    `LibreOfficeTheme`, the schemes and `CurrentColorScheme`, the accents, `NotebookbarColorTransparency`, the UI font,
+    `FirstRun`, `ShowTipOfTheDay`, Impress `AutoPilot`, `WhatsNew` (rulings 13, 15).
+  - Findings, ruled: the workspace takes the user's GTK color without `AppBackground` (ruling 14); a profile keeps its
+    first scheme (ruling 16); the tint 255 is copied by hand and the icon theme names are read with `ast` (ruling 17).
+  - Known, accepted: the UI font keeps the desktop's size (ruling 6); other GTK-drawn parts (a dialog's title bar)
+    follow the user's GTK theme (G3 looks at a native dialog); windows say "LibreOfficeDev" (ruling 1). The dev
+    screenshots never showed first-start dialogs because `shot-tab.sh` passes `--nologo`.
+  - Evidence (report: `task-G0-report.md`): 987 -> 998 OK; `git show --check` clean; the scratch tree deleted; nothing
+    of the user's `~/.config` or `~/.local` changed; screenshots in `assets/previews/github-install/g0/`.
+  - Controller check: the tree clean; no soffice left; no `.superpowers` file tracked; the Impress fresh-profile
+    screenshot looked at (Tabbed Office, orange underline, Boost icons).
+
 ## Next step
 
-G0 (delegated, opus; brief `task-G0-brief.md`): the `boost.xcd` spike.
+G1 (delegated, opus; brief `task-G1-brief.md`): `product/install/` scripts, the shared presets table, `AppBackground`.
