@@ -25,7 +25,8 @@ Usage: install.sh [options]
 Install a built Boost Office tree (an instdir) for the current user, without root.
 
 Options:
-  --instdir DIR    the built tree (default: the repository's instdir); it must contain program/soffice
+  --instdir DIR    the built tree (default: the instdir of the repository, or of the extracted release
+                   archive); it must contain program/soffice
   --prefix DIR     where the tree is copied (default: ~/.local/opt/boost-office)
   --bindir DIR     where the launchers boost-office, boost-writer, boost-calc and boost-impress go
                    (default: ~/.local/bin)
