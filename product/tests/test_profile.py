@@ -191,6 +191,13 @@ class ProductNameTest(unittest.TestCase):
                 p = props(profile.render(profile.build_items(ui, "light", app=app)))
                 self.assertEqual("Boost Office", p[(SETUP_PRODUCT, "ooName")], (app, ui))
 
+    def test_every_profile_names_the_vendor(self):
+        # Setup/Product/ooVendor is the About dialog's "This release was supplied by ..." (unotools
+        # ConfigManager::getVendor); the build's own value is the login name of whoever configured it.
+        for app in profile.APPS:
+            p = props(profile.render(profile.build_items("office", "light", app=app)))
+            self.assertEqual("the Boost Office project", p[(SETUP_PRODUCT, "ooVendor")], app)
+
     def test_oo_name_is_the_setup_schema_property(self):
         schema = ET.parse(Path(__file__).resolve().parents[2]
                           / "officecfg/registry/schema/org/openoffice/Setup.xcs")

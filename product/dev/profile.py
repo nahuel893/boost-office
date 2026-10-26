@@ -45,6 +45,9 @@ SETUP_PRODUCT = "/org.openoffice.Setup/Product"
 # and the Options tree (unotools ConfigManager::getProductName), so a configuration item renames the product with no
 # rebuild. Strings compiled into the program keep the build's name.
 PRODUCT_NAME = "Boost Office"
+# Setup/Product/ooVendor is the About dialog's "This release was supplied by ..." (ConfigManager::getVendor); the
+# build's own value is the login name of whoever configured it.
+VENDOR = "the Boost Office project"
 # The Start Center's recent and template views paint these colors (sfx2 RecentDocsView and TemplateDefaultView
 # UpdateColors; Common.xcs defaults #666666 and #EEEEEE). A Boost scheme gives them its workspace and text
 # colors, read from the palette its color scheme is built from.
@@ -98,6 +101,7 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system
     items.append((MISC, "ShowTipOfTheDay", "false"))
     items.append((SETUP_PRODUCT, "WhatsNew", "false"))
     items.append((SETUP_PRODUCT, "ooName", PRODUCT_NAME))
+    items.append((SETUP_PRODUCT, "ooVendor", VENDOR))
     if app == "impress":
         items.append((IMPRESS_NEWDOC, "AutoPilot", "false"))
     return items
