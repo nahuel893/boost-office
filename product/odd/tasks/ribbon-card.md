@@ -1,0 +1,52 @@
+# Feature: the ribbon as a rounded card (Microsoft 365 look)
+
+- **Status:** queued, 2026-10-26 (starts once the 0.1.1 archive of `boost-branding.md` is built: one writer in this
+  tree at a time, and C1 rebuilds `vcl` into the `instdir` that 0.1.1 is packaged from).
+- **Locator:** `product/odd/tasks/ribbon-card.md`
+- **Engram mirror:** `odd/ribbon-card/tasks`
+- **Repo / branch:** `/mnt/games/libreoffice/core`, branch `feature/ribbon-card` from `main` (410ae2d47 or later).
+
+## Objective
+
+The ribbon body (the commands under the tab names) is drawn as a rounded card on a slightly darker window background,
+as Microsoft 365 does, in Writer, Calc and Impress, light and dark.
+
+## Problem and why
+
+The user (2026-10-26), with a Microsoft 365 Excel screenshot: "podes hacer que la cinta tenga un borde redondeado?".
+Today (`product/docs/screenshots/calc-home-light.png`) the tab row, the ribbon and the window are one flat white area;
+in 365 the tab row sits on a light gray background and the ribbon body is a white card with rounded corners and a few
+pixels of margin, set off from the gray around it.
+
+## Rulings (controller, 2026-10-26; the user asked for no questions and no review stops)
+
+1. **Shape:** card corner radius about 8 px; margin about 4-6 px from the window's left and right edges and below the
+   card; a 1 px subtle edge or soft shadow (whichever reads like 365 on gtk3); the tab names stay outside the card, on
+   the window background, with the selected-tab underline unchanged.
+2. **Colors from the Boost schemes:** window/tab-row background a light neutral gray (light) / dark neutral (dark),
+   card = the current ribbon color; take existing `palette.json` roles, or add one role with light and dark values if
+   none fits (say which). Contrast as in the user's screenshot: visible but quiet.
+3. **Scope:** gtk3 (the shipped backend), Tabbed Office ribbons of Writer, Calc and Impress, light and dark; contextual
+   tabs and the collapsed ribbon must still look right. Non-gtk3 backends keep rendering something sane.
+4. **Release:** ships in 0.1.2, not 0.1.1 (the user, 2026-10-26: "no, que entre en la 0.1.2"); the README screenshots
+   of the three apps are retaken.
+
+## Tasks
+
+- [ ] **C1 — rounded ribbon card** (delegated, one writer: theme C++, possibly sfx2 notebookbar, palette, tests,
+  screenshots; writer trigger): rulings 1-4.
+
+## Acceptance criteria
+
+1. Screenshots of Writer, Calc and Impress (light and dark) show the ribbon as a rounded card with margins, the tab row
+   on the window background; measured colors match the chosen palette roles.
+2. The collapsed ribbon, a contextual tab (for example Calc chart or Writer table) and a popup still render correctly.
+3. The unit suite is green; the custom-theme UITest regression passes.
+
+## Progress / evidence
+
+- 2026-10-26: requested; queued behind B1 (same working tree, single writer). Moved to 0.1.2 by the user.
+
+## Next step
+
+C1 after the 0.1.1 archive is built (B2 of `boost-branding.md`); then release 0.1.2.
