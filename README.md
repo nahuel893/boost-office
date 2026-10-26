@@ -36,7 +36,10 @@ install from the archive.
 
 ## Status
 
-All three apps are built. The windows still say "LibreOfficeDev": the product name is not rebranded.
+All three apps are built. An install carries the Boost brand: the splash, the About dialog's logo and the product name
+("Boost Office" in window titles, dialogs and Tools > Options), applied by the installer with no rebuild (the dev
+profile carries the name too). Strings compiled into the program (the About dialog's copyright line, the window
+class `libreoffice-*`) keep the build's LibreOffice(Dev) name.
 
 | App | Ribbon | Placeholders (greyed) | Design record |
 |---|---|---|---|

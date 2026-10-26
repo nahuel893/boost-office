@@ -4,7 +4,7 @@ Decision date: 2026-10-12. Status: accepted.
 
 ## Goal
 
-Ship an installable, open-source office suite based on LibreOffice, under the name Boost Office (no configure-level rebranding yet: the windows still say LibreOfficeDev), competing in the market.
+Ship an installable, open-source office suite based on LibreOffice, under the name Boost Office (branded at install time, not at configure time: the splash, the logos and the product name are an overlay and a configuration item, so only compiled-in strings still say LibreOfficeDev), competing in the market.
 
 ## Model: develop on master, ship from release branches
 

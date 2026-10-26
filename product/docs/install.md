@@ -99,7 +99,7 @@ Run `--dry-run` first to read the plan.
 | What | Where |
 |---|---|
 | The program tree (a copy of `instdir`) | `<prefix>`, default `~/.local/opt/boost-office` |
-| The Boost defaults (Tabbed Office, icons, color schemes, tab accents, Inter) | `<prefix>/share/registry/boost.xcd` |
+| The Boost defaults (Tabbed Office, icons, color schemes, tab accents, Inter, the product name "Boost Office") | `<prefix>/share/registry/boost.xcd` |
 | The Boost icon themes | `<prefix>/share/config/images_boost.zip` and `images_boost_dark.zip` |
 | The Inter UI font | `<prefix>/share/fonts/truetype/` |
 | The Boost brand, over the stock LibreOffice one of the copied tree: the splash, the About and Start Center logos, the splash's progress bar | `<prefix>/program/intro.png` and `intro-highres.png` (from `--brand-dir`), `<prefix>/program/shell/{about,logo,logo_inverted,logo-sc,logo-sc_inverted}.svg` (from `product/brand/shell`), the `Progress*` keys of `<prefix>/program/sofficerc` |
@@ -124,7 +124,7 @@ Run `--dry-run` first to read the plan.
 A profile keeps the color scheme it first ran with. If `~/.config/boost-office` already exists, reinstalling with
 another `--theme` does not switch it, and the installer says so. To switch an existing profile:
 
-- choose **Boost Light** or **Boost Dark** in Tools > Options > LibreOfficeDev > Appearance, or
+- choose **Boost Light** or **Boost Dark** in Tools > Options > Boost Office > Appearance, or
 - move `~/.config/boost-office` away (or uninstall with `--purge`) and start again.
 
 ## Update
@@ -168,7 +168,7 @@ that the installer did not create; those stay.
 | `has no program/soffice` | `--instdir` is not a finished build: [building.md](building.md) |
 | `exists and is not a Boost Office install` | `--prefix` holds something else. Pick another prefix; the installer never replaces it |
 | An earlier install blocks the new one | Add `--force`, or run `uninstall.sh --prefix DIR` first |
-| The window title says "LibreOfficeDev" | Known: the product name is not rebranded |
+| The window title or the splash says "LibreOfficeDev" | The program was not started from this install (another `soffice`, or the build's own `instdir`), or the install predates 0.1.1: reinstall with `--force`. Strings compiled into the program (the About dialog's copyright line, the window class `libreoffice-*`) keep the build's name |
 | No desktop entry in the menu | Check that `boost-office-*.desktop` is in `${XDG_DATA_HOME:-~/.local/share}/applications`. The installer runs `update-desktop-database` when it is present |
 
 To report a problem, use the bug template in `.github/ISSUE_TEMPLATE/` and say which of these you tried.
