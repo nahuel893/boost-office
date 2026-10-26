@@ -181,6 +181,24 @@ class FirstStartTest(unittest.TestCase):
         self.assertEqual("xs:boolean", prop.get(OOR + "type"))
 
 
+class ProductNameTest(unittest.TestCase):
+
+    def test_every_profile_names_the_product_boost_office(self):
+        # Setup/Product/ooName is %PRODUCTNAME of the UI strings, the window titles and the Options tree; the dev
+        # profile and boost.xcd carry it from the same list.
+        for app in profile.APPS:
+            for ui in ("default", "office"):
+                p = props(profile.render(profile.build_items(ui, "light", app=app)))
+                self.assertEqual("Boost Office", p[(SETUP_PRODUCT, "ooName")], (app, ui))
+
+    def test_oo_name_is_the_setup_schema_property(self):
+        schema = ET.parse(Path(__file__).resolve().parents[2]
+                          / "officecfg/registry/schema/org/openoffice/Setup.xcs")
+        prop = schema.find("component/group[@{0}name='Product']/prop[@{0}name='ooName']".format(OOR))
+        self.assertIsNotNone(prop)
+        self.assertEqual("xs:string", prop.get(OOR + "type"))
+
+
 class ImpressProfileTest(unittest.TestCase):
 
     def test_impress_office_sets_the_impress_mode_and_file(self):

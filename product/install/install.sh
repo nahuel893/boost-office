@@ -317,5 +317,5 @@ case ":$PATH:" in *":$bindir:"*) ;; *) say "Note: $bindir is not on your PATH." 
 if [ -d "$profile" ]; then
     say "Note: the profile $profile exists. --theme sets the look of new profiles only: this profile keeps"
     say "the color scheme it first ran with. To switch it, choose Boost Light or Boost Dark under"
-    say "Tools > Options > LibreOfficeDev > Appearance, or move $profile away to start a new profile."
+    say "Tools > Options > Boost Office > Appearance, or move $profile away to start a new profile."
 fi

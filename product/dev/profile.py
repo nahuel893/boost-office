@@ -41,6 +41,10 @@ UI_FONTS = {"system": None, "selawik": "Selawik", "inter": "Inter"}
 # A fresh profile has no ooSetupLastVersion, so the welcome dialog opens over the first document
 # (sfx2/source/view/viewfrm.cxx:1705-1717) unless Setup/Product/WhatsNew is false.
 SETUP_PRODUCT = "/org.openoffice.Setup/Product"
+# Setup/Product/ooName (Setup.xcu: ${PRODUCTNAME} of the build) is %PRODUCTNAME in the UI strings, the window titles
+# and the Options tree (unotools ConfigManager::getProductName), so a configuration item renames the product with no
+# rebuild. Strings compiled into the program keep the build's name.
+PRODUCT_NAME = "Boost Office"
 # The Start Center's recent and template views paint these colors (sfx2 RecentDocsView and TemplateDefaultView
 # UpdateColors; Common.xcs defaults #666666 and #EEEEEE). A Boost scheme gives them its workspace and text
 # colors, read from the palette its color scheme is built from.
@@ -93,6 +97,7 @@ def build_items(ui, appearance, icons=None, scheme=None, tint=None, font="system
     items.append((MISC, "FirstRun", "false"))
     items.append((MISC, "ShowTipOfTheDay", "false"))
     items.append((SETUP_PRODUCT, "WhatsNew", "false"))
+    items.append((SETUP_PRODUCT, "ooName", PRODUCT_NAME))
     if app == "impress":
         items.append((IMPRESS_NEWDOC, "AutoPilot", "false"))
     return items

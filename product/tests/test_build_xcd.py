@@ -110,6 +110,10 @@ class BuildXcdTest(unittest.TestCase):
         for theme in build_xcd.THEMES:
             self.assertEqual(lookup(parse(theme), "/org.openoffice.Setup/Product", "WhatsNew"), "false")
 
+    def test_the_product_is_named_boost_office(self):
+        for theme in build_xcd.THEMES:
+            self.assertEqual(lookup(parse(theme), "/org.openoffice.Setup/Product", "ooName"), "Boost Office")
+
     def test_presets_are_the_shared_looks(self):
         # One table (profile.LOOKS) for the dev launchers and the layer: nothing is copied by hand.
         for theme in build_xcd.THEMES:
