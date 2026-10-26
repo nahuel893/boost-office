@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="345.611" height="71.5" viewBox="0 0 9144.293 1891.771">
+  <!-- program/shell/logo-sc_inverted.svg (Start Center logo, dark). Readable on dark backgrounds: palette.json dark colors (text, accents). The stock file's width, height and viewBox; the mark and the
+       wordmark of the splash (product/brand/intro.svg) at this scale. -->
+  <rect x="60" y="946.2" width="252" height="458" rx="64" fill="#83A6DB"/>
+  <rect x="440" y="716.2" width="252" height="688" rx="64" fill="#5CC27E"/>
+  <rect x="820" y="487.2" width="252" height="917" rx="64" fill="#FF8F6B"/>
+  <text x="1450" y="1404.2" font-family="Inter" font-size="1260" font-weight="600" fill="#F2F2F2">Boost</text>
+  <text x="5306.4" y="1404.2" font-family="Inter" font-size="1260" font-weight="400" fill="#F2F2F2">Office</text>
+</svg>

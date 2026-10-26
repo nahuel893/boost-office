@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="345.611" height="71.5" viewBox="0 0 9144.293 1891.771">
+  <!-- program/shell/logo-sc.svg (Start Center logo, light): palette.json light colors: text, accent.writer, accent.calc, accent.impress. The stock file's width, height and viewBox; the mark and the
+       wordmark of the splash (product/brand/intro.svg) at this scale. -->
+  <rect x="60" y="946.2" width="252" height="458" rx="64" fill="#185ABD"/>
+  <rect x="440" y="716.2" width="252" height="688" rx="64" fill="#1B7A3E"/>
+  <rect x="820" y="487.2" width="252" height="917" rx="64" fill="#C43E1C"/>
+  <text x="1450" y="1404.2" font-family="Inter" font-size="1260" font-weight="600" fill="#242424">Boost</text>
+  <text x="5306.4" y="1404.2" font-family="Inter" font-size="1260" font-weight="400" fill="#242424">Office</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="644" height="199" viewBox="0 0 644 199">
+  <!-- The Boost Office splash (program/intro.png, the stock 644 x 199). Colors from product/themes/palette.json
+       (light): workspace, surface.pressed, text, accent.writer, accent.calc, accent.impress. The mark is three
+       rising bars, one per app; the wordmark is Inter SemiBold + Regular (product/fonts/inter), each word placed
+       at its own x so no renderer has to keep the space between them. #progress marks where the splash draws
+       its progress bar: build_brand.py writes it into sofficerc (ProgressPosition, ProgressSize). -->
+  <rect width="644" height="199" fill="#FAFAFB"/>
+  <rect x="0.5" y="0.5" width="643" height="198" fill="none" stroke="#E0E0E0"/>
+  <g id="mark">
+    <rect x="40" y="80" width="10" height="19" rx="2" fill="#185ABD"/>
+    <rect x="56" y="71" width="10" height="28" rx="2" fill="#1B7A3E"/>
+    <rect x="72" y="61" width="10" height="38" rx="2" fill="#C43E1C"/>
+  </g>
+  <text x="98" y="99" font-family="Inter" font-size="52" font-weight="600" fill="#242424">Boost</text>
+  <text x="257.15" y="99" font-family="Inter" font-size="52" font-weight="400" fill="#242424">Office</text>
+  <rect id="progress" x="40" y="146" width="564" height="8" fill="none"/>
+</svg>
