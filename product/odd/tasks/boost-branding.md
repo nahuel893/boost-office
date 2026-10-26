@@ -88,7 +88,11 @@ brand.
   refused rc 1 before download. Controller spot-check: `sha256sum -c` OK, bootstrap carries 0.1.1, its sha256, floor
   2.44.
 - 2026-10-26 B3 (controller): pushed, fast-forwarded `main` and `dev`, tag `v0.1.1`, GitHub release with the three
-  assets and the notes; checked against the real URLs (see the final entry below).
+  assets and the notes (`main`/`dev` e45e1bd7f). Real URLs: the three `latest/download` assets `sha256sum -c` OK,
+  bootstrap byte-identical to `out/`; clean `archlinux:latest` one-liner rc 0, installed `intro.png` sha256 9481d6c0…
+  (Boost), `boost.xcd` names Boost Office, `--headless --convert-to pdf` wrote `%PDF-`, `--uninstall --purge` rc 0.
+  A first container run without `nss` failed to start (`libssl3.so` missing): the notes already list NSS, so it was
+  the test's package list, not a defect. Images removed.
 
 ## Next step
 
