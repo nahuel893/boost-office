@@ -6,7 +6,7 @@
 # Package a built Boost Office tree (an instdir) as the release archive boost-office-VERSION-linux-x86_64.tar.xz,
 # the one-command installer boost-office-install.sh (the archive's sha256 inside) and SHA256SUMS for both. The archive holds one folder, boost-office-VERSION/, laid out like the repository: install.sh
 # and uninstall.sh at the top, instdir/, and the files the installer reads from product/ and sysui/ (the icon
-# zips prebuilt), so ./install.sh with no arguments installs the bundled instdir. See --help.
+# zips and the splash PNGs prebuilt), so ./install.sh with no arguments installs the bundled instdir. See --help.
 set -euo pipefail
 
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -22,12 +22,15 @@ FILES=(
     product/install/build_xcd.py product/install/boost-office.desktop.in
     product/icons/__init__.py product/icons/build_theme.py product/icons/manifest.json product/icons/fluent/LICENSE
     product/themes/__init__.py product/themes/build_schemes.py product/themes/palette.json
+    product/brand/__init__.py product/brand/build_brand.py product/brand/intro.svg product/brand/intro-highres.svg
+    product/brand/shell/about.svg product/brand/shell/logo.svg product/brand/shell/logo_inverted.svg
+    product/brand/shell/logo-sc.svg product/brand/shell/logo-sc_inverted.svg
     product/docs/install.md product/docs/licenses.md
 )
 
 usage() {
     cat <<EOF
-Usage: make-release.sh --instdir DIR --version VERSION --out DIR [--icons-dir DIR]
+Usage: make-release.sh --instdir DIR --version VERSION --out DIR [--icons-dir DIR] [--brand-dir DIR]
 
 Package a built Boost Office tree as boost-office-VERSION-linux-x86_64.tar.xz, boost-office-install.sh (the
 one-command installer for that archive) and SHA256SUMS in --out.
@@ -38,6 +41,8 @@ Options:
   --out DIR        where the three files are written (created when missing)
   --icons-dir DIR  where images_boost.zip and images_boost_dark.zip come from; when they are missing they are
                    built there first, which needs Pillow and rsvg-convert (default: product/icons/out)
+  --brand-dir DIR  where the Boost splash intro.png and intro-highres.png come from; when they are missing they
+                   are built there first, which needs rsvg-convert (default: product/brand/out)
   -h, --help       show this help
 
 The glibc floor (the highest GLIBC_ symbol version the shipped files need, measured with readelf) goes
@@ -53,15 +58,17 @@ instdir=""
 version=""
 out=""
 icons="$repo/product/icons/out"
+brand="$repo/product/brand/out"
 while [ $# -gt 0 ]; do
     case "$1" in
-    --instdir|--version|--out|--icons-dir)
+    --instdir|--version|--out|--icons-dir|--brand-dir)
         [ $# -ge 2 ] || bad "$1 needs a value"
         case "$1" in
         --instdir) instdir=$2 ;;
         --version) version=$2 ;;
         --out) out=$2 ;;
         --icons-dir) icons=$2 ;;
+        --brand-dir) brand=$2 ;;
         esac
         shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -79,6 +86,7 @@ esac
 instdir=$(realpath -ms -- "$instdir")
 out=$(realpath -ms -- "$out")
 icons=$(realpath -ms -- "$icons")
+brand=$(realpath -ms -- "$brand")
 [ -f "$instdir/program/soffice" ] || die "$instdir has no program/soffice: pass a built tree to --instdir"
 for rel in "${FILES[@]}"; do
     [ -f "$repo/$rel" ] || die "$repo/$rel is missing"
@@ -93,6 +101,15 @@ if [ "$build_icons" = 1 ]; then
     command -v rsvg-convert >/dev/null \
         || die "the icon zips are not in $icons, and building them needs rsvg-convert (librsvg)"
 fi
+build_brand=0
+[ -f "$brand/intro.png" ] && [ -f "$brand/intro-highres.png" ] || build_brand=1
+if [ "$build_brand" = 1 ]; then
+    command -v rsvg-convert >/dev/null \
+        || die "the splash PNGs are not in $brand, and building them needs rsvg-convert (librsvg)"
+else
+    python3 -I "$repo/product/brand/build_brand.py" check --out "$brand" >/dev/null \
+        || die "the splash PNGs in $brand are not the stock sizes; rebuild them with product/brand/build_brand.py"
+fi
 command -v xz >/dev/null || die "xz is needed"
 command -v readelf >/dev/null || die "readelf (binutils) is needed to measure the glibc floor"
 
@@ -104,6 +121,12 @@ archive="$out/$name"
 if [ "$build_icons" = 1 ]; then
     say "build the icon zips into $icons (Pillow, rsvg-convert)"
     python3 -I "$repo/product/icons/build_theme.py" build --out "$icons" >/dev/null
+fi
+
+# --- the splash PNGs --------------------------------------------------------------------------------------
+if [ "$build_brand" = 1 ]; then
+    say "build the splash PNGs into $brand (rsvg-convert)"
+    python3 -I "$repo/product/brand/build_brand.py" build --out "$brand" >/dev/null
 fi
 
 # --- the bundle, staged in a temp dir inside --out -----------------------------------------------------
@@ -134,6 +157,8 @@ done
 
 mkdir -p -- "$bundle/product/icons/out"
 cp -- "$icons/images_boost.zip" "$icons/images_boost_dark.zip" "$bundle/product/icons/out/"
+mkdir -p -- "$bundle/product/brand/out"
+cp -- "$brand/intro.png" "$brand/intro-highres.png" "$bundle/product/brand/out/"
 
 # install.sh and uninstall.sh at the top run the real scripts, which find the bundle's instdir, icon zips and
 # data through their own path, as in the repository.

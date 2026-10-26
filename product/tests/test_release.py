@@ -19,7 +19,9 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from product.brand import build_brand
 from product.install import build_xcd
+from product.tests.test_brand import STOCK_SOFFICERC, png
 from product.tests.test_install import STUB, snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +49,7 @@ def fake_instdir(root):
     soffice = instdir / "program/soffice"
     soffice.write_text(STUB, encoding="utf-8")
     soffice.chmod(0o755)
+    (instdir / "program/sofficerc").write_text(STOCK_SOFFICERC, encoding="utf-8")
     (instdir / "LICENSE").write_text("license\n", encoding="utf-8")
     (instdir / "user/user").mkdir(parents=True)
     (instdir / "user/user/registrymodifications.xcu").write_text("private\n", encoding="utf-8")
@@ -63,6 +66,15 @@ def fake_icons(root):
     return icons
 
 
+def fake_brand(root):
+    """Splash PNGs of the stock sizes (the installer and make-release.sh check only the sizes)."""
+    brand = Path(root)
+    brand.mkdir(parents=True)
+    for name, (_svg, (width, height)) in build_brand.SPLASHES.items():
+        png(brand / name, width, height)
+    return brand
+
+
 def make_release(*argv, env=None):
     return subprocess.run(["bash", str(MAKE), *argv], capture_output=True, text=True, check=False, timeout=300,
                           env=env)
@@ -77,9 +89,10 @@ class ReleaseTest(unittest.TestCase):
         cls.root = Path(cls._tmp.name)
         cls.instdir = fake_instdir(cls.root / "instdir")
         cls.icons = fake_icons(cls.root / "icons")
+        cls.brand = fake_brand(cls.root / "brand")
         cls.out = cls.root / "out"
         cls.result = make_release("--instdir", str(cls.instdir), "--version", VERSION, "--out", str(cls.out),
-                                  "--icons-dir", str(cls.icons))
+                                  "--icons-dir", str(cls.icons), "--brand-dir", str(cls.brand))
         cls.extracted = cls.root / "extracted"
         if cls.result.returncode == 0:
             cls.extracted.mkdir()
@@ -118,6 +131,13 @@ class ReleaseTest(unittest.TestCase):
         for theme in ("boost", "boost_dark"):
             self.assertEqual((self.icons / f"images_{theme}.zip").read_bytes(),
                              (b / f"product/icons/out/images_{theme}.zip").read_bytes())
+        # the splash PNGs prebuilt, so installing needs no converter; the logos and the build script as they are
+        for name in build_brand.SPLASHES:
+            self.assertEqual((self.brand / name).read_bytes(), (b / "product/brand/out" / name).read_bytes(), name)
+        for name in build_brand.SHELL_LOGOS:
+            self.assertEqual((ROOT / "product/brand/shell" / name).read_bytes(),
+                             (b / "product/brand/shell" / name).read_bytes(), name)
+        self.assertTrue((b / "product/brand/build_brand.py").is_file())
         # the instdir's runtime state, the icon sources, the dev tools and caches stay out
         for rel in ("instdir/user", "instdir/.lock", "product/icons/fluent/add_circle_16_filled.svg",
                     "product/dev/office.sh", "product/tests", "product/odd"):
@@ -143,6 +163,9 @@ class ReleaseTest(unittest.TestCase):
             self.assertTrue(os.access(home / ".local/bin/boost-writer", os.X_OK))
             self.assertTrue((home / ".local/share/applications/boost-office-writer.desktop").is_file())
             self.assertFalse((prefix / "user").exists())
+            self.assertEqual((self.brand / "intro.png").read_bytes(), (prefix / "program/intro.png").read_bytes())
+            self.assertIn("ProgressBarColor=" + build_brand.sofficerc_keys()["ProgressBarColor"],
+                          (prefix / "program/sofficerc").read_text(encoding="utf-8"))
             out = subprocess.run([str(self.bundle / "uninstall.sh"), "--purge"], cwd=tmp, capture_output=True,
                                  text=True, env=env, timeout=120)
             self.assertEqual(0, out.returncode, out.stdout + out.stderr)
@@ -175,9 +198,10 @@ class BootstrapTest(unittest.TestCase):
         cls.root = Path(cls._tmp.name)
         instdir = fake_instdir(cls.root / "instdir")
         cls.icons = fake_icons(cls.root / "icons")
+        cls.brand = fake_brand(cls.root / "brand")
         cls.out = cls.root / "out"
         cls.result = make_release("--instdir", str(instdir), "--version", VERSION, "--out", str(cls.out),
-                                  "--icons-dir", str(cls.icons))
+                                  "--icons-dir", str(cls.icons), "--brand-dir", str(cls.brand))
         cls.tampered = cls.root / "tampered"
         cls.tampered.mkdir()
         if cls.result.returncode == 0:
@@ -321,19 +345,21 @@ class RefusalTest(unittest.TestCase):
         self.root = Path(self._tmp.name)
         self.instdir = fake_instdir(self.root / "instdir")
         self.icons = fake_icons(self.root / "icons")
+        self.brand = fake_brand(self.root / "brand")
         self.out = self.root / "out"
 
     def test_an_instdir_without_soffice_is_refused_and_nothing_is_written(self):
         (self.instdir / "program/soffice").unlink()
         before = snapshot(self.root)
         out = make_release("--instdir", str(self.instdir), "--version", VERSION, "--out", str(self.out),
-                           "--icons-dir", str(self.icons))
+                           "--icons-dir", str(self.icons), "--brand-dir", str(self.brand))
         self.assertEqual(1, out.returncode)
         self.assertIn("program/soffice", out.stderr)
         self.assertEqual(before, snapshot(self.root))
 
     def test_missing_or_bad_options_are_refused(self):
-        base = ["--instdir", str(self.instdir), "--out", str(self.out), "--icons-dir", str(self.icons)]
+        base = ["--instdir", str(self.instdir), "--out", str(self.out), "--icons-dir", str(self.icons),
+                "--brand-dir", str(self.brand)]
         for argv in (base, base + ["--version", "1.0 beta"], base + ["--version", "../x"], ["--bogus"]):
             out = make_release(*argv)
             self.assertEqual(2, out.returncode, argv)
@@ -343,7 +369,7 @@ class RefusalTest(unittest.TestCase):
     def test_an_instdir_with_no_elf_file_is_refused(self):
         (self.instdir / "program/elf-sample").unlink()
         out = make_release("--instdir", str(self.instdir), "--version", VERSION, "--out", str(self.out),
-                           "--icons-dir", str(self.icons))
+                           "--icons-dir", str(self.icons), "--brand-dir", str(self.brand))
         self.assertEqual(1, out.returncode)
         self.assertIn("GLIBC_", out.stderr)
         self.assertFalse((self.out / ARCHIVE).exists())
@@ -351,7 +377,7 @@ class RefusalTest(unittest.TestCase):
     def test_help(self):
         out = make_release("--help")
         self.assertEqual(0, out.returncode)
-        for option in ("--instdir", "--version", "--out", "--icons-dir"):
+        for option in ("--instdir", "--version", "--out", "--icons-dir", "--brand-dir"):
             self.assertIn(option, out.stdout)
 
 

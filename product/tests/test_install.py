@@ -12,7 +12,9 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from product.brand import build_brand
 from product.install import build_xcd
+from product.tests.test_brand import STOCK_SOFFICERC, png
 
 ROOT = Path(__file__).resolve().parents[2]
 INSTALL = ROOT / "product/install/install.sh"
@@ -76,12 +78,22 @@ class InstallTestCase(unittest.TestCase):
         self.bindir = self.root / "bin"
         self.instdir = self.root / "instdir"
         self.icons = self.root / "icons"
+        self.brand = self.root / "brand"
         self.home.mkdir()
         (self.instdir / "program").mkdir(parents=True)
         (self.instdir / "share" / "registry").mkdir(parents=True)
         soffice = self.instdir / "program" / "soffice"
         soffice.write_text(STUB, encoding="utf-8")
         soffice.chmod(0o755)
+        # the stock brand the overlay replaces
+        (self.instdir / "program/sofficerc").write_text(STOCK_SOFFICERC, encoding="utf-8")
+        (self.instdir / "program/intro.png").write_bytes(b"stock splash")
+        (self.instdir / "program/shell").mkdir()
+        for name in (*build_brand.SHELL_LOGOS, "donate1.png"):
+            (self.instdir / "program/shell" / name).write_text("stock " + name, encoding="utf-8")
+        self.brand.mkdir()
+        for name, (_svg, (width, height)) in build_brand.SPLASHES.items():
+            png(self.brand / name, width, height)
         self.icons.mkdir()
         for theme in ("boost", "boost_dark"):
             with zipfile.ZipFile(self.icons / f"images_{theme}.zip", "w") as z:
@@ -91,7 +103,7 @@ class InstallTestCase(unittest.TestCase):
 
     def args(self, *extra):
         return ["--instdir", str(self.instdir), "--prefix", str(self.prefix), "--bindir", str(self.bindir),
-                "--icons-dir", str(self.icons), *extra]
+                "--icons-dir", str(self.icons), "--brand-dir", str(self.brand), *extra]
 
     def run_script(self, script, *argv, env=None):
         return subprocess.run(["bash", str(script), *argv], capture_output=True, text=True, check=False,
@@ -121,6 +133,47 @@ class InstallTest(InstallTestCase):
                              (self.prefix / f"share/config/images_{theme}.zip").read_bytes())
         # nothing is left next to the prefix (the copy goes through a temp dir that is renamed)
         self.assertEqual(["boost-office"], sorted(p.name for p in self.prefix.parent.iterdir()))
+
+    def assert_boost_brand(self):
+        program = self.prefix / "program"
+        for name in build_brand.SPLASHES:
+            self.assertEqual((self.brand / name).read_bytes(), (program / name).read_bytes(), name)
+        for name in build_brand.SHELL_LOGOS:
+            self.assertEqual((ROOT / "product/brand/shell" / name).read_bytes(), (program / "shell" / name).read_bytes(),
+                             name)
+        self.assertEqual("stock donate1.png", (program / "shell/donate1.png").read_text(encoding="utf-8"))
+        self.assertEqual(build_brand.edit_sofficerc(STOCK_SOFFICERC, build_brand.sofficerc_keys()),
+                         (program / "sofficerc").read_text(encoding="utf-8"))
+
+    def test_the_boost_brand_goes_over_the_copied_tree_and_the_instdir_stays_stock(self):
+        before = snapshot(self.instdir)
+        out = self.install()
+        self.assert_boost_brand()
+        self.assertEqual(before, snapshot(self.instdir))
+        self.assertIn("sofficerc", out.stdout)
+
+    def test_force_replaces_a_stale_brand(self):
+        self.install()
+        (self.prefix / "program/intro.png").write_bytes(b"stale")
+        (self.prefix / "program/shell/logo.svg").write_text("stale", encoding="utf-8")
+        self.install("--force")
+        self.assert_boost_brand()
+
+    def test_a_splash_of_the_wrong_size_is_refused_before_anything_is_written(self):
+        png(self.brand / "intro.png", 640, 199)
+        before = snapshot(self.root)
+        out = self.run_script(INSTALL, *self.args())
+        self.assertNotEqual(0, out.returncode)
+        self.assertIn("640 x 199", out.stderr)
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_an_instdir_without_sofficerc_is_refused(self):
+        (self.instdir / "program/sofficerc").unlink()
+        before = snapshot(self.root)
+        out = self.run_script(INSTALL, *self.args())
+        self.assertNotEqual(0, out.returncode)
+        self.assertIn("program/sofficerc", out.stderr)
+        self.assertEqual(before, snapshot(self.root))
 
     def test_dark_theme_writes_the_dark_layer(self):
         self.install("--theme", "dark")
@@ -206,13 +259,13 @@ class InstallTest(InstallTestCase):
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertEqual(before, snapshot(self.root))
         for word in ("boost.xcd", "boost-writer", "boost-office-calc.desktop", "Inter-Regular.ttf",
-                     "images_boost.zip", str(self.prefix)):
+                     "images_boost.zip", "intro-highres.png", "sofficerc", str(self.prefix)):
             self.assertIn(word, out.stdout)
 
     def test_defaults_are_under_home(self):
         env = {k: v for k, v in self.env.items() if k != "XDG_DATA_HOME"}
-        out = self.run_script(INSTALL, "--instdir", str(self.instdir), "--icons-dir", str(self.icons), "--dry-run",
-                              env=env)
+        out = self.run_script(INSTALL, "--instdir", str(self.instdir), "--icons-dir", str(self.icons),
+                              "--brand-dir", str(self.brand), "--dry-run", env=env)
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertIn(f"{self.home}/.local/opt/boost-office", out.stdout)
         self.assertIn(f"{self.home}/.local/bin/boost-writer", out.stdout)

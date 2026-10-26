@@ -4,7 +4,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Install a built Boost Office tree (an instdir) for the current user, without root: the tree with the Boost
-# defaults layer (boost.xcd), the Inter UI font and the Boost icon themes in a prefix, launchers, desktop
+# defaults layer (boost.xcd), the Inter UI font, the Boost icon themes and the Boost brand (splash, logos and the
+# splash keys of sofficerc, over the copied tree's stock ones) in a prefix, launchers, desktop
 # entries, app icons, and a manifest that uninstall.sh removes exactly. A copy of uninstall.sh goes into the
 # prefix, so the install can be removed without the repository or the release folder. See --help.
 set -euo pipefail
@@ -34,6 +35,8 @@ Options:
   --theme THEME    light or dark: the look of new profiles (default: light)
   --icons-dir DIR  where images_boost.zip and images_boost_dark.zip come from; when they are missing they are
                    built there first, which needs Pillow and rsvg-convert (default: product/icons/out)
+  --brand-dir DIR  where the Boost splash intro.png and intro-highres.png come from; when they are missing they
+                   are built there first, which needs rsvg-convert (default: product/brand/out)
   --force          replace an earlier Boost Office install at --prefix (uninstalled first; the profile stays)
   --dry-run        print every action and write nothing
   -h, --help       show this help
@@ -54,11 +57,12 @@ prefix="$HOME/.local/opt/boost-office"
 bindir="$HOME/.local/bin"
 theme=light
 icons="$repo/product/icons/out"
+brand="$repo/product/brand/out"
 force=0
 dry=0
 while [ $# -gt 0 ]; do
     case "$1" in
-    --instdir|--prefix|--bindir|--theme|--icons-dir)
+    --instdir|--prefix|--bindir|--theme|--icons-dir|--brand-dir)
         [ $# -ge 2 ] || bad "$1 needs a value"
         case "$1" in
         --instdir) instdir=$2 ;;
@@ -66,6 +70,7 @@ while [ $# -gt 0 ]; do
         --bindir) bindir=$2 ;;
         --theme) theme=$2 ;;
         --icons-dir) icons=$2 ;;
+        --brand-dir) brand=$2 ;;
         esac
         shift 2 ;;
     --force) force=1; shift ;;
@@ -81,6 +86,7 @@ instdir=$(realpath -ms -- "$instdir")
 prefix=$(realpath -ms -- "$prefix")
 bindir=$(realpath -ms -- "$bindir")
 icons=$(realpath -ms -- "$icons")
+brand=$(realpath -ms -- "$brand")
 appdir=$(realpath -ms -- "$data/applications")
 icondir=$(realpath -ms -- "$data/icons/hicolor")
 profile="$HOME/.config/boost-office"
@@ -95,6 +101,7 @@ done
 # --- checks: nothing is written before they pass -------------------------------------------------------
 [ -f "$instdir/program/soffice" ] \
     || die "$instdir has no program/soffice: build Boost Office first (product/docs/building.md) or pass --instdir"
+[ -f "$instdir/program/sofficerc" ] || die "$instdir has no program/sofficerc: is it a built tree?"
 command -v python3 >/dev/null || die "python3 is needed"
 build_icons=0
 [ -f "$icons/images_boost.zip" ] && [ -f "$icons/images_boost_dark.zip" ] || build_icons=1
@@ -103,6 +110,15 @@ if [ "$build_icons" = 1 ]; then
         || die "the icon zips are not in $icons, and building them needs Pillow (python3 -m pip install Pillow)"
     command -v rsvg-convert >/dev/null \
         || die "the icon zips are not in $icons, and building them needs rsvg-convert (librsvg)"
+fi
+build_brand=0
+[ -f "$brand/intro.png" ] && [ -f "$brand/intro-highres.png" ] || build_brand=1
+if [ "$build_brand" = 1 ]; then
+    command -v rsvg-convert >/dev/null \
+        || die "the splash PNGs are not in $brand, and building them needs rsvg-convert (librsvg)"
+else
+    python3 -I "$repo/product/brand/build_brand.py" check --out "$brand" >/dev/null \
+        || die "the splash PNGs in $brand are not the stock sizes; rebuild them with product/brand/build_brand.py"
 fi
 replace=0
 if [ -e "$prefix" ] || [ -L "$prefix" ]; then
@@ -184,6 +200,21 @@ write_layer() {
     python3 -I "$repo/product/install/build_xcd.py" --theme "$theme" --out "$stage/share/registry/boost.xcd" >/dev/null
 }
 act "write $stage/share/registry/boost.xcd (theme $theme)" write_layer
+
+# The Boost brand over the stock one the tree was built with. It lives inside the prefix, so the prefix's removal
+# (uninstall.sh, and install.sh --force before it copies a fresh tree) takes it away with the rest.
+if [ "$build_brand" = 1 ]; then
+    act "build the splash PNGs into $brand (rsvg-convert)" \
+        python3 -I "$repo/product/brand/build_brand.py" build --out "$brand"
+fi
+install_brand() {
+    cp -- "$brand/intro.png" "$brand/intro-highres.png" "$stage/program/" &&
+        mkdir -p "$stage/program/shell" &&
+        cp -- "$repo"/product/brand/shell/*.svg "$stage/program/shell/" &&
+        python3 -I "$repo/product/brand/build_brand.py" sofficerc "$stage/program/sofficerc"
+}
+act "copy the Boost splash (intro.png, intro-highres.png) from $brand and logos (program/shell) into $stage, and set the splash keys of $stage/program/sofficerc" \
+    install_brand
 
 act "create $stage/share/fonts/truetype" mkdir -p "$stage/share/fonts/truetype"
 for ttf in "$repo"/product/fonts/inter/*.ttf; do

@@ -18,7 +18,7 @@ script; an older system is refused before anything is downloaded, `--uninstall` 
 the same release; checks the archive against the sha256 written inside the script (a mismatch installs nothing);
 extracts it into a temp folder under `${XDG_CACHE_HOME:-~/.cache}`; runs the bundled `install.sh`; and deletes the
 temp folder, also when something fails. The release archive carries the built tree, the installer and its data, with
-the icon themes prebuilt (no Pillow, no `rsvg-convert`).
+the icon themes and the splash images prebuilt (no Pillow, no `rsvg-convert`).
 
 Options go after `bash -s --`:
 
@@ -72,6 +72,8 @@ If the launchers are not found, add `~/.local/bin` to your `PATH`; the installer
 - `bash` and `python3`.
 - Pillow and `rsvg-convert`, only when `images_boost.zip` and `images_boost_dark.zip` are not already in
   `--icons-dir` (default `product/icons/out`). They are then built there first.
+- `rsvg-convert`, only when the splash images `intro.png` and `intro-highres.png` are not already in `--brand-dir`
+  (default `product/brand/out`). They are then built there first (`product/brand/build_brand.py build`).
 - About 0.7 GB in the prefix.
 - `update-desktop-database` and `gtk-update-icon-cache` are used when present; failures are printed and ignored.
 
@@ -84,6 +86,7 @@ If the launchers are not found, add `~/.local/bin` to your `PATH`; the installer
 | `--bindir DIR` | Where the launchers `boost-office`, `boost-writer`, `boost-calc` and `boost-impress` go | `~/.local/bin` |
 | `--theme THEME` | `light` or `dark`: the look of **new** profiles | `light` |
 | `--icons-dir DIR` | Where `images_boost.zip` and `images_boost_dark.zip` come from; missing ones are built there | `product/icons/out` |
+| `--brand-dir DIR` | Where the splash images `intro.png` and `intro-highres.png` come from; missing ones are built there, and ones that are not the stock pixel sizes (644 x 199, 990 x 254) are refused | `product/brand/out` |
 | `--force` | Replace an earlier Boost Office install at `--prefix` (it is uninstalled first; the profile stays) | refuse |
 | `--dry-run` | Print every action and write nothing | off |
 | `--help` | Show the usage text | |
@@ -99,6 +102,7 @@ Run `--dry-run` first to read the plan.
 | The Boost defaults (Tabbed Office, icons, color schemes, tab accents, Inter) | `<prefix>/share/registry/boost.xcd` |
 | The Boost icon themes | `<prefix>/share/config/images_boost.zip` and `images_boost_dark.zip` |
 | The Inter UI font | `<prefix>/share/fonts/truetype/` |
+| The Boost brand, over the stock LibreOffice one of the copied tree: the splash, the About and Start Center logos, the splash's progress bar | `<prefix>/program/intro.png` and `intro-highres.png` (from `--brand-dir`), `<prefix>/program/shell/{about,logo,logo_inverted,logo-sc,logo-sc_inverted}.svg` (from `product/brand/shell`), the `Progress*` keys of `<prefix>/program/sofficerc` |
 | Launchers | `<bindir>`, default `~/.local/bin`: `boost-office`, `boost-writer`, `boost-calc`, `boost-impress` |
 | Desktop entries | `${XDG_DATA_HOME:-~/.local/share}/applications/boost-office-*.desktop` (start center, writer, calc, impress) |
 | App icons | `${XDG_DATA_HOME:-~/.local/share}/icons/hicolor/<size>/apps/boost-office-*` |
