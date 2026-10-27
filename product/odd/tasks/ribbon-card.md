@@ -1,7 +1,6 @@
 # Feature: the ribbon as a rounded card (Microsoft 365 look)
 
-- **Status:** queued, 2026-10-26 (starts once the 0.1.1 archive of `boost-branding.md` is built: one writer in this
-  tree at a time, and C1 rebuilds `vcl` into the `instdir` that 0.1.1 is packaged from).
+- **Status:** done, 2026-10-26 (published in 0.1.2).
 - **Locator:** `product/odd/tasks/ribbon-card.md`
 - **Engram mirror:** `odd/ribbon-card/tasks`
 - **Repo / branch:** `/mnt/games/libreoffice/core`, branch `feature/ribbon-card` from `main` (410ae2d47 or later).
