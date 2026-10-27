@@ -16,6 +16,8 @@
 #include <unx/gtk/gtkdata.hxx>
 #include <gtk/gtk.h>
 
+#include <optional>
+
 namespace
 {
 // The accent of an app's Start Center tile: its notebookbar tab accent, ToolbarMode
@@ -40,6 +42,33 @@ Color lcl_getAppAccentColor(const OUString& rApp, bool bDark, const Color& rNeut
     {
     }
     return rNeutral;
+}
+
+// A color of the current color scheme that ThemeColors does not hand out: Office.UI ColorScheme
+// ColorSchemes/<CurrentColorScheme>/<rEntry>/Color. Empty when unset, as in the stock schemes.
+std::optional<Color> lcl_getSchemeColor(std::u16string_view rEntry)
+{
+    if (comphelper::IsFuzzing())
+        return {};
+    try
+    {
+        const utl::OConfigurationTreeRoot aRoot(comphelper::getProcessComponentContext(),
+                                                u"org.openoffice.Office.UI/ColorScheme"_ustr, false);
+        OUString aScheme;
+        if (!aRoot.isValid() || !(aRoot.getNodeValue(u"CurrentColorScheme"_ustr) >>= aScheme))
+            return {};
+        const utl::OConfigurationNode aSchemes = aRoot.openNode(u"ColorSchemes"_ustr);
+        if (!aSchemes.isValid() || !aSchemes.hasByName(aScheme))
+            return {};
+        const utl::OConfigurationNode aEntry = aSchemes.openNode(aScheme).openNode(OUString(rEntry));
+        sal_Int32 nColor = 0;
+        if (aEntry.isValid() && (aEntry.getNodeValue(u"Color"_ustr) >>= nColor))
+            return Color(ColorTransparency, nColor);
+    }
+    catch (const css::uno::Exception&)
+    {
+    }
+    return {};
 }
 }
 
@@ -674,6 +703,38 @@ OString CreateStyleString()
         "  border-color: transparent;"
         "}";
     // clang-format on
+
+    // The Tabbed Office ribbon as Microsoft 365 draws it: the tab names on the window background (the
+    // scheme's InactiveColor, which vcl draws nothing else with), the commands on a rounded card in the
+    // ribbon's own color, a few pixels off the window's edges. salnativewidgets-gtk.cxx draws the tab
+    // controls vcl paints itself (the notebookbar's) with these nodes while the card has a margin, so a
+    // scheme without InactiveColor keeps the flat ribbon. The selected tab keeps only its underline.
+    const std::optional<Color> oRibbonWindow = lcl_getSchemeColor(u"InactiveColor");
+    if (oRibbonWindow)
+    {
+        // clang-format off
+        aStr +=
+            "notebook.boost-ribbon {"
+            "  background-color: #" + oRibbonWindow->AsRGBHexString() + ";"
+            "}"
+
+            "notebook.boost-ribbon > stack {"
+            "  background-color: #" + aThemeColors.GetWindowColor().AsRGBHexString() + ";"
+            "  border: 1px solid #" + aThemeColors.GetFaceColor().AsRGBHexString() + ";"
+            "  border-radius: 8px;"
+            "  margin: 2px 4px 4px 4px;"
+            "}"
+
+            "notebook.boost-ribbon > header tab:hover {"
+            "  background-color: #" + aThemeColors.GetFaceColor().AsRGBHexString() + ";"
+            "}"
+
+            "notebook.boost-ribbon > header tab:checked,"
+            "notebook.boost-ribbon > header tab:checked:hover {"
+            "  background-color: transparent;"
+            "}";
+        // clang-format on
+    }
 
     return OUStringToOString(aStr, RTL_TEXTENCODING_UTF8);
 }

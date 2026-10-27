@@ -23,6 +23,8 @@
 #include <vcl/commandevent.hxx>
 #include <vcl/layout.hxx>
 #include <vcl/settings.hxx>
+#include <vcl/salnativewidgets.hxx>
+#include <vcl/svapp.hxx>
 #include <vcl/notebookbar/notebookbar.hxx>
 #include <vcl/tabpage.hxx>
 #include <sfx2/viewfrm.hxx>
@@ -328,7 +330,26 @@ void NotebookbarTabControl::StateChanged(StateChangedType nStateChange)
 
         m_bInvalidate = false;
     }
+    ImplUpdateCardLook();
     NotebookbarTabControlBase::StateChanged( nStateChange );
+}
+
+// gtk3 draws the ribbon as a card on the window background when the color scheme asks for it
+// (vcl/unx/gtk3/salnativewidgets-gtk.cxx: the pane comes with the tab names' area, TabPaneWithHeader).
+// That window color has to reach the window's edges, so the box around the tab control loses the 6 px
+// margins the notebookbar .ui files give it, and the menu button at the end of the tab names turns flat
+// instead of a white box on it. Other backends keep both.
+void NotebookbarTabControl::ImplUpdateCardLook()
+{
+    vcl::Window* pBox = GetParent();
+    if (!pBox || Application::GetToolkitName() != u"gtk3"
+        || !GetOutDev()->IsNativeControlSupported(ControlType::TabPane, ControlPart::TabPaneWithHeader))
+        return;
+    for (const OUString& rSide : { u"margin-start"_ustr, u"margin-end"_ustr, u"margin-top"_ustr,
+                                   u"margin-bottom"_ustr })
+        pBox->set_property(rSide, u"0"_ustr);
+    if (Control* pOpenMenu = GetOpenMenu(); pOpenMenu && !(pOpenMenu->GetStyle() & WB_FLATBUTTON))
+        pOpenMenu->SetStyle(pOpenMenu->GetStyle() | WB_FLATBUTTON);
 }
 
 void NotebookbarTabControl::FillShortcutsToolBox(Reference<XComponentContext> const & xContext,

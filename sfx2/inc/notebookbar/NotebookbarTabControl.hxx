@@ -40,6 +40,7 @@ private:
                                           ToolBox* pShortcuts
                              );
     void ArrowStops( sal_uInt16 nCode );
+    void ImplUpdateCardLook();
 
     DECL_LINK(OpenNotebookbarPopupMenu, NotebookBar*, void);
 

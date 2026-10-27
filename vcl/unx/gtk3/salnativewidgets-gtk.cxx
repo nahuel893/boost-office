@@ -193,6 +193,7 @@ enum class RenderType {
     Icon,
     Progress,
     TabItem,
+    RibbonPane,
     Focus
 };
 
@@ -446,6 +447,56 @@ namespace
         aRect.AdjustBottom( -(border.bottom + padding.bottom) );
 
         return aRect;
+    }
+
+    // A style context for a child node of pParent, as GtkSalGraphics::makeContext makes them.
+    GtkStyleContext* lcl_makeChildContext(GtkStyleContext* pParent, GType eType, const char* pName,
+                                          std::initializer_list<const char*> aClasses)
+    {
+        GtkWidgetPath* pPath = gtk_widget_path_copy(gtk_style_context_get_path(pParent));
+        gtk_widget_path_append_type(pPath, eType);
+        gtk_widget_path_iter_set_object_name(pPath, -1, pName);
+        for (const char* pClass : aClasses)
+            gtk_widget_path_iter_add_class(pPath, -1, pClass);
+        GtkStyleContext* pContext = gtk_style_context_new();
+        gtk_style_context_set_screen(pContext, gtk_style_context_get_screen(pParent));
+        gtk_style_context_set_path(pContext, pPath);
+        gtk_style_context_set_parent(pContext, pParent);
+        gtk_style_context_set_scale(pContext, gtk_style_context_get_scale(pParent));
+        gtk_widget_path_unref(pPath);
+        return pContext;
+    }
+
+    // The nodes custom-theme.cxx styles for the Tabbed Office ribbon card: "notebook.boost-ribbon" is
+    // the window around the card, its "stack" the card, its "header > tabs > tab" the tab names. They
+    // stand beside the native notebook nodes, so real GtkNotebooks and vcl's TabBody keep their look.
+    struct RibbonStyles
+    {
+        GtkStyleContext* mpWindow;
+        GtkStyleContext* mpCard;
+        GtkStyleContext* mpTab;
+    };
+
+    // The ribbon's nodes while the custom theme draws the card (it gives the card a margin), else null:
+    // a scheme without the card's window color, or no custom theme, keeps the flat tab controls.
+    const RibbonStyles* lcl_getRibbonStyles(GtkStyleContext* pWindowStyle)
+    {
+        static const RibbonStyles aStyles = [pWindowStyle]
+        {
+            GtkStyleContext* pNotebook
+                = lcl_makeChildContext(pWindowStyle, GTK_TYPE_NOTEBOOK, "notebook", { "boost-ribbon" });
+            GtkStyleContext* pHeader
+                = lcl_makeChildContext(pNotebook, GTK_TYPE_NOTEBOOK, "header", { "frame", "top" });
+            GtkStyleContext* pTabs = lcl_makeChildContext(pHeader, GTK_TYPE_NOTEBOOK, "tabs", { "top" });
+            return RibbonStyles{ pNotebook,
+                                 lcl_makeChildContext(pNotebook, GTK_TYPE_NOTEBOOK, "stack", {}),
+                                 lcl_makeChildContext(pTabs, GTK_TYPE_NOTEBOOK, "tab", { "top" }) };
+        }();
+        if (!ThemeColors::VclPluginCanUseThemeColors())
+            return nullptr;
+        GtkBorder margin;
+        style_context_get_margin(aStyles.mpCard, &margin);
+        return margin.left > 0 ? &aStyles : nullptr;
     }
 #endif
 }
@@ -1598,6 +1649,7 @@ bool GtkSalGraphics::drawNativeControl( ControlType nType, ControlPart nPart, co
     bool bInMenu = false;
 
     GtkStateFlags flags = NWConvertVCLStateToGTKState(nState);
+    const RibbonStyles* pRibbon = nullptr;
 
     switch(nType)
     {
@@ -1729,6 +1781,10 @@ bool GtkSalGraphics::drawNativeControl( ControlType nType, ControlPart nPart, co
         return true;
     case ControlType::TabPane:
         context = mpNotebookStyle;
+        // under the ribbon card the pane comes with the tab names' area (TabPaneWithHeader)
+        pRibbon = lcl_getRibbonStyles(mpWindowStyle);
+        if (pRibbon && rValue.getType() == ControlType::TabPane)
+            renderType = RenderType::RibbonPane;
         break;
     case ControlType::TabBody:
         context = mpNotebookStackStyle;
@@ -1738,6 +1794,7 @@ bool GtkSalGraphics::drawNativeControl( ControlType nType, ControlPart nPart, co
         break;
     case ControlType::TabItem:
         context = mpNotebookHeaderTabsTabStyle;
+        pRibbon = lcl_getRibbonStyles(mpWindowStyle);
         if (nState & ControlState::SELECTED)
             flags = static_cast<GtkStateFlags>(flags | GTK_STATE_FLAG_CHECKED);
         renderType = RenderType::TabItem;
@@ -1966,7 +2023,21 @@ bool GtkSalGraphics::drawNativeControl( ControlType nType, ControlPart nPart, co
         nX += initial_gap/2;
         nWidth -= initial_gap;
         tools::Rectangle aRect(Point(nX, nY), Size(nWidth, nHeight));
-        render_common(mpNotebookHeaderTabsTabStyle, cr, aRect, flags);
+        render_common(pRibbon ? pRibbon->mpTab : mpNotebookHeaderTabsTabStyle, cr, aRect, flags);
+        break;
+    }
+    case RenderType::RibbonPane:
+    {
+        // The window background, under the tab names too, then the card from the bottom of the tab
+        // names down; the card's CSS margin keeps it off the edges. No card where only a sliver of the
+        // pane shows under the tab names.
+        gtk_render_background(pRibbon->mpWindow, cr, nX, nY, nWidth, nHeight);
+        const TabPaneValue& rPane = static_cast<const TabPaneValue&>(rValue);
+        const tools::Long nTop
+            = std::max<tools::Long>(0, rPane.m_aTabHeaderRect.Bottom() - rControlRegion.Top());
+        const tools::Rectangle aCard(Point(nX, nTop), Size(nWidth, nHeight - nTop));
+        if (aCard.GetHeight() > 24)
+            render_common(pRibbon->mpCard, cr, aCard, flags);
         break;
     }
     default:
@@ -2795,6 +2866,9 @@ bool GtkSalGraphics::isNativeControlSupported( ControlType nType, ControlPart nP
         case ControlType::TabBody:
             if(nPart==ControlPart::Entire || nPart==ControlPart::TabsDrawRtl)
                 return true;
+            // the ribbon card: vcl hands the tab names' area to the pane, which draws the window there
+            if (nType == ControlType::TabPane && nPart == ControlPart::TabPaneWithHeader)
+                return lcl_getRibbonStyles(mpWindowStyle) != nullptr;
             break;
 
         case ControlType::Listbox:

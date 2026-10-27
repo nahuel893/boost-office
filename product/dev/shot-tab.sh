@@ -334,9 +334,10 @@ import sys
 from PIL import Image
 img, tab, order = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 im = Image.open(img).convert("L")
-# Tab bar label rows (the label text spans y 18..29); the selected tab's pill strokes sit below, at y 33..41,
-# and would join File with Home at 1366 px where the labels are only ~20 px apart.
-y0, y1, x0 = 14, 31, int(sys.argv[4])   # x0 skips the quick access toolbar on the left
+# Tab bar label rows (the label text spans y 12..23 since the ribbon card, C1, took away the 6 px margin above
+# the tab bar); the selected tab's pill strokes sit below, at y 27..35, and would join File with Home at
+# 1366 px where the labels are only ~20 px apart.
+y0, y1, x0 = 8, 25, int(sys.argv[4])   # x0 skips the quick access toolbar on the left
 cols = []
 for x in range(x0, im.width - 80):
     col = [im.getpixel((x, y)) for y in range(y0, y1)]
@@ -357,7 +358,7 @@ idx = int(tab) if tab.isdigit() else [o.lower() for o in order].index(tab.lower(
 if not 0 <= idx < len(blobs):
     sys.exit(f"tab {tab}: only {len(blobs)} labels found on the bar")
 l, r = blobs[idx]
-print((l + r) // 2, 25)
+print((l + r) // 2, 19)
 PYEOF
     ) || true
     [ -n "$pos" ] || { echo "tab '$tab' not found on the tab bar" >&2; exit 1; }
