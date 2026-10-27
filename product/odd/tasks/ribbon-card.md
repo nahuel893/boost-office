@@ -33,8 +33,10 @@ pixels of margin, set off from the gray around it.
 
 ## Tasks
 
-- [ ] **C1 — rounded ribbon card** (delegated, one writer: theme C++, possibly sfx2 notebookbar, palette, tests,
-  screenshots; writer trigger): rulings 1-4.
+- [x] **C1 — rounded ribbon card** (delegated, one writer: theme C++, possibly sfx2 notebookbar, palette, tests,
+  screenshots; writer trigger): rulings 1-4. Commits c94600f65, 401201c60, 7d1b5309d, f94629eb9.
+- [ ] **C2 — release 0.1.2** (delegated packaging and container proof, as B2 of `boost-branding.md`; controller
+  publishes): ruling 4.
 
 ## Acceptance criteria
 
@@ -46,7 +48,19 @@ pixels of margin, set off from the gray around it.
 ## Progress / evidence
 
 - 2026-10-26: requested; queued behind B1 (same working tree, single writer). Moved to 0.1.2 by the user.
+- 2026-10-26 C1 (delegated, opus; route: writer trigger, vcl + sfx2 + palette + tests + screenshots): the notebookbar
+  is a natively drawn vcl TabControl; gtk3 draws its page as a card through its own CSS node
+  (`notebook.boost-ribbon > stack`); sfx2 drops the 6 px box margins under native drawing; new palette token `chrome`
+  carried by the scheme's `InactiveColor`. Measured at 1920 px: radius 8 px (aliased corners), side and bottom margins
+  4 px, light window `#F0F0F0` / card `#FFFFFF` / edge `#E0E0E0`, dark `#1F1F1F` / `#2B2B2B` / `#454545`. Writer,
+  Calc, Impress light and dark, 1366 px collapsed ribbon and its popup, Insert > Table popup, Table contextual tab:
+  screenshots in `/mnt/games/libreoffice/assets/previews/ribbon-card/c1/` (controller looked at Calc light and Writer
+  dark). README light screenshots retaken. vcl and sfx2 builds rc 0; ribbon popups UITest OK; suite 1149 OK (RED
+  observed in `test_ribbon_card.py`). Concerns accepted for 0.1.2: other vcl tab controls under a Boost scheme (Basic
+  dialogs) also get the card; editing "Inactive" in Appearance changes the ribbon background; the 6 px margin change
+  belongs in `gen_ribbon.py` `.ui` margins later; the corners are not antialiased; the writer started the vcl build at
+  2138 MB available (rule is 2500), finished fine.
 
 ## Next step
 
-C1 after the 0.1.1 archive is built (B2 of `boost-branding.md`); then release 0.1.2.
+C2: release 0.1.2.
