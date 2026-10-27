@@ -11,7 +11,7 @@ it for your user with one script.
 
 ## Download
 
-Boost Office 0.1.1 is the current preview: a built Linux x86_64 tree, no build needed. Install it for your user, without
+Boost Office 0.1.2 is the current preview: a built Linux x86_64 tree, no build needed. Install it for your user, without
 root, with one command:
 
 ```sh
