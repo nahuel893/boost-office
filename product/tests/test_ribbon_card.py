@@ -11,10 +11,14 @@ controls with them, header included (TabPaneWithHeader); NotebookbarTabControl.c
 its box so the window color reaches the window's edges."""
 import json
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image, ImageDraw
+
 from product.tests.test_custom_theme import rules
+from product.tests.test_shot_tab import heredoc, run_python
 
 ROOT = Path(__file__).resolve().parents[2]
 PALETTE = ROOT / "product/themes/palette.json"
@@ -160,6 +164,35 @@ class NotebookbarTabControlTest(unittest.TestCase):
         # the menu button at the end of the tab names: flat, not a white button box on the window color
         self.assertIn("pOpenMenu->SetStyle(pOpenMenu->GetStyle() | WB_FLATBUTTON);", body)
         self.assertIn("ImplUpdateCardLook();", function(source, "void NotebookbarTabControl::StateChanged("))
+
+
+class ShotTabFinderTest(unittest.TestCase):
+    """Without the box margin the tab row is 6 px higher: labels on y 12..23 and the selected tab's pill at
+    y 27..35 (after-writer-dark-home-1366-collapsed.png). shot-tab.sh finds the label rows from the first
+    row with ink, so the pill stays out of them at 1366 px (test_shot_tab.py keeps the flat geometry)."""
+    WRITER = "File,Home,Insert,Design,Layout,References,Mailings,Review,View,Extension,Tools,Help".split(",")
+
+    def test_finds_every_writer_tab_at_1366_on_the_card_tab_row(self):
+        finder = heredoc("pos=$(python3 -I -")
+        for index, name in enumerate(self.WRITER):
+            with tempfile.TemporaryDirectory() as tmp:
+                png = Path(tmp) / "bar.png"
+                im = Image.new("RGB", (1366, 60), (240, 240, 240))
+                draw = ImageDraw.Draw(im)
+                spans, x = [], 212
+                for _label in self.WRITER:
+                    draw.rectangle([x, 13, x + 39, 22], fill=(20, 20, 20))
+                    spans.append((x, x + 40))
+                    x += 61
+                left, right = spans[1]    # Home selected: the pill's side strokes come up to y 27
+                draw.rectangle([left - 8, 27, left - 7, 30], fill=(20, 20, 20))
+                draw.rectangle([right + 8, 27, right + 9, 30], fill=(20, 20, 20))
+                im.save(png)
+                r = run_python(finder, str(png), name, ",".join(self.WRITER), "217")
+            self.assertEqual(0, r.returncode, "%s: %s" % (name, r.stderr))
+            x, y = map(int, r.stdout.split())
+            self.assertTrue(spans[index][0] <= x <= spans[index][1], (name, x, spans[index]))
+            self.assertEqual(25, y)    # inside the tab (y 2..30) in both geometries
 
 
 if __name__ == "__main__":

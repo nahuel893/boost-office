@@ -334,10 +334,21 @@ import sys
 from PIL import Image
 img, tab, order = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 im = Image.open(img).convert("L")
-# Tab bar label rows (the label text spans y 12..23 since the ribbon card, C1, took away the 6 px margin above
-# the tab bar); the selected tab's pill strokes sit below, at y 27..35, and would join File with Home at
-# 1366 px where the labels are only ~20 px apart.
-y0, y1, x0 = 8, 25, int(sys.argv[4])   # x0 skips the quick access toolbar on the left
+# Tab bar label rows: the label text spans 12 rows from the first row with ink (y 18..29 with the flat ribbon,
+# y 12..23 with the ribbon card, which has no 6 px margin above the tab bar). The selected tab's pill strokes
+# sit below (y 33..41, or 27..35) and would join File with Home at 1366 px, where the labels are only ~20 px
+# apart. A few empty rows around the labels give each column a background median.
+x0 = int(sys.argv[4])   # x0 skips the quick access toolbar on the left
+
+
+def ink_row(y):
+    row = [im.getpixel((x, y)) for x in range(x0, im.width - 80)]
+    ref = sorted(row)[len(row) // 2]
+    return any(abs(v - ref) > 70 for v in row)
+
+
+top = next((y for y in range(4, 45) if ink_row(y)), 18)
+y0, y1 = top - 4, top + 13
 cols = []
 for x in range(x0, im.width - 80):
     col = [im.getpixel((x, y)) for y in range(y0, y1)]
@@ -358,7 +369,7 @@ idx = int(tab) if tab.isdigit() else [o.lower() for o in order].index(tab.lower(
 if not 0 <= idx < len(blobs):
     sys.exit(f"tab {tab}: only {len(blobs)} labels found on the bar")
 l, r = blobs[idx]
-print((l + r) // 2, 19)
+print((l + r) // 2, 25)
 PYEOF
     ) || true
     [ -n "$pos" ] || { echo "tab '$tab' not found on the tab bar" >&2; exit 1; }
