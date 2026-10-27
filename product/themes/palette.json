@@ -16,7 +16,8 @@
     "selection":       ["#CFE8D7", "#1E4D2E"],
     "menu":            ["#FFFFFF", "#2B2B2B"],
     "menu.hover":      ["#F0F0F0", "#383838"],
-    "workspace":       ["#FAFAFB", "#222226"]
+    "workspace":       ["#FAFAFB", "#222226"],
+    "chrome":          ["#F0F0F0", "#1F1F1F"]
   },
   "roles": {
     "WindowColor": "surface", "WindowTextColor": "text", "BaseColor": "field", "FieldColor": "field",
@@ -24,7 +25,7 @@
     "ButtonColor": "surface", "ButtonTextColor": "text",
     "AccentColor": "selection", "DisabledColor": "surface.hover", "DisabledTextColor": "text.disabled",
     "ActiveColor": "accent.calc", "ActiveTextColor": "field", "ActiveBorderColor": "accent.calc",
-    "InactiveColor": "surface", "InactiveTextColor": "text.disabled", "InactiveBorderColor": "separator",
+    "InactiveColor": "chrome", "InactiveTextColor": "text.disabled", "InactiveBorderColor": "separator",
     "MenuBarColor": "surface", "MenuBarTextColor": "text", "MenuBarHighlightColor": "surface.hover",
     "MenuBarHighlightTextColor": "text",
     "MenuColor": "menu", "MenuTextColor": "text", "MenuHighlightColor": "menu.hover",

@@ -5,7 +5,9 @@
 """Build the "Boost Light"/"Boost Dark" ColorSchemes as a configuration-only extension.
 
 The extension also carries each app's notebookbar tab accent (ToolbarMode AccentColor and
-AccentColorDark, design 3.4 of product/docs/writer-ribbon-tabs.md). Install or update it in a profile
+AccentColorDark, design 3.4 of product/docs/writer-ribbon-tabs.md). The role InactiveColor, which vcl
+stores but draws nothing with, carries the window color around the gtk3 ribbon card (token "chrome",
+read by vcl/unx/gtk3/custom-theme.cxx). Install or update it in a profile
 with: instdir/program/unopkg add -f product/themes/out/boost-schemes.oxt -env:UserInstallation=file://<profile>
 """
 import argparse

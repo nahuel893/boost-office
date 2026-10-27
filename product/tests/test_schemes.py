@@ -19,7 +19,7 @@ SPEC = {
     "ButtonTextColor": ("#242424", "#F2F2F2"), "AccentColor": ("#CFE8D7", "#1E4D2E"),
     "DisabledColor": ("#F0F0F0", "#383838"), "DisabledTextColor": ("#A6A6A6", "#6E6E6E"),
     "ActiveColor": ("#1B7A3E", "#5CC27E"), "ActiveTextColor": ("#FFFFFF", "#1F1F1F"),
-    "ActiveBorderColor": ("#1B7A3E", "#5CC27E"), "InactiveColor": ("#FFFFFF", "#2B2B2B"),
+    "ActiveBorderColor": ("#1B7A3E", "#5CC27E"), "InactiveColor": ("#F0F0F0", "#1F1F1F"),
     "InactiveTextColor": ("#A6A6A6", "#6E6E6E"), "InactiveBorderColor": ("#9E9E9E", "#6A6A6A"),
     "MenuBarColor": ("#FFFFFF", "#2B2B2B"), "MenuBarTextColor": ("#242424", "#F2F2F2"),
     "MenuBarHighlightColor": ("#F0F0F0", "#383838"), "MenuBarHighlightTextColor": ("#242424", "#F2F2F2"),
