@@ -124,12 +124,16 @@ class ImpressHomeIconsTest(_ImpressTabIcons, unittest.TestCase):
                 for member in (f"cmd/sc_{cmd}.png", f"cmd/lc_{cmd}.png"):
                     self.assertTrue(member in names or links.get(member) in names, f"{theme}:{member}")
 
-    def test_the_default_shape_cell_entries_are_plain_line_icons(self):
+    def test_the_default_shape_cell_entries_fill_their_closed_shapes(self):
+        # One glyph each; a closed shape carries the soft accent fill, the stroked double arrow stays line only.
         entries = {e["name"]: e for e in bt.load_manifest()["icons"]}
         for cmd in self.SHAPE_CELL_DEFAULTS:
             self.assertIn(cmd, entries)
-            self.assertNotIn("fill", entries[cmd], cmd)
             self.assertEqual(1, len(entries[cmd]["layers"]), cmd)
+            if cmd == "arrowshapes.left-right-arrow":
+                self.assertNotIn("fill", entries[cmd], cmd)
+            else:
+                self.assertIn("fill", entries[cmd], cmd)
 
 
 class ImpressInsertIconsTest(_ImpressTabIcons, unittest.TestCase):

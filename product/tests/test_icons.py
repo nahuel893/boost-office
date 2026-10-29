@@ -32,6 +32,22 @@ def luminance(hex_color):
     return (b * 29 + g * 151 + r * 76) >> 8
 
 
+def disabled_luminance(lum, face):
+    """The grey vcl's BitmapDisabledImageFilter gives a pixel of luminance `lum` on a toolbar of color `face`."""
+    def linear(c):
+        c /= 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    def srgb(v):
+        v = min(max(v, 0.0), 1.0)
+        return round(255 * (12.92 * v if v <= 0.0031308 else 1.055 * v ** (1 / 2.4) - 0.055))
+    r, g, b = (int(face[i:i + 2], 16) for i in (1, 3, 5))
+    if luminance(face) >= 128:  # Color::IsDark is false
+        return lum // 4 + 160
+    f = 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b) + 0.05
+    return srgb((1.0 + lum / 255) * f - 0.05)
+
+
 def tab_page(tab):
     text = OFFICE.read_text(encoding="utf-8")
     body = text.split(f"<!-- product:{tab}-begin -->")[1].split(f"<!-- product:{tab}-end -->")[0]
@@ -197,15 +213,32 @@ class IconThemeTest(unittest.TestCase):
             for alias, target in links.items():
                 self.assertIn(target, names, f"{theme}: {alias} -> {target}")
 
-    def test_icons_are_plain_lines_without_a_fill(self):
-        # Plain grey line icons: no manifest entry carries a fill, and "paste" has no pixel near the old yellow.
-        filled = [e["name"] for e in bt.load_manifest()["icons"] if "fill" in e]
-        self.assertEqual([], filled, f"{len(filled)} entries still have a fill")
-        for theme, fill in (("boost", "F5C96A"), ("boost_dark", "B08A3A")):
-            target = tuple(int(fill[i:i + 2], 16) for i in (0, 2, 4))
-            pixels = self.image(theme, "cmd/lc_paste.png").get_flattened_data()
-            close = [p for p in pixels if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 20]
-            self.assertEqual([], close, f"{theme}: paste still has the fill color")
+    def test_clipboard_group_fills_one_element_each(self):
+        # Microsoft 365's Clipboard group: Paste fills the clipboard's board, Copy the front page, Cut the
+        # scissor rings, Format Painter the brush head; the outline stays grey and on top.
+        icons = {e["name"]: e for e in bt.load_manifest()["icons"]}
+        expected = {"paste": "tint_yellow", "copy": "tint_blue", "cut": "tint_blue", "formatpaintbrush": "tint_yellow"}
+        for name, color in expected.items():
+            self.assertEqual(color, icons[name].get("fill", {}).get("color"), name)
+        self.assertEqual(2, len(icons["cut"]["fill"]["at"]), "cut: both rings")
+
+    def tint_pixels(self, image, hex_color, box):
+        target = tuple(int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+        crop = image.crop(box).get_flattened_data()
+        return sum(1 for p in crop if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 12)
+
+    def test_paste_fills_the_board_and_leaves_the_page_empty(self):
+        # Boxes in the 24 px design's units: the board's strip left of the page, and the page's inside.
+        palette = bt.load_manifest()["palette"]
+        for theme, mode in bt.THEMES.items():
+            tint = palette[mode]["tint_yellow"]
+            for member, size in (("cmd/lc_paste.png", 24), ("cmd/32/paste.png", 32)):
+                icon = self.image(theme, member)
+                unit = size / 24
+                board = tuple(round(v * unit) for v in (5.5, 9, 8.5, 18))
+                page = tuple(round(v * unit) for v in (12.5, 10.5, 18, 19))
+                self.assertGreater(self.tint_pixels(icon, tint, board), 4 * unit * unit, f"{theme}:{member} board")
+                self.assertEqual(0, icon.crop(page).getextrema()[3][1], f"{theme}:{member} page not empty")
 
     def test_fill_tints_are_softer_than_the_rejected_ones(self):
         # The whole-silhouette fills of 2026-10-22 used these yellows; every accent tint sits further from the
@@ -217,6 +250,21 @@ class IconThemeTest(unittest.TestCase):
             for name in ("tint_yellow", "tint_blue", "tint_green", "tint_red"):
                 self.assertGreater(abs(luminance(palette[mode][name]) - line), abs(luminance(old) - line),
                                    f"{mode}:{name}")
+
+    def test_fill_colors_are_tints_and_seeds_are_given(self):
+        for entry in bt.load_manifest()["icons"]:
+            fill = entry.get("fill")
+            if fill:
+                self.assertIn(fill["color"], ("tint_yellow", "tint_blue", "tint_green", "tint_red"), entry["name"])
+                self.assertTrue(fill["at"], entry["name"])
+
+    def test_line_icons_keep_no_fill(self):
+        # Pure strokes (alignment lines, arrows, letters, plain borders), the color-stripe buttons and the
+        # banded table icons stay line only.
+        icons = {e["name"]: e for e in bt.load_manifest()["icons"]}
+        for name in ("undo", "redo", "bold", "italic", "underline", "alignleft", "setborderstyle", "grow",
+                     "color", "backgroundcolor", "charbackcolor", "rowoperations", "autoformat", "polygon_unfilled"):
+            self.assertNotIn("fill", icons[name], name)
 
     def test_a_seed_outside_a_closed_part_fails_the_build(self):
         palette = bt.load_manifest()["palette"]["light"]
@@ -232,6 +280,30 @@ class IconThemeTest(unittest.TestCase):
                 bt.main(["build", "--out", tmp])
         self.assertEqual("build_theme.py build: probe: fill seed [1, 1] is not inside a closed part of the glyph "
                          "at 16 px", str(caught.exception.code))
+
+    def test_fills_never_cover_the_outline_and_stay_distinct_when_greyed(self):
+        # Ruling 4: every opaque outline pixel of a filled icon is the same with and without its fill (the
+        # line is on top), and greyed as LibreOffice greys a disabled button, the tint stays apart from the line.
+        palette = bt.load_manifest()["palette"]
+        filled = [e for e in bt.load_manifest()["icons"] if e.get("fill")]
+        self.assertGreater(len(filled), 150)
+        for theme, mode in bt.THEMES.items():
+            face = "#F0F0F0" if mode == "light" else "#2B2B2B"
+            line = disabled_luminance(luminance(palette[mode]["line"]), face)
+            for name in ("tint_yellow", "tint_blue", "tint_green", "tint_red"):
+                tint = disabled_luminance(luminance(palette[mode][name]), face)
+                self.assertGreaterEqual(abs(tint - line), 20, f"{mode}:{name} greyed {tint} vs line {line}")
+            for entry in filled:
+                bare = self.render({k: v for k, v in entry.items() if k != "fill"}, 24, mode)
+                icon = self.image(theme, f"cmd/lc_{entry['name']}.png")
+                fill_seen = False
+                for b, f in zip(bare.get_flattened_data(), icon.get_flattened_data()):
+                    if b[3] >= 250:
+                        self.assertLessEqual(max(abs(b[i] - f[i]) for i in range(3)), 16,
+                                             f"{theme}:{entry['name']} fill over the outline")
+                    elif b[3] == 0 and f[3] >= 250:
+                        fill_seen = True
+                self.assertTrue(fill_seen, f"{theme}:{entry['name']} has no visible fill at 24 px")
 
     def test_badges_use_their_accent(self):
         # (icon, accent hex in light, accent hex in dark)
