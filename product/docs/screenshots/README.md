@@ -3,8 +3,9 @@
 ## The three apps (used by the root README)
 
 Home tab, light theme, 1920 px wide, cropped to the top band: quick access bar, tabs, ribbon and a little of the
-document. The ribbon is a rounded card on the light gray window color, as Microsoft 365 draws it. Retaken on
-2026-10-26 with `product/dev/shot-tab.sh --app <app> light Home`. The UI font is Inter.
+document. The ribbon is a rounded card on the light gray window color, as Microsoft 365 draws it, and each icon
+fills one element in a soft tint (the accent fill). Retaken on 2026-10-29 with
+`product/dev/shot-tab.sh --app <app> light Home`. The UI font is Inter.
 
 ![Calc, Home tab](calc-home-light.png)
 
