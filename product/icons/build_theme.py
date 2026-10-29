@@ -70,46 +70,69 @@ def ring_ink(path, pad):
                if a > 40 and min(i % size, i // size, size - 1 - i % size, size - 1 - i // size) < pad)
 
 
-@functools.lru_cache(maxsize=None)
-def filled_cells(outline, silhouette, transform, size, scale=4):
-    """PNG data URI masking the cells the outline encloses that the silhouette fills at least
-    half, or None. Fluent's filled shapes do not always follow the regular glyph's inner lines
-    (the filled table has 6/8/6 px columns, the outline 5/6/5 px cells), which leaves slivers
-    of no fill beside thin lines. Cut-outs and open shapes, which the silhouette leaves (mostly)
-    empty or which open to the outside, stay open."""
-    from PIL import Image, ImageFilter
+class SeedError(ValueError):
+    """A fill seed that does not pick a closed part of the glyph."""
 
-    def alpha(inner):
-        svg = (f'<svg xmlns="{SVG_NS}" width="{size * scale}" height="{size * scale}" '
-               f'viewBox="0 0 {size} {size}"><g transform="{transform}">{inner}</g></svg>')
-        png = subprocess.run(["rsvg-convert", "-f", "png"], input=svg.encode(), capture_output=True,
-                             check=True).stdout
-        return list(Image.open(io.BytesIO(png)).convert("RGBA").getchannel("A").get_flattened_data())
-    line, fill = alpha(outline), alpha(silhouette)
+
+@functools.lru_cache(maxsize=None)
+def filled_cells(outline, transform, size, seeds, bridge, reach, scale=4):
+    """PNG data URI masking the cells of the outline that hold the seed points ((x, y) in px at
+    `size`): one element of the icon (a clipboard's board, a page, the rings of the scissors).
+    A cell is the outline's free space around the seed, closed on every side. Fluent leaves a
+    gap of about one design unit where one object overlaps another (the clipboard stops short
+    of its page), so a cell that is open only through gaps narrower than 2 * `bridge` px counts
+    as closed: the flood then runs with the outline grown by `bridge` and is grown back by as
+    much. The mask also covers the outline ink within `reach` px of the cells, so the fill
+    reaches under the line and a thinned line leaves no sliver of white beside it.
+    Raises SeedError(index, reason) for a seed on the line or in an open part."""
+    from PIL import Image, ImageChops, ImageFilter
+
+    svg = (f'<svg xmlns="{SVG_NS}" width="{size * scale}" height="{size * scale}" '
+           f'viewBox="0 0 {size} {size}"><g transform="{transform}">{outline}</g></svg>')
+    png = subprocess.run(["rsvg-convert", "-f", "png"], input=svg.encode(), capture_output=True, check=True).stdout
     n = size * scale
-    seen = [a >= 128 for a in line]
-    cells = bytearray(n * n)
-    for start in range(n * n):
-        if seen[start]:
-            continue
-        seen[start], stack, region, closed = True, [start], [], True
+    ink = Image.open(io.BytesIO(png)).convert("RGBA").getchannel("A").point(lambda a: 255 if a >= 128 else 0)
+
+    def grown(img, px):
+        r = round(px * scale)
+        return img.filter(ImageFilter.MaxFilter(2 * r + 1)) if r else img
+
+    def cell(walls, start):
+        """The 4-connected free pixels around `start`, and whether they stay off the image border."""
+        free = [a == 0 for a in walls.get_flattened_data()]
+        free[start], stack, region, closed = False, [start], [], True
         while stack:
             i = stack.pop()
             region.append(i)
             x, y = i % n, i // n
             closed &= 0 < x < n - 1 and 0 < y < n - 1
             for j in (i - 1 if x else -1, i + 1 if x < n - 1 else -1, i - n, i + n):
-                if 0 <= j < n * n and not seen[j]:
-                    seen[j] = True
+                if 0 <= j < n * n and free[j]:
+                    free[j] = False
                     stack.append(j)
-        if closed and 2 * sum(fill[i] >= 128 for i in region) >= len(region):
-            for i in region:
-                cells[i] = 255
-    if not any(cells):
-        return None
-    buf = io.BytesIO()
+        return region, closed
+
+    cells = bytearray(n * n)
+    for index, (x, y) in enumerate(seeds):
+        start = min(max(int(y * scale), 0), n - 1) * n + min(max(int(x * scale), 0), n - 1)
+        if ink.getpixel((start % n, start // n)):
+            raise SeedError(index, "lands on the outline")
+        region, closed = cell(ink, start)
+        if not closed and bridge:
+            walls = grown(ink, bridge)
+            if not walls.getpixel((start % n, start // n)):
+                region, closed = cell(walls, start)
+        if not closed:
+            raise SeedError(index, "is not inside a closed part of the glyph")
+        for i in region:
+            cells[i] = 255
     mask = Image.frombytes("L", (n, n), bytes(cells))
-    mask.filter(ImageFilter.MaxFilter(3)).save(buf, "PNG")  # tuck the edge under the line
+    free = ImageChops.invert(ink)
+    for _ in range(round(bridge * scale)):  # grow back what the bridge took, never across a line
+        mask = ImageChops.darker(mask.filter(ImageFilter.MaxFilter(3)), free)
+    mask = ImageChops.darker(grown(mask, reach), ImageChops.lighter(mask, ink))
+    buf = io.BytesIO()
+    mask.save(buf, "PNG")
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
@@ -119,7 +142,7 @@ class Sources:
     def __init__(self):
         self.scaled_16 = []
 
-    def load(self, icon, layer, size, stripe=False, also=()):
+    def load(self, icon, layer, size, stripe=False):
         """Return (markup, source size, padding to trim) for one glyph layer."""
         glyph, style = layer["glyph"], layer.get("style", "regular")
         if layer.get("custom"):
@@ -141,10 +164,8 @@ class Sources:
                         self.scaled_16.append(f"{icon}:{glyph}")
                     pad = 0
                     if size == 16 and src == 20 and not stripe:
-                        # Trim only the padding that is really empty, for every style that must register.
-                        paths = [base / f"{glyph}_20_{s}.svg" for s in {style, *also}]
-                        paths = [p if p.exists() else FLUENT / p.name for p in paths]
-                        pad = next(n for n in (2, 1, 0) if all(ring_ink(p, n) == 0 for p in paths))
+                        # Trim only the padding that is really empty.
+                        pad = next(n for n in (2, 1, 0) if ring_ink(path, n) == 0)
                     return inner_markup(path), src, pad
         raise FileNotFoundError(f"{glyph} ({style}) has no source for {size} px")
 
@@ -195,28 +216,28 @@ def compose(entry, colors, size, sources):
     base = next((layer for layer in entry["layers"] if "glyph" in layer), None)
     fill = entry.get("fill")
     if fill:
-        # Soft color under the outline, like Office's filled icons: the base
-        # glyph's Fluent "filled" silhouette in the fill color. Shapes that the
-        # filled variant leaves open stay unfilled, which keeps a touch of white.
-        silhouette = dict(base, style="filled")
-        inner, src, pad = sources.load(entry["name"], silhouette, s, bool(stripe), also=("regular",))
+        # One element in a soft tint under the outline, as Microsoft 365's ribbon icons do: the
+        # cells of the base glyph that hold the seed points. Seeds are in the 24 px design's
+        # units and scale to the source drawn at this size.
+        inner, src, pad = sources.load(entry["name"], base, s, bool(stripe))
         k = s / (src - 2 * pad) * base.get("scale", 1)
         thin = thinning(base, src, k * zoom) / zoom
-        thinned |= thin > 0
-        # The silhouette leaves gaps where the outline's inner strokes sit (grid lines, a
-        # lens's plus); thinner strokes would show them. A thinned icon fills the outline's
-        # area and its well-filled cells too, then trims the outer edge as much as the
-        # outline's (square erosion at 8x).
-        outline = sources.load(entry["name"], base, s, bool(stripe), also=("filled",))[0] if thin else ""
         x, y = base.get("dx", 0) * s - pad * k, base.get("dy", 0) * s - pad * k
-        place = f'translate({x:g} {y:g}) scale({k:g})'
-        paint = colors[fill["color"]]
-        markup = f'<g transform="{place}" fill="{paint}">{inner}{outline}</g>'
+        unit = src / 24 * k  # rendered px per 24 px design unit
+        seeds = tuple((x + px * unit, y + py * unit) for px, py in fill["at"])
+        # Unthinned, the fill reaches the middle of the line, which covers its edge; thinned,
+        # it reaches the line's outer edge and is eroded with the line, so both end together.
+        weight = REGULAR_WEIGHT[src] * k
+        try:
+            cells = filled_cells(inner, f'translate({x:g} {y:g}) scale({k:g})', s, seeds, unit,
+                                 weight if thin else weight / 2)
+        except SeedError as error:
+            index, reason = error.args
+            raise SeedError(f'{entry["name"]}: fill seed {fill["at"][index]} {reason} at {s} px') from None
+        defs.append(f'<mask id="fc"><image href="{cells}" width="{s}" height="{s}"/></mask>')
+        markup = f'<rect width="{s}" height="{s}" fill="{colors[fill["color"]]}" mask="url(#fc)"/>'
         if thin:
-            cells = filled_cells(outline, inner, place, s)
-            if cells:
-                defs.append(f'<mask id="tc"><image href="{cells}" width="{s}" height="{s}"/></mask>')
-                markup += f'<rect width="{s}" height="{s}" fill="{paint}" mask="url(#tc)"/>'
+            thinned = True
             shift = thin if anchored(thin) else 0
             defs.append(f'<filter id="tf"><feMorphology operator="erode" radius="{thin:g}"/></filter>')
             markup = f'<g transform="translate({-shift:g} {-shift:g})"><g filter="url(#tf)">{markup}</g></g>'
@@ -234,8 +255,7 @@ def compose(entry, colors, size, sources):
             markup = (f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" fill="{color}" '
                       f'fill-opacity="{layer.get("opacity", 1)}"/>')
         else:
-            also = ("filled",) if fill and layer is base else ()
-            inner, src, pad = sources.load(entry["name"], layer, s, bool(stripe), also=also)
+            inner, src, pad = sources.load(entry["name"], layer, s, bool(stripe))
             k = s / (src - 2 * pad) * scale
             thin = thinning(layer, src, k * zoom) / zoom
             thinned |= thin > 0
@@ -313,15 +333,12 @@ def vendor(manifest, src_dir, license_file):
         for layer in entry["layers"]:
             if "glyph" not in layer or layer.get("custom"):
                 continue
-            styles = {layer.get("style", "regular")}
-            if entry.get("fill"):
-                styles.add("filled")  # silhouette drawn under the outline
-            for style in sorted(styles):
-                for size in (16, 20, 24, 28, 32):
-                    path = Path(src_dir) / f"{layer['glyph']}_{size}_{style}.svg"
-                    if path.exists():
-                        shutil.copyfile(path, FLUENT / path.name)
-                        count += 1
+            style = layer.get("style", "regular")
+            for size in (16, 20, 24, 28, 32):
+                path = Path(src_dir) / f"{layer['glyph']}_{size}_{style}.svg"
+                if path.exists():
+                    shutil.copyfile(path, FLUENT / path.name)
+                    count += 1
     shutil.copyfile(license_file, FLUENT / "LICENSE")
     return count
 
@@ -378,7 +395,10 @@ def main(argv=None):
     if args.cmd == "vendor":
         print(f"vendored {vendor(manifest, args.src, args.license)} files into {FLUENT}")
     elif args.cmd == "build":
-        result = build(manifest, args.out)
+        try:
+            result = build(manifest, args.out)
+        except SeedError as error:
+            sys.exit(f"build_theme.py build: {error}")
         print("\n".join(str(p) for p in result["zips"].values()))
         if result["scaled_16"]:
             print("16 px rendered from a 24 px source (blurry):", ", ".join(result["scaled_16"]))

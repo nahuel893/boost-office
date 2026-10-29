@@ -2,11 +2,9 @@
   "fluent_version": "1.1.344",
   "palette": {
     "light": {"line": "#424242", "green": "#107C10", "red": "#C50F1F", "blue": "#0F6CBD", "amber": "#AD6800",
-              "fill_yellow": "#F5C96A", "fill_blue": "#9CC8F2", "fill_cells": "#BFDDF7",
-              "fill_red": "#F1A5A8", "fill_green": "#9FD89F"},
+              "tint_yellow": "#FCE6AE", "tint_blue": "#CDE3F8", "tint_green": "#D3EDCF", "tint_red": "#F9D5D7"},
     "dark":  {"line": "#D6D6D6", "green": "#54B054", "red": "#E9737B", "blue": "#479EF5", "amber": "#F2B230",
-              "fill_yellow": "#B08A3A", "fill_blue": "#3E78B8", "fill_cells": "#2F587C",
-              "fill_red": "#B85A60", "fill_green": "#4E8E4E"}
+              "tint_yellow": "#5E5034", "tint_blue": "#2D4560", "tint_green": "#2F5A36", "tint_red": "#5E373B"}
   },
   "icons": [
     {"name": "undo", "layers": [{"glyph": "arrow_undo"}]},

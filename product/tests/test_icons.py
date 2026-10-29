@@ -5,6 +5,7 @@ import re
 import tempfile
 import unittest
 import zipfile
+from unittest import mock
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -23,6 +24,12 @@ EXPECTED_SIZE = {"cmd/sc_": 16, "cmd/lc_": 24, "cmd/32/": 32}
 # touch each other, so only its outermost sides are single strokes.
 STROKE_PROBES = [("table", False, "row", 0.5, False), ("text_align_left", False, "col", 1 / 3, False),
                  ("thousands", True, "row", 11 / 24, True)]
+
+
+def luminance(hex_color):
+    """vcl's Color::GetLuminance."""
+    r, g, b = (int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+    return (b * 29 + g * 151 + r * 76) >> 8
 
 
 def tab_page(tab):
@@ -200,6 +207,32 @@ class IconThemeTest(unittest.TestCase):
             close = [p for p in pixels if p[3] > 200 and max(abs(p[i] - target[i]) for i in range(3)) < 20]
             self.assertEqual([], close, f"{theme}: paste still has the fill color")
 
+    def test_fill_tints_are_softer_than_the_rejected_ones(self):
+        # The whole-silhouette fills of 2026-10-22 used these yellows; every accent tint sits further from the
+        # line color, lighter on the light theme and quieter on the dark one, so the outline reads first.
+        rejected = {"light": "#F5C96A", "dark": "#B08A3A"}
+        palette = bt.load_manifest()["palette"]
+        for mode, old in rejected.items():
+            line = luminance(palette[mode]["line"])
+            for name in ("tint_yellow", "tint_blue", "tint_green", "tint_red"):
+                self.assertGreater(abs(luminance(palette[mode][name]) - line), abs(luminance(old) - line),
+                                   f"{mode}:{name}")
+
+    def test_a_seed_outside_a_closed_part_fails_the_build(self):
+        palette = bt.load_manifest()["palette"]["light"]
+        for at, reason in (([1, 1], "is not inside a closed part of the glyph"), ([15, 3.75], "lands on the outline")):
+            entry = {"name": "probe", "fill": {"color": "tint_blue", "at": [at]}, "layers": [{"glyph": "copy"}]}
+            with self.assertRaises(bt.SeedError) as caught:
+                bt.compose(entry, palette, 24, bt.Sources())
+            self.assertEqual(f"probe: fill seed {at} {reason} at 24 px", str(caught.exception))
+        manifest = {"palette": bt.load_manifest()["palette"], "icons": [
+            {"name": "probe", "fill": {"color": "tint_blue", "at": [[1, 1]]}, "layers": [{"glyph": "copy"}]}]}
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(bt, "load_manifest", return_value=manifest):
+            with self.assertRaises(SystemExit) as caught:
+                bt.main(["build", "--out", tmp])
+        self.assertEqual("build_theme.py build: probe: fill seed [1, 1] is not inside a closed part of the glyph "
+                         "at 16 px", str(caught.exception.code))
+
     def test_badges_use_their_accent(self):
         # (icon, accent hex in light, accent hex in dark)
         cases = [("insertcell", "107C10", "54B054"), ("deletecell", "C50F1F", "E9737B"),
@@ -221,22 +254,14 @@ class IconThemeTest(unittest.TestCase):
         for entry in bt.load_manifest()["icons"]:
             if entry.get("stripe"):
                 continue
-            base = next(layer for layer in entry["layers"] if "glyph" in layer)
             for layer in entry["layers"]:
                 if "glyph" not in layer or layer.get("custom"):
                     continue
-                also = ("filled",) if entry.get("fill") and layer is base else ()
-                _, src, pad = sources.load(entry["name"], layer, 16, False, also=also)
+                _, src, pad = sources.load(entry["name"], layer, 16, False)
                 if src != 20:
                     continue
-                styles = {layer.get("style", "regular"), *also}
-                for style in styles:
-                    path = bt.FLUENT / f"{layer['glyph']}_20_{style}.svg"
-                    self.assertEqual(0, bt.ring_ink(path, pad), f"{path.name} loses ink at pad {pad}")
-            if entry.get("fill"):
-                _, src, pad = sources.load(entry["name"], dict(base, style="filled"), 16, False, also=("regular",))
-                _, src2, pad2 = sources.load(entry["name"], base, 16, False, also=("filled",))
-                self.assertEqual((src, pad), (src2, pad2), f"{entry['name']}: fill and outline not registered")
+                path = bt.FLUENT / f"{layer['glyph']}_20_{layer.get('style', 'regular')}.svg"
+                self.assertEqual(0, bt.ring_ink(path, pad), f"{path.name} loses ink at pad {pad}")
 
     def test_custom_glyph_has_a_native_16px_drawing(self):
         self.assertTrue((bt.CUSTOM / "thousands_16.svg").exists())
@@ -300,9 +325,9 @@ class IconThemeTest(unittest.TestCase):
             for third in range(3):
                 cells = dots.crop((third * size // 3, 0, (third + 1) * size // 3, size))
                 self.assertGreater(cells.getextrema()[1], 200, f"more_horizontal@{size}: dot {third} faded")
-            for glyph in ("copy", "clipboard_paste", "table"):
+            for glyph, seeds in (("copy", [[15, 9]]), ("clipboard_paste", [[6.5, 14]]), ("table", [[6, 6], [18, 18]])):
                 outline = bbox(self.render({"name": "probe", "layers": [{"glyph": glyph}]}, size))
-                filled = {"name": "probe", "fill": {"color": "fill_blue"}, "layers": [{"glyph": glyph}]}
+                filled = {"name": "probe", "fill": {"color": "tint_blue", "at": seeds}, "layers": [{"glyph": glyph}]}
                 self.assertEqual(outline, bbox(self.render(filled, size)), f"fill {glyph}@{size}")
                 banded = {"name": "probe", "layers": [{"glyph": glyph}, band]}
                 self.assertEqual(outline, bbox(self.render(banded, size)), f"band {glyph}@{size}")
