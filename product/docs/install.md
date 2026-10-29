@@ -43,8 +43,8 @@ Download `boost-office-VERSION-linux-x86_64.tar.xz` and `SHA256SUMS` from the re
 
 ```sh
 sha256sum -c --ignore-missing SHA256SUMS
-tar -xJf boost-office-0.1.2-linux-x86_64.tar.xz
-boost-office-0.1.2/install.sh                 # takes every option below; no options: this folder's instdir
+tar -xJf boost-office-0.1.3-linux-x86_64.tar.xz
+boost-office-0.1.3/install.sh                 # takes every option below; no options: this folder's instdir
 ```
 
 `install.sh` and `uninstall.sh` at the top of the folder run `product/install/install.sh` and `uninstall.sh` inside
