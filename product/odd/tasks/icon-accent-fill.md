@@ -1,6 +1,6 @@
 # Feature: icon accent fill (one filled element per icon) and release 0.1.3
 
-- **Status:** in progress, 2026-10-29.
+- **Status:** done, 2026-10-29 (published in 0.1.3).
 - **Locator:** `product/odd/tasks/icon-accent-fill.md`; **Engram mirror:** `odd/icon-accent-fill/tasks`.
 - **Repo / branch:** `/mnt/games/libreoffice/core`, branch `feature/icon-accent-fill` from `main` (eb51ebde1). Runner:
   `python3 -I -m unittest discover -s product/tests -t .`
@@ -33,8 +33,9 @@
 
 - [x] **F1 — accent fills** (delegated, one writer; context reason: hundreds of per-icon choices and rendered
   previews/screenshots to look at): rulings 1-4, S1-S2. Commits 3f4ca4bfc, 37d4c4f77, af01047ad.
-- [ ] **F2 — release 0.1.3** (delegated packaging and container proof, as C2 of `ribbon-card.md`; controller
-  publishes): ruling 5.
+- [x] **F2 — release 0.1.3** (delegated packaging and container proof, as C2 of `ribbon-card.md`; controller
+  publishes): ruling 5. Commits c8a744b3c, a547c21f9; published
+  https://github.com/nahuel893/boost-office/releases/tag/v0.1.3.
 
 ## Log
 
@@ -51,3 +52,10 @@
   screenshots in `/mnt/games/libreoffice/assets/previews/icon-accent-fill/f1/`; controller looked at the light
   before/after sheet and Calc Home: outline first, one soft accent. Concern: Paste/Cut/Copy look grey in a fresh
   document because they are disabled (vcl greys disabled images, fill included).
+- L4 (2026-10-29) F2 done (delegated, opus): archive 214174688 bytes sha256 `48e8ac61…1af89d`, bootstrap
+  `25cfd4dd…787d49`, glibc floor 2.44. Suite 1155 OK. Host install with sampled fills; `archlinux:latest` clean rc 0 +
+  PDF; upgrade from the real published 0.1.2 one-liner rc 0, icon zips = archive (`196039d8…`, `e0d03471…`), purge
+  rc 0; `ubuntu:24.04` refused rc 1. Icon zips are not byte-reproducible (member timestamps).
+- L5 (2026-10-29) Publish (controller): `main`/`dev` a547c21f9, tag `v0.1.3`, release with the three assets. Real
+  URLs in clean `archlinux:latest`: one-liner rc 0, icon zips `196039d8…` / `e0d03471…` = archive, PDF `%PDF-`,
+  purge rc 0; image removed.
