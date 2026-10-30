@@ -799,6 +799,39 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testApplyStyleBoxListWhileEngaged)
     checkList("redo remove", u"Heading 5"_ustr, false);
 }
 
+CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testApplyStyleBoxListOfItsOwnDocument)
+{
+    // Two documents in two windows, each using a paragraph style that the other one lacks.
+    createSwDoc();
+    SwDocShell* pDocShell = getSwDocShell();
+    dispatchCommand(mxComponent, u".uno:StyleNewByExample"_ustr,
+                    paraStyleArgs(u"Alpha Only"_ustr));
+    vcl::Window* pBox = getApplyStyleBox(*pDocShell->GetWrtShell());
+
+    // Don't use createSwDoc(), UnoApiTest::loadFromURL() would dispose the first document.
+    mxComponent2 = loadFromDesktop(u"private:factory/swriter"_ustr,
+                                   u"com.sun.star.text.TextDocument"_ustr);
+    auto pTextDoc2 = dynamic_cast<SwXTextDocument*>(mxComponent2.get());
+    CPPUNIT_ASSERT(pTextDoc2);
+    SwDocShell* pDocShell2 = pTextDoc2->GetDocShell();
+    dispatchCommand(mxComponent2, u".uno:StyleNewByExample"_ustr,
+                    paraStyleArgs(u"Beta Only"_ustr));
+    getApplyStyleBox(*pDocShell2->GetWrtShell());
+    CPPUNIT_ASSERT_EQUAL(static_cast<SfxObjectShell*>(pDocShell2), SfxObjectShell::Current());
+
+    // Engage the box of the first window while the second document is the current one: the box
+    // lists the styles of its own document.
+    // Without the fix in place, this test would have failed: the box listed "Beta Only", the
+    // styles of the current document, and not "Alpha Only".
+    pBox->GrabFocus();
+    Scheduler::ProcessEventsToIdle();
+    CPPUNIT_ASSERT(pBox->HasChildPathFocus());
+    const OUString aEntries = getEntries(*pBox);
+    CPPUNIT_ASSERT_EQUAL(getExpectedParaStyleList(*pDocShell), aEntries);
+    CPPUNIT_ASSERT(aEntries.indexOf(u"\nAlpha Only\n") != -1);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(-1), aEntries.indexOf(u"\nBeta Only\n"));
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

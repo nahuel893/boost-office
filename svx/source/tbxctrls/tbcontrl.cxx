@@ -3226,8 +3226,15 @@ void SvxStyleToolBoxControl::EnsureStyleListFilled()
     if (m_pImpl->m_bListFilled)
         return;
 
-    // The pool remembered from the last status update may belong to a document that is gone.
-    SfxObjectShell* pDocShell = SfxObjectShell::Current();
+    // The pool remembered from the last status update may belong to a document that is gone. Take
+    // the pool of the document in this box's own frame: when the user engages the box of a window
+    // that is not the active one, SfxObjectShell::Current() is still the other window's document.
+    SfxObjectShell* pDocShell = nullptr;
+    if (m_xFrame.is())
+    {
+        if (Reference<XController> xController = m_xFrame->getController(); xController.is())
+            pDocShell = SfxObjectShell::GetShellFromComponent(xController->getModel());
+    }
     m_pStyleSheetPool = pDocShell ? pDocShell->GetStyleSheetPool() : nullptr;
     if (m_pStyleSheetPool)
         FillStyleBox();
@@ -3412,6 +3419,9 @@ css::uno::Reference<css::awt::XWindow> SvxStyleToolBoxControl::createItemWindow(
 
     if (m_pImpl->m_pBox && !m_pImpl->aDefaultStyles.empty())
         m_pImpl->m_pBox->SetDefaultStyle(m_pImpl->aDefaultStyles[0].second);
+
+    // A new box starts without a list: fill it when the user first engages it.
+    m_pImpl->m_bListFilled = false;
 
     return xItemWindow;
 }

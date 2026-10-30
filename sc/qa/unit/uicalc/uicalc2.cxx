@@ -2976,6 +2976,39 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testApplyStyleBoxListWhileEngaged)
     checkList("redo remove", u"Good"_ustr, false);
 }
 
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testApplyStyleBoxListOfItsOwnDocument)
+{
+    // Two documents in two windows, each using a cell style that the other one lacks.
+    createScDoc();
+    goToCell(u"A1"_ustr);
+    dispatchCommand(mxComponent, u".uno:StyleNewByExample"_ustr,
+                    lcl_cellStyleArgs(u"Alpha Only"_ustr));
+    vcl::Window* pBox = lcl_getApplyStyleBox(*getViewShell());
+
+    mxComponent2 = loadFromDesktop(u"private:factory/scalc"_ustr);
+    auto pDocShell2
+        = dynamic_cast<ScDocShell*>(SfxObjectShell::GetShellFromComponent(mxComponent2));
+    CPPUNIT_ASSERT(pDocShell2);
+    dispatchCommand(mxComponent2, u".uno:StyleNewByExample"_ustr,
+                    lcl_cellStyleArgs(u"Beta Only"_ustr));
+    ScTabViewShell* pViewShell2 = pDocShell2->GetBestViewShell(false);
+    CPPUNIT_ASSERT(pViewShell2);
+    lcl_getApplyStyleBox(*pViewShell2);
+    CPPUNIT_ASSERT_EQUAL(static_cast<SfxObjectShell*>(pDocShell2), SfxObjectShell::Current());
+
+    // Engage the box of the first window while the second document is the current one: the box
+    // lists the styles of its own document.
+    // Without the fix in place, this test would have failed: the box listed "Beta Only", the
+    // styles of the current document, and not "Alpha Only".
+    pBox->GrabFocus();
+    Scheduler::ProcessEventsToIdle();
+    CPPUNIT_ASSERT(pBox->HasChildPathFocus());
+    const OUString aEntries = lcl_getEntries(*pBox);
+    CPPUNIT_ASSERT_EQUAL(lcl_getExpectedCellStyleList(*getScDocShell()), aEntries);
+    CPPUNIT_ASSERT(aEntries.indexOf(u"\nAlpha Only\n") != -1);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(-1), aEntries.indexOf(u"\nBeta Only\n"));
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
