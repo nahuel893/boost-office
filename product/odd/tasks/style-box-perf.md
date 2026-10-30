@@ -41,8 +41,9 @@
 6. **Design (2026-10-29, on D1):** design B, "fill when engaged". The box keeps only the current style name while it
    is neither focused nor open; it fills the full list (exactly today's `FillStyleBox`) on focus-in and on popup
    toggle, and while engaged every update refills as today; a non-engaged update after a fill clears the list once
-   (idle task if that clear costs over 0.05 s). LibreOfficeKit always counts as engaged. Pool re-read from
-   `SfxObjectShell::Current()` at fill time. State in `SvxStyleToolBoxControl::Impl`. Fix 1 (refill on pool hints) is
+   (idle task if that clear costs over 0.05 s). LibreOfficeKit always counts as engaged. Pool re-read at fill time from
+   the document of the controller's own frame (amended 2026-10-29 after SB-V1 B1: `SfxObjectShell::Current()` can be
+   another window's document when the click lands). State in `SvxStyleToolBoxControl::Impl`. Fix 1 (refill on pool hints) is
    dropped: svl has no "created" hint, Writer's undo of a delete sends none, and Calc's "Used" styles change with cell
    content, so a hint-driven list would go stale (ruling 1). A change outside svx (gtk3 popup sizing in
    `vcl/unx/gtk3/gtkinst.cxx`) is allowed only if a probe shows the gtk3 popup opening at the wrong size, with that
@@ -57,9 +58,13 @@
 - [x] **I1 — implementation** (delegated writer, opus; context reason: svx/sc builds, tests and measurements): the
   ruled design, test first, `svx` build, before/after measurement with the P1 harness. Commits e046627af (guards),
   f6b15801e (change + RED tests). L6.
-- [ ] **SB-V1 — independent verification** (delegated verifier; Risk item 6 and item 3: shared code in four apps where a
+- [x] **SB-V1 — independent verification** (delegated verifier; Risk item 6 and item 3: shared code in four apps where a
   stale list would go unnoticed): the whole document, probes from rulings 1-2 against the baseline build.
-- [ ] **SB-R1 — blind dual review** (judgment-day: two independent reviewers on the diff; at most one correction round).
+- [x] **SB-R1 — blind dual review** (judgment-day: two independent reviewers on the diff; at most one correction round).
+  APPROVED (no CRITICAL from either judge). L8.
+- [x] **SB-C1 — correction round** (delegated writer, opus; context reason: svx build and CppUnit runs): SB-V1 blocker
+  B1 (pool from the controller's own frame, two-frame test) and the reviewers' `createItemWindow` reset; then a recheck
+  limited to B1. Commit 7cd6b02e1. L9.
 - [ ] **SB-F3 — release 0.1.4** (delegated packaging and container proof, as F2 of `icon-accent-fill.md`; controller
   publishes): ruling 5.
 
@@ -89,3 +94,24 @@
   close after renaming a used cell style through the API, old code too. Keyboard, `gen`, Impress/Draw and
   accessibility left to SB-V1. Controller spot check: `CppunitTest_sw_uibase_uiview` rerun OK; popup screenshot
   looked at; assess `high` via item 6, RDD off.
+- L7 (2026-10-29) SB-V1 done (delegated, opus): verdict BLOCKERS (1). B1: with two Writer windows, clicking the arrow
+  of the box in the window that is not current lists the other document's styles (5/5 new, 0/5 baseline); cause:
+  `EnsureStyleListFilled()` re-reads `SfxObjectShell::Current()`, as ruling 6 said. Passed against the baseline:
+  keyboard (Writer 14/14, Calc 14/14), list equality (Writer 21/21, Calc 20/20 incl. reload, Start Center), order,
+  Impress 7/7, `gen` popup, races (close while the idle is pending, update while open), AT-SPI identical,
+  notebookbar, `sw_tiledrendering` OK (110), stylebloat step 0.02 s CPU, to idle 3.26 s. Advisories (baseline too):
+  closing a document through the API while the gtk3 popup is open aborts; Draw just after opening now lists
+  "Default Drawing Style" where the baseline popup was empty (a fix). Ruling 6 amended (pool source).
+- L8 (2026-10-29) SB-R1 judgment-day: judges A and B, no CRITICAL; APPROVED. WARNINGs: gtk3 popup sizing if opened
+  without focus (A; disproved for the main toolbar by the I1 probe, `gen` by SB-V1), `m_bListFilled` not reset in
+  `createItemWindow` (B; folded into SB-C1). SUGGESTIONs kept for the upstream submission: duplicated test helpers,
+  English UI strings in tests, popup/LOK paths untested, `EnsureStyleListFilled` public, Qt has no popup-toggled
+  signal. User tested the build ("anda todo perfecto y mejor que antes ya podes pushear"); `main`, `dev` and the
+  branch pushed at fe714eb5a.
+- L9 (2026-10-30) SB-C1 done (delegated, opus; resumed once after the session ended): `EnsureStyleListFilled()`
+  takes the pool from its own frame's model (`SfxObjectShell::GetShellFromComponent`), `createItemWindow()` resets
+  `m_bListFilled`. RED Writer and Calc `testApplyStyleBoxListOfItsOwnDocument` (listed "Beta Only" instead of
+  "Alpha Only"), GREEN after. `sw_uibase_uiview` OK (14), `sc_uicalc2` OK (73), `sw_tiledrendering` OK (110). B1
+  recheck with the SB-V1 two-window gtk3 probe: 0/5 wrong lists. Controller: `sw_uibase_uiview` rerun OK, recheck
+  screenshot looked at (beta's popup lists BetaOnly while alpha is active). `Select()` still resolves the picked name
+  through `SfxObjectShell::Current()` (old code, advisory).
