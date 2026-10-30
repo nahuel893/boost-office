@@ -47,6 +47,7 @@
 #include <view.hxx>
 #include <IDocumentRedlineAccess.hxx>
 
+#include <algorithm>
 #include <optional>
 #include <unordered_set>
 
@@ -625,6 +626,12 @@ OUString getEntries(vcl::Window& rBox)
     return aEntries.makeStringAndClear();
 }
 
+sal_Int32 getEntryCount(vcl::Window& rBox)
+{
+    const OUString aEntries = getEntries(rBox);
+    return std::count(aEntries.getStr(), aEntries.getStr() + aEntries.getLength(), u'\n');
+}
+
 /// The list of SvxStyleToolBoxControl::FillStyleBox() for paragraph styles: "Clear formatting",
 /// the default styles, then the used, favourite and user-defined styles not listed yet, then
 /// "More Styles...".
@@ -659,6 +666,56 @@ uno::Sequence<beans::PropertyValue> paraStyleArgs(const OUString& rName)
              comphelper::makePropertyValue(u"Family"_ustr,
                                            static_cast<sal_Int16>(SfxStyleFamily::Para)) };
 }
+}
+
+CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testApplyStyleBoxNotFilledWhenNotEngaged)
+{
+    createSwDoc();
+    SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
+    pWrtShell->Insert(u"one"_ustr);
+    pWrtShell->SplitNode();
+    pWrtShell->Insert(u"two"_ustr);
+    pWrtShell->SplitNode();
+    pWrtShell->Insert(u"three"_ustr);
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+    dispatchCommand(
+        mxComponent,
+        u".uno:StyleApply?Style:string=Heading%201&FamilyName:string=ParagraphStyles"_ustr, {});
+    pWrtShell->Down(/*bSelect=*/false);
+    dispatchCommand(
+        mxComponent,
+        u".uno:StyleApply?Style:string=Heading%202&FamilyName:string=ParagraphStyles"_ustr, {});
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+
+    vcl::Window* pBox = getApplyStyleBox(*pWrtShell);
+    CPPUNIT_ASSERT(!pBox->HasChildPathFocus());
+
+    // Moving between paragraphs with different styles updates the box. While the box is neither
+    // focused nor open, it shows the current style but does not hold the whole list: refilling it
+    // on every cursor move is slow with many styles.
+    // Without the fix in place, this test would have failed with
+    // - Expected less or equal than: 1
+    // - Actual  : 13
+    for (const OUString& rStyle :
+         { u"Heading 1"_ustr, u"Heading 2"_ustr, u"Default Paragraph Style"_ustr })
+    {
+        updateStatus(*pWrtShell);
+        CPPUNIT_ASSERT_EQUAL(rStyle, pBox->GetText());
+        CPPUNIT_ASSERT_LESSEQUAL(sal_Int32(1), getEntryCount(*pBox));
+        pWrtShell->Down(/*bSelect=*/false);
+    }
+
+    // Focusing the box fills the list; once the user is back in the document, the next update
+    // drops it again.
+    pBox->GrabFocus();
+    updateStatus(*pWrtShell);
+    CPPUNIT_ASSERT_EQUAL(getExpectedParaStyleList(*getSwDocShell()), getEntries(*pBox));
+    pWrtShell->GetView().GetWindow()->GrabFocus();
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+    updateStatus(*pWrtShell);
+    CPPUNIT_ASSERT(!pBox->HasChildPathFocus());
+    CPPUNIT_ASSERT_EQUAL(u"Heading 1"_ustr, pBox->GetText());
+    CPPUNIT_ASSERT_LESSEQUAL(sal_Int32(1), getEntryCount(*pBox));
 }
 
 CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testApplyStyleBoxListWhileEngaged)

@@ -179,6 +179,9 @@ public:
     virtual sal_Bool SAL_CALL supportsService(const OUString& rServiceName) override;
     virtual css::uno::Sequence<OUString> SAL_CALL getSupportedServiceNames() override;
 
+    /// Fills the list of the box if it is empty; the box calls this when the user engages it.
+    void EnsureStyleListFilled();
+
 private:
 #define MAX_FAMILIES 5
 
@@ -189,6 +192,8 @@ private:
 
     void Update();
     void FillStyleBox();
+    void ClearStyleBox();
+    bool IsBoxEngaged() const;
     void AppendStyles(std::vector<OUString>& rStyles, SfxStyleFamily eFamily, SfxStyleSearchBits eBits);
     void SelectStyle(const OUString& rStyleName);
 

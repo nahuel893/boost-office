@@ -32,6 +32,7 @@
 #include <svl/itempool.hxx>
 #include <vcl/commandinfoprovider.hxx>
 #include <vcl/event.hxx>
+#include <vcl/idle.hxx>
 #include <vcl/toolbox.hxx>
 #include <vcl/vclptr.hxx>
 #include <vcl/weld/Builder.hxx>
@@ -211,6 +212,16 @@ public:
         m_xWidget->thaw();
     }
 
+    bool has_focus() const
+    {
+        return m_xWidget->has_focus();
+    }
+
+    bool get_popup_shown() const
+    {
+        return m_xWidget->get_popup_shown();
+    }
+
     virtual bool DoKeyInput(const KeyEvent& rKEvt);
 
 private:
@@ -223,6 +234,7 @@ private:
     DECL_LINK(ActivateHdl, weld::ComboBox&, bool);
     DECL_LINK(FocusInHdl, weld::Widget&, void);
     DECL_LINK(FocusOutHdl, weld::Widget&, void);
+    DECL_LINK(PopupToggledHdl, weld::ComboBox&, void);
     DECL_LINK(CustomRenderHdl, weld::ComboBox::render_args, void);
     DECL_LINK(CustomGetSizeHdl, OutputDevice&, Size);
 
@@ -837,6 +849,7 @@ SvxStyleBox_Base::SvxStyleBox_Base(std::unique_ptr<weld::ComboBox> xWidget,
     m_xWidget->connect_entry_activate(LINK(this, SvxStyleBox_Base, ActivateHdl));
     m_xWidget->connect_focus_in(LINK(this, SvxStyleBox_Base, FocusInHdl));
     m_xWidget->connect_focus_out(LINK(this, SvxStyleBox_Base, FocusOutHdl));
+    m_xWidget->connect_popup_toggled(LINK(this, SvxStyleBox_Base, PopupToggledHdl));
     m_xWidget->set_help_id(HID_STYLE_LISTBOX);
     m_xWidget->set_entry_completion(true);
     m_xMenu->connect_activate(LINK(this, SvxStyleBox_Base, MenuSelectHdl));
@@ -1015,7 +1028,15 @@ void SvxStyleBox_Base::SetFamily( SfxStyleFamily eNewFamily )
 
 IMPL_LINK_NOARG(SvxStyleBox_Base, FocusInHdl, weld::Widget&, void)
 {
+    // Keyboard navigation and autocompletion work on the list, so fill it before they need it.
+    m_rCtrl.EnsureStyleListFilled();
     m_xWidget->select_entry_region(0, -1);
+}
+
+IMPL_LINK_NOARG(SvxStyleBox_Base, PopupToggledHdl, weld::ComboBox&, void)
+{
+    // Called when the popup opens and when it closes; filling is a no-op once the list is filled.
+    m_rCtrl.EnsureStyleListFilled();
 }
 
 IMPL_LINK_NOARG(SvxStyleBox_Base, FocusOutHdl, weld::Widget&, void)
@@ -2870,16 +2891,23 @@ struct SvxStyleToolBoxControl::Impl
     VclPtr<SvxStyleBox_Impl> m_xVclBox;
     std::unique_ptr<SvxStyleBox_Base> m_xWeldBox;
     SvxStyleBox_Base* m_pBox;
+    /// The box holds the current list of styles. While the user does not work with the box, it
+    /// holds no list (see Update).
+    bool m_bListFilled = false;
+    /// Removes the list once the user has left the box. Removing tens of thousands of entries takes
+    /// noticeable time, so do it when nothing else is waiting.
+    Idle m_aClearIdle { "svx::SvxStyleToolBoxControl m_aClearIdle" };
 
-    Impl()
+    explicit Impl(SvxStyleToolBoxControl& rCtrl)
         :aClearForm         ( SvxResId( RID_SVXSTR_CLEARFORM ) )
         ,aMore              ( SvxResId( RID_SVXSTR_MORE_STYLES ) )
         ,bSpecModeWriter    ( false )
         ,bSpecModeCalc      ( false )
         ,m_pBox             ( nullptr )
+        ,m_rCtrl            ( rCtrl )
     {
-
-
+        m_aClearIdle.SetPriority(TaskPriority::LOWEST);
+        m_aClearIdle.SetInvokeHandler(LINK(this, Impl, ClearHdl));
     }
     void InitializeStyles(const Reference < frame::XModel >& xModel)
     {
@@ -2966,7 +2994,17 @@ struct SvxStyleToolBoxControl::Impl
             OSL_FAIL("error while initializing style names");
         }
     }
+
+private:
+    SvxStyleToolBoxControl& m_rCtrl;
+    DECL_LINK(ClearHdl, Timer*, void);
 };
+
+IMPL_LINK_NOARG(SvxStyleToolBoxControl::Impl, ClearHdl, Timer*, void)
+{
+    if (!m_bListFilled && !m_rCtrl.IsBoxEngaged())
+        m_rCtrl.ClearStyleBox();
+}
 
 // mapping table from bound items. BE CAREFUL this table must be in the
 // same order as the uno commands bound to the slots SID_STYLE_FAMILY1..n
@@ -2981,7 +3019,7 @@ constexpr OUString StyleSlotToStyleCommand[MAX_FAMILIES] =
 };
 
 SvxStyleToolBoxControl::SvxStyleToolBoxControl()
-    : m_pImpl(new Impl)
+    : m_pImpl(new Impl(*this))
     , m_pStyleSheetPool(nullptr)
     , m_nActFamily(0xffff)
 {
@@ -3166,6 +3204,43 @@ void SvxStyleToolBoxControl::FillStyleBox()
     pBox->thaw();
     pBox->set_active_or_entry_text(aStrSel);
     pBox->SetFamily( eFamily );
+    m_pImpl->m_bListFilled = true;
+    m_pImpl->m_aClearIdle.Stop();
+}
+
+void SvxStyleToolBoxControl::ClearStyleBox()
+{
+    SvxStyleBox_Base* pBox = m_pImpl->m_pBox;
+    if (!pBox)
+        return;
+
+    OUString aStrSel(pBox->get_active_text());
+    pBox->freeze();
+    pBox->clear();
+    pBox->thaw();
+    pBox->set_active_or_entry_text(aStrSel);
+}
+
+void SvxStyleToolBoxControl::EnsureStyleListFilled()
+{
+    if (m_pImpl->m_bListFilled)
+        return;
+
+    // The pool remembered from the last status update may belong to a document that is gone.
+    SfxObjectShell* pDocShell = SfxObjectShell::Current();
+    m_pStyleSheetPool = pDocShell ? pDocShell->GetStyleSheetPool() : nullptr;
+    if (m_pStyleSheetPool)
+        FillStyleBox();
+}
+
+bool SvxStyleToolBoxControl::IsBoxEngaged() const
+{
+    // LibreOfficeKit clients draw the drop-down themselves from the entries of the box.
+    if (comphelper::LibreOfficeKit::isActive())
+        return true;
+
+    const SvxStyleBox_Base* pBox = m_pImpl->m_pBox;
+    return pBox && (pBox->has_focus() || pBox->get_popup_shown());
 }
 
 void SvxStyleToolBoxControl::AppendStyles(std::vector<OUString>& rStyles, SfxStyleFamily eFamily,
@@ -3248,7 +3323,22 @@ void SvxStyleToolBoxControl::Update()
     else if ( pPool != m_pStyleSheetPool )
         m_pStyleSheetPool = pPool;
 
-    FillStyleBox(); // Decides by itself whether Fill is needed
+    if (SvxStyleBox_Base* pBox = m_pImpl->m_pBox)
+        pBox->SetFamily(GetActFamily());
+
+    // Update() runs on every cursor move, and filling the list costs time in proportion to the
+    // number of styles, which can be tens of thousands. So the box holds the list only while the
+    // user works with it (focus or popup, see EnsureStyleListFilled), and otherwise shows just
+    // the current style.
+    if (IsBoxEngaged())
+        FillStyleBox();
+    else if (m_pImpl->m_bListFilled)
+    {
+        // The list no longer follows the styles: refill it when the user comes back, and remove
+        // it in the meantime.
+        m_pImpl->m_bListFilled = false;
+        m_pImpl->m_aClearIdle.Start();
+    }
 
     if ( pItem )
         SelectStyle( pItem->GetStyleName() );

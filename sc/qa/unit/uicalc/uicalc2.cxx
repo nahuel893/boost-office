@@ -67,6 +67,7 @@
 #include <com/sun/star/container/XNamed.hpp>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 
+#include <algorithm>
 #include <optional>
 #include <unordered_set>
 
@@ -2802,6 +2803,12 @@ OUString lcl_getEntries(vcl::Window& rBox)
     return aEntries.makeStringAndClear();
 }
 
+sal_Int32 lcl_getEntryCount(vcl::Window& rBox)
+{
+    const OUString aEntries = lcl_getEntries(rBox);
+    return std::count(aEntries.getStr(), aEntries.getStr() + aEntries.getLength(), u'\n');
+}
+
 /// The list of SvxStyleToolBoxControl::FillStyleBox() for cell styles: "Clear formatting", the
 /// default styles, then the used, favourite and user-defined styles not listed yet, then
 /// "More Styles...".
@@ -2835,6 +2842,54 @@ uno::Sequence<beans::PropertyValue> lcl_cellStyleArgs(const OUString& rName)
         { { "Param", uno::Any(rName) },
           { "Family", uno::Any(static_cast<sal_Int16>(SfxStyleFamily::Para)) } });
 }
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testApplyStyleBoxNotFilledWhenNotEngaged)
+{
+    createScDoc();
+    goToCell(u"A1"_ustr);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Accent%201&FamilyName:string=CellStyles"_ustr,
+                    {});
+    goToCell(u"B1"_ustr);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Good&FamilyName:string=CellStyles"_ustr, {});
+    goToCell(u"C1"_ustr);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Bad&FamilyName:string=CellStyles"_ustr, {});
+
+    vcl::Window* pBox = lcl_getApplyStyleBox(*getViewShell());
+    CPPUNIT_ASSERT(!pBox->HasChildPathFocus());
+
+    // Moving between cells with different cell styles updates the box. While the box is neither
+    // focused nor open, it shows the current style but does not hold the whole list: refilling it
+    // on every cursor move took about a second with tens of thousands of cell styles.
+    // Without the fix in place, this test would have failed with
+    // - Expected less or equal than: 1
+    // - Actual  : 11
+    const std::pair<OUString, OUString> aMoves[] = { { u"A1"_ustr, u"Accent 1"_ustr },
+                                                     { u"B1"_ustr, u"Good"_ustr },
+                                                     { u"C1"_ustr, u"Bad"_ustr },
+                                                     { u"D1"_ustr, u"Default"_ustr } };
+    for (const auto& [rCell, rStyle] : aMoves)
+    {
+        goToCell(rCell);
+        lcl_updateStatus(*getViewShell());
+        CPPUNIT_ASSERT_EQUAL(rStyle, pBox->GetText());
+        CPPUNIT_ASSERT_LESSEQUAL(sal_Int32(1), lcl_getEntryCount(*pBox));
+    }
+
+    // Focusing the box fills the list; once the user is back in the document, the next update
+    // drops it again.
+    pBox->GrabFocus();
+    lcl_updateStatus(*getViewShell());
+    CPPUNIT_ASSERT_EQUAL(lcl_getExpectedCellStyleList(*getScDocShell()), lcl_getEntries(*pBox));
+    getViewShell()->GetWindow()->GrabFocus();
+    goToCell(u"A1"_ustr);
+    lcl_updateStatus(*getViewShell());
+    CPPUNIT_ASSERT(!pBox->HasChildPathFocus());
+    CPPUNIT_ASSERT_EQUAL(u"Accent 1"_ustr, pBox->GetText());
+    CPPUNIT_ASSERT_LESSEQUAL(sal_Int32(1), lcl_getEntryCount(*pBox));
 }
 
 CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testApplyStyleBoxListWhileEngaged)
