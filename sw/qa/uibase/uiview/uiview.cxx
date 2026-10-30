@@ -10,17 +10,24 @@
 #include <swmodeltestbase.hxx>
 
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
+#include <comphelper/OAccessible.hxx>
 #include <comphelper/processfactory.hxx>
 #include <osl/file.hxx>
 #include <comphelper/propertyvalue.hxx>
 #include <comphelper/scopeguard.hxx>
 #include <vcl/scheduler.hxx>
 #include <sfx2/viewfrm.hxx>
+#include <sfx2/bindings.hxx>
 #include <sfx2/dispatch.hxx>
 #include <sfx2/lokhelper.hxx>
 #include <test/lokcallback.hxx>
 #include <comphelper/string.hxx>
+#include <svl/style.hxx>
+#include <vcl/toolbox.hxx>
 
+#include <com/sun/star/accessibility/AccessibleRole.hpp>
+#include <com/sun/star/accessibility/XAccessibleContext.hpp>
+#include <com/sun/star/container/XNamed.hpp>
 #include <com/sun/star/frame/XLayoutManager.hpp>
 #include <com/sun/star/frame/XDispatchHelper.hpp>
 #include <com/sun/star/frame/XDispatchProvider.hpp>
@@ -28,6 +35,7 @@
 #include <com/sun/star/frame/XStorable2.hpp>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 #include <com/sun/star/packages/zip/ZipFileAccess.hpp>
+#include <com/sun/star/style/XStyleFamiliesSupplier.hpp>
 #include <com/sun/star/view/XSelectionSupplier.hpp>
 #include <com/sun/star/text/XParagraphCursor.hpp>
 
@@ -38,6 +46,9 @@
 #include <swmodule.hxx>
 #include <view.hxx>
 #include <IDocumentRedlineAccess.hxx>
+
+#include <optional>
+#include <unordered_set>
 
 /// Covers sw/source/uibase/uiview/ fixes.
 class SwUibaseUiviewTest : public SwModelTestBase
@@ -542,6 +553,193 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testRedlineRenderModeInvalidate)
     // Tear down LOK:
     pWrtShell->GetSfxViewShell()->setLibreOfficeKitViewCallback(nullptr);
     comphelper::LibreOfficeKit::setPartInInvalidation(false);
+}
+
+namespace
+{
+/// Finds the combo box of the "Apply Style" (.uno:StyleApply) toolbar item below pWindow.
+vcl::Window* findApplyStyleBox(vcl::Window* pWindow)
+{
+    if (auto pToolBox = dynamic_cast<ToolBox*>(pWindow))
+    {
+        for (ToolBox::ImplToolItems::size_type i = 0; i < pToolBox->GetItemCount(); ++i)
+        {
+            const ToolBoxItemId nId = pToolBox->GetItemId(i);
+            if (pToolBox->GetItemCommand(nId) != ".uno:StyleApply")
+                continue;
+            // The item window is an InterimItemWindow that holds the combo box.
+            std::vector<vcl::Window*> aWindows{ pToolBox->GetItemWindow(nId) };
+            while (!aWindows.empty())
+            {
+                vcl::Window* pChild = aWindows.back();
+                aWindows.pop_back();
+                if (!pChild)
+                    continue;
+                if (pChild->GetType() == WindowType::COMBOBOX)
+                    return pChild;
+                for (sal_uInt16 j = 0; j < pChild->GetChildCount(); ++j)
+                    aWindows.push_back(pChild->GetChild(j));
+            }
+        }
+    }
+    for (sal_uInt16 i = 0; i < pWindow->GetChildCount(); ++i)
+        if (vcl::Window* pFound = findApplyStyleBox(pWindow->GetChild(i)))
+            return pFound;
+    return nullptr;
+}
+
+/// Sends the pending status updates to the toolbar controllers now: they are sent from a timer,
+/// and Scheduler::ProcessEventsToIdle() does not wait for timers.
+void updateStatus(SwWrtShell& rWrtShell)
+{
+    Scheduler::ProcessEventsToIdle();
+    rWrtShell.GetView().GetViewFrame().GetBindings().Update();
+    Scheduler::ProcessEventsToIdle();
+}
+
+vcl::Window* getApplyStyleBox(SwWrtShell& rWrtShell)
+{
+    updateStatus(rWrtShell);
+    vcl::Window* pBox
+        = findApplyStyleBox(rWrtShell.GetView().GetViewFrame().GetWindow().GetSystemWindow());
+    CPPUNIT_ASSERT_MESSAGE("no Apply Style box in the formatting toolbar", pBox);
+    return pBox;
+}
+
+/// The entries of the box, one per line, as its accessible list exposes them.
+OUString getEntries(vcl::Window& rBox)
+{
+    OUStringBuffer aEntries;
+    uno::Reference<accessibility::XAccessibleContext> xBox
+        = rBox.GetAccessible()->getAccessibleContext();
+    for (sal_Int64 i = 0; i < xBox->getAccessibleChildCount(); ++i)
+    {
+        uno::Reference<accessibility::XAccessibleContext> xList
+            = xBox->getAccessibleChild(i)->getAccessibleContext();
+        if (xList->getAccessibleRole() != accessibility::AccessibleRole::LIST)
+            continue;
+        for (sal_Int64 j = 0; j < xList->getAccessibleChildCount(); ++j)
+            aEntries.append(
+                xList->getAccessibleChild(j)->getAccessibleContext()->getAccessibleName() + "\n");
+    }
+    return aEntries.makeStringAndClear();
+}
+
+/// The list of SvxStyleToolBoxControl::FillStyleBox() for paragraph styles: "Clear formatting",
+/// the default styles, then the used, favourite and user-defined styles not listed yet, then
+/// "More Styles...".
+OUString getExpectedParaStyleList(SwDocShell& rDocShell)
+{
+    OUStringBuffer aEntries(u"Clear formatting\n"_ustr);
+    std::unordered_set<OUString> aListed;
+    for (const OUString& rDefault :
+         { u"Default Paragraph Style"_ustr, u"Body Text"_ustr, u"Title"_ustr, u"Subtitle"_ustr,
+           u"Heading 1"_ustr, u"Heading 2"_ustr, u"Heading 3"_ustr, u"Heading 4"_ustr,
+           u"Block Quotation"_ustr, u"Preformatted Text"_ustr })
+    {
+        aEntries.append(rDefault + "\n");
+        aListed.insert(rDefault);
+    }
+    SfxStyleSheetBasePool* pPool = rDocShell.GetStyleSheetPool();
+    for (SfxStyleSearchBits eBits : { SfxStyleSearchBits::Used, SfxStyleSearchBits::Favourite,
+                                      SfxStyleSearchBits::UserDefined })
+    {
+        auto xIter = pPool->CreateIterator(SfxStyleFamily::Para, eBits);
+        for (SfxStyleSheetBase* pStyle = xIter->First(); pStyle; pStyle = xIter->Next())
+            if (aListed.insert(pStyle->GetName()).second)
+                aEntries.append(pStyle->GetName() + "\n");
+    }
+    aEntries.append("More Styles...\n");
+    return aEntries.makeStringAndClear();
+}
+
+uno::Sequence<beans::PropertyValue> paraStyleArgs(const OUString& rName)
+{
+    return { comphelper::makePropertyValue(u"Param"_ustr, rName),
+             comphelper::makePropertyValue(u"Family"_ustr,
+                                           static_cast<sal_Int16>(SfxStyleFamily::Para)) };
+}
+}
+
+CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testApplyStyleBoxListWhileEngaged)
+{
+    createSwDoc();
+    SwDocShell* pDocShell = getSwDocShell();
+    SwWrtShell* pWrtShell = pDocShell->GetWrtShell();
+    vcl::Window* pBox = getApplyStyleBox(*pWrtShell);
+
+    // Engage the box: while it has the focus, it lists every style as it always did.
+    pBox->GrabFocus();
+    Scheduler::ProcessEventsToIdle();
+    CPPUNIT_ASSERT(pBox->HasChildPathFocus());
+
+    // The list equals the one built from the style pool, and rName is listed or not.
+    auto checkList = [&](const char* pStep, const OUString& rName, std::optional<bool> oListed)
+    {
+        updateStatus(*pWrtShell);
+        CPPUNIT_ASSERT_MESSAGE(pStep, pBox->HasChildPathFocus());
+        const OUString aEntries = getEntries(*pBox);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(pStep, getExpectedParaStyleList(*pDocShell), aEntries);
+        if (oListed)
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(pStep, *oListed,
+                                         aEntries.indexOf(OUString("\n" + rName + "\n")) != -1);
+    };
+    checkList("initial", u"Heading 5"_ustr, false);
+
+    dispatchCommand(mxComponent, u".uno:StyleNewByExample"_ustr,
+                    paraStyleArgs(u"Boost Paragraph"_ustr));
+    checkList("create", u"Boost Paragraph"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    // Undo may take back only the use of the new style, not the style itself.
+    checkList("undo create", u"Boost Paragraph"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo create", u"Boost Paragraph"_ustr, true);
+
+    uno::Reference<style::XStyleFamiliesSupplier> xSupplier(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<container::XNameAccess> xParaStyles(
+        xSupplier->getStyleFamilies()->getByName(u"ParagraphStyles"_ustr), uno::UNO_QUERY_THROW);
+    uno::Reference<container::XNamed> xStyle(xParaStyles->getByName(u"Boost Paragraph"_ustr),
+                                             uno::UNO_QUERY_THROW);
+    xStyle->setName(u"Boost Renamed"_ustr);
+    checkList("rename", u"Boost Renamed"_ustr, true);
+    checkList("rename", u"Boost Paragraph"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo rename", u"Boost Paragraph"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo rename", u"Boost Renamed"_ustr, {});
+
+    // The box lists hidden styles too (SfxStyleSheetIterator does not filter them).
+    SfxStyleSheetBasePool* pPool = pDocShell->GetStyleSheetPool();
+    dispatchCommand(mxComponent, u".uno:HideStyle"_ustr, paraStyleArgs(u"Boost Renamed"_ustr));
+    CPPUNIT_ASSERT(pPool->Find(u"Boost Renamed"_ustr, SfxStyleFamily::Para)->IsHidden());
+    checkList("hide", u"Boost Renamed"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo hide", u"Boost Renamed"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo hide", u"Boost Renamed"_ustr, {});
+
+    dispatchCommand(mxComponent, u".uno:DeleteStyle"_ustr, paraStyleArgs(u"Boost Renamed"_ustr));
+    CPPUNIT_ASSERT(!xParaStyles->hasByName(u"Boost Renamed"_ustr));
+    checkList("delete", u"Boost Renamed"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    CPPUNIT_ASSERT(xParaStyles->hasByName(u"Boost Renamed"_ustr));
+    checkList("undo delete", u"Boost Renamed"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo delete", u"Boost Renamed"_ustr, false);
+
+    // "Heading 5" is not a default style: it is listed only while a paragraph uses it.
+    dispatchCommand(
+        mxComponent,
+        u".uno:StyleApply?Style:string=Heading%205&FamilyName:string=ParagraphStyles"_ustr, {});
+    checkList("apply", u"Heading 5"_ustr, true);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Standard&FamilyName:string=ParagraphStyles"_ustr,
+                    {});
+    checkList("remove", u"Heading 5"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo remove", u"Heading 5"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo remove", u"Heading 5"_ustr, false);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

@@ -14,7 +14,9 @@
 #include <editeng/editobj.hxx>
 #include <editeng/flditem.hxx>
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
+#include <sfx2/bindings.hxx>
 #include <sfx2/printer.hxx>
+#include <sfx2/viewfrm.hxx>
 #include <sfx2/viewsh.hxx>
 #include <sot/exchange.hxx>
 #include <svx/svdpage.hxx>
@@ -27,6 +29,7 @@
 #include <vcl/scheduler.hxx>
 #include <stlsheet.hxx>
 
+#include <comphelper/OAccessible.hxx>
 #include <comphelper/processfactory.hxx>
 #include <comphelper/propertysequence.hxx>
 #include <comphelper/propertyvalue.hxx>
@@ -56,6 +59,16 @@
 #include <viewdata.hxx>
 #include <queryparam.hxx>
 #include <svl/sharedstringpool.hxx>
+#include <svl/style.hxx>
+#include <vcl/toolbox.hxx>
+#include <com/sun/star/accessibility/AccessibleRole.hpp>
+#include <com/sun/star/accessibility/XAccessibleContext.hpp>
+#include <com/sun/star/container/XNameContainer.hpp>
+#include <com/sun/star/container/XNamed.hpp>
+#include <com/sun/star/lang/XMultiServiceFactory.hpp>
+
+#include <optional>
+#include <unordered_set>
 
 using namespace ::com::sun::star;
 
@@ -2717,6 +2730,195 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf171366)
     // - Expected: row1..row37 row38..row74 row75..row100
     // - Actual  : row1..row37 row57..row100 empty
     CPPUNIT_ASSERT_EQUAL(aFromPageStyle, aFromDialog);
+}
+
+namespace
+{
+/// Finds the combo box of the "Apply Style" (.uno:StyleApply) toolbar item below pWindow.
+vcl::Window* lcl_findApplyStyleBox(vcl::Window* pWindow)
+{
+    if (auto pToolBox = dynamic_cast<ToolBox*>(pWindow))
+    {
+        for (ToolBox::ImplToolItems::size_type i = 0; i < pToolBox->GetItemCount(); ++i)
+        {
+            const ToolBoxItemId nId = pToolBox->GetItemId(i);
+            if (pToolBox->GetItemCommand(nId) != ".uno:StyleApply")
+                continue;
+            // The item window is an InterimItemWindow that holds the combo box.
+            std::vector<vcl::Window*> aWindows{ pToolBox->GetItemWindow(nId) };
+            while (!aWindows.empty())
+            {
+                vcl::Window* pChild = aWindows.back();
+                aWindows.pop_back();
+                if (!pChild)
+                    continue;
+                if (pChild->GetType() == WindowType::COMBOBOX)
+                    return pChild;
+                for (sal_uInt16 j = 0; j < pChild->GetChildCount(); ++j)
+                    aWindows.push_back(pChild->GetChild(j));
+            }
+        }
+    }
+    for (sal_uInt16 i = 0; i < pWindow->GetChildCount(); ++i)
+        if (vcl::Window* pFound = lcl_findApplyStyleBox(pWindow->GetChild(i)))
+            return pFound;
+    return nullptr;
+}
+
+/// Sends the pending status updates to the toolbar controllers now: they are sent from a timer,
+/// and Scheduler::ProcessEventsToIdle() does not wait for timers.
+void lcl_updateStatus(ScTabViewShell& rViewShell)
+{
+    Scheduler::ProcessEventsToIdle();
+    rViewShell.GetViewFrame().GetBindings().Update();
+    Scheduler::ProcessEventsToIdle();
+}
+
+vcl::Window* lcl_getApplyStyleBox(ScTabViewShell& rViewShell)
+{
+    lcl_updateStatus(rViewShell);
+    vcl::Window* pBox
+        = lcl_findApplyStyleBox(rViewShell.GetViewFrame().GetWindow().GetSystemWindow());
+    CPPUNIT_ASSERT_MESSAGE("no Apply Style box in the formatting toolbar", pBox);
+    return pBox;
+}
+
+/// The entries of the box, one per line, as its accessible list exposes them.
+OUString lcl_getEntries(vcl::Window& rBox)
+{
+    OUStringBuffer aEntries;
+    uno::Reference<accessibility::XAccessibleContext> xBox
+        = rBox.GetAccessible()->getAccessibleContext();
+    for (sal_Int64 i = 0; i < xBox->getAccessibleChildCount(); ++i)
+    {
+        uno::Reference<accessibility::XAccessibleContext> xList
+            = xBox->getAccessibleChild(i)->getAccessibleContext();
+        if (xList->getAccessibleRole() != accessibility::AccessibleRole::LIST)
+            continue;
+        for (sal_Int64 j = 0; j < xList->getAccessibleChildCount(); ++j)
+            aEntries.append(
+                xList->getAccessibleChild(j)->getAccessibleContext()->getAccessibleName() + "\n");
+    }
+    return aEntries.makeStringAndClear();
+}
+
+/// The list of SvxStyleToolBoxControl::FillStyleBox() for cell styles: "Clear formatting", the
+/// default styles, then the used, favourite and user-defined styles not listed yet, then
+/// "More Styles...".
+OUString lcl_getExpectedCellStyleList(ScDocShell& rDocShell)
+{
+    OUStringBuffer aEntries(u"Clear formatting\n"_ustr);
+    std::unordered_set<OUString> aListed;
+    for (const OUString& rDefault :
+         { u"Default"_ustr, u"Accent 1"_ustr, u"Accent 2"_ustr, u"Accent 3"_ustr, u"Heading 1"_ustr,
+           u"Heading 2"_ustr, u"Result"_ustr })
+    {
+        aEntries.append(rDefault + "\n");
+        aListed.insert(rDefault);
+    }
+    SfxStyleSheetBasePool* pPool = rDocShell.GetStyleSheetPool();
+    for (SfxStyleSearchBits eBits : { SfxStyleSearchBits::Used, SfxStyleSearchBits::Favourite,
+                                      SfxStyleSearchBits::UserDefined })
+    {
+        auto xIter = pPool->CreateIterator(SfxStyleFamily::Para, eBits);
+        for (SfxStyleSheetBase* pStyle = xIter->First(); pStyle; pStyle = xIter->Next())
+            if (aListed.insert(pStyle->GetName()).second)
+                aEntries.append(pStyle->GetName() + "\n");
+    }
+    aEntries.append("More Styles...\n");
+    return aEntries.makeStringAndClear();
+}
+
+uno::Sequence<beans::PropertyValue> lcl_cellStyleArgs(const OUString& rName)
+{
+    return comphelper::InitPropertySequence(
+        { { "Param", uno::Any(rName) },
+          { "Family", uno::Any(static_cast<sal_Int16>(SfxStyleFamily::Para)) } });
+}
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testApplyStyleBoxListWhileEngaged)
+{
+    createScDoc();
+    ScDocShell* pDocShell = getScDocShell();
+    vcl::Window* pBox = lcl_getApplyStyleBox(*getViewShell());
+
+    // Engage the box: while it has the focus, it lists every style as it always did.
+    pBox->GrabFocus();
+    Scheduler::ProcessEventsToIdle();
+    CPPUNIT_ASSERT(pBox->HasChildPathFocus());
+
+    // The list equals the one built from the style pool, and rName is listed or not.
+    auto checkList = [&](const char* pStep, const OUString& rName, std::optional<bool> oListed)
+    {
+        lcl_updateStatus(*getViewShell());
+        CPPUNIT_ASSERT_MESSAGE(pStep, pBox->HasChildPathFocus());
+        const OUString aEntries = lcl_getEntries(*pBox);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(pStep, lcl_getExpectedCellStyleList(*pDocShell), aEntries);
+        if (oListed)
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(pStep, *oListed,
+                                         aEntries.indexOf(OUString("\n" + rName + "\n")) != -1);
+    };
+    checkList("initial", u"Good"_ustr, false);
+
+    dispatchCommand(mxComponent, u".uno:StyleNewByExample"_ustr,
+                    lcl_cellStyleArgs(u"Boost Cell"_ustr));
+    checkList("create", u"Boost Cell"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo create", u"Boost Cell"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo create", u"Boost Cell"_ustr, true);
+
+    // Renaming a style that cells use through the API leaves the cell attribute helper broken
+    // (a crash when the document is closed), so rename a style that no cell uses.
+    uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<style::XStyleFamiliesSupplier> xSupplier(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<container::XNameContainer> xCellStyles(
+        xSupplier->getStyleFamilies()->getByName(u"CellStyles"_ustr), uno::UNO_QUERY_THROW);
+    xCellStyles->insertByName(u"Boost Spare"_ustr, uno::Any(xFactory->createInstance(
+                                                       u"com.sun.star.style.CellStyle"_ustr)));
+    // Inserting a style through the API does not invalidate the style slots: the box is updated
+    // with the next cursor move.
+    goToCell(u"A2"_ustr);
+    checkList("insert", u"Boost Spare"_ustr, true);
+    // Calc has no undo for a rename through the API.
+    uno::Reference<container::XNamed> xStyle(xCellStyles->getByName(u"Boost Spare"_ustr),
+                                             uno::UNO_QUERY_THROW);
+    xStyle->setName(u"Boost Renamed"_ustr);
+    checkList("rename", u"Boost Renamed"_ustr, true);
+    checkList("rename", u"Boost Spare"_ustr, false);
+
+    // The box lists hidden styles too (SfxStyleSheetIterator does not filter them).
+    SfxStyleSheetBasePool* pPool = pDocShell->GetStyleSheetPool();
+    dispatchCommand(mxComponent, u".uno:HideStyle"_ustr, lcl_cellStyleArgs(u"Boost Cell"_ustr));
+    CPPUNIT_ASSERT(pPool->Find(u"Boost Cell"_ustr, SfxStyleFamily::Para)->IsHidden());
+    checkList("hide", u"Boost Cell"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo hide", u"Boost Cell"_ustr, {});
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo hide", u"Boost Cell"_ustr, {});
+
+    dispatchCommand(mxComponent, u".uno:DeleteStyle"_ustr, lcl_cellStyleArgs(u"Boost Cell"_ustr));
+    CPPUNIT_ASSERT(!xCellStyles->hasByName(u"Boost Cell"_ustr));
+    checkList("delete", u"Boost Cell"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    CPPUNIT_ASSERT(xCellStyles->hasByName(u"Boost Cell"_ustr));
+    checkList("undo delete", u"Boost Cell"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo delete", u"Boost Cell"_ustr, false);
+
+    // "Good" is not a default style: it is listed only while a cell uses it.
+    goToCell(u"A1"_ustr);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Good&FamilyName:string=CellStyles"_ustr, {});
+    checkList("apply", u"Good"_ustr, true);
+    dispatchCommand(mxComponent,
+                    u".uno:StyleApply?Style:string=Default&FamilyName:string=CellStyles"_ustr, {});
+    checkList("remove", u"Good"_ustr, false);
+    dispatchCommand(mxComponent, u".uno:Undo"_ustr, {});
+    checkList("undo remove", u"Good"_ustr, true);
+    dispatchCommand(mxComponent, u".uno:Redo"_ustr, {});
+    checkList("redo remove", u"Good"_ustr, false);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();
