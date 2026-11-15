@@ -16,6 +16,7 @@
 
 namespace com::sun::star::uno { class XComponentContext; }
 class ChangedUIEventListener;
+class DocumentTitleListener;
 
 class NotebookbarTabControl final : public NotebookbarTabControlBase
 {
@@ -24,6 +25,7 @@ friend class ChangedUIEventListener;
 public:
     NotebookbarTabControl( Window* pParent );
     ~NotebookbarTabControl() override;
+    virtual void dispose() override;
 
     virtual void KeyInput( const KeyEvent& rKEvt ) override;
     virtual void Command( const CommandEvent& rCEvt ) override;
@@ -41,10 +43,12 @@ private:
                              );
     void ArrowStops( sal_uInt16 nCode );
     void ImplUpdateCardLook();
+    void ImplListenToDocumentTitle();
 
     DECL_LINK(OpenNotebookbarPopupMenu, NotebookBar*, void);
 
     rtl::Reference<ChangedUIEventListener> m_pListener;
+    rtl::Reference<DocumentTitleListener> m_xTitleListener;
     css::uno::Reference<css::frame::XFrame> m_xFrame;
     bool m_bInitialized;
     bool m_bInvalidate;

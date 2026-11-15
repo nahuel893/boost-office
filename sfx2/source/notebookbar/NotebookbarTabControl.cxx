@@ -34,10 +34,14 @@
 #include <com/sun/star/frame/XModuleManager.hpp>
 #include <com/sun/star/frame/ModuleManager.hpp>
 #include <com/sun/star/frame/XFrame.hpp>
+#include <com/sun/star/frame/XTitle.hpp>
+#include <com/sun/star/frame/XTitleChangeBroadcaster.hpp>
+#include <com/sun/star/frame/XTitleChangeListener.hpp>
 #include <com/sun/star/uno/Reference.h>
 #include <com/sun/star/awt/PopupMenuDirection.hpp>
 #include <com/sun/star/awt/XVclWindowPeer.hpp>
 #include <com/sun/star/frame/XPopupMenuController.hpp>
+#include <comphelper/lok.hxx>
 #include <comphelper/processfactory.hxx>
 #include <comphelper/propertyvalue.hxx>
 #include <sidebar/SidebarToolBox.hxx>
@@ -125,6 +129,58 @@ public:
     }
 };
 
+// Keeps the tab row's document title on the title of the frame's controller: the file name without the
+// product name of the frame's own title. The frame announces every change of it (Save As, read-only,
+// another controller).
+class DocumentTitleListener : public ::cppu::WeakImplHelper<XTitleChangeListener>
+{
+    VclPtr<NotebookbarTabControl> m_pParent;
+    Reference<XFrame> m_xFrame;
+
+public:
+    DocumentTitleListener(NotebookbarTabControl* pParent, const Reference<XFrame>& xFrame)
+        : m_pParent(pParent)
+        , m_xFrame(xFrame)
+    {
+    }
+
+    void start()
+    {
+        if (Reference<XTitleChangeBroadcaster> xBroadcaster{ m_xFrame, UNO_QUERY })
+            xBroadcaster->addTitleChangeListener(this);
+        update();
+    }
+
+    void dispose()
+    {
+        if (Reference<XTitleChangeBroadcaster> xBroadcaster{ m_xFrame, UNO_QUERY })
+            xBroadcaster->removeTitleChangeListener(this);
+        m_xFrame.clear();
+        m_pParent.reset();
+    }
+
+    void update()
+    {
+        if (!m_pParent || !m_xFrame.is())
+            return;
+        Reference<XTitle> xTitle(m_xFrame->getController(), UNO_QUERY);
+        m_pParent->SetDocumentTitle(xTitle.is() ? xTitle->getTitle() : OUString());
+    }
+
+    // XTitleChangeListener
+    virtual void SAL_CALL titleChanged(const TitleChangedEvent&) override
+    {
+        SolarMutexGuard aGuard;
+        update();
+    }
+
+    virtual void SAL_CALL disposing(const css::lang::EventObject&) override
+    {
+        SolarMutexGuard aGuard;
+        m_xFrame.clear();
+    }
+};
+
 namespace {
 
 class ShortcutsToolBox : public sfx2::sidebar::SidebarToolBox
@@ -187,6 +243,38 @@ NotebookbarTabControl::NotebookbarTabControl( Window* pParent )
 
 NotebookbarTabControl::~NotebookbarTabControl()
 {
+    disposeOnce();
+}
+
+void NotebookbarTabControl::dispose()
+{
+    if (m_xTitleListener)
+    {
+        m_xTitleListener->dispose();
+        m_xTitleListener.clear();
+    }
+    NotebookbarTabControlBase::dispose();
+}
+
+// Follows the title of the frame whose window holds this tab control, not of SfxViewFrame::Current():
+// while a ribbon is built, that can still be the frame of another window. The ribbon is not yet the
+// window's notebookbar then, so the windows are matched by their system frame.
+void NotebookbarTabControl::ImplListenToDocumentTitle()
+{
+    if (m_xTitleListener || comphelper::LibreOfficeKit::isActive())
+        return;
+    const vcl::Window* pFrameWindow = GetWindow(GetWindowType::Frame);
+    for (SfxViewFrame* pFrame = SfxViewFrame::GetFirst(nullptr, false); pFrame;
+         pFrame = SfxViewFrame::GetNext(*pFrame, nullptr, false))
+    {
+        SystemWindow* pSysWindow = pFrame->GetFrame().GetSystemWindow();
+        if (pFrameWindow && pSysWindow && pSysWindow->GetWindow(GetWindowType::Frame) == pFrameWindow)
+        {
+            m_xTitleListener = new DocumentTitleListener(this, pFrame->GetFrame().GetFrameInterface());
+            m_xTitleListener->start();
+            return;
+        }
+    }
 }
 
 void NotebookbarTabControl::ArrowStops( sal_uInt16 nCode )
@@ -330,6 +418,7 @@ void NotebookbarTabControl::StateChanged(StateChangedType nStateChange)
 
         m_bInvalidate = false;
     }
+    ImplListenToDocumentTitle();
     ImplUpdateCardLook();
     NotebookbarTabControlBase::StateChanged( nStateChange );
 }

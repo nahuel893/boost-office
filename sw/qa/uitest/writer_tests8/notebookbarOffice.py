@@ -1508,4 +1508,128 @@ class NotebookbarOffice(UITestCase):
             self.assertIn("Title Page...", names)
             self.assertNotIn("Cover Page", names)
 
+    def document_title(self, document):
+        """The DocumentTitle label of the ribbon in `document`'s own window, whichever window has the focus."""
+        xWindow = self.xUITest.getWindow(document.CurrentController.Frame.ContainerWindow)
+        return xWindow.getChild("ContextContainer").getChild("DocumentTitle")
+
+    def check_document_title(self, document, timeout=5):
+        """The ribbon of `document` shows its controller's title: the file name, never the product name."""
+        xTitle = self.document_title(document)
+        self.wait_for(lambda: get_state_as_dict(xTitle)["Text"] == document.CurrentController.Title,
+                      "the ribbon shows %r, the controller's title is %r"
+                      % (get_state_as_dict(xTitle)["Text"], document.CurrentController.Title), timeout)
+        self.assertNotIn("Boost Office", get_state_as_dict(xTitle)["Text"])
+        return get_state_as_dict(xTitle)["Text"]
+
+    def tab_row(self, document):
+        """(the names of the tabs on screen, the right edge of the last one, the title's left and right edges or
+        None when it is hidden, the left edge of the menu button), in the tab control's pixels."""
+        xTabs = self.xUITest.getWindow(document.CurrentController.Frame.ContainerWindow).getChild("ContextContainer")
+        xWindow = document.CurrentController.Frame.ContainerWindow
+        xAcc = xWindow.getProperty("XAccessible").getAccessibleContext()
+        while xAcc.getAccessibleParent() is not None:
+            xAcc = xAcc.getAccessibleParent().getAccessibleContext()
+        queue = [xAcc]
+        tabs = None
+        while queue and tabs is None:
+            xAcc = queue.pop(0)
+            role = xAcc.getAccessibleRole()
+            if role == PAGE_TAB_LIST and xAcc.getAccessibleChildCount() == len(TABS):
+                pages = [xAcc.getAccessibleChild(i).getAccessibleContext() for i in range(len(TABS))]
+                tabs = [(page.getAccessibleName(), page.getBounds()) for page in pages if page.getBounds().Width > 0]
+            elif role not in (DOCUMENT_TEXT, PARAGRAPH):
+                queue += [xAcc.getAccessibleChild(i).getAccessibleContext()
+                          for i in range(xAcc.getAccessibleChildCount())]
+        self.assertIsNotNone(tabs, "no tab list with %d tabs in the accessibility tree" % len(TABS))
+        title = get_state_as_dict(xTabs.getChild("DocumentTitle"))
+        menu = get_state_as_dict(xTabs.getChild("OpenMenu"))
+        edges = None
+        if title["ReallyVisible"] == "true":
+            left = int(title["RelPosition"].split("x")[0])
+            edges = (left, left + int(title["Size"].split("x")[0]))
+        return ([name for name, _ in tabs], max(bounds.X + bounds.Width for _, bounds in tabs), edges,
+                int(menu["RelPosition"].split("x")[0]))
+
+    def test_document_title_shows_the_new_documents_name(self):
+        # S1: the open document's name sits in the free space of the tab row, as Microsoft 365 shows it
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            xWindow = document.CurrentController.Frame.ContainerWindow
+            old = xWindow.getPosSize()
+            try:
+                self.assertTrue(document.CurrentController.Title.startswith("Untitled "))
+                self.check_document_title(document)
+                # the UITest window is narrower than any screen the ribbon is made for: 1366 px, the
+                # smallest width of the ribbon's design, has room for the title next to every tab
+                xWindow.setPosSize(0, 0, 1366, 768, SIZE)
+                xTitle = self.document_title(document)
+                self.assertEqual("true", self.settle(lambda: get_state_as_dict(xTitle)["ReallyVisible"]))
+            finally:
+                xWindow.setPosSize(old.X, old.Y, old.Width, old.Height, SIZE)
+                self.switch_to("Default")
+
+    def test_document_title_follows_save_as(self):
+        with tempfile.TemporaryDirectory() as tmp, self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                self.check_document_title(document)
+                document.storeAsURL(Path(tmp, "titulo.odt").as_uri(), ())
+                self.assertEqual("titulo.odt", self.check_document_title(document))
+            finally:
+                self.switch_to("Default")
+
+    def test_document_title_of_a_read_only_document(self):
+        with tempfile.TemporaryDirectory() as tmp, self.ui_test.create_doc_in_start_center("writer") as document:
+            url = Path(tmp, "titulo.odt").as_uri()
+            document.storeToURL(url, ())
+            self.switch_to(OFFICE_UI)
+            try:
+                xReadOnly = self.ui_test.get_desktop().loadComponentFromURL(
+                    url, "_blank", 0, mkPropertyValues({"ReadOnly": True, "OnMainThread": True}))
+                try:
+                    self.assertEqual("titulo.odt (read-only)", self.check_document_title(xReadOnly, 10))
+                finally:
+                    xReadOnly.close(True)
+            finally:
+                self.switch_to("Default")
+
+    def test_document_title_of_two_windows_shows_each_windows_own_document(self):
+        # ruling 4: a ribbon must not take the title of the frame that is current when it is built
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            try:
+                xOther = self.ui_test.get_desktop().loadComponentFromURL(
+                    "private:factory/swriter", "_blank", 0, mkPropertyValues({"OnMainThread": True}))
+                try:
+                    self.assertNotEqual(document.CurrentController.Title, xOther.CurrentController.Title)
+                    self.check_document_title(xOther, 10)
+                    self.check_document_title(document)
+                finally:
+                    xOther.close(True)
+            finally:
+                self.switch_to("Default")
+
+    def test_document_title_never_takes_space_from_the_tabs(self):
+        # ruling 1: the title sits between the last tab and the menu button, and gives way in a narrow window
+        with self.ui_test.create_doc_in_start_center("writer") as document:
+            self.switch_to(OFFICE_UI)
+            xWindow = document.CurrentController.Frame.ContainerWindow
+            old = xWindow.getPosSize()
+            try:
+                self.check_document_title(document)
+                got = {}
+                for size in (1366, 700):
+                    xWindow.setPosSize(0, 0, size, 768, SIZE)
+                    got[size] = self.settle(lambda: self.tab_row(document))
+                self.assertIsNotNone(got[1366][2], "the title is hidden at 1366 px: %r" % (got,))
+                self.assertEqual(got[1366][0], got[700][0], "the tabs on screen changed")
+                for size, (_, tabs_right, title, menu_left) in got.items():
+                    if title:
+                        self.assertGreaterEqual(title[0], tabs_right, "%d: the title overlaps the last tab" % size)
+                        self.assertLessEqual(title[1], menu_left, "%d: the title overlaps the menu button" % size)
+            finally:
+                xWindow.setPosSize(old.X, old.Y, old.Width, old.Height, SIZE)
+                self.switch_to("Default")
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

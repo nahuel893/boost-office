@@ -33,6 +33,7 @@ class ImplTabItem;
 struct ImplTabCtrlData;
 class TabPage;
 class Button;
+class FixedText;
 class PushButton;
 class ListBox;
 class ToolBox;
@@ -191,6 +192,8 @@ public:
     void SetToolBox( ToolBox* pToolBox );
     ToolBox* GetToolBox() { return m_pShortcuts; }
     Control* GetOpenMenu();
+    /// Shows rTitle in the free space between the last tab and the menu button; empty hides it.
+    void SetDocumentTitle(const OUString& rTitle);
 
     virtual Size        calculateRequisition() const override;
 
@@ -205,6 +208,8 @@ private:
     static sal_uInt16 m_nHeaderHeight;
     VclPtr<ToolBox> m_pShortcuts;
     VclPtr<PushButton> m_pOpenMenu;
+    VclPtr<FixedText> m_pTitle;
+    SAL_DLLPRIVATE void ImplPlaceTitle();
     DECL_DLLPRIVATE_LINK(OpenMenu, Button*, void);
 };
 

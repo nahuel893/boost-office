@@ -52,6 +52,9 @@ class `libreoffice-*`) keep the build's LibreOffice(Dev) name.
 - **A greyed button is a placeholder.** Microsoft's ribbon has it, LibreOffice has no such feature yet. It shows the
   tooltip "<Label> (not available yet)" and does nothing. The design records list every one.
 - **Menu bar.** LibreOffice features without a Microsoft button leave the ribbon and stay in the menu bar.
+- **Document name.** The tab row shows the open document's name ("Untitled 1", "report.odt (read-only)") in the
+  free space between the last tab and the menu button, as Microsoft 365 shows it above its ribbon. The tabs keep
+  their room: in a narrow window the name is cut short with "..." or hidden.
 - **English only.** The new labels and tooltips are not translated.
 - **Linux only.** No Windows or macOS build, and no distribution packages.
 

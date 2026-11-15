@@ -33,6 +33,7 @@
 #include <vcl/themecolors.hxx>
 #include <vcl/toolbox.hxx>
 #include <vcl/toolkit/button.hxx>
+#include <vcl/toolkit/fixed.hxx>
 #include <vcl/menu.hxx>
 #include <vcl/mnemonic.hxx>
 #include <vcl/toolkit/lstbox.hxx>
@@ -42,6 +43,7 @@
 #include <svdata.hxx>
 #include <window.h>
 
+#include <algorithm>
 #include <deque>
 #include <optional>
 #include <unordered_map>
@@ -2202,6 +2204,32 @@ FactoryFunction TabControl::GetUITestFactory() const
 
 sal_uInt16 NotebookbarTabControlBase::m_nHeaderHeight = 0;
 
+namespace {
+
+// The document's name in the tab row: drawn like the tab names, a '~' in it is no mnemonic
+class DocumentTitle final : public FixedText
+{
+public:
+    explicit DocumentTitle(vcl::Window* pParent)
+        // WB_NOGROUP: a label must not split the tab control's children into two keyboard groups
+        : FixedText(pParent, WB_NOLABEL | WB_NOMULTILINE | WB_NOGROUP | WB_CENTER | WB_VCENTER)
+    {
+        ApplySettings(*GetOutDev());
+    }
+
+    const vcl::Font& GetCanonicalFont(const StyleSettings& rStyle) const override
+    {
+        return rStyle.GetTabFont();
+    }
+
+    const Color& GetCanonicalTextColor(const StyleSettings& rStyle) const override
+    {
+        return rStyle.GetTabTextColor();
+    }
+};
+
+}
+
 IMPL_LINK_NOARG(NotebookbarTabControlBase, OpenMenu, Button*, void)
 {
     m_aIconClickHdl.Call(static_cast<NotebookBar*>(GetParent()->GetParent()));
@@ -2213,10 +2241,14 @@ NotebookbarTabControlBase::NotebookbarTabControlBase(vcl::Window* pParent)
     , eLastContext(vcl::EnumContext::Context::Any)
 {
     m_pOpenMenu = VclPtr<PushButton>::Create( this , WB_CENTER | WB_VCENTER );
+    m_pOpenMenu->set_id(u"OpenMenu"_ustr);
     m_pOpenMenu->SetClickHdl(LINK(this, NotebookbarTabControlBase, OpenMenu));
     m_pOpenMenu->SetModeImage(Image(StockImage::Yes, SV_RESID_BITMAP_NOTEBOOKBAR));
     m_pOpenMenu->SetSizePixel(m_pOpenMenu->GetOptimalSize());
     m_pOpenMenu->Show();
+
+    m_pTitle = VclPtr<DocumentTitle>::Create(this);
+    m_pTitle->set_id(u"DocumentTitle"_ustr);
 }
 
 NotebookbarTabControlBase::~NotebookbarTabControlBase()
@@ -2279,7 +2311,47 @@ void NotebookbarTabControlBase::dispose()
 {
     m_pShortcuts.disposeAndClear();
     m_pOpenMenu.disposeAndClear();
+    m_pTitle.disposeAndClear();
     TabControl::dispose();
+}
+
+void NotebookbarTabControlBase::SetDocumentTitle(const OUString& rTitle)
+{
+    if (!m_pTitle || m_pTitle->GetText() == rTitle)
+        return;
+    m_pTitle->SetText(rTitle);
+    ImplPlaceTitle();
+}
+
+void NotebookbarTabControlBase::ImplPlaceTitle()
+{
+    if (!m_pTitle || !m_pOpenMenu)
+        return;
+
+    // the free space of the tab row, from the last tab to the menu button
+    constexpr tools::Long nSpacing = 12;
+    tools::Rectangle aLastTab;
+    for (auto const& item : mpTabCtrlData->maItemList)
+    {
+        if (item.m_bVisible && !item.maRect.IsEmpty()
+            && (aLastTab.IsEmpty() || item.maRect.Right() > aLastTab.Right()))
+            aLastTab = item.maRect;
+    }
+    const tools::Long nLeft = aLastTab.Right() + 1 + nSpacing;
+    const tools::Long nRight = m_pOpenMenu->GetPosPixel().X() - nSpacing;
+
+    // the tabs never give up space for the title: it hides when too little is left to read it
+    if (aLastTab.IsEmpty() || nRight - nLeft < 80 || m_pTitle->GetText().isEmpty())
+    {
+        m_pTitle->Hide();
+        return;
+    }
+
+    // centered on the window like Microsoft 365 does above its ribbon, but kept inside the free space
+    const tools::Long nTitleWidth = std::min(m_pTitle->GetOptimalSize().Width(), nRight - nLeft);
+    const tools::Long nX = std::clamp((GetSizePixel().Width() - nTitleWidth) / 2, nLeft, nRight - nTitleWidth);
+    m_pTitle->SetPosSizePixel(Point(nX, aLastTab.Top()), Size(nTitleWidth, aLastTab.GetHeight()));
+    m_pTitle->Show();
 }
 
 void NotebookbarTabControlBase::SetToolBox( ToolBox* pToolBox )
@@ -2409,6 +2481,8 @@ bool NotebookbarTabControlBase::ImplPlaceTabs( tools::Long nWidth )
     tools::Long nPosY = (m_nHeaderHeight - m_pOpenMenu->GetSizePixel().getHeight()) / 2;
     // position the menu
     m_pOpenMenu->SetPosPixel(Point(nWidth - nHamburgerWidth, nPosY));
+
+    ImplPlaceTitle();
 
     return true;
 }
