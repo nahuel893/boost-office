@@ -1,6 +1,6 @@
 # Feature: the Apply Style box stops refilling on every cursor move (release 0.1.4)
 
-- **Status:** in progress, 2026-10-29.
+- **Status:** done, 2026-11-14 (published in 0.1.4).
 - **Locator:** `product/odd/tasks/style-box-perf.md`; **Engram mirror:** `odd/style-box-perf/tasks`.
 - **Repo / branch:** `/mnt/games/libreoffice/core`, branch `feature/style-box-perf` from `main` (8e4d81b62). Runners:
   `python3 -I -m unittest discover -s product/tests -t .`; LibreOffice CppUnit/UITest through `product/dev/lo-make.sh`
@@ -65,8 +65,9 @@
 - [x] **SB-C1 — correction round** (delegated writer, opus; context reason: svx build and CppUnit runs): SB-V1 blocker
   B1 (pool from the controller's own frame, two-frame test) and the reviewers' `createItemWindow` reset; then a recheck
   limited to B1. Commit 7cd6b02e1. L9.
-- [ ] **SB-F3 — release 0.1.4** (delegated packaging and container proof, as F2 of `icon-accent-fill.md`; controller
-  publishes): ruling 5.
+- [x] **SB-F3 — release 0.1.4** (delegated packaging and container proof, as F2 of `icon-accent-fill.md`; controller
+  publishes): ruling 5. Commits 373f57d36, 40a3d1c4a; published
+  https://github.com/nahuel893/boost-office/releases/tag/v0.1.4.
 
 ## Log
 
@@ -115,3 +116,11 @@
   recheck with the SB-V1 two-window gtk3 probe: 0/5 wrong lists. Controller: `sw_uibase_uiview` rerun OK, recheck
   screenshot looked at (beta's popup lists BetaOnly while alpha is active). `Select()` still resolves the picked name
   through `SfxObjectShell::Current()` (old code, advisory).
+- L10 (2026-10-30) SB-F3 done (delegated, opus): archive sha256 `083d7840…679452`, bootstrap `860e0277…93d372`,
+  glibc floor 2.44, `libsvxcorelo.so` `9f526b15…291b49`. Host install: stylebloat `calc-keys` median 0.03 s CPU;
+  `archlinux:latest` clean rc 0 + PDF; upgrade from the real published 0.1.3 one-liner rc 0, svx = archive, purge
+  rc 0; `ubuntu:24.04` refused rc 1. The suite result was lost with a reboot.
+- L11 (2026-11-14) The user: "subi el fix al repositorio, asi queda desplegada la ultima version". Controller reran
+  the suite (1155 OK), pushed `main`/`dev` 40a3d1c4a, tag `v0.1.4`, release with the three assets. Real URLs in
+  clean `archlinux:latest`: latest one-liner rc 0, `libsvxcorelo.so` `9f526b15…` = archive, PDF `%PDF-`, purge rc 0,
+  prefix gone; image removed.
