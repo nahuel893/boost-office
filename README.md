@@ -19,7 +19,9 @@ curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/bo
 ```
 
 It downloads the release archive, checks its sha256, and adds `boost-writer`, `boost-calc`, `boost-impress` and
-`boost-office` and their desktop entries. Add `-s -- --theme dark` after `bash` for the dark look; run it again to
+`boost-office` and their desktop entries, and makes Boost Office the default application for Word, Excel,
+PowerPoint, OpenDocument and CSV files (`-s -- --no-default-apps` leaves them alone). Add `-s -- --theme dark`
+after `bash` for the dark look; run it again to
 upgrade; `-s -- --uninstall` removes it. It needs glibc 2.44 or newer (Arch Linux, Manjaro and other rolling
 distributions; the script refuses an older system before downloading), GTK 3 and `python3`. A build for Ubuntu, Debian
 and Fedora is planned. The release notes on <https://github.com/nahuel893/boost-office/releases/latest> list the
@@ -62,7 +64,8 @@ product/install/install.sh              # light theme, into ~/.local/opt/boost-o
 product/install/install.sh --theme dark
 ```
 
-It adds the launchers `boost-office`, `boost-writer`, `boost-calc` and `boost-impress` and desktop entries, and keeps
+It adds the launchers `boost-office`, `boost-writer`, `boost-calc` and `boost-impress` and desktop entries, makes
+them the default applications for the office file types (unless `--no-default-apps`), and keeps
 its own profile in `~/.config/boost-office`. Every option, the uninstall and troubleshooting are in
 [product/docs/install.md](product/docs/install.md).
 

@@ -19,7 +19,7 @@ FILES=(
     README.md COPYING COPYING.MPL COPYING.LGPL
     product/__init__.py product/dev/__init__.py product/dev/profile.py
     product/install/__init__.py product/install/install.sh product/install/uninstall.sh
-    product/install/build_xcd.py product/install/boost-office.desktop.in
+    product/install/build_xcd.py product/install/mimeapps.py product/install/boost-office.desktop.in
     product/icons/__init__.py product/icons/build_theme.py product/icons/manifest.json product/icons/fluent/LICENSE
     product/themes/__init__.py product/themes/build_schemes.py product/themes/palette.json
     product/brand/__init__.py product/brand/build_brand.py product/brand/intro.svg product/brand/intro-highres.svg

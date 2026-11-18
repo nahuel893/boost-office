@@ -4,9 +4,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Remove a Boost Office install made by install.sh: exactly the files and directories its manifest lists,
-# then the prefix. The profile stays unless --purge. See --help.
+# then the prefix, and gives the file types it made Boost's back to their earlier default applications. The
+# profile stays unless --purge. See --help.
 set -euo pipefail
 
+here="$(cd "$(dirname "$0")" && pwd)"
 MARKER="# boost-office-install 1"
 MANIFEST=.boost-office-install
 
@@ -15,7 +17,8 @@ usage() {
 Usage: uninstall.sh [options]
 
 Remove a Boost Office install made by install.sh: exactly the files and directories listed in its manifest
-(<prefix>/$MANIFEST), then the prefix. Directories it created are removed only when empty.
+(<prefix>/$MANIFEST), then the prefix. Directories it created are removed only when empty. The file types
+the install made Boost's open again with the applications they had before, unless another one was chosen since.
 
 Options:
   --prefix DIR  the install to remove (default: ~/.local/opt/boost-office)
@@ -51,6 +54,8 @@ manifest="$prefix/$MANIFEST"
 recorded=""
 files=()
 dirs=()
+mimeapps=""
+defaults=()
 while IFS= read -r line; do
     case "$line" in
     "" | "#"*) ;;
@@ -58,10 +63,13 @@ while IFS= read -r line; do
     "theme "*) ;;
     "file /"*) files+=("${line#file }") ;;
     "dir /"*) dirs+=("${line#dir }") ;;
+    "mimeapps /"*) mimeapps=${line#mimeapps } ;;
+    "default "*) defaults+=("${line#default }") ;;
     *) die "$manifest has a line this script does not know: '$line'; nothing removed" ;;
     esac
 done <"$manifest"
 [ "$recorded" = "$prefix" ] || die "$manifest was written for ${recorded:-no prefix}, not $prefix; nothing removed"
+[ ${#defaults[@]} = 0 ] || [ -n "$mimeapps" ] || die "$manifest lists default applications but no mimeapps.list; nothing removed"
 
 [ "$dry" = 0 ] || say "Dry run: nothing is removed."
 
@@ -70,6 +78,16 @@ act() {  # act DESCRIPTION COMMAND...: say what is done, and do it unless this i
     [ "$dry" = 1 ] || "$@"
 }
 rmdir_if_empty() { rmdir -- "$1" 2>/dev/null || say "  kept $1: it is not empty"; }
+
+# --- the default applications the install set: given back where the user has not chosen another one since ----
+restore_defaults() { printf '%s\n' "${defaults[@]}" | python3 -I "$here/mimeapps.py" restore "$mimeapps"; }
+if [ ${#defaults[@]} -gt 0 ]; then
+    if command -v python3 >/dev/null && [ -f "$here/mimeapps.py" ]; then
+        act "give ${#defaults[@]} file types back to their earlier default applications in $mimeapps" restore_defaults
+    else
+        say "python3 or $here/mimeapps.py is missing: the Boost default applications stay in $mimeapps"
+    fi
+fi
 
 # --- the files written outside the prefix ---------------------------------------------------------------
 caches=()

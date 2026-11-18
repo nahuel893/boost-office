@@ -126,7 +126,7 @@ class ReleaseTest(unittest.TestCase):
         for rel in ("README.md", "product/docs/install.md", "product/docs/licenses.md", "COPYING", "COPYING.MPL",
                     "COPYING.LGPL", "product/fonts/inter/OFL.txt", "product/icons/fluent/LICENSE",
                     "instdir/program/soffice", "instdir/LICENSE", "product/install/install.sh",
-                    "product/install/uninstall.sh", "product/install/build_xcd.py"):
+                    "product/install/uninstall.sh", "product/install/build_xcd.py", "product/install/mimeapps.py"):
             self.assertTrue((b / rel).is_file(), rel)
         for theme in ("boost", "boost_dark"):
             self.assertEqual((self.icons / f"images_{theme}.zip").read_bytes(),

@@ -6,7 +6,8 @@
 # Install a built Boost Office tree (an instdir) for the current user, without root: the tree with the Boost
 # defaults layer (boost.xcd), the Inter UI font, the Boost icon themes and the Boost brand (splash, logos and the
 # splash keys of sofficerc, over the copied tree's stock ones) in a prefix, launchers, desktop
-# entries, app icons, and a manifest that uninstall.sh removes exactly. A copy of uninstall.sh goes into the
+# entries, app icons, Writer, Calc and Impress as the default applications for the file types they open, and a
+# manifest that uninstall.sh undoes exactly. A copy of uninstall.sh goes into the
 # prefix, so the install can be removed without the repository or the release folder. See --help.
 set -euo pipefail
 
@@ -37,13 +38,17 @@ Options:
                    built there first, which needs Pillow and rsvg-convert (default: product/icons/out)
   --brand-dir DIR  where the Boost splash intro.png and intro-highres.png come from; when they are missing they
                    are built there first, which needs rsvg-convert (default: product/brand/out)
+  --no-default-apps
+                   leave the default applications alone (otherwise Writer, Calc and Impress become the default for
+                   the file types they open, and uninstall.sh gives those types back to the earlier ones)
   --force          replace an earlier Boost Office install at --prefix (uninstalled first; the profile stays)
   --dry-run        print every action and write nothing
   -h, --help       show this help
 
 Desktop entries and app icons go to \${XDG_DATA_HOME:-~/.local/share}/applications and icons/hicolor. The
-launchers use the profile ~/.config/boost-office and the desktop's GTK theme. <prefix>/uninstall.sh (a copy
-of uninstall.sh) removes everything this script wrote.
+launchers use the profile ~/.config/boost-office and the desktop's GTK theme. The default applications are
+set in \${XDG_CONFIG_HOME:-~/.config}/mimeapps.list. <prefix>/uninstall.sh (a copy of uninstall.sh) undoes
+everything this script wrote.
 EOF
 }
 
@@ -60,6 +65,7 @@ icons="$repo/product/icons/out"
 brand="$repo/product/brand/out"
 force=0
 dry=0
+defaults=1
 while [ $# -gt 0 ]; do
     case "$1" in
     --instdir|--prefix|--bindir|--theme|--icons-dir|--brand-dir)
@@ -74,6 +80,7 @@ while [ $# -gt 0 ]; do
         esac
         shift 2 ;;
     --force) force=1; shift ;;
+    --no-default-apps) defaults=0; shift ;;
     --dry-run) dry=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) bad "unknown option: $1" ;;
@@ -90,6 +97,7 @@ brand=$(realpath -ms -- "$brand")
 appdir=$(realpath -ms -- "$data/applications")
 icondir=$(realpath -ms -- "$data/icons/hicolor")
 profile="$HOME/.config/boost-office"
+mimeapps=$(realpath -ms -- "${XDG_CONFIG_HOME:-$HOME/.config}/mimeapps.list")
 # These paths go into the launchers, the desktop entries' Exec lines and the manifest unquoted.
 for path in "$prefix" "$bindir" "$appdir" "$icondir"; do
     case "$path" in
@@ -119,6 +127,17 @@ if [ "$build_brand" = 1 ]; then
 else
     python3 -I "$repo/product/brand/build_brand.py" check --out "$brand" >/dev/null \
         || die "the splash PNGs in $brand are not the stock sizes; rebuild them with product/brand/build_brand.py"
+fi
+if [ "$defaults" = 1 ]; then
+    # mimeapps.list is replaced through a temp file in its own (real) folder, or created with its folders
+    if [ -e "$mimeapps" ]; then
+        writable=$(dirname "$(realpath -- "$mimeapps")")
+    else
+        writable=$(dirname "$mimeapps")
+        while [ ! -e "$writable" ]; do writable=$(dirname "$writable"); done
+    fi
+    [ -d "$writable" ] && [ -w "$writable" ] \
+        || die "$writable is not writable, so $mimeapps cannot be set; fix it or pass --no-default-apps"
 fi
 replace=0
 if [ -e "$prefix" ] || [ -L "$prefix" ]; then
@@ -221,8 +240,10 @@ for ttf in "$repo"/product/fonts/inter/*.ttf; do
     act "copy $(basename "$ttf") into $stage/share/fonts/truetype" cp -- "$ttf" "$stage/share/fonts/truetype/"
 done
 
-copy_uninstall() { cp -- "$here/uninstall.sh" "$stage/uninstall.sh" && chmod 755 "$stage/uninstall.sh"; }
-act "copy uninstall.sh into $stage" copy_uninstall
+copy_uninstall() {
+    cp -- "$here/uninstall.sh" "$here/mimeapps.py" "$stage/" && chmod 755 "$stage/uninstall.sh"
+}
+act "copy uninstall.sh and mimeapps.py into $stage" copy_uninstall
 
 act "write the manifest $stage/$MANIFEST" write_manifest "$stage/$MANIFEST"
 act "rename $stage to $prefix" mv -T -- "$stage" "$prefix"
@@ -291,6 +312,31 @@ for sizedir in "$repo"/sysui/desktop/icons/hicolor/*/apps; do
         done
     done <<<"$APPS"
 done
+
+# --- default applications: Writer, Calc and Impress for the file types they open (the first of them that lists a
+# type gets it). Each type is recorded with its earlier default before mimeapps.list is written. ------------
+if [ "$defaults" = 1 ]; then
+    declare -A owner=()
+    pairs=""
+    while IFS='|' read -r _launcher _flag name _title stock; do
+        [ "$stock" != startcenter ] || continue
+        IFS=';' read -ra types <<<"$(stock_value "$repo/sysui/desktop/menus/$stock.desktop" MimeType)"
+        for mime in "${types[@]}"; do
+            [ -n "$mime" ] && [ -z "${owner[$mime]:-}" ] || continue
+            owner[$mime]=$name.desktop
+            pairs+="$mime $name.desktop"$'\n'
+        done
+    done <<<"$APPS"
+    previous=$(printf '%s' "$pairs" | python3 -I "$here/mimeapps.py" plan "$mimeapps")
+    ensure_dir "$(dirname "$mimeapps")"
+    record mimeapps "$mimeapps"
+    while IFS= read -r line; do
+        record default "$line"
+    done <<<"$previous"
+    set_defaults() { printf '%s' "$pairs" | python3 -I "$here/mimeapps.py" set "$mimeapps"; }
+    act "make Boost Writer, Calc and Impress the default for the ${#owner[@]} file types they open, in $mimeapps" \
+        set_defaults
+fi
 
 # --- caches: only with the tools present, never failing on them -----------------------------------------
 refresh_desktop_db() { update-desktop-database "$appdir" || say "update-desktop-database failed (ignored)"; }
