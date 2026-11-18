@@ -50,8 +50,8 @@ main() {
         --uninstall) uninstall=1 ;;
         -h|--help)
             say "Boost Office $VERSION installer. Install:   $ONE_LINER"
-            say "Options go after 'bash -s --': the install.sh options (--theme dark, --prefix DIR, --bindir DIR,"
-            say "--dry-run ...), or --uninstall [--purge] [--prefix DIR] to remove an install."
+            say "Options go after 'bash -s --': the install.sh options (--theme dark, --no-default-apps,"
+            say "--prefix DIR, --bindir DIR, --dry-run ...), or --uninstall [--purge] [--prefix DIR] to remove an install."
             exit 0 ;;
         *)
             [ "${!i}" != --force ] || force=1

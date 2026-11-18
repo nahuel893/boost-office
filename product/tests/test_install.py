@@ -63,6 +63,29 @@ def stock_entry(name):
     return desktop_entry(ROOT / "sysui/desktop/menus" / name)
 
 
+def default_apps(path):
+    """The [Default Applications] entries of a mimeapps.list."""
+    out, inside = {}, False
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("["):
+            inside = line == "[Default Applications]"
+        elif inside and "=" in line:
+            key, value = line.split("=", 1)
+            out[key.strip()] = value.strip()
+    return out
+
+
+def expected_defaults():
+    """Each file type of the Writer, Calc and Impress entries, to the first of them that lists it."""
+    out = {}
+    for launcher in ("boost-writer", "boost-calc", "boost-impress"):
+        _flag, desktop, _title, _icon, stock = APPS[launcher]
+        for mime in filter(None, stock_entry(stock)["MimeType"].split(";")):
+            out.setdefault(mime, desktop)
+    return out
+
+
 class InstallTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -246,7 +269,7 @@ class InstallTest(InstallTestCase):
         self.assertEqual(MARKER, header)
         self.assertIn(("prefix", str(self.prefix)), records)
         self.assertIn(("theme", "light"), records)
-        listed = {path for kind, path in records if kind in ("file", "dir")}
+        listed = {path for kind, path in records if kind in ("file", "dir", "mimeapps")}
         new = {str(self.root / rel) for rel in snapshot(self.root).keys() - before.keys()}
         outside = {p for p in new if p != str(self.prefix) and not p.startswith(str(self.prefix) + "/")}
         self.assertEqual(outside, listed)
@@ -259,7 +282,7 @@ class InstallTest(InstallTestCase):
         self.assertEqual(0, out.returncode, out.stderr)
         self.assertEqual(before, snapshot(self.root))
         for word in ("boost.xcd", "boost-writer", "boost-office-calc.desktop", "Inter-Regular.ttf",
-                     "images_boost.zip", "intro-highres.png", "sofficerc", str(self.prefix)):
+                     "images_boost.zip", "intro-highres.png", "sofficerc", "mimeapps.list", str(self.prefix)):
             self.assertIn(word, out.stdout)
 
     def test_defaults_are_under_home(self):
@@ -313,6 +336,7 @@ class InstallTest(InstallTestCase):
             self.assertEqual(0, out.returncode, script)
             self.assertIn("--dry-run", out.stdout, script)
             self.assertIn("--prefix", out.stdout, script)
+        self.assertIn("--no-default-apps", self.run_script(INSTALL, "--help").stdout)
 
 
 class UninstallTest(InstallTestCase):
@@ -373,6 +397,117 @@ class UninstallTest(InstallTestCase):
         out = self.run_script(UNINSTALL, "--prefix", str(moved))
         self.assertNotEqual(0, out.returncode)
         self.assertTrue((moved / "program/soffice").is_file())
+
+
+class DefaultAppsTest(InstallTestCase):
+    # a user's mimeapps.list from before the install: another office suite for CSV and ODT, a browser for HTML
+    PRIOR = ("[Added Associations]\n"
+             "text/csv=wps-office-et.desktop;\n"
+             "\n"
+             "[Default Applications]\n"
+             "text/html=firefox.desktop\n"
+             "text/csv=wps-office-et.desktop\n"
+             "application/vnd.oasis.opendocument.text=Other Office.desktop\n")
+    XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    def setUp(self):
+        super().setUp()
+        self.mimeapps = self.home / ".config/mimeapps.list"
+
+    def write_prior(self, extra=""):
+        self.mimeapps.parent.mkdir(parents=True, exist_ok=True)
+        self.mimeapps.write_text(self.PRIOR + extra, encoding="utf-8")
+
+    def uninstall(self):
+        out = self.run_script(UNINSTALL, "--prefix", str(self.prefix))
+        self.assertEqual(0, out.returncode, out.stdout + out.stderr)
+        return out
+
+    def test_writer_calc_and_impress_become_the_default_for_their_file_types(self):
+        self.write_prior()
+        out = self.install()
+        defaults = default_apps(self.mimeapps)
+        for mime, desktop in expected_defaults().items():
+            self.assertEqual(desktop, defaults[mime], mime)
+        self.assertEqual("boost-office-calc.desktop", defaults["text/csv"])
+        self.assertEqual("boost-office-writer.desktop", defaults[self.DOCX])
+        self.assertEqual("firefox.desktop", defaults["text/html"])
+        self.assertNotIn("boost-office-startcenter.desktop", defaults.values())
+        self.assertTrue(self.mimeapps.read_text(encoding="utf-8").startswith(
+            "[Added Associations]\ntext/csv=wps-office-et.desktop;\n\n[Default Applications]\n"))
+        self.assertIn(str(self.mimeapps), out.stdout)
+
+    def test_uninstall_gives_the_file_types_back_byte_for_byte(self):
+        self.write_prior()
+        before = snapshot(self.root)
+        self.install()
+        self.uninstall()
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_a_mimeapps_list_the_install_created_goes_away_with_it(self):
+        before = snapshot(self.root)
+        self.install()
+        self.assertEqual(expected_defaults(), default_apps(self.mimeapps))
+        self.uninstall()
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_a_default_the_user_chose_after_the_install_stays(self):
+        self.write_prior()
+        self.install()
+        text = self.mimeapps.read_text(encoding="utf-8")
+        self.mimeapps.write_text(text.replace("text/csv=boost-office-calc.desktop", "text/csv=gnumeric.desktop"),
+                                 encoding="utf-8")
+        self.uninstall()
+        defaults = default_apps(self.mimeapps)
+        self.assertEqual("gnumeric.desktop", defaults["text/csv"])
+        self.assertEqual("Other Office.desktop", defaults["application/vnd.oasis.opendocument.text"])
+        self.assertNotIn(self.DOCX, defaults)
+        self.assertNotIn("boost-office", self.mimeapps.read_text(encoding="utf-8"))
+
+    def test_an_upgrade_keeps_the_defaults_from_before_boost(self):
+        self.write_prior()
+        before = snapshot(self.root)
+        self.install()
+        self.install("--force")
+        self.assertEqual("boost-office-calc.desktop", default_apps(self.mimeapps)["text/csv"])
+        self.uninstall()
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_a_type_already_set_to_boost_is_dropped_at_uninstall(self):
+        # an earlier install, or the user by hand, pointed it at Boost: there is nothing older to give back
+        self.write_prior(f"{self.XLSX}=boost-office-calc.desktop\n")
+        self.install()
+        self.uninstall()
+        defaults = default_apps(self.mimeapps)
+        self.assertNotIn(self.XLSX, defaults)
+        self.assertEqual("wps-office-et.desktop", defaults["text/csv"])
+
+    def test_no_default_apps_leaves_them_alone(self):
+        home = snapshot(self.home)
+        self.install("--no-default-apps")
+        self.assertEqual(home, snapshot(self.home))
+        self.write_prior()
+        before = snapshot(self.root)
+        self.install("--force", "--no-default-apps")
+        self.assertEqual(before["home/.config/mimeapps.list"], snapshot(self.root)["home/.config/mimeapps.list"])
+        self.assertFalse([r for r in self.manifest()[1] if r[0] in ("mimeapps", "default")])
+
+    def test_xdg_config_home_is_where_mimeapps_list_goes(self):
+        config = self.root / "xdg-config"
+        self.env["XDG_CONFIG_HOME"] = str(config)
+        self.install()
+        self.assertEqual(expected_defaults(), default_apps(config / "mimeapps.list"))
+        self.assertFalse(self.mimeapps.exists())
+
+    def test_uninstall_dry_run_keeps_the_defaults(self):
+        self.write_prior()
+        self.install()
+        installed = self.mimeapps.read_bytes()
+        out = self.run_script(UNINSTALL, "--prefix", str(self.prefix), "--dry-run")
+        self.assertEqual(0, out.returncode, out.stderr)
+        self.assertEqual(installed, self.mimeapps.read_bytes())
+        self.assertIn(str(self.mimeapps), out.stdout)
 
 
 class FlagSampleTest(unittest.TestCase):

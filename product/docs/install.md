@@ -28,7 +28,7 @@ curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/bo
 curl -fsSL https://github.com/nahuel893/boost-office/releases/latest/download/boost-office-install.sh | bash -s -- --uninstall --purge
 ```
 
-- Every `install.sh` option below works (`--theme`, `--prefix`, `--bindir`, `--dry-run` ...).
+- Every `install.sh` option below works (`--theme`, `--no-default-apps`, `--prefix`, `--bindir`, `--dry-run` ...).
 - **Upgrade:** run the one-liner again. An install made by `install.sh` at the prefix is replaced (the script adds
   `--force` itself); the profile stays.
 - **Uninstall:** `--uninstall` runs the `uninstall.sh` copy that every install keeps in its prefix
@@ -87,6 +87,7 @@ If the launchers are not found, add `~/.local/bin` to your `PATH`; the installer
 | `--theme THEME` | `light` or `dark`: the look of **new** profiles | `light` |
 | `--icons-dir DIR` | Where `images_boost.zip` and `images_boost_dark.zip` come from; missing ones are built there | `product/icons/out` |
 | `--brand-dir DIR` | Where the splash images `intro.png` and `intro-highres.png` come from; missing ones are built there, and ones that are not the stock pixel sizes (644 x 199, 990 x 254) are refused | `product/brand/out` |
+| `--no-default-apps` | Leave the default applications alone: without it, Writer, Calc and Impress become the default for the file types they open (see below) | set them |
 | `--force` | Replace an earlier Boost Office install at `--prefix` (it is uninstalled first; the profile stays) | refuse |
 | `--dry-run` | Print every action and write nothing | off |
 | `--help` | Show the usage text | |
@@ -106,8 +107,9 @@ Run `--dry-run` first to read the plan.
 | Launchers | `<bindir>`, default `~/.local/bin`: `boost-office`, `boost-writer`, `boost-calc`, `boost-impress` |
 | Desktop entries | `${XDG_DATA_HOME:-~/.local/share}/applications/boost-office-*.desktop` (start center, writer, calc, impress) |
 | App icons | `${XDG_DATA_HOME:-~/.local/share}/icons/hicolor/<size>/apps/boost-office-*` |
+| Boost Writer, Calc and Impress as the default applications for the file types they open (Word, Excel, PowerPoint, OpenDocument, CSV ...), unless `--no-default-apps` | the `[Default Applications]` section of `${XDG_CONFIG_HOME:-~/.config}/mimeapps.list` |
 | The install manifest | `<prefix>/.boost-office-install` |
-| A copy of `uninstall.sh` (works without the repository or the release folder) | `<prefix>/uninstall.sh` |
+| A copy of `uninstall.sh` and its helper `mimeapps.py` (work without the repository or the release folder) | `<prefix>/uninstall.sh`, `<prefix>/mimeapps.py` |
 | Your profile (settings, recent documents) | `~/.config/boost-office` |
 
 - **The theme is a configuration layer, not a profile.** `boost.xcd` carries the defaults, so a new profile starts in
@@ -118,6 +120,22 @@ Run `--dry-run` first to read the plan.
   dialog title bars and some borders follow your GTK theme, and the UI font keeps the desktop's size.
 - **Fonts need no `fc-cache`.** Inter sits in LibreOffice's own font folder inside the prefix, not in a user font
   folder, and the program loads it from there.
+
+## Default applications
+
+The installer makes Boost Writer, Calc and Impress the default applications for the file types their desktop entries
+list, the same ones LibreOffice's Writer, Calc and Impress open: double-clicking a `.docx`, `.xlsx`, `.pptx`, `.odt` or
+`.csv` file opens it in Boost Office. A type both Writer and Calc list (ClarisWorks, Microsoft Works) goes to Writer.
+It writes only those lines of the `[Default Applications]` section of `${XDG_CONFIG_HOME:-~/.config}/mimeapps.list`
+(the file `xdg-mime default` writes, read by GNOME, KDE, Xfce, file managers and `xdg-open`); every other line stays
+as it is. The manifest records each type with the application it had before.
+
+- `--no-default-apps` leaves the default applications as they are.
+- `uninstall.sh` gives each type back to the application it had before the install, or drops the line when it had
+  none. A type you have pointed at another application since stays with it. A `mimeapps.list` the install created
+  is removed when nothing else is left in it.
+- An upgrade (`--force`, or the one-liner again) keeps the applications from before the first install, so a later
+  uninstall still gives them back.
 
 ## The theme applies to new profiles only
 
@@ -133,7 +151,8 @@ another `--theme` does not switch it, and the installer says so. To switch an ex
 product/install/install.sh --force
 ```
 
-`--force` runs the uninstall first (the profile stays), then installs the tree again. Without it, an existing
+`--force` runs the uninstall first (the profile stays, and the default applications go back to the earlier ones
+for a moment), then installs the tree again. Without it, an existing
 prefix is refused, and a directory without the install marker is never replaced.
 
 ## Uninstall
