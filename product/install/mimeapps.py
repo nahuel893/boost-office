@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Set and give back default applications in a mimeapps.list (XDG MIME Applications spec), for install.sh and
 uninstall.sh. Only the [Default Applications] lines of the given types change; every other line stays as it is.
+GLib merges repeated [Default Applications] sections and the last line of a type wins there, while xdg-mime reads
+the first one: every line of a type, in every such section, is set and given back.
 
     mimeapps.py plan FILE     stdin "TYPE DESKTOP" lines; stdout "TYPE DESKTOP PREVIOUS" (the manifest's records)
     mimeapps.py set FILE      stdin "TYPE DESKTOP" lines: make DESKTOP the default for TYPE
@@ -26,6 +28,7 @@ def read(path):
 
 
 def write(path, lines):
+    path = Path(os.path.realpath(path))  # a mimeapps.list kept as a link (dotfiles) stays a link
     mode = path.stat().st_mode & 0o7777 if path.exists() else 0o644
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=".mimeapps.")
     try:
@@ -53,24 +56,26 @@ def value_of(line):
     return line.rstrip("\r\n").split("=", 1)[1]
 
 
-def section(lines):
-    """(header index, end index) of the first [Default Applications] section, or None."""
+def sections(lines):
+    """(header index, end index) of every [Default Applications] section."""
+    out = []
     for start, line in enumerate(lines):
         if line.strip() == SECTION:
             end = start + 1
             while end < len(lines) and not is_header(lines[end]):
                 end += 1
-            return start, end
-    return None
+            out.append((start, end))
+    return out
 
 
-def find(lines, mime):
-    bounds = section(lines)
-    if bounds:
-        for i in range(bounds[0] + 1, bounds[1]):
-            if key_of(lines[i]) == mime:
-                return i
-    return None
+def section(lines):
+    """(header index, end index) of the first [Default Applications] section, or None."""
+    found = sections(lines)
+    return found[0] if found else None
+
+
+def find_all(lines, mime):
+    return [i for start, end in sections(lines) for i in range(start + 1, end) if key_of(lines[i]) == mime]
 
 
 def entries(value):
@@ -81,8 +86,8 @@ def plan(lines, pairs):
     """For each pair, the value to give back at uninstall: today's default without DESKTOP itself."""
     out = []
     for mime, desktop in pairs:
-        i = find(lines, mime)
-        previous = "" if i is None else value_of(lines[i])
+        found = find_all(lines, mime)
+        previous = value_of(lines[found[-1]]) if found else ""  # the line that wins in GLib
         if desktop in entries(previous):
             previous = ";".join(e for e in entries(previous) if e != desktop)
         out.append((mime, desktop, previous))
@@ -96,9 +101,10 @@ def set_defaults(lines, pairs):
             lines[-1] += "\n"
         lines.append(SECTION + "\n")
     for mime, desktop in pairs:
-        i = find(lines, mime)
-        if i is not None:
+        found = find_all(lines, mime)
+        for i in found:
             lines[i] = f"{mime}={desktop}\n"
+        if found:
             continue
         start, end = section(lines)
         at = end
@@ -113,13 +119,14 @@ def set_defaults(lines, pairs):
 def restore(lines, records):
     lines = list(lines)
     for mime, desktop, previous in records:
-        i = find(lines, mime)
-        if i is None or entries(value_of(lines[i])) != [desktop]:
-            continue  # gone, or the user chose another application since: theirs stays
-        if previous:
-            lines[i] = f"{mime}={previous}\n"
-        else:
-            del lines[i]
+        # a line gone, or set to another application since by the user, stays theirs
+        for i in reversed(find_all(lines, mime)):
+            if entries(value_of(lines[i])) != [desktop]:
+                continue
+            if previous:
+                lines[i] = f"{mime}={previous}\n"
+            else:
+                del lines[i]
     bounds = section(lines)
     if bounds and not any(line.strip() for line in lines[bounds[0] + 1:bounds[1]]):
         del lines[bounds[0]]  # the header set_defaults added to a file that had none
@@ -139,11 +146,11 @@ def main(argv):
     elif command == "set":
         write(path, set_defaults(lines, [tuple(row[:2]) for row in rows]))
     elif path.exists():
-        lines = restore(lines, [(row + [""])[:3] for row in rows])
-        if any(line.strip() for line in lines):
-            write(path, lines)
-        else:
+        restored = restore(lines, [(row + [""])[:3] for row in rows])
+        if not any(line.strip() for line in restored):
             path.unlink()
+        elif restored != lines:
+            write(path, restored)
     return 0
 
 

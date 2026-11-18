@@ -130,6 +130,11 @@ It writes only those lines of the `[Default Applications]` section of `${XDG_CON
 (the file `xdg-mime default` writes, read by GNOME, KDE, Xfce, file managers and `xdg-open`); every other line stays
 as it is. The manifest records each type with the application it had before.
 
+- Every `[Default Applications]` section counts: GLib merges repeated ones and the last line of a type wins there,
+  so each line of a type is set (and given back). A `mimeapps.list` kept as a link, as dotfile managers do, stays a
+  link and its target is edited. A config folder the installer cannot write to is refused before anything is
+  written.
+
 - `--no-default-apps` leaves the default applications as they are.
 - `uninstall.sh` gives each type back to the application it had before the install, or drops the line when it had
   none. A type you have pointed at another application since stays with it. A `mimeapps.list` the install created

@@ -500,6 +500,53 @@ class DefaultAppsTest(InstallTestCase):
         self.assertEqual(expected_defaults(), default_apps(config / "mimeapps.list"))
         self.assertFalse(self.mimeapps.exists())
 
+    def test_every_default_applications_section_is_set_and_given_back(self):
+        # GLib merges repeated sections and the last line wins: a type there must become Boost's too
+        self.write_prior(f"\n[Added Associations]\nimage/png=eog.desktop;\n\n[Default Applications]\n"
+                         f"{self.DOCX}=onlyoffice.desktop\n")
+        before = snapshot(self.root)
+        self.install()
+        self.assertEqual("boost-office-writer.desktop", default_apps(self.mimeapps)[self.DOCX])
+        self.assertNotIn("onlyoffice", self.mimeapps.read_text(encoding="utf-8"))
+        self.uninstall()
+        self.assertEqual(before, snapshot(self.root))
+
+    def test_a_mimeapps_list_kept_as_a_link_stays_a_link(self):
+        dotfiles = self.root / "dotfiles/mimeapps.list"
+        dotfiles.parent.mkdir()
+        dotfiles.write_text(self.PRIOR, encoding="utf-8")
+        self.mimeapps.parent.mkdir(parents=True)
+        self.mimeapps.symlink_to(dotfiles)
+        before = snapshot(self.root)
+        self.install()
+        self.assertTrue(self.mimeapps.is_symlink())
+        self.assertEqual("boost-office-calc.desktop", default_apps(dotfiles)["text/csv"])
+        self.uninstall()
+        self.assertEqual(before, snapshot(self.root))
+
+    @unittest.skipIf(os.geteuid() == 0, "root writes anywhere")
+    def test_an_unwritable_config_folder_is_refused_before_anything_is_written(self):
+        config = self.mimeapps.parent
+        config.mkdir()
+        config.chmod(0o555)
+        self.addCleanup(config.chmod, 0o755)
+        before = snapshot(self.root)
+        out = self.run_script(INSTALL, *self.args())
+        self.assertNotEqual(0, out.returncode)
+        self.assertIn("--no-default-apps", out.stderr)
+        self.assertEqual(before, snapshot(self.root))
+
+    @unittest.skipIf(os.geteuid() == 0, "root writes anywhere")
+    def test_uninstall_leaves_a_mimeapps_list_without_boost_lines_untouched(self):
+        self.write_prior()
+        self.install()
+        self.mimeapps.write_text(self.PRIOR, encoding="utf-8")  # the user put their own file back
+        self.mimeapps.parent.chmod(0o555)
+        self.addCleanup(self.mimeapps.parent.chmod, 0o755)
+        self.uninstall()
+        self.assertEqual(self.PRIOR, self.mimeapps.read_text(encoding="utf-8"))
+        self.assertFalse(self.prefix.exists())
+
     def test_uninstall_dry_run_keeps_the_defaults(self):
         self.write_prior()
         self.install()

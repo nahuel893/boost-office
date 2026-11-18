@@ -128,6 +128,17 @@ else
     python3 -I "$repo/product/brand/build_brand.py" check --out "$brand" >/dev/null \
         || die "the splash PNGs in $brand are not the stock sizes; rebuild them with product/brand/build_brand.py"
 fi
+if [ "$defaults" = 1 ]; then
+    # mimeapps.list is replaced through a temp file in its own (real) folder, or created with its folders
+    if [ -e "$mimeapps" ]; then
+        writable=$(dirname "$(realpath -- "$mimeapps")")
+    else
+        writable=$(dirname "$mimeapps")
+        while [ ! -e "$writable" ]; do writable=$(dirname "$writable"); done
+    fi
+    [ -d "$writable" ] && [ -w "$writable" ] \
+        || die "$writable is not writable, so $mimeapps cannot be set; fix it or pass --no-default-apps"
+fi
 replace=0
 if [ -e "$prefix" ] || [ -L "$prefix" ]; then
     [ "$(head -n 1 "$prefix/$MANIFEST" 2>/dev/null || true)" = "$MARKER" ] \
